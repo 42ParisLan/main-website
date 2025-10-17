@@ -1,0 +1,33 @@
+roles:
+    basic:
+        name: 'basic'
+        description: Basic role for all users
+        permissions:
+            - path: /auth/logout
+              methods: [GET]
+            - path: /auth/authorize
+              methods: [GET]
+            - path: /env
+              methods: [GET]
+            - path: /roles
+              methods: [GET]
+            - path: /users/*
+              methods: [GET]
+            - path: /users
+              methods: [GET]
+            - path: /me
+              methods: [GET]
+
+    admin:
+        name: 'admin'
+        description: Admin for the app
+        inherits: [basic]
+        permissions:
+
+    super-admin:
+        name: 'super-admin'
+        description: Super Admin for the app that can manage admin
+        inherits: [basic, admin]
+        permissions:
+            - path: '*'
+              methods: ['*']

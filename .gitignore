@@ -1,0 +1,7 @@
+.vscode
+.env*
+!.env*.sample
+.migration_status
+static/*
+artefacts/*
+db-data

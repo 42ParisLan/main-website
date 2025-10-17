@@ -1,0 +1,7 @@
+FROM node:23-alpine3.20
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+ENTRYPOINT [ "ash", "-c", "pnpm install && pnpm dev" ]

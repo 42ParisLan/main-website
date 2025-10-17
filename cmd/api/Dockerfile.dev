@@ -1,0 +1,18 @@
+FROM golang:1.25.2-alpine
+
+RUN apk add --no-cache make git fish bash zsh curl
+
+# Install Atlas CLI
+RUN curl -sSf https://atlasgo.sh | sh
+
+WORKDIR /app
+
+# Copy the entrypoint script
+COPY scripts/docker/api-entrypoint.sh /usr/local/bin/api-entrypoint.sh
+RUN chmod +x /usr/local/bin/api-entrypoint.sh
+
+# Set migrations directory
+ENV MIGRATIONS_DIR=/app/ent/migrate/migrations
+
+ENTRYPOINT ["/usr/local/bin/api-entrypoint.sh"]
+CMD ["go", "run", "-modfile=./tools/go.mod", "github.com/mitranim/gow", "-e=go,mod,sum", "run", "./cmd/api/main.go"]

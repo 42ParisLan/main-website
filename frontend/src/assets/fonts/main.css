@@ -1,0 +1,155 @@
+/* Futura PT Font Faces */
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTBold.otf') format('opentype');
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTBoldOblique.otf') format('opentype');
+	font-weight: 700;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTBook.otf') format('opentype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTBookOblique.otf') format('opentype');
+	font-weight: 400;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondBold.otf') format('opentype');
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondBoldOblique.otf') format('opentype');
+	font-weight: 700;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondBook.otf') format('opentype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondBookOblique.otf') format('opentype');
+	font-weight: 400;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondExtraBold.otf') format('opentype');
+	font-weight: 800;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondExtraBoldOblique.otf') format('opentype');
+	font-weight: 800;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondMedium.otf') format('opentype');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT Condensed';
+	src: url('./FuturaPTCondMediumOblique.otf') format('opentype');
+	font-weight: 500;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTDemi.otf') format('opentype');
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTDemiOblique.otf') format('opentype');
+	font-weight: 600;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTExtraBold.otf') format('opentype');
+	font-weight: 800;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTExtraBoldOblique.otf') format('opentype');
+	font-weight: 800;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTHeavy.otf') format('opentype');
+	font-weight: 900;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTHeavyOblique.otf') format('opentype');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTLight.otf') format('opentype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTLightOblique.otf') format('opentype');
+	font-weight: 300;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTMedium.otf') format('opentype');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Futura PT';
+	src: url('./FuturaPTMediumOblique.otf') format('opentype');
+	font-weight: 500;
+	font-style: italic;
+}

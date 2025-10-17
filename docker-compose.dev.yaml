@@ -1,0 +1,81 @@
+# this docker compose shoudld be used for development only
+
+services:
+  db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    networks:
+      - base-website
+    tmpfs:
+      - /var/lib/postgresql/data
+    # volumes:
+    #   - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=base-website
+      - POSTGRES_PASSWORD=base-website
+      - POSTGRES_DB=base-website
+
+  api:
+    build:
+      context: ./
+      dockerfile: ./cmd/api/Dockerfile.dev
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app:z
+      - go-cache:/go
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - db
+    networks:
+      - base-website
+    environment:
+      - TZ=Europe/Paris
+      - DB_HOST=db
+      - DB_USER=base-website
+      - DB_PASS=base-website
+      - DB_NAME=base-website
+      - DB_PORT=5432
+      - VALKEY_ADDRESS=valkey:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - API_PREFIX=/api
+      - LOG_LEVEL=${LOG_LEVEL}
+      - OPENID_ISSUER=http://${DEV_DOMAIN}:3000/api/openid
+      - LOGIN_URL=http://${DEV_DOMAIN}:8080/auth/authorize
+      - INTRA_TOKEN_URL=https://api.intra.42.fr/oauth/token
+      - INTRA_API_URL=https://api.intra.42.fr/v2
+      - INTRA_CLIENT_ID=${INTRA_CLIENT_ID}
+      - INTRA_CLIENT_SECRET=${INTRA_CLIENT_SECRET}
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app:z
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - base-website
+    environment:
+      - TZ=Europe/Paris
+      - REWRITE_API_URL=http://api:3000/api
+      - NEXT_PUBLIC_OAUTH_AUTHORIZE_URL=https://api.intra.42.fr/oauth/authorize
+      - NEXT_PUBLIC_OAUTH_CLIENT_ID=${INTRA_CLIENT_ID}
+
+  valkey:
+    image: valkey/valkey:8.1.1
+    ports:
+      - 6379:6379
+    networks:
+      - base-website
+
+networks:
+  base-website:
+
+volumes:
+  # db-data:
+  go-cache:
