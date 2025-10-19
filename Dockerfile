@@ -57,6 +57,7 @@ RUN curl -sf https://outrig.run/install.sh | OUTRIG_VERSION=${OUTRIG_VERSION} sh
 RUN curl -sSf https://atlasgo.sh | sh
 
 COPY ./ent/migrate/migrations /app/migrations
+COPY ./configs /app/configs
 COPY ./scripts/docker/api-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 COPY --from=back-builder /src/pedago-dashboard /usr/local/bin/pedago-dashboard
