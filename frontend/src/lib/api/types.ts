@@ -377,6 +377,12 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Component: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Component.json
+             */
+            readonly $schema?: string;
             /** @example #FF5733 */
             color: string;
             /** @example Network infrastructure and connectivity */
@@ -404,6 +410,46 @@ export interface components {
              * @example 120
              */
             votes: number;
+        };
+        CreateComponent: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateComponent.json
+             */
+            readonly $schema?: string;
+            /** @example #FF5733 */
+            color: string;
+            /** @example Network infrastructure and connectivity */
+            description: string;
+            /** @example https://example.com/network.png */
+            image_url: string;
+            /** @example Network */
+            name: string;
+        };
+        CreateVote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateVote.json
+             */
+            readonly $schema?: string;
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+            /** @example true */
+            visible: boolean;
         };
         EnvResponse: {
             /**
@@ -579,6 +625,46 @@ export interface components {
             name: string;
             permissions: components["schemas"]["Permission"][];
         };
+        UpdateComponent: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/UpdateComponent.json
+             */
+            readonly $schema?: string;
+            /** @example #FF5733 */
+            color: string;
+            /** @example Network infrastructure and connectivity */
+            description: string;
+            /** @example https://example.com/network.png */
+            image_url: string;
+            /** @example Network */
+            name: string;
+        };
+        UpdateVote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/UpdateVote.json
+             */
+            readonly $schema?: string;
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+            /** @example true */
+            visible: boolean | null;
+        };
         User: {
             /**
              * Format: uri
@@ -737,17 +823,22 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description No Content */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": string;
+                };
             };
             /** @description Error */
             default: {
@@ -764,17 +855,26 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateComponent"];
+            };
+        };
         responses: {
-            /** @description No Content */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Component"];
+                };
             };
             /** @description Error */
             default: {
@@ -1061,14 +1161,20 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVote"];
+            };
+        };
         responses: {
-            /** @description No Content */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Vote"];
+                };
             };
             /** @description Error */
             default: {
@@ -1117,17 +1223,22 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description No Content */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": string;
+                };
             };
             /** @description Error */
             default: {
@@ -1144,17 +1255,26 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVote"];
+            };
+        };
         responses: {
-            /** @description No Content */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Vote"];
+                };
             };
             /** @description Error */
             default: {
@@ -1174,14 +1294,20 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateComponent"];
+            };
+        };
         responses: {
-            /** @description No Content */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Component"];
+                };
             };
             /** @description Error */
             default: {
