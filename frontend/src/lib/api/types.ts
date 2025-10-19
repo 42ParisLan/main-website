@@ -196,26 +196,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/kind": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Change user kind
-         * @description This endpoint is used to change user kind.
-         */
-        post: operations["changeUserKind"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/{id}/permissions": {
         parameters: {
             query?: never;
@@ -230,6 +210,26 @@ export interface paths {
         get: operations["getUserRBACPermissions"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change user roles
+         * @description This endpoint is used to change user roles.
+         */
+        post: operations["changeUserRoles"];
         delete?: never;
         options?: never;
         head?: never;
@@ -313,17 +313,17 @@ export interface components {
              */
             id: number;
             /**
-             * @example basic
+             * @example user
              * @enum {string}
              */
-            kind: "basic" | "admin" | "super-admin";
+            kind: "user" | "admin";
             /** @example Matis */
             last_name: string;
             /** @example https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg */
             picture: string | null;
             /**
              * @example [
-             *       "basic"
+             *       "user"
              *     ]
              */
             roles: string[];
@@ -384,17 +384,17 @@ export interface components {
              */
             id: number;
             /**
-             * @example basic
+             * @example user
              * @enum {string}
              */
-            kind: "basic" | "admin" | "super-admin";
+            kind: "user" | "admin";
             /** @example Matis */
             last_name: string;
             /** @example https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg */
             picture: string | null;
             /**
              * @example [
-             *       "basic"
+             *       "user"
              *     ]
              */
             roles: string[];
@@ -584,8 +584,8 @@ export interface operations {
                 limit?: number;
                 /** @example asc */
                 order?: "asc" | "desc";
-                /** @example basic */
-                kind?: "basic" | "admin" | "super-admin";
+                /** @example user */
+                kind?: "user" | "admin";
             };
             header?: never;
             path?: never;
@@ -646,41 +646,6 @@ export interface operations {
             };
         };
     };
-    changeUserKind: {
-        parameters: {
-            query: {
-                /** @example admin */
-                kind: "basic" | "admin";
-            };
-            header?: never;
-            path: {
-                /** @example 42 */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
     getUserRBACPermissions: {
         parameters: {
             query?: never;
@@ -700,6 +665,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Permission"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    changeUserRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[] | null;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
                 };
             };
             /** @description Error */

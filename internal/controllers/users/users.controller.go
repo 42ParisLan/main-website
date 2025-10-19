@@ -55,13 +55,13 @@ func (ctrl *userController) Register(api huma.API) {
 
 	huma.Register(api, huma.Operation{
 		Method:      "POST",
-		Path:        "/users/{id}/kind",
-		Summary:     "Change user kind",
-		Description: `This endpoint is used to change user kind.`,
+		Path:        "/users/{id}/roles",
+		Summary:     "Change user roles",
+		Description: `This endpoint is used to change user roles.`,
 		Tags:        []string{"Users"},
-		OperationID: "changeUserKind",
+		OperationID: "changeUserRoles",
 		Security:    security.WithAuth("profile"),
-	}, ctrl.changeUserKind)
+	}, ctrl.changeUserRoles)
 }
 
 func (ctrl *userController) getUserByID(
@@ -119,11 +119,11 @@ func (ctrl *userController) getCurrentUser(
 	}, nil
 }
 
-func (ctrl *userController) changeUserKind(
+func (ctrl *userController) changeUserRoles(
 	ctx context.Context,
-	input *changeUserKindInput,
+	input *changeUserRolesInput,
 ) (*oneUserOutput, error) {
-	user, err := ctrl.usersService.ChangeUserKindByID(ctx, input.UserID, input.Kind)
+	user, err := ctrl.usersService.ChangeUserRolesByID(ctx, input.UserID, input.Body)
 	if err != nil {
 		return nil, err
 	}

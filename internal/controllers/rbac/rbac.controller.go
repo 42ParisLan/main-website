@@ -82,10 +82,6 @@ func (ctrl *rbacController) getRoles(
 	ctx context.Context,
 	input *struct{}) (*rolesOutput, error) {
 	output := &rolesOutput{}
-	var err error
-	output.Body, err = ctrl.rbacService.List(ctx)
-	if err != nil {
-		return nil, err
-	}
+	output.Body = ctrl.rbacService.List()
 	return output, nil
 }

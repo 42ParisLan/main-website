@@ -1,11 +1,14 @@
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/providers/auth.provider'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/register/')({
-  component: RouteComponent,
+	component: RouteComponent,
 })
 
 function RouteComponent() {
+	const {me} = useAuth();
+
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-background">
 			<div className="container mx-auto px-4 py-16">
@@ -15,9 +18,12 @@ function RouteComponent() {
 						<h1 className="text-5xl md:text-7xl font-bold tracking-tight">
 							Register
 						</h1>
+						<h2 className='text-3xl font-semibold'>
+							Welcome {me.username}
+						</h2>
 						<p className="text-xl text-muted-foreground">
-							This is the public register page.
-							edit it in /frontend/src/routes/register
+							This is a protected page.
+							edit it in /frontend/src/routes/register/index.tsx
 						</p>
 					</div>
 

@@ -9,7 +9,7 @@ type User = components["schemas"]["LightUser"];
 interface UserSearchProps {
 	selectedUsers: Set<number>;
 	onUserSelect: (user: User) => void;
-	kind?: "basic" | "admin";
+	kind?: "user" | "admin";
 }
 
 export default function UserSearch({ selectedUsers, onUserSelect, kind = undefined }: UserSearchProps) {
@@ -45,9 +45,17 @@ export default function UserSearch({ selectedUsers, onUserSelect, kind = undefin
 					}`}
 				>
 					<Avatar className="h-8 w-8 mr-3">
-					<div className="w-full h-full bg-muted rounded-full flex items-center justify-center">
-						{user.username[0].toUpperCase()}
-					</div>
+						{user.picture ? (
+							<img
+								src={user.picture}
+								alt={user.username}
+								className="w-full h-full object-cover rounded-full"
+							/>
+						) : (
+							<div className="w-full h-full bg-muted rounded-full flex items-center justify-center">
+								{user.username[0].toUpperCase()}
+							</div>
+						)}
 					</Avatar>
 					<div>
 					<p className="font-medium">{user.username}</p>

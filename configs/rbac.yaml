@@ -1,13 +1,15 @@
 roles:
-    basic:
-        name: 'basic'
-        description: Basic role for all users
+    user:
+        name: 'user'
+        description: 'Standard authenticated user with basic permissions'
         permissions:
             - path: /auth/logout
               methods: [GET]
             - path: /auth/authorize
               methods: [GET]
             - path: /env
+              methods: [GET]
+            - path: /me/permissions
               methods: [GET]
             - path: /roles
               methods: [GET]
@@ -18,16 +20,21 @@ roles:
             - path: /me
               methods: [GET]
 
-    admin:
-        name: 'admin'
-        description: Admin for the app
-        inherits: [basic]
+    vote_admin:
+        name: 'vote_admin'
+        description: 'User who can create and manage voting sessions'
+        inherits: [user]
         permissions:
 
-    super-admin:
-        name: 'super-admin'
-        description: Super Admin for the app that can manage admin
-        inherits: [basic, admin]
+    team_admin:
+        name: 'team_admin'
+        description: 'User who can manage teams and team members'
+        inherits: [user]
+        permissions:
+
+    super_admin:
+        name: 'super_admin'
+        description: 'Full system administrator with all permissions'
         permissions:
             - path: '*'
               methods: ['*']

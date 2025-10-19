@@ -126,7 +126,3 @@ func apiMux(
 		loggerAPIBootstrap.Info("OpenAPI spec written to %s", specFilePath)
 	}
 }
-
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "404 page not found", http.StatusNotFound)
-}

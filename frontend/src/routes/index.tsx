@@ -34,13 +34,20 @@ function WelcomePage() {
 							<h2 className="text-2xl font-semibold tracking-tight">Public Pages</h2>
 							<div className="flex flex-wrap justify-center gap-4">
 								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/register">
-										Register
+									<Link to="/tournament">
+										Tournament
 									</Link>
 								</Button>
+							</div>
+						</div>
+
+						{/* Protected Pages Section */}
+						<div className="space-y-4">
+							<h2 className="text-2xl font-semibold tracking-tight">Protected Pages</h2>
+							<div className="flex flex-wrap justify-center gap-4">
 								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/team">
-										Team
+									<Link to="/register">
+										Register
 									</Link>
 								</Button>
 							</div>

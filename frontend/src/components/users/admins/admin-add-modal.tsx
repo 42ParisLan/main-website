@@ -12,7 +12,10 @@ import { Button } from "@/components/ui/button";
 import UserSearch from "@/components/users/user-search";
 import useQueryClient from "@/hooks/use-query-client";
 import type { components } from "@/lib/api/types";
+import { toast } from "sonner";
 import { IconUserPlus } from "@tabler/icons-react";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 
 type User = components["schemas"]["LightUser"];
 
@@ -20,17 +23,27 @@ interface AdminModalProps {
 	children?: React.ReactNode;
 }
 
-export default function AdminModal({ children }: AdminModalProps) {
+export default function AdminAddModal({ children }: AdminModalProps) {
+	const [roles, setRoles] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 	const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
 	const client = useQueryClient();
+	const reactQueryClient = useReactQueryClient();
+
+	const { data: rbacRoles } = client.useQuery("get", "/roles");
 	
-	const { mutate, isPending } = client.useMutation("post", "/users/{id}/kind", {
+	const { mutate, isPending } = client.useMutation("post", "/users/{id}/roles", {
 		onSuccess: () => {
+			toast.success("User updated to Admin successfully");
 			setOpen(false);
 			setSelectedUser(null);
 			setSelectedUsers(new Set());
+			reactQueryClient.invalidateQueries({ queryKey: ["/users"] });
+		},
+		onError: (error: any) => {
+			toast.error("Failed to update user as admin");
+			console.error(error);
 		},
 	});
 
@@ -44,13 +57,11 @@ export default function AdminModal({ children }: AdminModalProps) {
 
 		mutate({
 			params: {
-				query: {
-					kind: "admin",
-				},
 				path: {
 					id: selectedUser.id,
 				},
 			},
+			body: roles,
 		});
 	};
 
@@ -75,13 +86,25 @@ export default function AdminModal({ children }: AdminModalProps) {
 					<UserSearch
 						selectedUsers={selectedUsers}
 						onUserSelect={handleUserSelect}
-						kind="basic"
+						kind="user"
 					/>
 					{selectedUser && (
-						<div className="mt-4 p-3 bg-muted rounded-md">
-							<p className="text-sm font-medium">Selected user:</p>
-							<p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
-						</div>
+						<>
+							<div className="mt-4 p-3 bg-muted rounded-md">
+								<p className="text-sm font-medium">Selected user:</p>
+								<p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
+							</div>
+							<MultiSelect
+								defaultValue={roles}
+								options={rbacRoles?.filter((role: components['schemas']['Role']) => role.name !== "user")
+									.map((role: components['schemas']['Role']) => ({
+										value: role.name,
+										label: role.name,
+									})) ?? []}
+								onValueChange={setRoles}
+								className="w-full"
+							/>
+						</>
 					)}
 				</div>
 				<DialogFooter>

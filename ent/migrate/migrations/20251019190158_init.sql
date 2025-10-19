@@ -40,7 +40,7 @@ CREATE TABLE "users" (
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
   "picture" character varying NULL,
-  "kind" character varying NOT NULL DEFAULT 'basic',
+  "kind" character varying NOT NULL DEFAULT 'user',
   "usual_full_name" character varying NOT NULL,
   "usual_first_name" character varying NULL,
   "roles" jsonb NOT NULL,

@@ -80,14 +80,13 @@ var (
 // Kind defines the type for the "kind" enum field.
 type Kind string
 
-// KindBasic is the default value of the Kind enum.
-const DefaultKind = KindBasic
+// KindUser is the default value of the Kind enum.
+const DefaultKind = KindUser
 
 // Kind values.
 const (
-	KindBasic      Kind = "basic"
-	KindAdmin      Kind = "admin"
-	KindSuperAdmin Kind = "super-admin"
+	KindUser  Kind = "user"
+	KindAdmin Kind = "admin"
 )
 
 func (k Kind) String() string {
@@ -97,7 +96,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindBasic, KindAdmin, KindSuperAdmin:
+	case KindUser, KindAdmin:
 		return nil
 	default:
 		return fmt.Errorf("user: invalid enum value for kind field: %q", k)

@@ -21,7 +21,9 @@ type RBACService interface {
 	// GetPermissionsFromClaims
 	GetPermissionsFromUserID(ctx context.Context, userID int) ([]*rbac.Permission, error)
 	// List
-	List(ctx context.Context) ([]*rbac.Role, error)
+	List() []*rbac.Role
+	// List of existing roles
+	ListRoles() []string
 }
 
 type rbacService struct {
@@ -80,12 +82,18 @@ func (svc *rbacService) GetPermissionsFromUserID(
 	return svc.GetPermissions(user.Roles), nil
 }
 
-func (svc *rbacService) List(ctx context.Context) ([]*rbac.Role, error) {
-	roles := make([]*rbac.Role, len(svc.rbac.Roles))
-	i := 0
+func (svc *rbacService) List() []*rbac.Role {
+	roles := make([]*rbac.Role, 0, len(svc.rbac.Roles))
 	for _, role := range svc.rbac.Roles {
-		roles[i] = role
-		i++
+		roles = append(roles, role)
 	}
-	return roles, nil
+	return roles
+}
+
+func (svc *rbacService) ListRoles() []string {
+	roles := make([]string, 0, len(svc.rbac.Roles))
+	for _, role := range svc.rbac.Roles {
+		roles = append(roles, role.Name)
+	}
+	return roles
 }

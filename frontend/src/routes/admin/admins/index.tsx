@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import useQueryClient from '@/hooks/use-query-client'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import AdminCard from '@/components/users/admins/admin-card';
-import AdminModal from '@/components/users/admins/admin-modal';
-import useCan from '@/hooks/use-can'
+import AdminAddModal from '@/components/users/admins/admin-add-modal';
+import useCan, { useHasRole } from '@/hooks/use-can'
 
 export const Route = createFileRoute('/admin/admins/')({
 	component: RouteComponent,
@@ -14,6 +14,8 @@ export const Route = createFileRoute('/admin/admins/')({
 
 function RouteComponent() {
 	const client = useQueryClient();
+	const hasRole = useHasRole();
+	const router = useRouter();
 	const [page, setPage] = useState(0);
 	const [limit] = useState(10);
 
@@ -26,6 +28,10 @@ function RouteComponent() {
 			}
 		}
 	})
+
+	if (!hasRole(["super_admin"])) {
+		router.navigate({to: "/admin"})
+	}
 
 	const can = useCan();
 	const canAddAdmin = can("post", "/user/*/kind")
@@ -41,7 +47,7 @@ function RouteComponent() {
 						<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 							Admins
 						</CardTitle>
-						{canAddAdmin && <AdminModal />}
+						{canAddAdmin && <AdminAddModal />}
 					</CardHeader>
 					<CardContent>
 						<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5'>

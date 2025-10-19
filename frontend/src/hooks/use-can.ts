@@ -27,7 +27,7 @@ export function useHasRole() {
 		(roles: string[]): boolean => {
 			return (
 				roles.some((role) => me.roles.includes(role)) ||
-				me.roles.includes('super-admin')
+				me.roles.includes('super_admin')
 			);
 		},
 		[me]

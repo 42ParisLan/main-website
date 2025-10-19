@@ -23,10 +23,10 @@ func (User) Fields() []ent.Field {
 		field.Time("created_at").Immutable().Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 		field.String("picture").Optional().Nillable(),
-		field.Enum("kind").Values("basic", "admin", "super-admin").Default("basic"),
+		field.Enum("kind").Values("user", "admin").Default("user"),
 		field.String("usual_full_name"),
 		field.String("usual_first_name").Optional().Nillable(),
-		field.Strings("roles").Default([]string{"basic"}),
+		field.Strings("roles").Default([]string{"user"}),
 	}
 }
 

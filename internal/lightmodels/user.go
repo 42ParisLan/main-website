@@ -16,10 +16,10 @@ type LightUser struct {
 	CreatedAt      time.Time `json:"created_at" example:"2024-01-01T00:00:00Z" description:"The creation date of the user"`
 	UpdatedAt      time.Time `json:"updated_at" example:"2024-01-01T00:00:00Z" description:"The last update date of the user"`
 	Picture        *string   `json:"picture" example:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg" description:"The picture of the user"`
-	Kind           user.Kind `json:"kind" example:"basic" description:"The kind of the user" enum:"basic,admin,super-admin"`
+	Kind           user.Kind `json:"kind" example:"user" description:"The kind of the user" enum:"user,admin"`
 	UsualFullName  string    `json:"usual_full_name" example:"Theo Matis" description:"The usual full name of the user"`
 	UsualFirstName *string   `json:"usual_first_name" example:"Theo" description:"The usual first name of the user"`
-	Roles          []string  `json:"roles" example:"[\"basic\"]" description:"The roles of the user" nullable:"false"`
+	Roles          []string  `json:"roles" example:"[\"user\"]" description:"The roles of the user" nullable:"false"`
 }
 
 func NewLightUserFromEnt(entUser *ent.User) *LightUser {

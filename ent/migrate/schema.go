@@ -65,7 +65,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "picture", Type: field.TypeString, Nullable: true},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"basic", "admin", "super-admin"}, Default: "basic"},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"user", "admin"}, Default: "user"},
 		{Name: "usual_full_name", Type: field.TypeString},
 		{Name: "usual_first_name", Type: field.TypeString, Nullable: true},
 		{Name: "roles", Type: field.TypeJSON},

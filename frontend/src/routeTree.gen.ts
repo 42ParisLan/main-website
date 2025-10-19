@@ -12,12 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TeamIndexRouteImport } from './routes/team/index'
+import { Route as TournamentIndexRouteImport } from './routes/tournament/index'
 import { Route as RegisterIndexRouteImport } from './routes/register/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AuthCallbackIndexRouteImport } from './routes/auth/callback/index'
 import { Route as AdminVoteIndexRouteImport } from './routes/admin/vote/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
+import { Route as AdminTeamsIndexRouteImport } from './routes/admin/teams/index'
 import { Route as AdminAdminsIndexRouteImport } from './routes/admin/admins/index'
 
 const AdminRoute = AdminRouteImport.update({
@@ -35,9 +36,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TeamIndexRoute = TeamIndexRouteImport.update({
-  id: '/team/',
-  path: '/team/',
+const TournamentIndexRoute = TournamentIndexRouteImport.update({
+  id: '/tournament/',
+  path: '/tournament/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterIndexRoute = RegisterIndexRouteImport.update({
@@ -65,6 +66,11 @@ const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTeamsIndexRoute = AdminTeamsIndexRouteImport.update({
+  id: '/teams/',
+  path: '/teams/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAdminsIndexRoute = AdminAdminsIndexRouteImport.update({
   id: '/admins/',
   path: '/admins/',
@@ -77,8 +83,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/register': typeof RegisterIndexRoute
-  '/team': typeof TeamIndexRoute
+  '/tournament': typeof TournamentIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
+  '/admin/teams': typeof AdminTeamsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/admin/vote': typeof AdminVoteIndexRoute
   '/auth/callback': typeof AuthCallbackIndexRoute
@@ -88,8 +95,9 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/admin': typeof AdminIndexRoute
   '/register': typeof RegisterIndexRoute
-  '/team': typeof TeamIndexRoute
+  '/tournament': typeof TournamentIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
+  '/admin/teams': typeof AdminTeamsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/admin/vote': typeof AdminVoteIndexRoute
   '/auth/callback': typeof AuthCallbackIndexRoute
@@ -101,8 +109,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/register/': typeof RegisterIndexRoute
-  '/team/': typeof TeamIndexRoute
+  '/tournament/': typeof TournamentIndexRoute
   '/admin/admins/': typeof AdminAdminsIndexRoute
+  '/admin/teams/': typeof AdminTeamsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/admin/vote/': typeof AdminVoteIndexRoute
   '/auth/callback/': typeof AuthCallbackIndexRoute
@@ -115,8 +124,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/'
     | '/register'
-    | '/team'
+    | '/tournament'
     | '/admin/admins'
+    | '/admin/teams'
     | '/admin/users'
     | '/admin/vote'
     | '/auth/callback'
@@ -126,8 +136,9 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/register'
-    | '/team'
+    | '/tournament'
     | '/admin/admins'
+    | '/admin/teams'
     | '/admin/users'
     | '/admin/vote'
     | '/auth/callback'
@@ -138,8 +149,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/'
     | '/register/'
-    | '/team/'
+    | '/tournament/'
     | '/admin/admins/'
+    | '/admin/teams/'
     | '/admin/users/'
     | '/admin/vote/'
     | '/auth/callback/'
@@ -150,7 +162,7 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
   RegisterIndexRoute: typeof RegisterIndexRoute
-  TeamIndexRoute: typeof TeamIndexRoute
+  TournamentIndexRoute: typeof TournamentIndexRoute
   AuthCallbackIndexRoute: typeof AuthCallbackIndexRoute
 }
 
@@ -177,11 +189,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/team/': {
-      id: '/team/'
-      path: '/team'
-      fullPath: '/team'
-      preLoaderRoute: typeof TeamIndexRouteImport
+    '/tournament/': {
+      id: '/tournament/'
+      path: '/tournament'
+      fullPath: '/tournament'
+      preLoaderRoute: typeof TournamentIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register/': {
@@ -219,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/teams/': {
+      id: '/admin/teams/'
+      path: '/teams'
+      fullPath: '/admin/teams'
+      preLoaderRoute: typeof AdminTeamsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/admins/': {
       id: '/admin/admins/'
       path: '/admins'
@@ -232,6 +251,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAdminsIndexRoute: typeof AdminAdminsIndexRoute
+  AdminTeamsIndexRoute: typeof AdminTeamsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVoteIndexRoute: typeof AdminVoteIndexRoute
 }
@@ -239,6 +259,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminAdminsIndexRoute: AdminAdminsIndexRoute,
+  AdminTeamsIndexRoute: AdminTeamsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVoteIndexRoute: AdminVoteIndexRoute,
 }
@@ -250,7 +271,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
   RegisterIndexRoute: RegisterIndexRoute,
-  TeamIndexRoute: TeamIndexRoute,
+  TournamentIndexRoute: TournamentIndexRoute,
   AuthCallbackIndexRoute: AuthCallbackIndexRoute,
 }
 export const routeTree = rootRouteImport

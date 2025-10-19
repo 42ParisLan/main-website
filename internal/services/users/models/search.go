@@ -15,7 +15,7 @@ type SearchUsersParams struct {
 
 	//// FILTERS ////
 	// The kind of the user
-	Kind string `query:"kind" example:"basic" description:"The kind of the user" enum:"basic,admin,super-admin"`
+	Kind string `query:"kind" example:"user" description:"The kind of the user" enum:"user,admin"`
 }
 
 type SearchResult struct {

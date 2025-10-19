@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/team/')({
+export const Route = createFileRoute('/tournament/')({
 	component: RouteComponent,
 })
 
@@ -13,11 +13,11 @@ function RouteComponent() {
 					{/* Title */}
 					<div className="space-y-4 max-w-2xl">
 						<h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-							Team
+							Tournament
 						</h1>
 						<p className="text-xl text-muted-foreground">
-							This is the public team page.
-							edit it in /frontend/src/routes/team
+							This is the public tournament page.
+							edit it in /frontend/src/routes/tournament/index.tsx
 						</p>
 					</div>
 

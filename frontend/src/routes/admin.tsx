@@ -3,17 +3,17 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout-admin/app-sidebar'
 import { SiteHeader } from '@/components/layout-admin/site-header'
 import * as React from 'react'
-import { useHasRole } from '@/hooks/use-can'
+import { useAuth } from '@/providers/auth.provider'
 
 export const Route = createFileRoute('/admin')({
   component: DashLayout,
 })
 
 function DashLayout() {
-	const hasRole = useHasRole();
+	const { me } = useAuth();
 	const router = useRouter();
 
-	if (!hasRole(["admin", "super-admin"])) {
+	if (me.kind != "admin") {
 		router.navigate({ to: "/"});
 	}
 

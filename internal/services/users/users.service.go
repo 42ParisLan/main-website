@@ -3,16 +3,17 @@ package usersservice
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 
 	"base-website/ent"
 	"base-website/ent/predicate"
 	"base-website/ent/user"
 	"base-website/internal/lightmodels"
-	"base-website/internal/security"
 	configservice "base-website/internal/services/config"
 	databaseservice "base-website/internal/services/database"
 	intraservice "base-website/internal/services/intra"
+	rbacservice "base-website/internal/services/rbac"
 	usersmodels "base-website/internal/services/users/models"
 	"base-website/pkg/errorfilters"
 	"base-website/pkg/paging"
@@ -30,8 +31,8 @@ type UserService interface {
 	GetUserByID(ctx context.Context, id int) (*usersmodels.User, error)
 	// This method is used get user by its ID or login.
 	GetUserByIDOrLogin(ctx context.Context, idOrLogin string) (*usersmodels.User, error)
-	// This method is user to change user kind by its ID
-	ChangeUserKindByID(ctx context.Context, id int, kind user.Kind) (*usersmodels.User, error)
+	// This method is user to change user roles by its ID
+	ChangeUserRolesByID(ctx context.Context, id int, roles []string) (*usersmodels.User, error)
 	// This method is used to search users
 	SearchUsers(
 		ctx context.Context,
@@ -44,6 +45,7 @@ type usersService struct {
 	databaseService databaseservice.DatabaseService
 	intraService    intraservice.IntraService
 	errorFilter     errorfilters.ErrorFilter
+	rbacService     rbacservice.RBACService
 }
 
 func NewProvider() func(i *do.Injector) (UserService, error) {
@@ -52,6 +54,7 @@ func NewProvider() func(i *do.Injector) (UserService, error) {
 			do.MustInvoke[configservice.ConfigService](i),
 			do.MustInvoke[databaseservice.DatabaseService](i),
 			do.MustInvoke[intraservice.IntraService](i),
+			do.MustInvoke[rbacservice.RBACService](i),
 		)
 	}
 }
@@ -60,12 +63,14 @@ func New(
 	configService configservice.ConfigService,
 	databaseService databaseservice.DatabaseService,
 	intraService intraservice.IntraService,
+	rbacService rbacservice.RBACService,
 ) (UserService, error) {
 	return &usersService{
 		configService:   configService,
 		databaseService: databaseService,
 		intraService:    intraService,
 		errorFilter:     errorfilters.NewEntErrorFilter().WithEntityTypeName("user"),
+		rbacService:     rbacService,
 	}, nil
 }
 
@@ -110,8 +115,8 @@ func (svc *usersService) UpsertUserFromIntra(
 		SetNillableUsualFirstName(intraUser.UsualFirstName)
 
 	if intraUser.ID == svc.configService.GetConfig().SuperAdminUser {
-		userCreateQuery.SetKind(user.KindSuperAdmin)
-		userCreateQuery.SetRoles([]string{"super-admin"})
+		userCreateQuery.SetKind(user.KindAdmin)
+		userCreateQuery.SetRoles([]string{"super_admin"})
 	}
 
 	if intraUser.Image != nil {
@@ -222,25 +227,46 @@ func (svc *usersService) newQuery() *ent.UserQuery {
 	return svc.databaseService.User.Query()
 }
 
-func (svc *usersService) ChangeUserKindByID(ctx context.Context, id int, kind user.Kind) (*usersmodels.User, error) {
-	if kind == user.KindSuperAdmin {
-		return nil, fmt.Errorf("can't change kind of user to super-admin")
+func (svc *usersService) ChangeUserRolesByID(ctx context.Context, id int, roles []string) (*usersmodels.User, error) {
+	if id == svc.configService.GetConfig().SuperAdminUser {
+		return nil, huma.Error403Forbidden("can't change roles of super admin user")
 	}
 
-	callerID, err := security.GetUserIDFromContext(ctx)
+	kind := user.KindAdmin
+	if len(roles) == 0 {
+		roles = append(roles, "user")
+		kind = user.KindUser
+	}
+
+	rbacRoles := svc.rbacService.ListRoles()
+	err := checkRoles(rbacRoles, roles)
 	if err != nil {
 		return nil, err
-	}
-	if callerID == id {
-		return nil, huma.Error403Forbidden("can't change own kind or roles")
 	}
 
 	updatedUser, err := svc.databaseService.User.UpdateOneID(id).
 		SetKind(kind).
-		SetRoles([]string{kind.String()}).
+		SetRoles(roles).
 		Save(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "update")
 	}
 	return usersmodels.NewUserFromEnt(updatedUser), nil
+}
+
+//// HELPERS ////
+
+func checkRoles(rbacRoles []string, roles []string) error {
+	for _, role := range roles {
+		found := slices.Contains(rbacRoles, role)
+		if !found {
+			return huma.Error403Forbidden(
+				fmt.Sprintf(
+					"role %s doesn't exist",
+					role,
+				),
+			)
+		}
+	}
+	return nil
 }

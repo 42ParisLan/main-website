@@ -88,10 +88,9 @@ components:
           type: integer
         kind:
           enum:
-            - basic
+            - user
             - admin
-            - super-admin
-          example: basic
+          example: user
           type: string
         last_name:
           example: Matis
@@ -102,7 +101,7 @@ components:
           type: string
         roles:
           example:
-            - basic
+            - user
           items:
             type: string
           type: array
@@ -200,10 +199,9 @@ components:
           type: integer
         kind:
           enum:
-            - basic
+            - user
             - admin
-            - super-admin
-          example: basic
+          example: user
           type: string
         last_name:
           example: Matis
@@ -214,7 +212,7 @@ components:
           type: string
         roles:
           example:
-            - basic
+            - user
           items:
             type: string
           type: array
@@ -526,16 +524,15 @@ paths:
               - desc
             example: asc
             type: string
-        - example: basic
+        - example: user
           explode: false
           in: query
           name: kind
           schema:
             enum:
-              - basic
+              - user
               - admin
-              - super-admin
-            example: basic
+            example: user
             type: string
       responses:
         "200":
@@ -595,49 +592,6 @@ paths:
       summary: Get User by ID or Login
       tags:
         - Users
-  /users/{id}/kind:
-    post:
-      description: This endpoint is used to change user kind.
-      operationId: changeUserKind
-      parameters:
-        - example: 42
-          in: path
-          name: id
-          required: true
-          schema:
-            example: 42
-            format: int64
-            type: integer
-        - example: admin
-          explode: false
-          in: query
-          name: kind
-          required: true
-          schema:
-            enum:
-              - basic
-              - admin
-            example: admin
-            type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-          description: OK
-        default:
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ErrorModel"
-          description: Error
-      security:
-        - OAuth2 Auth:
-            - profile
-      summary: Change user kind
-      tags:
-        - Users
   /users/{id}/permissions:
     get:
       description: This endpoint is used to get the user RBAC permissions.
@@ -672,6 +626,47 @@ paths:
       summary: Get user RBAC permissions
       tags:
         - RBAC
+        - Users
+  /users/{id}/roles:
+    post:
+      description: This endpoint is used to change user roles.
+      operationId: changeUserRoles
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                type: string
+              nullable: true
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Change user roles
+      tags:
         - Users
 servers:
   - description: Current Server
