@@ -14,11 +14,15 @@ import (
 	"base-website/ent/authcode"
 	"base-website/ent/authrefreshtoken"
 	"base-website/ent/authtoken"
+	"base-website/ent/component"
 	"base-website/ent/user"
+	"base-website/ent/uservote"
+	"base-website/ent/vote"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -32,8 +36,14 @@ type Client struct {
 	AuthRefreshToken *AuthRefreshTokenClient
 	// AuthToken is the client for interacting with the AuthToken builders.
 	AuthToken *AuthTokenClient
+	// Component is the client for interacting with the Component builders.
+	Component *ComponentClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserVote is the client for interacting with the UserVote builders.
+	UserVote *UserVoteClient
+	// Vote is the client for interacting with the Vote builders.
+	Vote *VoteClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -48,7 +58,10 @@ func (c *Client) init() {
 	c.AuthCode = NewAuthCodeClient(c.config)
 	c.AuthRefreshToken = NewAuthRefreshTokenClient(c.config)
 	c.AuthToken = NewAuthTokenClient(c.config)
+	c.Component = NewComponentClient(c.config)
 	c.User = NewUserClient(c.config)
+	c.UserVote = NewUserVoteClient(c.config)
+	c.Vote = NewVoteClient(c.config)
 }
 
 type (
@@ -144,7 +157,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthCode:         NewAuthCodeClient(cfg),
 		AuthRefreshToken: NewAuthRefreshTokenClient(cfg),
 		AuthToken:        NewAuthTokenClient(cfg),
+		Component:        NewComponentClient(cfg),
 		User:             NewUserClient(cfg),
+		UserVote:         NewUserVoteClient(cfg),
+		Vote:             NewVoteClient(cfg),
 	}, nil
 }
 
@@ -167,7 +183,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthCode:         NewAuthCodeClient(cfg),
 		AuthRefreshToken: NewAuthRefreshTokenClient(cfg),
 		AuthToken:        NewAuthTokenClient(cfg),
+		Component:        NewComponentClient(cfg),
 		User:             NewUserClient(cfg),
+		UserVote:         NewUserVoteClient(cfg),
+		Vote:             NewVoteClient(cfg),
 	}, nil
 }
 
@@ -196,19 +215,23 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.AuthCode.Use(hooks...)
-	c.AuthRefreshToken.Use(hooks...)
-	c.AuthToken.Use(hooks...)
-	c.User.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.User, c.UserVote,
+		c.Vote,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.AuthCode.Intercept(interceptors...)
-	c.AuthRefreshToken.Intercept(interceptors...)
-	c.AuthToken.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.User, c.UserVote,
+		c.Vote,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -220,8 +243,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthRefreshToken.mutate(ctx, m)
 	case *AuthTokenMutation:
 		return c.AuthToken.mutate(ctx, m)
+	case *ComponentMutation:
+		return c.Component.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
+	case *UserVoteMutation:
+		return c.UserVote.mutate(ctx, m)
+	case *VoteMutation:
+		return c.Vote.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -626,6 +655,171 @@ func (c *AuthTokenClient) mutate(ctx context.Context, m *AuthTokenMutation) (Val
 	}
 }
 
+// ComponentClient is a client for the Component schema.
+type ComponentClient struct {
+	config
+}
+
+// NewComponentClient returns a client for the Component from the given config.
+func NewComponentClient(c config) *ComponentClient {
+	return &ComponentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `component.Hooks(f(g(h())))`.
+func (c *ComponentClient) Use(hooks ...Hook) {
+	c.hooks.Component = append(c.hooks.Component, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `component.Intercept(f(g(h())))`.
+func (c *ComponentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Component = append(c.inters.Component, interceptors...)
+}
+
+// Create returns a builder for creating a Component entity.
+func (c *ComponentClient) Create() *ComponentCreate {
+	mutation := newComponentMutation(c.config, OpCreate)
+	return &ComponentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Component entities.
+func (c *ComponentClient) CreateBulk(builders ...*ComponentCreate) *ComponentCreateBulk {
+	return &ComponentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ComponentClient) MapCreateBulk(slice any, setFunc func(*ComponentCreate, int)) *ComponentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ComponentCreateBulk{err: fmt.Errorf("calling to ComponentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ComponentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ComponentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Component.
+func (c *ComponentClient) Update() *ComponentUpdate {
+	mutation := newComponentMutation(c.config, OpUpdate)
+	return &ComponentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ComponentClient) UpdateOne(_m *Component) *ComponentUpdateOne {
+	mutation := newComponentMutation(c.config, OpUpdateOne, withComponent(_m))
+	return &ComponentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ComponentClient) UpdateOneID(id int) *ComponentUpdateOne {
+	mutation := newComponentMutation(c.config, OpUpdateOne, withComponentID(id))
+	return &ComponentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Component.
+func (c *ComponentClient) Delete() *ComponentDelete {
+	mutation := newComponentMutation(c.config, OpDelete)
+	return &ComponentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ComponentClient) DeleteOne(_m *Component) *ComponentDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ComponentClient) DeleteOneID(id int) *ComponentDeleteOne {
+	builder := c.Delete().Where(component.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ComponentDeleteOne{builder}
+}
+
+// Query returns a query builder for Component.
+func (c *ComponentClient) Query() *ComponentQuery {
+	return &ComponentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeComponent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Component entity by its id.
+func (c *ComponentClient) Get(ctx context.Context, id int) (*Component, error) {
+	return c.Query().Where(component.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ComponentClient) GetX(ctx context.Context, id int) *Component {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryVote queries the vote edge of a Component.
+func (c *ComponentClient) QueryVote(_m *Component) *VoteQuery {
+	query := (&VoteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(component.Table, component.FieldID, id),
+			sqlgraph.To(vote.Table, vote.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, component.VoteTable, component.VoteColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUserVotes queries the user_votes edge of a Component.
+func (c *ComponentClient) QueryUserVotes(_m *Component) *UserVoteQuery {
+	query := (&UserVoteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(component.Table, component.FieldID, id),
+			sqlgraph.To(uservote.Table, uservote.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, component.UserVotesTable, component.UserVotesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ComponentClient) Hooks() []Hook {
+	return c.hooks.Component
+}
+
+// Interceptors returns the client interceptors.
+func (c *ComponentClient) Interceptors() []Interceptor {
+	return c.inters.Component
+}
+
+func (c *ComponentClient) mutate(ctx context.Context, m *ComponentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ComponentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ComponentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ComponentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ComponentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Component mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -734,6 +928,22 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 	return obj
 }
 
+// QueryUserVotes queries the user_votes edge of a User.
+func (c *UserClient) QueryUserVotes(_m *User) *UserVoteQuery {
+	query := (&UserVoteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(uservote.Table, uservote.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.UserVotesTable, user.UserVotesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -759,12 +969,328 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 	}
 }
 
+// UserVoteClient is a client for the UserVote schema.
+type UserVoteClient struct {
+	config
+}
+
+// NewUserVoteClient returns a client for the UserVote from the given config.
+func NewUserVoteClient(c config) *UserVoteClient {
+	return &UserVoteClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `uservote.Hooks(f(g(h())))`.
+func (c *UserVoteClient) Use(hooks ...Hook) {
+	c.hooks.UserVote = append(c.hooks.UserVote, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `uservote.Intercept(f(g(h())))`.
+func (c *UserVoteClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserVote = append(c.inters.UserVote, interceptors...)
+}
+
+// Create returns a builder for creating a UserVote entity.
+func (c *UserVoteClient) Create() *UserVoteCreate {
+	mutation := newUserVoteMutation(c.config, OpCreate)
+	return &UserVoteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserVote entities.
+func (c *UserVoteClient) CreateBulk(builders ...*UserVoteCreate) *UserVoteCreateBulk {
+	return &UserVoteCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserVoteClient) MapCreateBulk(slice any, setFunc func(*UserVoteCreate, int)) *UserVoteCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserVoteCreateBulk{err: fmt.Errorf("calling to UserVoteClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserVoteCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserVoteCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserVote.
+func (c *UserVoteClient) Update() *UserVoteUpdate {
+	mutation := newUserVoteMutation(c.config, OpUpdate)
+	return &UserVoteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserVoteClient) UpdateOne(_m *UserVote) *UserVoteUpdateOne {
+	mutation := newUserVoteMutation(c.config, OpUpdateOne, withUserVote(_m))
+	return &UserVoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserVoteClient) UpdateOneID(id int) *UserVoteUpdateOne {
+	mutation := newUserVoteMutation(c.config, OpUpdateOne, withUserVoteID(id))
+	return &UserVoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserVote.
+func (c *UserVoteClient) Delete() *UserVoteDelete {
+	mutation := newUserVoteMutation(c.config, OpDelete)
+	return &UserVoteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserVoteClient) DeleteOne(_m *UserVote) *UserVoteDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserVoteClient) DeleteOneID(id int) *UserVoteDeleteOne {
+	builder := c.Delete().Where(uservote.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserVoteDeleteOne{builder}
+}
+
+// Query returns a query builder for UserVote.
+func (c *UserVoteClient) Query() *UserVoteQuery {
+	return &UserVoteQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserVote},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserVote entity by its id.
+func (c *UserVoteClient) Get(ctx context.Context, id int) (*UserVote, error) {
+	return c.Query().Where(uservote.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserVoteClient) GetX(ctx context.Context, id int) *UserVote {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserVote.
+func (c *UserVoteClient) QueryUser(_m *UserVote) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(uservote.Table, uservote.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, uservote.UserTable, uservote.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryComponent queries the component edge of a UserVote.
+func (c *UserVoteClient) QueryComponent(_m *UserVote) *ComponentQuery {
+	query := (&ComponentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(uservote.Table, uservote.FieldID, id),
+			sqlgraph.To(component.Table, component.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, uservote.ComponentTable, uservote.ComponentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserVoteClient) Hooks() []Hook {
+	return c.hooks.UserVote
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserVoteClient) Interceptors() []Interceptor {
+	return c.inters.UserVote
+}
+
+func (c *UserVoteClient) mutate(ctx context.Context, m *UserVoteMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserVoteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserVoteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserVoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserVoteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserVote mutation op: %q", m.Op())
+	}
+}
+
+// VoteClient is a client for the Vote schema.
+type VoteClient struct {
+	config
+}
+
+// NewVoteClient returns a client for the Vote from the given config.
+func NewVoteClient(c config) *VoteClient {
+	return &VoteClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `vote.Hooks(f(g(h())))`.
+func (c *VoteClient) Use(hooks ...Hook) {
+	c.hooks.Vote = append(c.hooks.Vote, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `vote.Intercept(f(g(h())))`.
+func (c *VoteClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Vote = append(c.inters.Vote, interceptors...)
+}
+
+// Create returns a builder for creating a Vote entity.
+func (c *VoteClient) Create() *VoteCreate {
+	mutation := newVoteMutation(c.config, OpCreate)
+	return &VoteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Vote entities.
+func (c *VoteClient) CreateBulk(builders ...*VoteCreate) *VoteCreateBulk {
+	return &VoteCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *VoteClient) MapCreateBulk(slice any, setFunc func(*VoteCreate, int)) *VoteCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &VoteCreateBulk{err: fmt.Errorf("calling to VoteClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*VoteCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &VoteCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Vote.
+func (c *VoteClient) Update() *VoteUpdate {
+	mutation := newVoteMutation(c.config, OpUpdate)
+	return &VoteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VoteClient) UpdateOne(_m *Vote) *VoteUpdateOne {
+	mutation := newVoteMutation(c.config, OpUpdateOne, withVote(_m))
+	return &VoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VoteClient) UpdateOneID(id int) *VoteUpdateOne {
+	mutation := newVoteMutation(c.config, OpUpdateOne, withVoteID(id))
+	return &VoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Vote.
+func (c *VoteClient) Delete() *VoteDelete {
+	mutation := newVoteMutation(c.config, OpDelete)
+	return &VoteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VoteClient) DeleteOne(_m *Vote) *VoteDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VoteClient) DeleteOneID(id int) *VoteDeleteOne {
+	builder := c.Delete().Where(vote.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VoteDeleteOne{builder}
+}
+
+// Query returns a query builder for Vote.
+func (c *VoteClient) Query() *VoteQuery {
+	return &VoteQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVote},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Vote entity by its id.
+func (c *VoteClient) Get(ctx context.Context, id int) (*Vote, error) {
+	return c.Query().Where(vote.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VoteClient) GetX(ctx context.Context, id int) *Vote {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryComponents queries the components edge of a Vote.
+func (c *VoteClient) QueryComponents(_m *Vote) *ComponentQuery {
+	query := (&ComponentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(vote.Table, vote.FieldID, id),
+			sqlgraph.To(component.Table, component.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, vote.ComponentsTable, vote.ComponentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *VoteClient) Hooks() []Hook {
+	return c.hooks.Vote
+}
+
+// Interceptors returns the client interceptors.
+func (c *VoteClient) Interceptors() []Interceptor {
+	return c.inters.Vote
+}
+
+func (c *VoteClient) mutate(ctx context.Context, m *VoteMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VoteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VoteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VoteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Vote mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AuthCode, AuthRefreshToken, AuthToken, User []ent.Hook
+		AuthCode, AuthRefreshToken, AuthToken, Component, User, UserVote,
+		Vote []ent.Hook
 	}
 	inters struct {
-		AuthCode, AuthRefreshToken, AuthToken, User []ent.Interceptor
+		AuthCode, AuthRefreshToken, AuthToken, Component, User, UserVote,
+		Vote []ent.Interceptor
 	}
 )

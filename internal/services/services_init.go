@@ -9,6 +9,7 @@ import (
 	pubsubservice "base-website/internal/services/pubsub"
 	rbacservice "base-website/internal/services/rbac"
 	usersservice "base-website/internal/services/users"
+	votesservice "base-website/internal/services/votes"
 
 	"github.com/samber/do"
 )
@@ -22,5 +23,6 @@ func InitServices(i *do.Injector) error {
 	do.Provide(i, intraservice.NewProvider())
 	do.Provide(i, usersservice.NewProvider())
 	do.Provide(i, pubsubservice.NewProvider())
+	do.Provide(i, votesservice.NewProvider())
 	return nil
 }

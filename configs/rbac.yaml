@@ -19,12 +19,32 @@ roles:
               methods: [GET]
             - path: /me
               methods: [GET]
+            - path: /votes
+              methods: [GET]
+            - path: /votes/*
+              methods: [GET]
+            - path: /votes/*/submit
+              methods: [POST]
+            - path: /votes/*/results
+              methods: [GET]
 
     vote_admin:
         name: 'vote_admin'
         description: 'User who can create and manage voting sessions'
         inherits: [user]
         permissions:
+            - path: /votes
+              methods: [POST]
+            - path: /votes/*
+              methods: [PATCH]
+            - path: /votes/*
+              methods: [DELETE]
+            - path: /votes/*/components
+              methods: [POST]
+            - path: /components/*
+              methods: [PATCH]
+            - path: /components/*
+              methods: [DELETE]
 
     team_admin:
         name: 'team_admin'

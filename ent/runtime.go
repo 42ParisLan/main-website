@@ -6,6 +6,8 @@ import (
 	"base-website/ent/authcode"
 	"base-website/ent/schema"
 	"base-website/ent/user"
+	"base-website/ent/uservote"
+	"base-website/ent/vote"
 	"time"
 )
 
@@ -35,4 +37,26 @@ func init() {
 	userDescRoles := userFields[11].Descriptor()
 	// user.DefaultRoles holds the default value on creation for the roles field.
 	user.DefaultRoles = userDescRoles.Default.([]string)
+	uservoteFields := schema.UserVote{}.Fields()
+	_ = uservoteFields
+	// uservoteDescCreatedAt is the schema descriptor for created_at field.
+	uservoteDescCreatedAt := uservoteFields[0].Descriptor()
+	// uservote.DefaultCreatedAt holds the default value on creation for the created_at field.
+	uservote.DefaultCreatedAt = uservoteDescCreatedAt.Default.(func() time.Time)
+	voteFields := schema.Vote{}.Fields()
+	_ = voteFields
+	// voteDescVisible is the schema descriptor for visible field.
+	voteDescVisible := voteFields[2].Descriptor()
+	// vote.DefaultVisible holds the default value on creation for the visible field.
+	vote.DefaultVisible = voteDescVisible.Default.(bool)
+	// voteDescCreatedAt is the schema descriptor for created_at field.
+	voteDescCreatedAt := voteFields[5].Descriptor()
+	// vote.DefaultCreatedAt holds the default value on creation for the created_at field.
+	vote.DefaultCreatedAt = voteDescCreatedAt.Default.(func() time.Time)
+	// voteDescUpdatedAt is the schema descriptor for updated_at field.
+	voteDescUpdatedAt := voteFields[6].Descriptor()
+	// vote.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	vote.DefaultUpdatedAt = voteDescUpdatedAt.Default.(func() time.Time)
+	// vote.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	vote.UpdateDefaultUpdatedAt = voteDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

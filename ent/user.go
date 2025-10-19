@@ -39,8 +39,29 @@ type User struct {
 	// UsualFirstName holds the value of the "usual_first_name" field.
 	UsualFirstName *string `json:"usual_first_name,omitempty"`
 	// Roles holds the value of the "roles" field.
-	Roles        []string `json:"roles,omitempty"`
+	Roles []string `json:"roles,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges        UserEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// UserVotes holds the value of the user_votes edge.
+	UserVotes []*UserVote `json:"user_votes,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// UserVotesOrErr returns the UserVotes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) UserVotesOrErr() ([]*UserVote, error) {
+	if e.loadedTypes[0] {
+		return e.UserVotes, nil
+	}
+	return nil, &NotLoadedError{edge: "user_votes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -158,6 +179,11 @@ func (_m *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *User) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryUserVotes queries the "user_votes" edge of the User entity.
+func (_m *User) QueryUserVotes() *UserVoteQuery {
+	return NewUserClient(_m.config).QueryUserVotes(_m)
 }
 
 // Update returns a builder for updating this User.

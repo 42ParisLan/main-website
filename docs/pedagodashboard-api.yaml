@@ -1,5 +1,116 @@
 components:
   schemas:
+    Component:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Component.json
+          format: uri
+          readOnly: true
+          type: string
+        color:
+          example: "#FF5733"
+          type: string
+        description:
+          example: Network infrastructure and connectivity
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        image_url:
+          example: https://example.com/network.png
+          type: string
+        name:
+          example: Network
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - image_url
+        - color
+      type: object
+    ComponentResult:
+      additionalProperties: false
+      properties:
+        component_id:
+          example: 1
+          format: int64
+          type: integer
+        name:
+          example: Go
+          type: string
+        votes:
+          example: 120
+          format: int64
+          type: integer
+      required:
+        - component_id
+        - name
+        - votes
+      type: object
+    CreateComponent:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/CreateComponent.json
+          format: uri
+          readOnly: true
+          type: string
+        color:
+          example: "#FF5733"
+          type: string
+        description:
+          example: Network infrastructure and connectivity
+          type: string
+        image_url:
+          example: https://example.com/network.png
+          type: string
+        name:
+          example: Network
+          type: string
+      required:
+        - name
+        - description
+        - image_url
+        - color
+      type: object
+    CreateVote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/CreateVote.json
+          format: uri
+          readOnly: true
+          type: string
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+        visible:
+          example: true
+          type: boolean
+      required:
+        - title
+        - description
+        - start_at
+        - end_at
+        - visible
+      type: object
     EnvResponse:
       additionalProperties: false
       properties:
@@ -133,6 +244,48 @@ components:
         - usual_first_name
         - roles
       type: object
+    LightVote:
+      additionalProperties: false
+      properties:
+        components_count:
+          example: 4
+          format: int64
+          type: integer
+        created_at:
+          example: "2025-10-01T12:00:00Z"
+          format: date-time
+          type: string
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+        visible:
+          example: true
+          type: boolean
+      required:
+        - id
+        - title
+        - description
+        - start_at
+        - end_at
+        - created_at
+        - components_count
+        - visible
+      type: object
     Permission:
       additionalProperties: false
       properties:
@@ -148,6 +301,33 @@ components:
       required:
         - path
         - methods
+      type: object
+    ResultsResponse:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResultsResponse.json
+          format: uri
+          readOnly: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/ComponentResult"
+          nullable: true
+          type: array
+        total_votes:
+          example: 290
+          format: int64
+          type: integer
+        vote_id:
+          example: 1
+          format: int64
+          type: integer
+      required:
+        - vote_id
+        - results
+        - total_votes
       type: object
     Role:
       additionalProperties: false
@@ -173,6 +353,67 @@ components:
         - description
         - permissions
         - inherits
+      type: object
+    UpdateComponent:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/UpdateComponent.json
+          format: uri
+          readOnly: true
+          type: string
+        color:
+          example: "#FF5733"
+          type: string
+        description:
+          example: Network infrastructure and connectivity
+          type: string
+        image_url:
+          example: https://example.com/network.png
+          type: string
+        name:
+          example: Network
+          type: string
+      required:
+        - name
+        - description
+        - image_url
+        - color
+      type: object
+    UpdateVote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/UpdateVote.json
+          format: uri
+          readOnly: true
+          type: string
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+        visible:
+          example: true
+          nullable: true
+          type: boolean
+      required:
+        - title
+        - description
+        - start_at
+        - end_at
+        - visible
       type: object
     User:
       additionalProperties: false
@@ -243,6 +484,50 @@ components:
         - usual_full_name
         - usual_first_name
         - roles
+      type: object
+    Vote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Vote.json
+          format: uri
+          readOnly: true
+          type: string
+        components:
+          items:
+            $ref: "#/components/schemas/Component"
+          nullable: true
+          type: array
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+        visible:
+          example: true
+          type: boolean
+      required:
+        - id
+        - title
+        - description
+        - start_at
+        - end_at
+        - visible
+        - components
       type: object
   securitySchemes:
     OAuth2 Auth:
@@ -386,6 +671,75 @@ paths:
       summary: Logout
       tags:
         - Authentification
+  /components/{id}:
+    delete:
+      description: This endpoint is used to delete a component.
+      operationId: deleteComponent
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: DELETE Component
+      tags:
+        - Vote
+    patch:
+      description: This endpoint is used to update a component.
+      operationId: updateComponent
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateComponent"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Component
+      tags:
+        - Vote
   /env:
     get:
       description: Returns frontend environment variables needed for OAuth
@@ -668,6 +1022,309 @@ paths:
       summary: Change user roles
       tags:
         - Users
+  /votes:
+    get:
+      description: This endpoint is used to get all votes.
+      operationId: getAllVotes
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: asc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: visible
+          explode: false
+          in: query
+          name: visible
+          schema:
+            default: visible
+            enum:
+              - all
+              - visible
+            example: visible
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/LightVote"
+                type: array
+          description: OK
+          headers:
+            X-Total:
+              schema:
+                example: 42
+                format: int64
+                type: integer
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get All Votes
+      tags:
+        - Vote
+    post:
+      description: This endpoint is used to create a vote.
+      operationId: createVote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVote"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Vote
+      tags:
+        - Vote
+  /votes/{id}:
+    delete:
+      description: This endpoint is used to delete a vote.
+      operationId: deleteVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Vote
+      tags:
+        - Vote
+    get:
+      description: This endpoint is used to get a vote.
+      operationId: getVoteByID
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Vote by ID
+      tags:
+        - Vote
+    patch:
+      description: This endpoint is used to update a vote.
+      operationId: updateVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVote"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Vote
+      tags:
+        - Vote
+  /votes/{id}/components:
+    post:
+      description: This endpoint is used to create a component for a vote.
+      operationId: createComponent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateComponent"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Component
+      tags:
+        - Vote
+  /votes/{id}/results:
+    get:
+      description: This endpoint is used to get vote results.
+      operationId: getResults
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultsResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Vote results
+      tags:
+        - Vote
+  /votes/{id}/submit:
+    post:
+      description: This endpoint is used to submit a vote.
+      operationId: submitVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              format: int64
+              type: integer
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Submit Vote
+      tags:
+        - Vote
 servers:
   - description: Current Server
     url: /api

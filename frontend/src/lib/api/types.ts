@@ -48,6 +48,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/components/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * DELETE Component
+         * @description This endpoint is used to delete a component.
+         */
+        delete: operations["deleteComponent"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Component
+         * @description This endpoint is used to update a component.
+         */
+        patch: operations["updateComponent"];
+        trace?: never;
+    };
     "/env": {
         parameters: {
             query?: never;
@@ -236,10 +260,151 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Votes
+         * @description This endpoint is used to get all votes.
+         */
+        get: operations["getAllVotes"];
+        put?: never;
+        /**
+         * Create Vote
+         * @description This endpoint is used to create a vote.
+         */
+        post: operations["createVote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Vote by ID
+         * @description This endpoint is used to get a vote.
+         */
+        get: operations["getVoteByID"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Vote
+         * @description This endpoint is used to delete a vote.
+         */
+        delete: operations["deleteVote"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Vote
+         * @description This endpoint is used to update a vote.
+         */
+        patch: operations["updateVote"];
+        trace?: never;
+    };
+    "/votes/{id}/components": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Component
+         * @description This endpoint is used to create a component for a vote.
+         */
+        post: operations["createComponent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Vote results
+         * @description This endpoint is used to get vote results.
+         */
+        get: operations["getResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Vote
+         * @description This endpoint is used to submit a vote.
+         */
+        post: operations["submitVote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Component: {
+            /** @example #FF5733 */
+            color: string;
+            /** @example Network infrastructure and connectivity */
+            description: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /** @example https://example.com/network.png */
+            image_url: string;
+            /** @example Network */
+            name: string;
+        };
+        ComponentResult: {
+            /**
+             * Format: int64
+             * @example 1
+             */
+            component_id: number;
+            /** @example Go */
+            name: string;
+            /**
+             * Format: int64
+             * @example 120
+             */
+            votes: number;
+        };
         EnvResponse: {
             /**
              * Format: uri
@@ -339,6 +504,39 @@ export interface components {
             /** @example Theo Matis */
             usual_full_name: string;
         };
+        LightVote: {
+            /**
+             * Format: int64
+             * @example 4
+             */
+            components_count: number;
+            /**
+             * Format: date-time
+             * @example 2025-10-01T12:00:00Z
+             */
+            created_at: string;
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+            /** @example true */
+            visible: boolean;
+        };
         Permission: {
             /**
              * @example [
@@ -348,6 +546,25 @@ export interface components {
             methods: string[];
             /** @example /users */
             path: string;
+        };
+        ResultsResponse: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResultsResponse.json
+             */
+            readonly $schema?: string;
+            results: components["schemas"]["ComponentResult"][] | null;
+            /**
+             * Format: int64
+             * @example 290
+             */
+            total_votes: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            vote_id: number;
         };
         Role: {
             /** @example admin role */
@@ -410,6 +627,36 @@ export interface components {
             /** @example Theo Matis */
             usual_full_name: string;
         };
+        Vote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Vote.json
+             */
+            readonly $schema?: string;
+            components: components["schemas"]["Component"][] | null;
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+            /** @example true */
+            visible: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -471,6 +718,60 @@ export interface operations {
             204: {
                 headers: {
                     "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteComponent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateComponent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
@@ -701,6 +1002,253 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["User"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAllVotes: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+                /** @example visible */
+                visible?: "all" | "visible";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    "X-Total"?: number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightVote"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getVoteByID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vote"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createComponent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getResults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    submitVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": number;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
             /** @description Error */

@@ -5,6 +5,7 @@ import (
 	envcontroller "base-website/internal/controllers/env"
 	rbaccrontroller "base-website/internal/controllers/rbac"
 	userscontroller "base-website/internal/controllers/users"
+	votescontroller "base-website/internal/controllers/votes"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/autopatch"
@@ -21,6 +22,7 @@ func controllersList() []controllerInitFunc {
 		userscontroller.Init,
 		rbaccrontroller.Init,
 		envcontroller.Init,
+		votescontroller.Init,
 	}
 }
 

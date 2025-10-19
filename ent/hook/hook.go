@@ -44,6 +44,18 @@ func (f AuthTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthTokenMutation", m)
 }
 
+// The ComponentFunc type is an adapter to allow the use of ordinary
+// function as Component mutator.
+type ComponentFunc func(context.Context, *ent.ComponentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ComponentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ComponentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ComponentMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
@@ -54,6 +66,30 @@ func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+}
+
+// The UserVoteFunc type is an adapter to allow the use of ordinary
+// function as UserVote mutator.
+type UserVoteFunc func(context.Context, *ent.UserVoteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserVoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserVoteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserVoteMutation", m)
+}
+
+// The VoteFunc type is an adapter to allow the use of ordinary
+// function as Vote mutator.
+type VoteFunc func(context.Context, *ent.VoteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f VoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.VoteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.VoteMutation", m)
 }
 
 // Condition is a hook condition function.

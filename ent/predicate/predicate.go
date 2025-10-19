@@ -15,5 +15,14 @@ type AuthRefreshToken func(*sql.Selector)
 // AuthToken is the predicate function for authtoken builders.
 type AuthToken func(*sql.Selector)
 
+// Component is the predicate function for component builders.
+type Component func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// UserVote is the predicate function for uservote builders.
+type UserVote func(*sql.Selector)
+
+// Vote is the predicate function for vote builders.
+type Vote func(*sql.Selector)

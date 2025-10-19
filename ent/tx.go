@@ -18,8 +18,14 @@ type Tx struct {
 	AuthRefreshToken *AuthRefreshTokenClient
 	// AuthToken is the client for interacting with the AuthToken builders.
 	AuthToken *AuthTokenClient
+	// Component is the client for interacting with the Component builders.
+	Component *ComponentClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserVote is the client for interacting with the UserVote builders.
+	UserVote *UserVoteClient
+	// Vote is the client for interacting with the Vote builders.
+	Vote *VoteClient
 
 	// lazily loaded.
 	client     *Client
@@ -154,7 +160,10 @@ func (tx *Tx) init() {
 	tx.AuthCode = NewAuthCodeClient(tx.config)
 	tx.AuthRefreshToken = NewAuthRefreshTokenClient(tx.config)
 	tx.AuthToken = NewAuthTokenClient(tx.config)
+	tx.Component = NewComponentClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.UserVote = NewUserVoteClient(tx.config)
+	tx.Vote = NewVoteClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
