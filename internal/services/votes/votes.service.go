@@ -25,15 +25,15 @@ type VotesService interface {
 	// User
 	ListVotes(ctx context.Context, params *votesmodels.ListVotesParams) (*votesmodels.ListResult, error)
 	GetVoteByID(ctx context.Context, voteID int) (*lightmodels.Vote, error)
-	SubmitVote(ctx context.Context, componentID int, voteID int) error
-	GetResults(ctx context.Context, voteID int) (*votesmodels.ResultsResponse, error)
+	SubmitVote(ctx context.Context, componentID int, voteID int) (*votesmodels.ResultsResponse, error)
+	GetResults(ctx context.Context, voteID int, live bool) (*votesmodels.ResultsResponse, error)
 
 	// Admins
 	CreateVote(ctx context.Context, input votesmodels.CreateVote) (*lightmodels.Vote, error)
 	UpdateVote(ctx context.Context, voteID int, input *votesmodels.UpdateVote) (*lightmodels.Vote, error)
 	DeleteVote(ctx context.Context, voteID int) error
 
-	CreateComponent(ctx context.Context, input votesmodels.CreateComponent) (*lightmodels.Component, error)
+	CreateComponent(ctx context.Context, input votesmodels.CreateComponent, VoteID int) (*lightmodels.Component, error)
 	UpdateComponent(ctx context.Context, componentID int, input *votesmodels.UpdateComponent) (*lightmodels.Component, error)
 	DeleteComponent(ctx context.Context, componentID int) error
 }
@@ -92,7 +92,7 @@ func (svc *votesService) ListVotes(
 		query = query.Order(ent.Desc("id"))
 	}
 
-	votes, err := query.All(ctx)
+	votes, err := query.WithComponents().All(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
@@ -124,22 +124,22 @@ func (svc *votesService) SubmitVote(
 	ctx context.Context,
 	componentID int,
 	voteID int,
-) error {
+) (*votesmodels.ResultsResponse, error) {
 	entVote, err := svc.databaseService.Vote.
 		Query().
 		Where(vote.IDEQ(voteID)).
 		WithComponents().
 		Only(ctx)
 	if err != nil {
-		return svc.errorFilter.Filter(err, "get_vote")
+		return nil, svc.errorFilter.Filter(err, "get_vote")
 	}
 	if entVote.Visible == false || entVote.StartAt.After(time.Now()) || entVote.EndAt.Before(time.Now()) {
-		return fmt.Errorf("vote session is not active")
+		return nil, fmt.Errorf("vote session is not active")
 	}
 
 	userID, err := security.GetUserIDFromContext(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = svc.databaseService.UserVote.
@@ -150,7 +150,7 @@ func (svc *votesService) SubmitVote(
 		).
 		Only(ctx)
 	if err == nil {
-		return errors.New("user has already voted in this vote")
+		return nil, errors.New("user has already voted in this vote")
 	}
 
 	_, err = svc.databaseService.UserVote.
@@ -159,15 +159,16 @@ func (svc *votesService) SubmitVote(
 		SetComponentID(componentID).
 		Save(ctx)
 	if err != nil {
-		return svc.errorFilter.Filter(err, "create_uservote")
+		return nil, svc.errorFilter.Filter(err, "create_uservote")
 	}
 
-	return nil
+	return svc.GetResults(ctx, voteID, true)
 }
 
 func (svc *votesService) GetResults(
 	ctx context.Context,
 	voteID int,
+	live bool,
 ) (*votesmodels.ResultsResponse, error) {
 	entVote, err := svc.databaseService.Vote.
 		Query().
@@ -177,8 +178,10 @@ func (svc *votesService) GetResults(
 		return nil, svc.errorFilter.Filter(err, "get_vote")
 	}
 
-	if !entVote.Visible || entVote.EndAt.After(time.Now()) {
-		return nil, fmt.Errorf("results are not available yet")
+	if live == false {
+		if !entVote.Visible || entVote.EndAt.After(time.Now()) {
+			return nil, fmt.Errorf("results are not available yet")
+		}
 	}
 
 	comps, err := svc.databaseService.Component.

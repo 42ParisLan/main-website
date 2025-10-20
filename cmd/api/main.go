@@ -74,7 +74,7 @@ func apiMux(
 ) func(chi.Router) {
 	return func(router chi.Router) {
 		config := do.MustInvoke[configservice.ConfigService](injector).GetConfig()
-		humaConfig := huma.DefaultConfig("PedagoDashboard API", "dev")
+		humaConfig := huma.DefaultConfig("42Lan API", "1.2.0")
 		humaConfig = openapi.WithAuthSchemes(humaConfig)
 		humaConfig = openapi.WithOverviewDoc(humaConfig)
 		humaConfig = openapi.WithServers(humaConfig, config)
@@ -103,6 +103,8 @@ func apiMux(
 
 		loggerAPIBootstrap.Info("Controllers initialized")
 
+		router.Get("/docs", openapi.ScalarDocHandler(config))
+
 		// Generate api spec after routes are initialized
 		yaml, err := api.OpenAPI().DowngradeYAML()
 		if err != nil {
@@ -110,7 +112,7 @@ func apiMux(
 			return
 		}
 
-		specFilePath := "./docs/pedagodashboard-api.yaml"
+		specFilePath := "./docs/42lan-api.yaml"
 		err = os.MkdirAll(filepath.Dir(specFilePath), 0755)
 		if err != nil {
 			loggerAPIBootstrap.Error("Error creating docs directory: %v", err)

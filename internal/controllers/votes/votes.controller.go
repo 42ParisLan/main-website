@@ -2,21 +2,27 @@ package votescontroller
 
 import (
 	"base-website/internal/security"
+	pubsubservice "base-website/internal/services/pubsub"
 	votesservice "base-website/internal/services/votes"
 	votesmodels "base-website/internal/services/votes/models"
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/sse"
 	"github.com/samber/do"
 )
 
 type voteController struct {
-	votesService votesservice.VotesService
+	votesService  votesservice.VotesService
+	pubsubService pubsubservice.PubSubService
 }
 
 func Init(api huma.API, injector *do.Injector) {
 	authController := &voteController{
-		votesService: do.MustInvoke[votesservice.VotesService](injector),
+		votesService:  do.MustInvoke[votesservice.VotesService](injector),
+		pubsubService: do.MustInvoke[pubsubservice.PubSubService](injector),
 	}
 	authController.Register(api)
 }
@@ -123,6 +129,18 @@ func (ctrl *voteController) Register(api huma.API) {
 		OperationID: "deleteComponent",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.deleteComponent)
+
+	sse.Register(api, huma.Operation{
+		Method:      "GET",
+		Path:        "/votes/{id}/live",
+		Summary:     "Live updates for a vote",
+		Description: `Server-Sent Events stream that sends live vote results in real-time when votes are submitted. First sends a connection confirmation message, then streams updated results as they occur.`,
+		Tags:        []string{"Vote"},
+		OperationID: "liveVote",
+		Security:    security.WithAuth("profile"),
+	}, map[string]any{
+		"message": votesmodels.ResultsResponse{},
+	}, ctrl.liveVote)
 }
 
 func (ctrl *voteController) getAllVotes(
@@ -156,9 +174,14 @@ func (ctrl *voteController) submitVote(
 	ctx context.Context,
 	input *submitVoteInput,
 ) (*BodyMessage, error) {
-	err := ctrl.votesService.SubmitVote(ctx, input.Body, input.VoteID)
+	results, err := ctrl.votesService.SubmitVote(ctx, input.Body, input.VoteID)
 	if err != nil {
 		return nil, err
+	}
+
+	resultsJSON, err := json.Marshal(results)
+	if err == nil {
+		ctrl.pubsubService.Publish(ctx, fmt.Sprintf("Vote:%d", input.VoteID), resultsJSON)
 	}
 
 	return &BodyMessage{
@@ -170,7 +193,7 @@ func (ctrl *voteController) getResults(
 	ctx context.Context,
 	input *VoteIDInput,
 ) (*getResultsOutput, error) {
-	result, err := ctrl.votesService.GetResults(ctx, input.VoteID)
+	result, err := ctrl.votesService.GetResults(ctx, input.VoteID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +249,7 @@ func (ctrl *voteController) createComponent(
 	ctx context.Context,
 	input *createComponentInput,
 ) (*oneComponentOutput, error) {
-	component, err := ctrl.votesService.CreateComponent(ctx, *input.Body)
+	component, err := ctrl.votesService.CreateComponent(ctx, *input.Body, input.VoteID)
 	if err != nil {
 		return nil, err
 	}
@@ -262,4 +285,26 @@ func (ctrl *voteController) deleteComponent(
 	return &BodyMessage{
 		Body: "Success",
 	}, nil
+}
+
+func (ctrl *voteController) liveVote(
+	ctx context.Context,
+	input *VoteIDInput,
+	send sse.Sender,
+) {
+	result, err := ctrl.votesService.GetResults(ctx, input.VoteID, true)
+	if err != nil {
+		return
+	}
+
+	_ = send.Data(result)
+
+	_ = ctrl.pubsubService.Subscribe(ctx, fmt.Sprintf("Vote:%d", input.VoteID), func(message []byte) error {
+		var results votesmodels.ResultsResponse
+		if err := json.Unmarshal(message, &results); err != nil {
+			return err
+		}
+
+		return send.Data(results)
+	})
 }

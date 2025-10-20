@@ -52,6 +52,8 @@ type oneComponentOutput struct {
 }
 
 type createComponentInput struct {
+	VoteID int `path:"id" required:"true" example:"42" description:"The vote ID"`
+
 	Body *votesmodels.CreateComponent `required:"true"`
 }
 
@@ -59,4 +61,8 @@ type updateComponentInput struct {
 	ComponentID int `path:"id" required:"true" example:"42" description:"The vote ID"`
 
 	Body *votesmodels.UpdateComponent `required:"true"`
+}
+
+type liveMessage struct {
+	Message string `json:"message" example:"heartbeat" description:"Live event message"`
 }

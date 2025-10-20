@@ -332,6 +332,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/votes/{id}/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Live updates for a vote
+         * @description Server-Sent Events stream that sends live vote results in real-time when votes are submitted. First sends a connection confirmation message, then streams updated results as they occur.
+         */
+        get: operations["liveVote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/votes/{id}/results": {
         parameters: {
             query?: never;
@@ -633,13 +653,13 @@ export interface components {
              */
             readonly $schema?: string;
             /** @example #FF5733 */
-            color: string;
+            color: string | null;
             /** @example Network infrastructure and connectivity */
-            description: string;
+            description: string | null;
             /** @example https://example.com/network.png */
-            image_url: string;
+            image_url: string | null;
             /** @example Network */
-            name: string;
+            name: string | null;
         };
         UpdateVote: {
             /**
@@ -649,19 +669,19 @@ export interface components {
              */
             readonly $schema?: string;
             /** @example Vote for your favorite language! */
-            description: string;
+            description: string | null;
             /**
              * Format: date-time
              * @example 2025-10-20T23:59:59Z
              */
-            end_at: string;
+            end_at: string | null;
             /**
              * Format: date-time
              * @example 2025-10-10T00:00:00Z
              */
-            start_at: string;
+            start_at: string | null;
             /** @example Best Programming Language 2025 */
-            title: string;
+            title: string | null;
             /** @example true */
             visible: boolean | null;
         };
@@ -1291,7 +1311,10 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -1307,6 +1330,49 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Component"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    liveVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": {
+                        data: components["schemas"]["ResultsResponse"];
+                        /**
+                         * @description The event name.
+                         * @constant
+                         */
+                        event?: "message";
+                        /** @description The event ID. */
+                        id?: number;
+                        /** @description The retry time in milliseconds. */
+                        retry?: number;
+                    }[];
                 };
             };
             /** @description Error */

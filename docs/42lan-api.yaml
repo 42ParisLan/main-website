@@ -365,21 +365,20 @@ components:
           type: string
         color:
           example: "#FF5733"
+          nullable: true
           type: string
         description:
           example: Network infrastructure and connectivity
+          nullable: true
           type: string
         image_url:
           example: https://example.com/network.png
+          nullable: true
           type: string
         name:
           example: Network
+          nullable: true
           type: string
-      required:
-        - name
-        - description
-        - image_url
-        - color
       type: object
     UpdateVote:
       additionalProperties: false
@@ -392,28 +391,26 @@ components:
           type: string
         description:
           example: Vote for your favorite language!
+          nullable: true
           type: string
         end_at:
           example: "2025-10-20T23:59:59Z"
           format: date-time
+          nullable: true
           type: string
         start_at:
           example: "2025-10-10T00:00:00Z"
           format: date-time
+          nullable: true
           type: string
         title:
           example: Best Programming Language 2025
+          nullable: true
           type: string
         visible:
           example: true
           nullable: true
           type: boolean
-      required:
-        - title
-        - description
-        - start_at
-        - end_at
-        - visible
       type: object
     User:
       additionalProperties: false
@@ -598,8 +595,8 @@ info:
     ```
 
     Replace `YOUR_ACCESS_TOKEN` with the access token you received after authenticating the user.
-  title: PedagoDashboard API
-  version: dev
+  title: 42Lan API
+  version: 1.2.0
 openapi: 3.0.3
 paths:
   /auth/callback:
@@ -1229,6 +1226,15 @@ paths:
     post:
       description: This endpoint is used to create a component for a vote.
       operationId: createComponent
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
       requestBody:
         content:
           application/json:
@@ -1252,6 +1258,59 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: Create Component
+      tags:
+        - Vote
+  /votes/{id}/live:
+    get:
+      description: Server-Sent Events stream that sends live vote results in real-time when votes are submitted. First sends a connection confirmation message, then streams updated results as they occur.
+      operationId: liveVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            text/event-stream:
+              schema:
+                description: Each oneOf object in the array represents one possible Server Sent Events (SSE) message, serialized as UTF-8 text according to the SSE specification.
+                items:
+                  oneOf:
+                    - properties:
+                        data:
+                          $ref: "#/components/schemas/ResultsResponse"
+                        event:
+                          const: message
+                          description: The event name.
+                          type: string
+                        id:
+                          description: The event ID.
+                          type: integer
+                        retry:
+                          description: The retry time in milliseconds.
+                          type: integer
+                      required:
+                        - data
+                      title: Event message
+                      type: object
+                title: Server Sent Events
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Live updates for a vote
       tags:
         - Vote
   /votes/{id}/results:
@@ -1335,5 +1394,5 @@ tags:
     name: Authentification
   - description: |
       `User` is the object representing a user in the database.
-      It contains all the information about the user. its kind can be `staff` or `student`.
+      It contains all the information about the user. its kind can be `user` or `admin`.
     name: Users

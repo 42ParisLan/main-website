@@ -50,19 +50,19 @@ func (svc *votesService) UpdateVote(
 
 	update := svc.databaseService.Vote.UpdateOneID(voteID)
 
-	if input.Title != "" {
-		update.SetTitle(input.Title)
+	if input.Title != nil {
+		update.SetTitle(*input.Title)
 	}
-	if input.Description != "" {
-		update.SetDescription(input.Description)
+	if input.Description != nil {
+		update.SetDescription(*input.Description)
 	}
-	if !input.StartAt.IsZero() {
-		desiredStart = input.StartAt
-		update.SetStartAt(input.StartAt)
+	if input.StartAt != nil {
+		desiredStart = *input.StartAt
+		update.SetStartAt(*input.StartAt)
 	}
-	if !input.EndAt.IsZero() {
-		desiredEnd = input.EndAt
-		update.SetEndAt(input.EndAt)
+	if input.EndAt != nil {
+		desiredEnd = *input.EndAt
+		update.SetEndAt(*input.EndAt)
 	}
 
 	if input.Visible != nil {
@@ -112,6 +112,7 @@ func (svc *votesService) DeleteVote(
 func (svc *votesService) CreateComponent(
 	ctx context.Context,
 	input votesmodels.CreateComponent,
+	VoteID int,
 ) (*lightmodels.Component, error) {
 	entComponent, err := svc.databaseService.Component.
 		Create().
@@ -119,6 +120,7 @@ func (svc *votesService) CreateComponent(
 		SetDescription(input.Description).
 		SetImageURL(input.ImageURL).
 		SetColor(input.Color).
+		SetVoteID(VoteID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -142,17 +144,17 @@ func (svc *votesService) UpdateComponent(
 
 	update := svc.databaseService.Component.UpdateOneID(componentID)
 
-	if input.Name != "" {
-		update.SetName(input.Name)
+	if input.Name != nil {
+		update.SetName(*input.Name)
 	}
-	if input.Description != "" {
-		update.SetDescription(input.Description)
+	if input.Description != nil {
+		update.SetDescription(*input.Description)
 	}
-	if input.ImageURL != "" {
-		update.SetImageURL(input.ImageURL)
+	if input.ImageURL != nil {
+		update.SetImageURL(*input.ImageURL)
 	}
-	if input.Color != "" {
-		update.SetColor(input.Color)
+	if input.Color != nil {
+		update.SetColor(*input.Color)
 	}
 
 	if _, err := update.Save(ctx); err != nil {
