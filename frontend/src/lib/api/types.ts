@@ -613,6 +613,64 @@ export interface components {
             /** @example /users */
             path: string;
         };
+        ResponseLightUser: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightUser.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightUser"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseLightVote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightVote.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightVote"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
         ResultsResponse: {
             /**
              * Format: uri
@@ -653,13 +711,13 @@ export interface components {
              */
             readonly $schema?: string;
             /** @example #FF5733 */
-            color: string | null;
+            color?: string | null;
             /** @example Network infrastructure and connectivity */
-            description: string | null;
+            description?: string | null;
             /** @example https://example.com/network.png */
-            image_url: string | null;
+            image_url?: string | null;
             /** @example Network */
-            name: string | null;
+            name?: string | null;
         };
         UpdateVote: {
             /**
@@ -669,21 +727,21 @@ export interface components {
              */
             readonly $schema?: string;
             /** @example Vote for your favorite language! */
-            description: string | null;
+            description?: string | null;
             /**
              * Format: date-time
              * @example 2025-10-20T23:59:59Z
              */
-            end_at: string | null;
+            end_at?: string | null;
             /**
              * Format: date-time
              * @example 2025-10-10T00:00:00Z
              */
-            start_at: string | null;
+            start_at?: string | null;
             /** @example Best Programming Language 2025 */
-            title: string | null;
+            title?: string | null;
             /** @example true */
-            visible: boolean | null;
+            visible?: boolean | null;
         };
         User: {
             /**
@@ -1017,11 +1075,10 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
-                    "X-Total"?: number;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LightUser"][];
+                    "application/json": components["schemas"]["ResponseLightUser"];
                 };
             };
             /** @description Error */
@@ -1146,6 +1203,8 @@ export interface operations {
                 order?: "asc" | "desc";
                 /** @example visible */
                 visible?: "all" | "visible";
+                /** @example ongoing */
+                status?: "all" | "ongoing" | "finish" | "not_started";
             };
             header?: never;
             path?: never;
@@ -1156,11 +1215,10 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
-                    "X-Total"?: number;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LightVote"][];
+                    "application/json": components["schemas"]["ResponseLightVote"];
                 };
             };
             /** @description Error */

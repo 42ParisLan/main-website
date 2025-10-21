@@ -23,7 +23,7 @@ import (
 
 type VotesService interface {
 	// User
-	ListVotes(ctx context.Context, params *votesmodels.ListVotesParams) (*votesmodels.ListResult, error)
+	ListVotes(ctx context.Context, params *votesmodels.ListVotesParams) (*paging.Response[*lightmodels.LightVote], error)
 	GetVoteByID(ctx context.Context, voteID int) (*lightmodels.Vote, error)
 	SubmitVote(ctx context.Context, componentID int, voteID int) (*votesmodels.ResultsResponse, error)
 	GetResults(ctx context.Context, voteID int, live bool) (*votesmodels.ResultsResponse, error)
@@ -67,7 +67,7 @@ func New(
 func (svc *votesService) ListVotes(
 	ctx context.Context,
 	params *votesmodels.ListVotesParams,
-) (*votesmodels.ListResult, error) {
+) (*paging.Response[*lightmodels.LightVote], error) {
 	query := svc.databaseService.Vote.Query()
 
 	if params.Visible == "visible" {
@@ -77,6 +77,22 @@ func (svc *votesService) ListVotes(
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	switch params.Status {
+	case "finish":
+		query = query.Where(
+			vote.EndAtLT(time.Now()),
+		)
+	case "ongoing":
+		query = query.Where(
+			vote.StartAtLTE(time.Now()),
+			vote.EndAtGT(time.Now()),
+		)
+	case "not_started":
+		query = query.Where(
+			vote.StartAtGT(time.Now()),
+		)
 	}
 
 	total, err := query.Count(ctx)
@@ -97,12 +113,9 @@ func (svc *votesService) ListVotes(
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
 
-	return &votesmodels.ListResult{
-		Votes: lightmodels.NewLightVotesFromEnt(votes),
-		Response: paging.Response{
-			Total: total,
-		},
-	}, nil
+	limit := params.Input.Limit
+	page := params.Input.Page
+	return paging.CreatePagingResponse(lightmodels.NewLightVotesFromEnt(votes), total, page, limit), nil
 }
 
 func (svc *votesService) GetVoteByID(

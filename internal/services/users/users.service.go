@@ -34,10 +34,7 @@ type UserService interface {
 	// This method is user to change user roles by its ID
 	ChangeUserRolesByID(ctx context.Context, id int, roles []string) (*usersmodels.User, error)
 	// This method is used to search users
-	SearchUsers(
-		ctx context.Context,
-		params *usersmodels.SearchUsersParams,
-	) (*usersmodels.SearchResult, error)
+	SearchUsers(ctx context.Context, params *usersmodels.SearchUsersParams) (*paging.Response[*lightmodels.LightUser], error)
 }
 
 type usersService struct {
@@ -179,7 +176,7 @@ func (svc *usersService) GetUserByIDOrLogin(
 func (svc *usersService) SearchUsers(
 	ctx context.Context,
 	params *usersmodels.SearchUsersParams,
-) (*usersmodels.SearchResult, error) {
+) (*paging.Response[*lightmodels.LightUser], error) {
 	query := svc.databaseService.User.Query()
 
 	if params.Query != "" {
@@ -215,12 +212,7 @@ func (svc *usersService) SearchUsers(
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
 
-	return &usersmodels.SearchResult{
-		Users: lightmodels.NewLightUsersFromEnt(users),
-		Response: paging.Response{
-			Total: total,
-		},
-	}, nil
+	return paging.CreatePagingResponse[*lightmodels.LightUser](lightmodels.NewLightUsersFromEnt(users), total, params.Page, params.Limit), nil
 }
 
 func (svc *usersService) newQuery() *ent.UserQuery {

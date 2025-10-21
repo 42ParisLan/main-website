@@ -302,6 +302,80 @@ components:
         - path
         - methods
       type: object
+    ResponseLightUser:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightUser.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightUser"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseLightVote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightVote.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightVote"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
     ResultsResponse:
       additionalProperties: false
       properties:
@@ -890,16 +964,8 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: "#/components/schemas/LightUser"
-                type: array
+                $ref: "#/components/schemas/ResponseLightUser"
           description: OK
-          headers:
-            X-Total:
-              schema:
-                example: 42
-                format: int64
-                type: integer
         default:
           content:
             application/problem+json:
@@ -1067,21 +1133,26 @@ paths:
               - visible
             example: visible
             type: string
+        - example: ongoing
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: all
+            enum:
+              - all
+              - ongoing
+              - finish
+              - not_started
+            example: ongoing
+            type: string
       responses:
         "200":
           content:
             application/json:
               schema:
-                items:
-                  $ref: "#/components/schemas/LightVote"
-                type: array
+                $ref: "#/components/schemas/ResponseLightVote"
           description: OK
-          headers:
-            X-Total:
-              schema:
-                example: 42
-                format: int64
-                type: integer
         default:
           content:
             application/problem+json:

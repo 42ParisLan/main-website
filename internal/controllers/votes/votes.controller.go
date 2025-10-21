@@ -152,8 +152,7 @@ func (ctrl *voteController) getAllVotes(
 		return nil, err
 	}
 	return &multipleVotesOutput{
-		Body:  result.Votes,
-		Total: result.Total,
+		Body: result,
 	}, nil
 }
 

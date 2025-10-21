@@ -97,8 +97,7 @@ func (ctrl *userController) searchUsers(
 		return nil, err
 	}
 	return &searchUsersOutput{
-		Body:  result.Users,
-		Total: result.Total,
+		Body: result,
 	}, nil
 }
 

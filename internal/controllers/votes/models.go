@@ -3,6 +3,7 @@ package votescontroller
 import (
 	"base-website/internal/lightmodels"
 	votesmodels "base-website/internal/services/votes/models"
+	"base-website/pkg/paging"
 )
 
 type BodyMessage struct {
@@ -18,9 +19,7 @@ type oneVoteOutput struct {
 }
 
 type multipleVotesOutput struct {
-	Body []*lightmodels.LightVote `nullable:"false"`
-
-	Total int `header:"X-Total" description:"The total number of users" example:"42"`
+	Body *paging.Response[*lightmodels.LightVote] `nullable:"false"`
 }
 
 type submitVoteInput struct {

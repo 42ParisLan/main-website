@@ -1,7 +1,6 @@
 package votesmodels
 
 import (
-	"base-website/internal/lightmodels"
 	"base-website/pkg/paging"
 )
 
@@ -13,9 +12,7 @@ type ListVotesParams struct {
 	//// FILTERS ////
 	// Filter by visibility. "all" returns all votes, "visible" returns only visible votes.
 	Visible string `query:"visible" default:"visible" enum:"all,visible" example:"visible" description:"Filter by visibility"`
-}
 
-type ListResult struct {
-	paging.Response
-	Votes []*lightmodels.LightVote `json:"votes" description:"The votes"`
+	// Filter by status. "all" returns all votes, "ongoing" returns ongoing votes, "finish" returns finished votes, "not_started" returns vortes that has not started.
+	Status string `query:"status" default:"all" example:"ongoing" enum:"all,ongoing,finish,not_started" description:"Filter by vote status" `
 }

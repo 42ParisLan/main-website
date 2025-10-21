@@ -3,8 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { IconTrash } from "@tabler/icons-react";
 import AdminEditModal from "./admin-edit-modal";
+import { memo } from "react";
 
-export default function AdminCard({user}: {user: components['schemas']['User']}) {
+function AdminCard({user}: {user: components['schemas']['User']}) {
 	return (
 		<Card className="group relative overflow-hidden">
 			<CardContent>
@@ -36,3 +37,5 @@ export default function AdminCard({user}: {user: components['schemas']['User']})
 		</Card>
 	);
 }
+
+export default memo(AdminCard);
