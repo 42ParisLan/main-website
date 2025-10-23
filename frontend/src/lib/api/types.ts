@@ -468,8 +468,6 @@ export interface components {
             start_at: string;
             /** @example Best Programming Language 2025 */
             title: string;
-            /** @example true */
-            visible: boolean;
         };
         EnvResponse: {
             /**
@@ -581,6 +579,7 @@ export interface components {
              * @example 2025-10-01T12:00:00Z
              */
             created_at: string;
+            creator: components["schemas"]["LightUser"];
             /** @example Vote for your favorite language! */
             description: string;
             /**
@@ -799,6 +798,7 @@ export interface components {
              */
             readonly $schema?: string;
             components: components["schemas"]["Component"][] | null;
+            creator: components["schemas"]["LightUser"];
             /** @example Vote for your favorite language! */
             description: string;
             /**
@@ -1205,6 +1205,8 @@ export interface operations {
                 visible?: "all" | "visible";
                 /** @example ongoing */
                 status?: "all" | "ongoing" | "finish" | "not_started";
+                /** @example me */
+                owner?: "all" | "me";
             };
             header?: never;
             path?: never;

@@ -212,7 +212,7 @@ func (svc *usersService) SearchUsers(
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
 
-	return paging.CreatePagingResponse[*lightmodels.LightUser](lightmodels.NewLightUsersFromEnt(users), total, params.Page, params.Limit), nil
+	return paging.CreatePagingResponse(lightmodels.NewLightUsersFromEnt(users), total, params.Page, params.Limit), nil
 }
 
 func (svc *usersService) newQuery() *ent.UserQuery {

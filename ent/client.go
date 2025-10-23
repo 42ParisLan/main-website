@@ -944,6 +944,22 @@ func (c *UserClient) QueryUserVotes(_m *User) *UserVoteQuery {
 	return query
 }
 
+// QueryCreatedVotes queries the created_votes edge of a User.
+func (c *UserClient) QueryCreatedVotes(_m *User) *VoteQuery {
+	query := (&VoteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(vote.Table, vote.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedVotesTable, user.CreatedVotesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -1251,6 +1267,22 @@ func (c *VoteClient) QueryComponents(_m *Vote) *ComponentQuery {
 			sqlgraph.From(vote.Table, vote.FieldID, id),
 			sqlgraph.To(component.Table, component.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, vote.ComponentsTable, vote.ComponentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCreator queries the creator edge of a Vote.
+func (c *VoteClient) QueryCreator(_m *Vote) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(vote.Table, vote.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, vote.CreatorTable, vote.CreatorColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

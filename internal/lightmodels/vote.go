@@ -15,6 +15,7 @@ type LightVote struct {
 	CreatedAt       time.Time `json:"created_at" example:"2025-10-01T12:00:00Z" description:"The creation date of the vote"`
 	ComponentsCount int       `json:"components_count" example:"4" description:"The number of components in the vote"`
 	Visible         bool      `json:"visible" example:"true" description:"Whether the vote is visible"`
+	Creator         LightUser `json:"creator" description:"The user who created this vote"`
 }
 
 type Vote struct {
@@ -25,6 +26,7 @@ type Vote struct {
 	EndAt       time.Time    `json:"end_at" example:"2025-10-20T23:59:59Z" description:"The end date of the vote"`
 	Visible     bool         `json:"visible" example:"true" description:"Whether the vote is visible"`
 	Components  []*Component `json:"components" description:"The list of components in the vote"`
+	Creator     LightUser    `json:"creator" description:"The user who created this vote"`
 }
 
 func NewLightVoteFromEnt(entVote *ent.Vote) *LightVote {
@@ -46,6 +48,7 @@ func NewLightVoteFromEnt(entVote *ent.Vote) *LightVote {
 		CreatedAt:       entVote.CreatedAt,
 		ComponentsCount: componentsCount,
 		Visible:         entVote.Visible,
+		Creator:         *NewLightUserFromEnt(entVote.Edges.Creator),
 	}
 }
 
@@ -72,6 +75,7 @@ func NewVoteFromEnt(entVote *ent.Vote) *Vote {
 		EndAt:       entVote.EndAt,
 		Components:  components,
 		Visible:     entVote.Visible,
+		Creator:     *NewLightUserFromEnt(entVote.Edges.Creator),
 	}
 }
 

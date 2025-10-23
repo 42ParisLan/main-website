@@ -4,6 +4,7 @@ package ent
 
 import (
 	"base-website/ent/component"
+	"base-website/ent/user"
 	"base-website/ent/vote"
 	"context"
 	"errors"
@@ -110,6 +111,17 @@ func (_c *VoteCreate) AddComponents(v ...*Component) *VoteCreate {
 	return _c.AddComponentIDs(ids...)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_c *VoteCreate) SetCreatorID(id int) *VoteCreate {
+	_c.mutation.SetCreatorID(id)
+	return _c
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_c *VoteCreate) SetCreator(v *User) *VoteCreate {
+	return _c.SetCreatorID(v.ID)
+}
+
 // Mutation returns the VoteMutation object of the builder.
 func (_c *VoteCreate) Mutation() *VoteMutation {
 	return _c.mutation
@@ -179,6 +191,9 @@ func (_c *VoteCreate) check() error {
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Vote.updated_at"`)}
 	}
+	if len(_c.mutation.CreatorIDs()) == 0 {
+		return &ValidationError{Name: "creator", err: errors.New(`ent: missing required edge "Vote.creator"`)}
+	}
 	return nil
 }
 
@@ -247,6 +262,23 @@ func (_c *VoteCreate) createSpec() (*Vote, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   vote.CreatorTable,
+			Columns: []string{vote.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_created_votes = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

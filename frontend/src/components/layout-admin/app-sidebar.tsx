@@ -43,11 +43,11 @@ interface SidebarData {
 
 const data: SidebarData[] = [
 	{
-		title: "Vote",
+		title: "Votes",
 		items: [
 			{
-				title: "Vote",
-				url: "/admin/vote",
+				title: "Votes",
+				url: "/admin/votes",
 				icon: IconNotes,
 				role: "vote_admin"
 			},

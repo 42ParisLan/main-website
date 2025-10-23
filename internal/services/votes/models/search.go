@@ -15,4 +15,7 @@ type ListVotesParams struct {
 
 	// Filter by status. "all" returns all votes, "ongoing" returns ongoing votes, "finish" returns finished votes, "not_started" returns vortes that has not started.
 	Status string `query:"status" default:"all" example:"ongoing" enum:"all,ongoing,finish,not_started" description:"Filter by vote status" `
+
+	// Filter by ownership. "all" returns all votes, "me" returns only votes created by the current user.
+	Owner string `query:"owner" default:"all" enum:"all,me" example:"me" description:"Filter by ownership (me = only my votes)"`
 }

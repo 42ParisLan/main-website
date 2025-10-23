@@ -16,11 +16,11 @@ export default function UserSearch({ selectedUsers, onUserSelect, kind = undefin
 	const [searchQuery, setSearchQuery] = useState("");
 	const client = useQueryClient();
 
-	const { data: users = [] } = client.useQuery("get", "/users", {
+	const { data: users } = client.useQuery("get", "/users", {
 		params: {
 			query: {
-				query: searchQuery,
-				limit: 20,
+				query: searchQuery.trim().toLocaleLowerCase(),
+				limit: 5,
 				kind,
 			},
 		},
@@ -34,7 +34,7 @@ export default function UserSearch({ selectedUsers, onUserSelect, kind = undefin
 				onChange={(e) => setSearchQuery(e.target.value)}
 			/>
 			<div className="max-h-60 overflow-y-auto space-y-2">
-				{users.map((user) => (
+				{users?.items && users.items && users.items.map((user) => (
 				<div
 					key={user.id}
 					onClick={() => onUserSelect(user)}
@@ -62,8 +62,8 @@ export default function UserSearch({ selectedUsers, onUserSelect, kind = undefin
 					</div>
 				</div>
 				))}
-				{searchQuery && users.length === 0 && (
-				<p className="text-muted-foreground text-sm">No users found</p>
+				{searchQuery && (!users?.items || users.items.length === 0) && (
+					<p className="text-muted-foreground text-sm">No users found</p>
 				)}
 			</div>
 		</div>

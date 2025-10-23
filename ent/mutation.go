@@ -2574,28 +2574,31 @@ func (m *ComponentMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	username          *string
-	first_name        *string
-	last_name         *string
-	email             *string
-	created_at        *time.Time
-	updated_at        *time.Time
-	picture           *string
-	kind              *user.Kind
-	usual_full_name   *string
-	usual_first_name  *string
-	roles             *[]string
-	appendroles       []string
-	clearedFields     map[string]struct{}
-	user_votes        map[int]struct{}
-	removeduser_votes map[int]struct{}
-	cleareduser_votes bool
-	done              bool
-	oldValue          func(context.Context) (*User, error)
-	predicates        []predicate.User
+	op                   Op
+	typ                  string
+	id                   *int
+	username             *string
+	first_name           *string
+	last_name            *string
+	email                *string
+	created_at           *time.Time
+	updated_at           *time.Time
+	picture              *string
+	kind                 *user.Kind
+	usual_full_name      *string
+	usual_first_name     *string
+	roles                *[]string
+	appendroles          []string
+	clearedFields        map[string]struct{}
+	user_votes           map[int]struct{}
+	removeduser_votes    map[int]struct{}
+	cleareduser_votes    bool
+	created_votes        map[int]struct{}
+	removedcreated_votes map[int]struct{}
+	clearedcreated_votes bool
+	done                 bool
+	oldValue             func(context.Context) (*User, error)
+	predicates           []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -3193,6 +3196,60 @@ func (m *UserMutation) ResetUserVotes() {
 	m.removeduser_votes = nil
 }
 
+// AddCreatedVoteIDs adds the "created_votes" edge to the Vote entity by ids.
+func (m *UserMutation) AddCreatedVoteIDs(ids ...int) {
+	if m.created_votes == nil {
+		m.created_votes = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.created_votes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCreatedVotes clears the "created_votes" edge to the Vote entity.
+func (m *UserMutation) ClearCreatedVotes() {
+	m.clearedcreated_votes = true
+}
+
+// CreatedVotesCleared reports if the "created_votes" edge to the Vote entity was cleared.
+func (m *UserMutation) CreatedVotesCleared() bool {
+	return m.clearedcreated_votes
+}
+
+// RemoveCreatedVoteIDs removes the "created_votes" edge to the Vote entity by IDs.
+func (m *UserMutation) RemoveCreatedVoteIDs(ids ...int) {
+	if m.removedcreated_votes == nil {
+		m.removedcreated_votes = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.created_votes, ids[i])
+		m.removedcreated_votes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCreatedVotes returns the removed IDs of the "created_votes" edge to the Vote entity.
+func (m *UserMutation) RemovedCreatedVotesIDs() (ids []int) {
+	for id := range m.removedcreated_votes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CreatedVotesIDs returns the "created_votes" edge IDs in the mutation.
+func (m *UserMutation) CreatedVotesIDs() (ids []int) {
+	for id := range m.created_votes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCreatedVotes resets all changes to the "created_votes" edge.
+func (m *UserMutation) ResetCreatedVotes() {
+	m.created_votes = nil
+	m.clearedcreated_votes = false
+	m.removedcreated_votes = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -3511,9 +3568,12 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.user_votes != nil {
 		edges = append(edges, user.EdgeUserVotes)
+	}
+	if m.created_votes != nil {
+		edges = append(edges, user.EdgeCreatedVotes)
 	}
 	return edges
 }
@@ -3528,15 +3588,24 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeCreatedVotes:
+		ids := make([]ent.Value, 0, len(m.created_votes))
+		for id := range m.created_votes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removeduser_votes != nil {
 		edges = append(edges, user.EdgeUserVotes)
+	}
+	if m.removedcreated_votes != nil {
+		edges = append(edges, user.EdgeCreatedVotes)
 	}
 	return edges
 }
@@ -3551,15 +3620,24 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeCreatedVotes:
+		ids := make([]ent.Value, 0, len(m.removedcreated_votes))
+		for id := range m.removedcreated_votes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleareduser_votes {
 		edges = append(edges, user.EdgeUserVotes)
+	}
+	if m.clearedcreated_votes {
+		edges = append(edges, user.EdgeCreatedVotes)
 	}
 	return edges
 }
@@ -3570,6 +3648,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
 	case user.EdgeUserVotes:
 		return m.cleareduser_votes
+	case user.EdgeCreatedVotes:
+		return m.clearedcreated_votes
 	}
 	return false
 }
@@ -3588,6 +3668,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
 	case user.EdgeUserVotes:
 		m.ResetUserVotes()
+		return nil
+	case user.EdgeCreatedVotes:
+		m.ResetCreatedVotes()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
@@ -4062,6 +4145,8 @@ type VoteMutation struct {
 	components        map[int]struct{}
 	removedcomponents map[int]struct{}
 	clearedcomponents bool
+	creator           *int
+	clearedcreator    bool
 	done              bool
 	oldValue          func(context.Context) (*Vote, error)
 	predicates        []predicate.Vote
@@ -4484,6 +4569,45 @@ func (m *VoteMutation) ResetComponents() {
 	m.removedcomponents = nil
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by id.
+func (m *VoteMutation) SetCreatorID(id int) {
+	m.creator = &id
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (m *VoteMutation) ClearCreator() {
+	m.clearedcreator = true
+}
+
+// CreatorCleared reports if the "creator" edge to the User entity was cleared.
+func (m *VoteMutation) CreatorCleared() bool {
+	return m.clearedcreator
+}
+
+// CreatorID returns the "creator" edge ID in the mutation.
+func (m *VoteMutation) CreatorID() (id int, exists bool) {
+	if m.creator != nil {
+		return *m.creator, true
+	}
+	return
+}
+
+// CreatorIDs returns the "creator" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CreatorID instead. It exists only for internal usage by the builders.
+func (m *VoteMutation) CreatorIDs() (ids []int) {
+	if id := m.creator; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCreator resets all changes to the "creator" edge.
+func (m *VoteMutation) ResetCreator() {
+	m.creator = nil
+	m.clearedcreator = false
+}
+
 // Where appends a list predicates to the VoteMutation builder.
 func (m *VoteMutation) Where(ps ...predicate.Vote) {
 	m.predicates = append(m.predicates, ps...)
@@ -4728,9 +4852,12 @@ func (m *VoteMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *VoteMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.components != nil {
 		edges = append(edges, vote.EdgeComponents)
+	}
+	if m.creator != nil {
+		edges = append(edges, vote.EdgeCreator)
 	}
 	return edges
 }
@@ -4745,13 +4872,17 @@ func (m *VoteMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case vote.EdgeCreator:
+		if id := m.creator; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *VoteMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedcomponents != nil {
 		edges = append(edges, vote.EdgeComponents)
 	}
@@ -4774,9 +4905,12 @@ func (m *VoteMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *VoteMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedcomponents {
 		edges = append(edges, vote.EdgeComponents)
+	}
+	if m.clearedcreator {
+		edges = append(edges, vote.EdgeCreator)
 	}
 	return edges
 }
@@ -4787,6 +4921,8 @@ func (m *VoteMutation) EdgeCleared(name string) bool {
 	switch name {
 	case vote.EdgeComponents:
 		return m.clearedcomponents
+	case vote.EdgeCreator:
+		return m.clearedcreator
 	}
 	return false
 }
@@ -4795,6 +4931,9 @@ func (m *VoteMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *VoteMutation) ClearEdge(name string) error {
 	switch name {
+	case vote.EdgeCreator:
+		m.ClearCreator()
+		return nil
 	}
 	return fmt.Errorf("unknown Vote unique edge %s", name)
 }
@@ -4805,6 +4944,9 @@ func (m *VoteMutation) ResetEdge(name string) error {
 	switch name {
 	case vote.EdgeComponents:
 		m.ResetComponents()
+		return nil
+	case vote.EdgeCreator:
+		m.ResetCreator()
 		return nil
 	}
 	return fmt.Errorf("unknown Vote edge %s", name)

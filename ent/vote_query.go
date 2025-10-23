@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/component"
 	"base-website/ent/predicate"
+	"base-website/ent/user"
 	"base-website/ent/vote"
 	"context"
 	"database/sql/driver"
@@ -25,6 +26,8 @@ type VoteQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.Vote
 	withComponents *ComponentQuery
+	withCreator    *UserQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -76,6 +79,28 @@ func (_q *VoteQuery) QueryComponents() *ComponentQuery {
 			sqlgraph.From(vote.Table, vote.FieldID, selector),
 			sqlgraph.To(component.Table, component.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, vote.ComponentsTable, vote.ComponentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCreator chains the current query on the "creator" edge.
+func (_q *VoteQuery) QueryCreator() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(vote.Table, vote.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, vote.CreatorTable, vote.CreatorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -276,6 +301,7 @@ func (_q *VoteQuery) Clone() *VoteQuery {
 		inters:         append([]Interceptor{}, _q.inters...),
 		predicates:     append([]predicate.Vote{}, _q.predicates...),
 		withComponents: _q.withComponents.Clone(),
+		withCreator:    _q.withCreator.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -290,6 +316,17 @@ func (_q *VoteQuery) WithComponents(opts ...func(*ComponentQuery)) *VoteQuery {
 		opt(query)
 	}
 	_q.withComponents = query
+	return _q
+}
+
+// WithCreator tells the query-builder to eager-load the nodes that are connected to
+// the "creator" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *VoteQuery) WithCreator(opts ...func(*UserQuery)) *VoteQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCreator = query
 	return _q
 }
 
@@ -370,11 +407,19 @@ func (_q *VoteQuery) prepareQuery(ctx context.Context) error {
 func (_q *VoteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Vote, error) {
 	var (
 		nodes       = []*Vote{}
+		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withComponents != nil,
+			_q.withCreator != nil,
 		}
 	)
+	if _q.withCreator != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, vote.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Vote).scanValues(nil, columns)
 	}
@@ -397,6 +442,12 @@ func (_q *VoteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Vote, e
 		if err := _q.loadComponents(ctx, query, nodes,
 			func(n *Vote) { n.Edges.Components = []*Component{} },
 			func(n *Vote, e *Component) { n.Edges.Components = append(n.Edges.Components, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCreator; query != nil {
+		if err := _q.loadCreator(ctx, query, nodes, nil,
+			func(n *Vote, e *User) { n.Edges.Creator = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -431,6 +482,38 @@ func (_q *VoteQuery) loadComponents(ctx context.Context, query *ComponentQuery, 
 			return fmt.Errorf(`unexpected referenced foreign-key "vote_components" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (_q *VoteQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []*Vote, init func(*Vote), assign func(*Vote, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Vote)
+	for i := range nodes {
+		if nodes[i].user_created_votes == nil {
+			continue
+		}
+		fk := *nodes[i].user_created_votes
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_created_votes" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }

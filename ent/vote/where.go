@@ -423,6 +423,29 @@ func HasComponentsWith(preds ...predicate.Component) predicate.Vote {
 	})
 }
 
+// HasCreator applies the HasEdge predicate on the "creator" edge.
+func HasCreator() predicate.Vote {
+	return predicate.Vote(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCreatorWith applies the HasEdge predicate on the "creator" edge with a given conditions (other predicates).
+func HasCreatorWith(preds ...predicate.User) predicate.Vote {
+	return predicate.Vote(func(s *sql.Selector) {
+		step := newCreatorStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Vote) predicate.Vote {
 	return predicate.Vote(sql.AndPredicates(predicates...))

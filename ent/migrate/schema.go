@@ -136,12 +136,21 @@ var (
 		{Name: "end_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_created_votes", Type: field.TypeInt},
 	}
 	// VotesTable holds the schema information for the "votes" table.
 	VotesTable = &schema.Table{
 		Name:       "votes",
 		Columns:    VotesColumns,
 		PrimaryKey: []*schema.Column{VotesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "votes_users_created_votes",
+				Columns:    []*schema.Column{VotesColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -159,4 +168,5 @@ func init() {
 	ComponentsTable.ForeignKeys[0].RefTable = VotesTable
 	UserVotesTable.ForeignKeys[0].RefTable = ComponentsTable
 	UserVotesTable.ForeignKeys[1].RefTable = UsersTable
+	VotesTable.ForeignKeys[0].RefTable = UsersTable
 }

@@ -7,7 +7,6 @@ type CreateVote struct {
 	Description string    `json:"description" example:"Vote for your favorite language!" description:"The description of the vote" required:"true" validate:"min=3"`
 	StartAt     time.Time `json:"start_at" example:"2025-10-10T00:00:00Z" description:"The start date of the vote" required:"true"`
 	EndAt       time.Time `json:"end_at" example:"2025-10-20T23:59:59Z" description:"The end date of the vote" required:"true"`
-	Visible     bool      `json:"visible" example:"true" description:"Whether the vote is visible" required:"true"`
 }
 
 type UpdateVote struct {

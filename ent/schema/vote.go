@@ -27,5 +27,9 @@ func (Vote) Fields() []ent.Field {
 func (Vote) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("components", Component.Type),
+		edge.From("creator", User.Type).
+			Ref("created_votes").
+			Unique().
+			Required(),
 	}
 }

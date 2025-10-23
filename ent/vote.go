@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"base-website/ent/user"
 	"base-website/ent/vote"
 	"fmt"
 	"strings"
@@ -33,17 +34,20 @@ type Vote struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the VoteQuery when eager-loading is set.
-	Edges        VoteEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges              VoteEdges `json:"edges"`
+	user_created_votes *int
+	selectValues       sql.SelectValues
 }
 
 // VoteEdges holds the relations/edges for other nodes in the graph.
 type VoteEdges struct {
 	// Components holds the value of the components edge.
 	Components []*Component `json:"components,omitempty"`
+	// Creator holds the value of the creator edge.
+	Creator *User `json:"creator,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ComponentsOrErr returns the Components value or an error if the edge
@@ -53,6 +57,17 @@ func (e VoteEdges) ComponentsOrErr() ([]*Component, error) {
 		return e.Components, nil
 	}
 	return nil, &NotLoadedError{edge: "components"}
+}
+
+// CreatorOrErr returns the Creator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e VoteEdges) CreatorOrErr() (*User, error) {
+	if e.Creator != nil {
+		return e.Creator, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "creator"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -68,6 +83,8 @@ func (*Vote) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case vote.FieldStartAt, vote.FieldEndAt, vote.FieldCreatedAt, vote.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case vote.ForeignKeys[0]: // user_created_votes
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -131,6 +148,13 @@ func (_m *Vote) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
 			}
+		case vote.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_created_votes", value)
+			} else if value.Valid {
+				_m.user_created_votes = new(int)
+				*_m.user_created_votes = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -147,6 +171,11 @@ func (_m *Vote) Value(name string) (ent.Value, error) {
 // QueryComponents queries the "components" edge of the Vote entity.
 func (_m *Vote) QueryComponents() *ComponentQuery {
 	return NewVoteClient(_m.config).QueryComponents(_m)
+}
+
+// QueryCreator queries the "creator" edge of the Vote entity.
+func (_m *Vote) QueryCreator() *UserQuery {
+	return NewVoteClient(_m.config).QueryCreator(_m)
 }
 
 // Update returns a builder for updating this Vote.

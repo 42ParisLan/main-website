@@ -11,6 +11,7 @@ import (
 	databaseservice "base-website/internal/services/database"
 	rbacservice "base-website/internal/services/rbac"
 	votesmodels "base-website/internal/services/votes/models"
+	"base-website/pkg/authz"
 	"base-website/pkg/errorfilters"
 	"base-website/pkg/paging"
 	"context"
@@ -73,10 +74,21 @@ func (svc *votesService) ListVotes(
 	if params.Visible == "visible" {
 		query = query.Where(vote.VisibleEQ(true))
 	} else {
-		err := svc.CheckModo(ctx)
+		userID, err := security.GetUserIDFromContext(ctx)
 		if err != nil {
 			return nil, err
 		}
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "vote_admin", "super_admin"); err != nil {
+			return nil, err
+		}
+	}
+
+	if params.Owner == "me" {
+		userID, err := security.GetUserIDFromContext(ctx)
+		if err != nil {
+			return nil, err
+		}
+		query = query.Where(vote.HasCreatorWith(user.IDEQ(userID)))
 	}
 
 	switch params.Status {
@@ -108,7 +120,7 @@ func (svc *votesService) ListVotes(
 		query = query.Order(ent.Desc("id"))
 	}
 
-	votes, err := query.WithComponents().All(ctx)
+	votes, err := query.WithComponents().WithCreator().All(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
@@ -126,6 +138,7 @@ func (svc *votesService) GetVoteByID(
 		Query().
 		Where(vote.IDEQ(voteID)).
 		WithComponents().
+		WithCreator().
 		Only(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")

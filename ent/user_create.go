@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/user"
 	"base-website/ent/uservote"
+	"base-website/ent/vote"
 	"context"
 	"errors"
 	"fmt"
@@ -146,6 +147,21 @@ func (_c *UserCreate) AddUserVotes(v ...*UserVote) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddUserVoteIDs(ids...)
+}
+
+// AddCreatedVoteIDs adds the "created_votes" edge to the Vote entity by IDs.
+func (_c *UserCreate) AddCreatedVoteIDs(ids ...int) *UserCreate {
+	_c.mutation.AddCreatedVoteIDs(ids...)
+	return _c
+}
+
+// AddCreatedVotes adds the "created_votes" edges to the Vote entity.
+func (_c *UserCreate) AddCreatedVotes(v ...*Vote) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCreatedVoteIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -320,6 +336,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatedVotesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

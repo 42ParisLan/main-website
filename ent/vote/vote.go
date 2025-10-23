@@ -30,6 +30,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeComponents holds the string denoting the components edge name in mutations.
 	EdgeComponents = "components"
+	// EdgeCreator holds the string denoting the creator edge name in mutations.
+	EdgeCreator = "creator"
 	// Table holds the table name of the vote in the database.
 	Table = "votes"
 	// ComponentsTable is the table that holds the components relation/edge.
@@ -39,6 +41,13 @@ const (
 	ComponentsInverseTable = "components"
 	// ComponentsColumn is the table column denoting the components relation/edge.
 	ComponentsColumn = "vote_components"
+	// CreatorTable is the table that holds the creator relation/edge.
+	CreatorTable = "votes"
+	// CreatorInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	CreatorInverseTable = "users"
+	// CreatorColumn is the table column denoting the creator relation/edge.
+	CreatorColumn = "user_created_votes"
 )
 
 // Columns holds all SQL columns for vote fields.
@@ -53,10 +62,21 @@ var Columns = []string{
 	FieldUpdatedAt,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "votes"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_created_votes",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -130,10 +150,24 @@ func ByComponents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newComponentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCreatorField orders the results by creator field.
+func ByCreatorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatorStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newComponentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ComponentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ComponentsTable, ComponentsColumn),
+	)
+}
+func newCreatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
 	)
 }

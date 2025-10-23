@@ -35,5 +35,6 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("user_votes", UserVote.Type),
+		edge.To("created_votes", Vote.Type),
 	}
 }

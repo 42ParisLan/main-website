@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/component"
 	"base-website/ent/predicate"
+	"base-website/ent/user"
 	"base-website/ent/vote"
 	"context"
 	"errors"
@@ -140,6 +141,17 @@ func (_u *VoteUpdate) AddComponents(v ...*Component) *VoteUpdate {
 	return _u.AddComponentIDs(ids...)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_u *VoteUpdate) SetCreatorID(id int) *VoteUpdate {
+	_u.mutation.SetCreatorID(id)
+	return _u
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_u *VoteUpdate) SetCreator(v *User) *VoteUpdate {
+	return _u.SetCreatorID(v.ID)
+}
+
 // Mutation returns the VoteMutation object of the builder.
 func (_u *VoteUpdate) Mutation() *VoteMutation {
 	return _u.mutation
@@ -164,6 +176,12 @@ func (_u *VoteUpdate) RemoveComponents(v ...*Component) *VoteUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveComponentIDs(ids...)
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (_u *VoteUpdate) ClearCreator() *VoteUpdate {
+	_u.mutation.ClearCreator()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -202,7 +220,18 @@ func (_u *VoteUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *VoteUpdate) check() error {
+	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Vote.creator"`)
+	}
+	return nil
+}
+
 func (_u *VoteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(vote.Table, vote.Columns, sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -273,6 +302,35 @@ func (_u *VoteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(component.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   vote.CreatorTable,
+			Columns: []string{vote.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   vote.CreatorTable,
+			Columns: []string{vote.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -411,6 +469,17 @@ func (_u *VoteUpdateOne) AddComponents(v ...*Component) *VoteUpdateOne {
 	return _u.AddComponentIDs(ids...)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_u *VoteUpdateOne) SetCreatorID(id int) *VoteUpdateOne {
+	_u.mutation.SetCreatorID(id)
+	return _u
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_u *VoteUpdateOne) SetCreator(v *User) *VoteUpdateOne {
+	return _u.SetCreatorID(v.ID)
+}
+
 // Mutation returns the VoteMutation object of the builder.
 func (_u *VoteUpdateOne) Mutation() *VoteMutation {
 	return _u.mutation
@@ -435,6 +504,12 @@ func (_u *VoteUpdateOne) RemoveComponents(v ...*Component) *VoteUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveComponentIDs(ids...)
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (_u *VoteUpdateOne) ClearCreator() *VoteUpdateOne {
+	_u.mutation.ClearCreator()
+	return _u
 }
 
 // Where appends a list predicates to the VoteUpdate builder.
@@ -486,7 +561,18 @@ func (_u *VoteUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *VoteUpdateOne) check() error {
+	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Vote.creator"`)
+	}
+	return nil
+}
+
 func (_u *VoteUpdateOne) sqlSave(ctx context.Context) (_node *Vote, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(vote.Table, vote.Columns, sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -574,6 +660,35 @@ func (_u *VoteUpdateOne) sqlSave(ctx context.Context) (_node *Vote, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(component.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   vote.CreatorTable,
+			Columns: []string{vote.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   vote.CreatorTable,
+			Columns: []string{vote.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

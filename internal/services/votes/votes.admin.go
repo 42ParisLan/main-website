@@ -1,11 +1,14 @@
 package votesservice
 
 import (
+	"base-website/ent"
 	"base-website/ent/component"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
 	"base-website/internal/lightmodels"
+	"base-website/internal/security"
 	votesmodels "base-website/internal/services/votes/models"
+	"base-website/pkg/authz"
 	"context"
 	"fmt"
 )
@@ -17,18 +20,34 @@ func (svc *votesService) CreateVote(
 	if !input.StartAt.Before(input.EndAt) {
 		return nil, fmt.Errorf("start_at must be before end_at")
 	}
+
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	entVote, err := svc.databaseService.Vote.
 		Create().
 		SetTitle(input.Title).
 		SetDescription(input.Description).
 		SetStartAt(input.StartAt).
 		SetEndAt(input.EndAt).
-		SetVisible(input.Visible).
+		SetCreatorID(userID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return lightmodels.NewVoteFromEnt(entVote), nil
+	// Reload with needed edges (components & creator) for light model conversion
+	reloaded, err := svc.databaseService.Vote.
+		Query().
+		Where(vote.IDEQ(entVote.ID)).
+		WithComponents().
+		WithCreator().
+		Only(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+	return lightmodels.NewVoteFromEnt(reloaded), nil
 }
 
 func (svc *votesService) UpdateVote(
@@ -40,9 +59,31 @@ func (svc *votesService) UpdateVote(
 		return nil, fmt.Errorf("invalid input")
 	}
 
-	existing, err := svc.databaseService.Vote.Get(ctx, voteID)
+	existing, err := svc.databaseService.Vote.
+		Query().
+		Where(vote.IDEQ(voteID)).
+		WithCreator().
+		Only(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
+	}
+
+	// Check ownership
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	creator, err := existing.Edges.CreatorOrErr()
+	if err != nil {
+		return nil, fmt.Errorf("vote has no creator")
+	}
+
+	if creator.ID != userID {
+		// Check if user is admin
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "super_admin"); err != nil {
+			return nil, fmt.Errorf("only the creator or an admin can update this vote")
+		}
 	}
 
 	desiredStart := existing.StartAt
@@ -84,8 +125,31 @@ func (svc *votesService) DeleteVote(
 	ctx context.Context,
 	voteID int,
 ) error {
-	if _, err := svc.databaseService.Vote.Get(ctx, voteID); err != nil {
+	existing, err := svc.databaseService.Vote.
+		Query().
+		Where(vote.IDEQ(voteID)).
+		WithCreator().
+		Only(ctx)
+	if err != nil {
 		return svc.errorFilter.Filter(err, "get")
+	}
+
+	// Check ownership
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	creator, err := existing.Edges.CreatorOrErr()
+	if err != nil {
+		return fmt.Errorf("vote has no creator")
+	}
+
+	if creator.ID != userID {
+		// Check if user is admin
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "super_admin"); err != nil {
+			return fmt.Errorf("only the creator or an admin can delete this vote")
+		}
 	}
 
 	if _, err := svc.databaseService.UserVote.
@@ -137,9 +201,31 @@ func (svc *votesService) UpdateComponent(
 		return nil, fmt.Errorf("invalid input")
 	}
 
-	_, err := svc.databaseService.Component.Get(ctx, componentID)
+	// Fetch component with owning vote and its creator for ownership checks
+	compWithOwner, err := svc.databaseService.Component.
+		Query().
+		Where(component.IDEQ(componentID)).
+		WithVote(func(vq *ent.VoteQuery) {
+			vq.WithCreator()
+		}).
+		Only(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
+	}
+
+	// Check ownership or admin
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var creatorID int
+	if compWithOwner.Edges.Vote != nil && compWithOwner.Edges.Vote.Edges.Creator != nil {
+		creatorID = compWithOwner.Edges.Vote.Edges.Creator.ID
+	}
+	if creatorID != userID {
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "super_admin"); err != nil {
+			return nil, fmt.Errorf("only the vote creator or an admin can update this component")
+		}
 	}
 
 	update := svc.databaseService.Component.UpdateOneID(componentID)
@@ -172,9 +258,31 @@ func (svc *votesService) DeleteComponent(
 	ctx context.Context,
 	componentID int,
 ) error {
-	_, err := svc.databaseService.Component.Get(ctx, componentID)
+	// Fetch component with owning vote and its creator for ownership checks
+	compWithOwner, err := svc.databaseService.Component.
+		Query().
+		Where(component.IDEQ(componentID)).
+		WithVote(func(vq *ent.VoteQuery) {
+			vq.WithCreator()
+		}).
+		Only(ctx)
 	if err != nil {
 		return svc.errorFilter.Filter(err, "get")
+	}
+
+	// Check ownership or admin
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return err
+	}
+	var creatorID int
+	if compWithOwner.Edges.Vote != nil && compWithOwner.Edges.Vote.Edges.Creator != nil {
+		creatorID = compWithOwner.Edges.Vote.Edges.Creator.ID
+	}
+	if creatorID != userID {
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "super_admin"); err != nil {
+			return fmt.Errorf("only the vote creator or an admin can delete this component")
+		}
 	}
 
 	if err := svc.databaseService.Component.DeleteOneID(componentID).Exec(ctx); err != nil {

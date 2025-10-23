@@ -50,9 +50,11 @@ type User struct {
 type UserEdges struct {
 	// UserVotes holds the value of the user_votes edge.
 	UserVotes []*UserVote `json:"user_votes,omitempty"`
+	// CreatedVotes holds the value of the created_votes edge.
+	CreatedVotes []*Vote `json:"created_votes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // UserVotesOrErr returns the UserVotes value or an error if the edge
@@ -62,6 +64,15 @@ func (e UserEdges) UserVotesOrErr() ([]*UserVote, error) {
 		return e.UserVotes, nil
 	}
 	return nil, &NotLoadedError{edge: "user_votes"}
+}
+
+// CreatedVotesOrErr returns the CreatedVotes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CreatedVotesOrErr() ([]*Vote, error) {
+	if e.loadedTypes[1] {
+		return e.CreatedVotes, nil
+	}
+	return nil, &NotLoadedError{edge: "created_votes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -184,6 +195,11 @@ func (_m *User) Value(name string) (ent.Value, error) {
 // QueryUserVotes queries the "user_votes" edge of the User entity.
 func (_m *User) QueryUserVotes() *UserVoteQuery {
 	return NewUserClient(_m.config).QueryUserVotes(_m)
+}
+
+// QueryCreatedVotes queries the "created_votes" edge of the User entity.
+func (_m *User) QueryCreatedVotes() *VoteQuery {
+	return NewUserClient(_m.config).QueryCreatedVotes(_m)
 }
 
 // Update returns a builder for updating this User.

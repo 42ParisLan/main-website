@@ -6,6 +6,7 @@ import (
 	"base-website/ent/predicate"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
+	"base-website/ent/vote"
 	"context"
 	"database/sql/driver"
 	"fmt"
@@ -20,11 +21,12 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx           *QueryContext
-	order         []user.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.User
-	withUserVotes *UserVoteQuery
+	ctx              *QueryContext
+	order            []user.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.User
+	withUserVotes    *UserVoteQuery
+	withCreatedVotes *VoteQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -76,6 +78,28 @@ func (_q *UserQuery) QueryUserVotes() *UserVoteQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(uservote.Table, uservote.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.UserVotesTable, user.UserVotesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCreatedVotes chains the current query on the "created_votes" edge.
+func (_q *UserQuery) QueryCreatedVotes() *VoteQuery {
+	query := (&VoteClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(vote.Table, vote.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedVotesTable, user.CreatedVotesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -270,12 +294,13 @@ func (_q *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:        _q.config,
-		ctx:           _q.ctx.Clone(),
-		order:         append([]user.OrderOption{}, _q.order...),
-		inters:        append([]Interceptor{}, _q.inters...),
-		predicates:    append([]predicate.User{}, _q.predicates...),
-		withUserVotes: _q.withUserVotes.Clone(),
+		config:           _q.config,
+		ctx:              _q.ctx.Clone(),
+		order:            append([]user.OrderOption{}, _q.order...),
+		inters:           append([]Interceptor{}, _q.inters...),
+		predicates:       append([]predicate.User{}, _q.predicates...),
+		withUserVotes:    _q.withUserVotes.Clone(),
+		withCreatedVotes: _q.withCreatedVotes.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -290,6 +315,17 @@ func (_q *UserQuery) WithUserVotes(opts ...func(*UserVoteQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withUserVotes = query
+	return _q
+}
+
+// WithCreatedVotes tells the query-builder to eager-load the nodes that are connected to
+// the "created_votes" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithCreatedVotes(opts ...func(*VoteQuery)) *UserQuery {
+	query := (&VoteClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCreatedVotes = query
 	return _q
 }
 
@@ -371,8 +407,9 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withUserVotes != nil,
+			_q.withCreatedVotes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -397,6 +434,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadUserVotes(ctx, query, nodes,
 			func(n *User) { n.Edges.UserVotes = []*UserVote{} },
 			func(n *User, e *UserVote) { n.Edges.UserVotes = append(n.Edges.UserVotes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCreatedVotes; query != nil {
+		if err := _q.loadCreatedVotes(ctx, query, nodes,
+			func(n *User) { n.Edges.CreatedVotes = []*Vote{} },
+			func(n *User, e *Vote) { n.Edges.CreatedVotes = append(n.Edges.CreatedVotes, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -429,6 +473,37 @@ func (_q *UserQuery) loadUserVotes(ctx context.Context, query *UserVoteQuery, no
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_user_votes" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadCreatedVotes(ctx context.Context, query *VoteQuery, nodes []*User, init func(*User), assign func(*User, *Vote)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Vote(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.CreatedVotesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_created_votes
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_created_votes" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_created_votes" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

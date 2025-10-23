@@ -101,15 +101,11 @@ components:
         title:
           example: Best Programming Language 2025
           type: string
-        visible:
-          example: true
-          type: boolean
       required:
         - title
         - description
         - start_at
         - end_at
-        - visible
       type: object
     EnvResponse:
       additionalProperties: false
@@ -255,6 +251,8 @@ components:
           example: "2025-10-01T12:00:00Z"
           format: date-time
           type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
         description:
           example: Vote for your favorite language!
           type: string
@@ -285,6 +283,7 @@ components:
         - created_at
         - components_count
         - visible
+        - creator
       type: object
     Permission:
       additionalProperties: false
@@ -570,6 +569,8 @@ components:
             $ref: "#/components/schemas/Component"
           nullable: true
           type: array
+        creator:
+          $ref: "#/components/schemas/LightUser"
         description:
           example: Vote for your favorite language!
           type: string
@@ -599,6 +600,7 @@ components:
         - end_at
         - visible
         - components
+        - creator
       type: object
   securitySchemes:
     OAuth2 Auth:
@@ -943,7 +945,7 @@ paths:
           in: query
           name: order
           schema:
-            default: asc
+            default: desc
             enum:
               - asc
               - desc
@@ -1116,7 +1118,7 @@ paths:
           in: query
           name: order
           schema:
-            default: asc
+            default: desc
             enum:
               - asc
               - desc
@@ -1145,6 +1147,17 @@ paths:
               - finish
               - not_started
             example: ongoing
+            type: string
+        - example: me
+          explode: false
+          in: query
+          name: owner
+          schema:
+            default: all
+            enum:
+              - all
+              - me
+            example: me
             type: string
       responses:
         "200":
