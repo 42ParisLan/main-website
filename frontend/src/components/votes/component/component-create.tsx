@@ -251,7 +251,7 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 							type="submit"
 							disabled={!form.state.canSubmit || isPending || form.state.isSubmitting}
 						>
-							{isPending || form.state.isSubmitting ? "Creating..." : "Create Vote"}
+							{isPending || form.state.isSubmitting ? "Creating..." : "Create Component"}
 						</Button>
 					</DialogFooter>
 				</form>
