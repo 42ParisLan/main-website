@@ -19,6 +19,7 @@ import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import type { components } from "@/lib/api/types";
+import { toIsoString, toDatetimeLocal } from "@/lib/date.utils";
 
 interface VoteCreateModalProps {
 	children?: React.ReactNode;
@@ -52,8 +53,8 @@ export default function VoteCreateModal({ children }: VoteCreateModalProps) {
 			const body: components["schemas"]["CreateVote"] = {
 				title: value.title.trim(),
 				description: value.description.trim(),
-				start_at: toIsoString(value.start_at),
-				end_at: toIsoString(value.end_at),
+				start_at: value.start_at,
+				end_at: value.end_at,
 			};
 			await new Promise<void>((resolve, reject) => {
 				mutate({ body }, {
@@ -171,8 +172,8 @@ export default function VoteCreateModal({ children }: VoteCreateModalProps) {
 									<Input
 										id={field.name}
 										type="datetime-local"
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
+										value={toDatetimeLocal(field.state.value)}
+										onChange={(e) => field.handleChange(toIsoString(e.target.value))}
 										onBlur={field.handleBlur}
 										required
 									/>
@@ -205,8 +206,8 @@ export default function VoteCreateModal({ children }: VoteCreateModalProps) {
 									<Input
 										id={field.name}
 										type="datetime-local"
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
+										value={toDatetimeLocal(field.state.value)}
+										onChange={(e) => field.handleChange(toIsoString(e.target.value))}
 										onBlur={field.handleBlur}
 										required
 									/>
@@ -242,9 +243,3 @@ export default function VoteCreateModal({ children }: VoteCreateModalProps) {
 	);
 }
 
-function toIsoString(localDateTime: string): string {
-    // localDateTime expected: YYYY-MM-DDTHH:mm (from input[type=datetime-local])
-    const d = new Date(localDateTime);
-    if (isNaN(d.getTime())) return "";
-    return d.toISOString();
-}

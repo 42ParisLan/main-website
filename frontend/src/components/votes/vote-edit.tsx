@@ -11,8 +11,9 @@ import type { components } from "@/lib/api/types";
 import { CardFooter } from "../ui/card";
 import ComponentEdit from "./component/component-edit";
 import ComponentCreate from "./component/component-create";
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { toIsoString, toDatetimeLocal } from "@/lib/date.utils";
 
 interface VoteEditModalProps {
 	vote: components['schemas']['Vote'];
@@ -22,6 +23,16 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 	const client = useQueryClient();
 	const reactQueryClient = useReactQueryClient();
 	const router = useRouter();
+
+	const [isDefault, setIsDefault] = useState<boolean>(true);
+
+	const initialValues = useMemo(() => ({
+		title: vote.title ?? "",
+		description: vote.description ?? "",
+		start_at: toDatetimeLocal(vote.start_at ?? ""),
+		end_at: toDatetimeLocal(vote.end_at ?? ""),
+		visible: !!vote.visible,
+	}), [vote]);
 
 	// Zod schemas for field-level validation
 
@@ -36,21 +47,24 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 		.refine((v) => !isNaN(new Date(v).getTime()), "Invalid date");
 
 	const form = useForm({
-		defaultValues: {
-			title: vote.title,
-			description: vote.description,
-			// Convert API ISO timestamps to input[type="datetime-local"] format
-			start_at: toDatetimeLocal(vote.start_at),
-			end_at: toDatetimeLocal(vote.end_at),
-			visible: vote.visible
-		},
+		defaultValues: vote,
 		onSubmit: async ({ value }) => {
-			const body: components["schemas"]["UpdateVote"] = {
-				title: value.title.trim(),
-				description: value.description.trim(),
-				start_at: toIsoString(value.start_at),
-				end_at: toIsoString(value.end_at),
-			};
+			const body: components["schemas"]["UpdateVote"] = {};
+			if (value.title.trim() != initialValues.title) {
+				body.title = value.title.trim()
+			}
+			if (value.description.trim() != initialValues.description) {
+				body.description = value.description.trim()
+			}
+			if (value.start_at != initialValues.start_at) {
+				body.start_at = value.start_at
+			}
+			if (value.end_at != initialValues.end_at) {
+				body.end_at = value.end_at
+			}
+			if (value.visible != initialValues.visible) {
+				body.visible = value.visible
+			}
 			await new Promise<void>((resolve, reject) => {
 				mutate({
 					params: {
@@ -123,7 +137,12 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 							<Input
 								id={field.name}
 								value={field.state.value}
-								onChange={(e) => field.handleChange(e.target.value)}
+								onChange={(e) => {
+									const value = e.target.value
+									const change = value.trim() == initialValues.title
+									setIsDefault(change)
+									field.handleChange(value)
+								}}
 								onBlur={field.handleBlur}
 								placeholder="MVP of the game"
 								required
@@ -150,7 +169,12 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 							<Textarea
 								id={field.name}
 								value={field.state.value}
-								onChange={(e) => field.handleChange(e.target.value)}
+								onChange={(e) => {
+									const value = e.target.value
+									const change = value.trim() == initialValues.description
+									setIsDefault(change)
+									field.handleChange(value)
+								}}
 								onBlur={field.handleBlur}
 								placeholder="Vote for your favorite language!"
 								rows={4}
@@ -179,8 +203,13 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 								<Input
 									id={field.name}
 									type="datetime-local"
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value)}
+									value={toDatetimeLocal(field.state.value)}
+									onChange={(e) => {
+										const value = toIsoString(e.target.value)
+										const change = value == initialValues.start_at
+										setIsDefault(change)
+										field.handleChange(value)
+									}}
 									onBlur={field.handleBlur}
 									required
 								/>
@@ -197,7 +226,6 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 							onChange: ({ value }) => {
 								const r = dateFieldSchema.safeParse(value as string)
 								if (!r.success) return r.error.errors[0]?.message
-								// cross-field check
 								const start = new Date(form.state.values.start_at)
 								const end = new Date(value as string)
 								if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end <= start) {
@@ -213,8 +241,13 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 								<Input
 									id={field.name}
 									type="datetime-local"
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value)}
+									value={toDatetimeLocal(field.state.value)}
+									onChange={(e) => {
+										const value = toIsoString(e.target.value)
+										const change = value == initialValues.end_at
+										setIsDefault(change)
+										field.handleChange(value)
+									}}
 									onBlur={field.handleBlur}
 									required
 								/>
@@ -227,6 +260,14 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 
 					<form.Field
 						name="visible"
+						validators={{
+							onChange: ({ value }) => {
+								if (value && (vote.components?.length ?? 0) < 2) {
+									return "You should have at least two components to make it visible"
+								}
+								return undefined
+							},
+						}}
 					>
 						{(field) => (
 							<div className="flex gap-2">
@@ -235,7 +276,12 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 									id={field.name}
 									type="checkbox"
 									checked={!!field.state.value}
-									onChange={(e) => field.handleChange(e.target.checked)}
+									onChange={(e) => {
+										const value = e.target.checked
+										const change = value == initialValues.visible
+										setIsDefault(change)
+										field.handleChange(value)
+									}}
 									onBlur={field.handleBlur}
 									className="w-4"
 								/>
@@ -251,9 +297,9 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 					Dates are interpreted in your local timezone and saved in UTC.
 				</p>
 
-				<div className="grid md:grid-cols-2">
+				<div className="grid md:grid-cols-2 gap-4">
 					{vote.components?.map((component) => (
-						<ComponentEdit component={component}/>
+						<ComponentEdit key={component.id} component={component}/>
 					))}
 					<ComponentCreate voteid={vote.id}/>
 				</div>
@@ -268,7 +314,7 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 					</Button>
 					<Button
 						type="submit"
-						disabled={!form.state.canSubmit || isPending || form.state.isSubmitting}
+						disabled={isDefault || !form.state.canSubmit || isPending || form.state.isSubmitting}
 					>
 						{isPending || form.state.isSubmitting ? "Editing..." : "Edit Vote"}
 					</Button>
@@ -278,18 +324,4 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 	);
 }
 
-function toIsoString(localDateTime: string): string {
-	const d = new Date(localDateTime);
-	if (isNaN(d.getTime())) return "";
-	return d.toISOString();
-}
 
-// Convert an ISO string (UTC) to a value acceptable by input[type="datetime-local"] (local time: YYYY-MM-DDTHH:mm)
-function toDatetimeLocal(iso: string): string {
-	const d = new Date(iso);
-	if (isNaN(d.getTime())) return "";
-	// Adjust to local time and format without seconds/Z
-	const tzOffset = d.getTimezoneOffset();
-	const local = new Date(d.getTime() - tzOffset * 60000);
-	return local.toISOString().slice(0, 16);
-}

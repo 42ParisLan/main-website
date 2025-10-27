@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { components } from '@/lib/api/types';
+import { useAuth } from '@/providers/auth.provider';
 
 interface VoteCardProps {
 	vote: components['schemas']['LightVote'];
 }
 
 export default function VoteAdmin({ vote }: VoteCardProps) {
+	const {me} = useAuth();
 	const [status, setStatus] = useState<'pending' | 'active' | 'finished'>('pending');
 
 	useEffect(() => {
@@ -52,12 +54,14 @@ export default function VoteAdmin({ vote }: VoteCardProps) {
 				>
 					See Live
 				</a>
-				<a 
-					href={`/admin/votes/${vote.id}`}
-					className="text-primary hover:underline"
-				>
-					Edit Vote
-				</a>
+				{vote.creator.id == me.id && (
+					<a 
+						href={`/admin/votes/${vote.id}`}
+						className="text-primary hover:underline"
+					>
+						Edit Vote
+					</a>
+				)}
 			</CardContent>
 		</Card>
 	);
