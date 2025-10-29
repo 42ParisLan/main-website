@@ -27,6 +27,9 @@ jobs:
             - name: Enable pnpm
               run: corepack enable
 
+            - name: Prepare pnpm via corepack
+              run: corepack prepare pnpm@latest --activate
+
             - name: Install frontend dependencies
               working-directory: ./frontend
               run: pnpm install --frozen-lockfile
@@ -59,6 +62,9 @@ jobs:
 
             - name: Enable pnpm
               run: corepack enable
+
+            - name: Prepare pnpm via corepack
+              run: corepack prepare pnpm@latest --activate
 
             - name: Install frontend dependencies
               working-directory: ./frontend
