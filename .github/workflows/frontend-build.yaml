@@ -26,8 +26,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 23
-                  cache: 'pnpm'
-                  cache-dependency-path: ${{ env.WORKING_DIR }}/pnpm-lock.yaml
+                  package_json_file: ${{ env.WORKING_DIR }}/package.json
 
             - name: Install pnpm
               run: npm install -g pnpm@9
