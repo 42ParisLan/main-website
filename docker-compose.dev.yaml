@@ -40,7 +40,7 @@ services:
       - DB_PASS=base-website
       - DB_NAME=base-website
       - DB_PORT=5432
-      - VALKEY_ADDRESS=valkey:6379
+      - 'VALKEY_ADDRESS=redis://valkey:6379'
       - API_PREFIX=/api
       - OPENID_ISSUER=http://localhost:3000/api/openid
       - LOGIN_URL=http://localhost:8080/auth/authorize
