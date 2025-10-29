@@ -24,11 +24,10 @@ jobs:
                   cache: 'pnpm'
                   cache-dependency-path: 'frontend/pnpm-lock.yaml'
 
-            - name: Enable pnpm
-              run: corepack enable
-
-            - name: Prepare pnpm via corepack
-              run: corepack prepare pnpm@latest --activate
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
 
             - name: Install frontend dependencies
               working-directory: ./frontend
@@ -60,11 +59,10 @@ jobs:
                   cache: 'pnpm'
                   cache-dependency-path: 'frontend/pnpm-lock.yaml'
 
-            - name: Enable pnpm
-              run: corepack enable
-
-            - name: Prepare pnpm via corepack
-              run: corepack prepare pnpm@latest --activate
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
 
             - name: Install frontend dependencies
               working-directory: ./frontend
