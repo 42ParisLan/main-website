@@ -1,9 +1,9 @@
 tags:
-  - name: Authentification
-    description: |
-      `Authentification` contains all the endpoints related to the authentification of the user.
-      Most of them are not usefull for you and require the `security` scope.
-  - name: Users
-    description: |
-      `User` is the object representing a user in the database.
-      It contains all the information about the user. its kind can be `staff` or `student`.
+    - name: Authentification
+      description: |
+          `Authentification` contains all the endpoints related to the authentification of the user.
+          Most of them are not usefull for you and require the `security` scope.
+    - name: Users
+      description: |
+          `User` is the object representing a user in the database.
+          It contains all the information about the user. its kind can be `user` or `admin`.

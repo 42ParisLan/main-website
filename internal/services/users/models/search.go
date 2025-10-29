@@ -1,7 +1,6 @@
 package usersmodels
 
 import (
-	"base-website/internal/lightmodels"
 	"base-website/pkg/paging"
 )
 
@@ -16,9 +15,4 @@ type SearchUsersParams struct {
 	//// FILTERS ////
 	// The kind of the user
 	Kind string `query:"kind" example:"user" description:"The kind of the user" enum:"user,admin"`
-}
-
-type SearchResult struct {
-	paging.Response
-	Users []*lightmodels.LightUser `json:"users" description:"The users"`
 }

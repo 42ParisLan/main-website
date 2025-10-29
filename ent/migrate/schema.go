@@ -55,6 +55,29 @@ var (
 		Columns:    AuthTokensColumns,
 		PrimaryKey: []*schema.Column{AuthTokensColumns[0]},
 	}
+	// ComponentsColumns holds the columns for the "components" table.
+	ComponentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "color", Type: field.TypeString, Nullable: true},
+		{Name: "vote_components", Type: field.TypeInt},
+	}
+	// ComponentsTable holds the schema information for the "components" table.
+	ComponentsTable = &schema.Table{
+		Name:       "components",
+		Columns:    ComponentsColumns,
+		PrimaryKey: []*schema.Column{ComponentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "components_votes_components",
+				Columns:    []*schema.Column{ComponentsColumns[5]},
+				RefColumns: []*schema.Column{VotesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -76,14 +99,74 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// UserVotesColumns holds the columns for the "user_votes" table.
+	UserVotesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "component_user_votes", Type: field.TypeInt},
+		{Name: "user_user_votes", Type: field.TypeInt},
+	}
+	// UserVotesTable holds the schema information for the "user_votes" table.
+	UserVotesTable = &schema.Table{
+		Name:       "user_votes",
+		Columns:    UserVotesColumns,
+		PrimaryKey: []*schema.Column{UserVotesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_votes_components_user_votes",
+				Columns:    []*schema.Column{UserVotesColumns[2]},
+				RefColumns: []*schema.Column{ComponentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "user_votes_users_user_votes",
+				Columns:    []*schema.Column{UserVotesColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// VotesColumns holds the columns for the "votes" table.
+	VotesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "visible", Type: field.TypeBool, Default: false},
+		{Name: "start_at", Type: field.TypeTime},
+		{Name: "end_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_created_votes", Type: field.TypeInt},
+	}
+	// VotesTable holds the schema information for the "votes" table.
+	VotesTable = &schema.Table{
+		Name:       "votes",
+		Columns:    VotesColumns,
+		PrimaryKey: []*schema.Column{VotesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "votes_users_created_votes",
+				Columns:    []*schema.Column{VotesColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AuthCodesTable,
 		AuthRefreshTokensTable,
 		AuthTokensTable,
+		ComponentsTable,
 		UsersTable,
+		UserVotesTable,
+		VotesTable,
 	}
 )
 
 func init() {
+	ComponentsTable.ForeignKeys[0].RefTable = VotesTable
+	UserVotesTable.ForeignKeys[0].RefTable = ComponentsTable
+	UserVotesTable.ForeignKeys[1].RefTable = UsersTable
+	VotesTable.ForeignKeys[0].RefTable = UsersTable
 }

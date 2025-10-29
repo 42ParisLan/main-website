@@ -5,6 +5,8 @@ package ent
 import (
 	"base-website/ent/predicate"
 	"base-website/ent/user"
+	"base-website/ent/uservote"
+	"base-website/ent/vote"
 	"context"
 	"errors"
 	"fmt"
@@ -171,9 +173,81 @@ func (_u *UserUpdate) AppendRoles(v []string) *UserUpdate {
 	return _u
 }
 
+// AddUserVoteIDs adds the "user_votes" edge to the UserVote entity by IDs.
+func (_u *UserUpdate) AddUserVoteIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddUserVoteIDs(ids...)
+	return _u
+}
+
+// AddUserVotes adds the "user_votes" edges to the UserVote entity.
+func (_u *UserUpdate) AddUserVotes(v ...*UserVote) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserVoteIDs(ids...)
+}
+
+// AddCreatedVoteIDs adds the "created_votes" edge to the Vote entity by IDs.
+func (_u *UserUpdate) AddCreatedVoteIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddCreatedVoteIDs(ids...)
+	return _u
+}
+
+// AddCreatedVotes adds the "created_votes" edges to the Vote entity.
+func (_u *UserUpdate) AddCreatedVotes(v ...*Vote) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCreatedVoteIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearUserVotes clears all "user_votes" edges to the UserVote entity.
+func (_u *UserUpdate) ClearUserVotes() *UserUpdate {
+	_u.mutation.ClearUserVotes()
+	return _u
+}
+
+// RemoveUserVoteIDs removes the "user_votes" edge to UserVote entities by IDs.
+func (_u *UserUpdate) RemoveUserVoteIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveUserVoteIDs(ids...)
+	return _u
+}
+
+// RemoveUserVotes removes "user_votes" edges to UserVote entities.
+func (_u *UserUpdate) RemoveUserVotes(v ...*UserVote) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserVoteIDs(ids...)
+}
+
+// ClearCreatedVotes clears all "created_votes" edges to the Vote entity.
+func (_u *UserUpdate) ClearCreatedVotes() *UserUpdate {
+	_u.mutation.ClearCreatedVotes()
+	return _u
+}
+
+// RemoveCreatedVoteIDs removes the "created_votes" edge to Vote entities by IDs.
+func (_u *UserUpdate) RemoveCreatedVoteIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveCreatedVoteIDs(ids...)
+	return _u
+}
+
+// RemoveCreatedVotes removes "created_votes" edges to Vote entities.
+func (_u *UserUpdate) RemoveCreatedVotes(v ...*Vote) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCreatedVoteIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -274,6 +348,96 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, user.FieldRoles, value)
 		})
+	}
+	if _u.mutation.UserVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserVotesTable,
+			Columns: []string{user.UserVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserVotesIDs(); len(nodes) > 0 && !_u.mutation.UserVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserVotesTable,
+			Columns: []string{user.UserVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserVotesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserVotesTable,
+			Columns: []string{user.UserVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatedVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCreatedVotesIDs(); len(nodes) > 0 && !_u.mutation.CreatedVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedVotesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -437,9 +601,81 @@ func (_u *UserUpdateOne) AppendRoles(v []string) *UserUpdateOne {
 	return _u
 }
 
+// AddUserVoteIDs adds the "user_votes" edge to the UserVote entity by IDs.
+func (_u *UserUpdateOne) AddUserVoteIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddUserVoteIDs(ids...)
+	return _u
+}
+
+// AddUserVotes adds the "user_votes" edges to the UserVote entity.
+func (_u *UserUpdateOne) AddUserVotes(v ...*UserVote) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserVoteIDs(ids...)
+}
+
+// AddCreatedVoteIDs adds the "created_votes" edge to the Vote entity by IDs.
+func (_u *UserUpdateOne) AddCreatedVoteIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddCreatedVoteIDs(ids...)
+	return _u
+}
+
+// AddCreatedVotes adds the "created_votes" edges to the Vote entity.
+func (_u *UserUpdateOne) AddCreatedVotes(v ...*Vote) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCreatedVoteIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearUserVotes clears all "user_votes" edges to the UserVote entity.
+func (_u *UserUpdateOne) ClearUserVotes() *UserUpdateOne {
+	_u.mutation.ClearUserVotes()
+	return _u
+}
+
+// RemoveUserVoteIDs removes the "user_votes" edge to UserVote entities by IDs.
+func (_u *UserUpdateOne) RemoveUserVoteIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveUserVoteIDs(ids...)
+	return _u
+}
+
+// RemoveUserVotes removes "user_votes" edges to UserVote entities.
+func (_u *UserUpdateOne) RemoveUserVotes(v ...*UserVote) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserVoteIDs(ids...)
+}
+
+// ClearCreatedVotes clears all "created_votes" edges to the Vote entity.
+func (_u *UserUpdateOne) ClearCreatedVotes() *UserUpdateOne {
+	_u.mutation.ClearCreatedVotes()
+	return _u
+}
+
+// RemoveCreatedVoteIDs removes the "created_votes" edge to Vote entities by IDs.
+func (_u *UserUpdateOne) RemoveCreatedVoteIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveCreatedVoteIDs(ids...)
+	return _u
+}
+
+// RemoveCreatedVotes removes "created_votes" edges to Vote entities.
+func (_u *UserUpdateOne) RemoveCreatedVotes(v ...*Vote) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCreatedVoteIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -570,6 +806,96 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, user.FieldRoles, value)
 		})
+	}
+	if _u.mutation.UserVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserVotesTable,
+			Columns: []string{user.UserVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserVotesIDs(); len(nodes) > 0 && !_u.mutation.UserVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserVotesTable,
+			Columns: []string{user.UserVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserVotesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserVotesTable,
+			Columns: []string{user.UserVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(uservote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatedVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCreatedVotesIDs(); len(nodes) > 0 && !_u.mutation.CreatedVotesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedVotesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedVotesTable,
+			Columns: []string{user.CreatedVotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: _u.config}
 	_spec.Assign = _node.assignValues

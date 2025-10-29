@@ -1,0 +1,1482 @@
+components:
+  schemas:
+    Component:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Component.json
+          format: uri
+          readOnly: true
+          type: string
+        color:
+          example: "#FF5733"
+          type: string
+        description:
+          example: Network infrastructure and connectivity
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        image_url:
+          example: https://example.com/network.png
+          type: string
+        name:
+          example: Network
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - image_url
+        - color
+      type: object
+    ComponentResult:
+      additionalProperties: false
+      properties:
+        component_id:
+          example: 1
+          format: int64
+          type: integer
+        name:
+          example: Go
+          type: string
+        votes:
+          example: 120
+          format: int64
+          type: integer
+      required:
+        - component_id
+        - name
+        - votes
+      type: object
+    CreateComponent:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/CreateComponent.json
+          format: uri
+          readOnly: true
+          type: string
+        color:
+          example: "#FF5733"
+          type: string
+        description:
+          example: Network infrastructure and connectivity
+          type: string
+        image_url:
+          example: https://example.com/network.png
+          type: string
+        name:
+          example: Network
+          type: string
+      required:
+        - name
+        - description
+        - image_url
+        - color
+      type: object
+    CreateVote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/CreateVote.json
+          format: uri
+          readOnly: true
+          type: string
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+      required:
+        - title
+        - description
+        - start_at
+        - end_at
+      type: object
+    EnvResponse:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/EnvResponse.json
+          format: uri
+          readOnly: true
+          type: string
+        VITE_OAUTH_AUTHORIZE_URL:
+          type: string
+        VITE_OAUTH_CLIENT_ID:
+          type: string
+      required:
+        - VITE_OAUTH_AUTHORIZE_URL
+        - VITE_OAUTH_CLIENT_ID
+      type: object
+    ErrorDetail:
+      additionalProperties: false
+      properties:
+        location:
+          description: Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'
+          type: string
+        message:
+          description: Error message text
+          type: string
+        value:
+          description: The value at the given location
+      type: object
+    ErrorModel:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ErrorModel.json
+          format: uri
+          readOnly: true
+          type: string
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          example: Property foo is required but is missing.
+          type: string
+        errors:
+          description: Optional list of individual error details
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+          nullable: true
+          type: array
+        instance:
+          description: A URI reference that identifies the specific occurrence of the problem.
+          example: https://example.com/error-log/abc123
+          format: uri
+          type: string
+        status:
+          description: HTTP status code
+          example: 400
+          format: int64
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
+          example: Bad Request
+          type: string
+        type:
+          default: about:blank
+          description: A URI reference to human-readable documentation for the error.
+          example: https://example.com/errors/example
+          format: uri
+          type: string
+      type: object
+    LightUser:
+      additionalProperties: false
+      properties:
+        created_at:
+          example: "2024-01-01T00:00:00Z"
+          format: date-time
+          type: string
+        email:
+          example: froz@42paris.fr
+          type: string
+        first_name:
+          example: Theo
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        kind:
+          enum:
+            - user
+            - admin
+          example: user
+          type: string
+        last_name:
+          example: Matis
+          type: string
+        picture:
+          example: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg
+          nullable: true
+          type: string
+        roles:
+          example:
+            - user
+          items:
+            type: string
+          type: array
+        updated_at:
+          example: "2024-01-01T00:00:00Z"
+          format: date-time
+          type: string
+        username:
+          example: froz
+          type: string
+        usual_first_name:
+          example: Theo
+          nullable: true
+          type: string
+        usual_full_name:
+          example: Theo Matis
+          type: string
+      required:
+        - id
+        - username
+        - first_name
+        - last_name
+        - email
+        - created_at
+        - updated_at
+        - picture
+        - kind
+        - usual_full_name
+        - usual_first_name
+        - roles
+      type: object
+    LightVote:
+      additionalProperties: false
+      properties:
+        components_count:
+          example: 4
+          format: int64
+          type: integer
+        created_at:
+          example: "2025-10-01T12:00:00Z"
+          format: date-time
+          type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+        visible:
+          example: true
+          type: boolean
+      required:
+        - id
+        - title
+        - description
+        - start_at
+        - end_at
+        - created_at
+        - components_count
+        - visible
+        - creator
+      type: object
+    Permission:
+      additionalProperties: false
+      properties:
+        methods:
+          example:
+            - GET
+          items:
+            type: string
+          type: array
+        path:
+          example: /users
+          type: string
+      required:
+        - path
+        - methods
+      type: object
+    ResponseLightUser:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightUser.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightUser"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseLightVote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightVote.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightVote"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResultsResponse:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResultsResponse.json
+          format: uri
+          readOnly: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/ComponentResult"
+          nullable: true
+          type: array
+        total_votes:
+          example: 290
+          format: int64
+          type: integer
+        vote_id:
+          example: 1
+          format: int64
+          type: integer
+      required:
+        - vote_id
+        - results
+        - total_votes
+      type: object
+    Role:
+      additionalProperties: false
+      properties:
+        description:
+          example: admin role
+          type: string
+        inherits:
+          example:
+            - admin role inherits
+          items:
+            type: string
+          type: array
+        name:
+          example: admin
+          type: string
+        permissions:
+          items:
+            $ref: "#/components/schemas/Permission"
+          type: array
+      required:
+        - name
+        - description
+        - permissions
+        - inherits
+      type: object
+    UpdateComponent:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/UpdateComponent.json
+          format: uri
+          readOnly: true
+          type: string
+        color:
+          example: "#FF5733"
+          nullable: true
+          type: string
+        description:
+          example: Network infrastructure and connectivity
+          nullable: true
+          type: string
+        image_url:
+          example: https://example.com/network.png
+          nullable: true
+          type: string
+        name:
+          example: Network
+          nullable: true
+          type: string
+      type: object
+    UpdateVote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/UpdateVote.json
+          format: uri
+          readOnly: true
+          type: string
+        description:
+          example: Vote for your favorite language!
+          nullable: true
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          nullable: true
+          type: string
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          nullable: true
+          type: string
+        title:
+          example: Best Programming Language 2025
+          nullable: true
+          type: string
+        visible:
+          example: true
+          nullable: true
+          type: boolean
+      type: object
+    User:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/User.json
+          format: uri
+          readOnly: true
+          type: string
+        created_at:
+          example: "2024-01-01T00:00:00Z"
+          format: date-time
+          type: string
+        email:
+          example: froz@42paris.fr
+          type: string
+        first_name:
+          example: Theo
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        kind:
+          enum:
+            - user
+            - admin
+          example: user
+          type: string
+        last_name:
+          example: Matis
+          type: string
+        picture:
+          example: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg
+          nullable: true
+          type: string
+        roles:
+          example:
+            - user
+          items:
+            type: string
+          type: array
+        updated_at:
+          example: "2024-01-01T00:00:00Z"
+          format: date-time
+          type: string
+        username:
+          example: froz
+          type: string
+        usual_first_name:
+          example: Theo
+          nullable: true
+          type: string
+        usual_full_name:
+          example: Theo Matis
+          type: string
+      required:
+        - id
+        - username
+        - first_name
+        - last_name
+        - email
+        - created_at
+        - updated_at
+        - picture
+        - kind
+        - usual_full_name
+        - usual_first_name
+        - roles
+      type: object
+    Vote:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Vote.json
+          format: uri
+          readOnly: true
+          type: string
+        components:
+          items:
+            $ref: "#/components/schemas/Component"
+          nullable: true
+          type: array
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        description:
+          example: Vote for your favorite language!
+          type: string
+        end_at:
+          example: "2025-10-20T23:59:59Z"
+          format: date-time
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        start_at:
+          example: "2025-10-10T00:00:00Z"
+          format: date-time
+          type: string
+        title:
+          example: Best Programming Language 2025
+          type: string
+        visible:
+          example: true
+          type: boolean
+      required:
+        - id
+        - title
+        - description
+        - start_at
+        - end_at
+        - visible
+        - components
+        - creator
+      type: object
+  securitySchemes:
+    OAuth2 Auth:
+      description: OAuth2 security scheme
+      flows:
+        authorizationCode:
+          authorizationUrl: http://localhost:8080/api/openid/authorize
+          refreshUrl: http://localhost:8080/api/openid/token
+          scopes:
+            email: see your email address
+            offline_access: have access to your account even when you are not connected
+            openid: connect to the identity provider
+            profile: see your profile
+            security: access to the security API
+          tokenUrl: http://localhost:8080/api/openid/oauth/token
+        clientCredentials:
+          scopes:
+            email: see your email address
+            offline_access: have access to your account even when you are not connected
+            openid: connect to the identity provider
+            profile: see your profile
+            security: access to the security API
+          tokenUrl: http://localhost:8080/api/openid/oauth/token
+      scheme: bearer
+      type: oauth2
+info:
+  contact:
+    email: si@42paris.fr
+    name: IT Team 42 Paris
+  description: |
+    <!-- 42 logo -->
+
+    # How to use this API
+
+    ## Create an application
+
+    In order to use this API, you need to create an application. To do this go to the [applications page](http://localhost:8080/applications) and click on the "Create Application" button. Fill in the form and click on the "Create" button.
+
+    ### Details
+
+    - **Name**: The name of the application.
+    - **Description**: A description of the application.
+    - **Redirect URLs**: The URLs to redirect to after authentication.
+    - **Roles**: The roles that the application can have. **Note**: The roles are only available for 42's staff.
+
+    ## Authentication
+
+    To authenticate a user, you need to redirect them to the following URL:
+
+    ```txt
+    http://localhost:8080/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI
+    ```
+
+    Replace `YOUR_CLIENT_ID` with the client ID of your application and `YOUR_REDIRECT_URI` with the redirect URI of your application.
+
+    ## Get user information
+
+    To get the information of the authenticated user, you need to make a GET request to the following URL:
+
+    ```txt
+    http://localhost:8080/api/openid/userinfo
+    ```
+
+    You need to include the `Authorization` header with the value
+
+    ```txt
+    Bearer YOUR_ACCESS_TOKEN
+    ```
+
+    Replace `YOUR_ACCESS_TOKEN` with the access token you received after authenticating the user.
+  title: 42Lan API
+  version: 1.2.0
+openapi: 3.0.3
+paths:
+  /auth/callback:
+    get:
+      description: |-
+        This endpoint is used to handle the OAuth2 callback from the OAuth2 provider.
+        		It should exchange the code for an access token and return a generated TokenSet.
+        		⚠️ **You are probably not interested in this endpoint as it is should be only used by the frontend**.
+      operationId: getOAuthCallback
+      parameters:
+        - description: The OAuth2 code to exchange for a token
+          example: "123456"
+          explode: false
+          in: query
+          name: code
+          required: true
+          schema:
+            description: The OAuth2 code to exchange for a token
+            example: "123456"
+            type: string
+        - description: The redirect URI to use for the OAuth2 callback
+          example: http://localhost:8080/auth/callback
+          explode: false
+          in: query
+          name: redirect_uri
+          schema:
+            description: The redirect URI to use for the OAuth2 callback
+            example: http://localhost:8080/auth/callback
+            type: string
+      responses:
+        "204":
+          description: No Content
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: OAuth2 Callback
+      tags:
+        - Authentification
+  /auth/logout:
+    get:
+      description: |-
+        This endpoint is used to log out the user.
+        		It should clear the auth cookie and invalidate the session.
+        		⚠️ **You are probably not interested in this endpoint as it is should be only used by the frontend**
+      operationId: logout
+      responses:
+        "204":
+          description: No Content
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Logout
+      tags:
+        - Authentification
+  /components/{id}:
+    delete:
+      description: This endpoint is used to delete a component.
+      operationId: deleteComponent
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: DELETE Component
+      tags:
+        - Vote
+    patch:
+      description: This endpoint is used to update a component.
+      operationId: updateComponent
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateComponent"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Component
+      tags:
+        - Vote
+  /env:
+    get:
+      description: Returns frontend environment variables needed for OAuth
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Frontend Env Vars
+      tags:
+        - Env
+  /me:
+    get:
+      description: This endpoint is used to get the current user.
+      operationId: getCurrentUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get current user
+      tags:
+        - Users
+  /me/permissions:
+    get:
+      description: This endpoint is used to get the current user RBAC permissions.
+      operationId: getCurrentUserRBACPermissions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Permission"
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get current user RBAC permissions
+      tags:
+        - RBAC
+        - Users
+  /roles:
+    get:
+      description: This endpoint is used to get the roles.
+      operationId: getRoles
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Role"
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get roles
+      tags:
+        - RBAC
+        - Roles
+  /users:
+    get:
+      description: This endpoint is used to search users.
+      operationId: searchUsers
+      parameters:
+        - example: froz
+          explode: false
+          in: query
+          name: query
+          schema:
+            example: froz
+            type: string
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: user
+          explode: false
+          in: query
+          name: kind
+          schema:
+            enum:
+              - user
+              - admin
+            example: user
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseLightUser"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Search Users
+      tags:
+        - Users
+  /users/{id_or_login}:
+    get:
+      description: This endpoint is used to get a user by its ID or login.
+      operationId: getUserByIDOrLogin
+      parameters:
+        - example: froz
+          in: path
+          name: id_or_login
+          required: true
+          schema:
+            example: froz
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get User by ID or Login
+      tags:
+        - Users
+  /users/{id}/permissions:
+    get:
+      description: This endpoint is used to get the user RBAC permissions.
+      operationId: getUserRBACPermissions
+      parameters:
+        - example: 1
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 1
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Permission"
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get user RBAC permissions
+      tags:
+        - RBAC
+        - Users
+  /users/{id}/roles:
+    post:
+      description: This endpoint is used to change user roles.
+      operationId: changeUserRoles
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                type: string
+              nullable: true
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Change user roles
+      tags:
+        - Users
+  /votes:
+    get:
+      description: This endpoint is used to get all votes.
+      operationId: getAllVotes
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: visible
+          explode: false
+          in: query
+          name: visible
+          schema:
+            default: visible
+            enum:
+              - all
+              - visible
+            example: visible
+            type: string
+        - example: ongoing
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: all
+            enum:
+              - all
+              - ongoing
+              - finish
+              - not_started
+            example: ongoing
+            type: string
+        - example: me
+          explode: false
+          in: query
+          name: owner
+          schema:
+            default: all
+            enum:
+              - all
+              - me
+            example: me
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseLightVote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get All Votes
+      tags:
+        - Vote
+    post:
+      description: This endpoint is used to create a vote.
+      operationId: createVote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVote"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Vote
+      tags:
+        - Vote
+  /votes/{id}:
+    delete:
+      description: This endpoint is used to delete a vote.
+      operationId: deleteVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Vote
+      tags:
+        - Vote
+    get:
+      description: This endpoint is used to get a vote.
+      operationId: getVoteByID
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Vote by ID
+      tags:
+        - Vote
+    patch:
+      description: This endpoint is used to update a vote.
+      operationId: updateVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVote"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Vote
+      tags:
+        - Vote
+  /votes/{id}/components:
+    post:
+      description: This endpoint is used to create a component for a vote.
+      operationId: createComponent
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateComponent"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Component
+      tags:
+        - Vote
+  /votes/{id}/live:
+    get:
+      description: Server-Sent Events stream that sends live vote results in real-time when votes are submitted. First sends a connection confirmation message, then streams updated results as they occur.
+      operationId: liveVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            text/event-stream:
+              schema:
+                description: Each oneOf object in the array represents one possible Server Sent Events (SSE) message, serialized as UTF-8 text according to the SSE specification.
+                items:
+                  oneOf:
+                    - properties:
+                        data:
+                          $ref: "#/components/schemas/ResultsResponse"
+                        event:
+                          const: message
+                          description: The event name.
+                          type: string
+                        id:
+                          description: The event ID.
+                          type: integer
+                        retry:
+                          description: The retry time in milliseconds.
+                          type: integer
+                      required:
+                        - data
+                      title: Event message
+                      type: object
+                title: Server Sent Events
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Live updates for a vote
+      tags:
+        - Vote
+  /votes/{id}/results:
+    get:
+      description: This endpoint is used to get vote results.
+      operationId: getResults
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultsResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Vote results
+      tags:
+        - Vote
+  /votes/{id}/submit:
+    post:
+      description: This endpoint is used to submit a vote.
+      operationId: submitVote
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              format: int64
+              type: integer
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Submit Vote
+      tags:
+        - Vote
+servers:
+  - description: Current Server
+    url: /api
+tags:
+  - description: |
+      `Authentification` contains all the endpoints related to the authentification of the user.
+      Most of them are not usefull for you and require the `security` scope.
+    name: Authentification
+  - description: |
+      `User` is the object representing a user in the database.
+      It contains all the information about the user. its kind can be `user` or `admin`.
+    name: Users

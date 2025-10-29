@@ -3,6 +3,7 @@ package userscontroller
 import (
 	"base-website/internal/lightmodels"
 	usersmodels "base-website/internal/services/users/models"
+	"base-website/pkg/paging"
 )
 
 type userByIDOrLoginInput struct {
@@ -18,9 +19,7 @@ type searchUsersInput struct {
 }
 
 type searchUsersOutput struct {
-	Body []*lightmodels.LightUser `nullable:"false"`
-
-	Total int `header:"X-Total" description:"The total number of users" example:"42"`
+	Body *paging.Response[*lightmodels.LightUser] `nullable:"false"`
 }
 
 type changeUserRolesInput struct {

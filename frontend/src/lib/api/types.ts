@@ -48,6 +48,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/components/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * DELETE Component
+         * @description This endpoint is used to delete a component.
+         */
+        delete: operations["deleteComponent"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Component
+         * @description This endpoint is used to update a component.
+         */
+        patch: operations["updateComponent"];
+        trace?: never;
+    };
     "/env": {
         parameters: {
             query?: never;
@@ -236,10 +260,215 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Votes
+         * @description This endpoint is used to get all votes.
+         */
+        get: operations["getAllVotes"];
+        put?: never;
+        /**
+         * Create Vote
+         * @description This endpoint is used to create a vote.
+         */
+        post: operations["createVote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Vote by ID
+         * @description This endpoint is used to get a vote.
+         */
+        get: operations["getVoteByID"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Vote
+         * @description This endpoint is used to delete a vote.
+         */
+        delete: operations["deleteVote"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Vote
+         * @description This endpoint is used to update a vote.
+         */
+        patch: operations["updateVote"];
+        trace?: never;
+    };
+    "/votes/{id}/components": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Component
+         * @description This endpoint is used to create a component for a vote.
+         */
+        post: operations["createComponent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Live updates for a vote
+         * @description Server-Sent Events stream that sends live vote results in real-time when votes are submitted. First sends a connection confirmation message, then streams updated results as they occur.
+         */
+        get: operations["liveVote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Vote results
+         * @description This endpoint is used to get vote results.
+         */
+        get: operations["getResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/votes/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Vote
+         * @description This endpoint is used to submit a vote.
+         */
+        post: operations["submitVote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Component: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Component.json
+             */
+            readonly $schema?: string;
+            /** @example #FF5733 */
+            color: string;
+            /** @example Network infrastructure and connectivity */
+            description: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /** @example https://example.com/network.png */
+            image_url: string;
+            /** @example Network */
+            name: string;
+        };
+        ComponentResult: {
+            /**
+             * Format: int64
+             * @example 1
+             */
+            component_id: number;
+            /** @example Go */
+            name: string;
+            /**
+             * Format: int64
+             * @example 120
+             */
+            votes: number;
+        };
+        CreateComponent: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateComponent.json
+             */
+            readonly $schema?: string;
+            /** @example #FF5733 */
+            color: string;
+            /** @example Network infrastructure and connectivity */
+            description: string;
+            /** @example https://example.com/network.png */
+            image_url: string;
+            /** @example Network */
+            name: string;
+        };
+        CreateVote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateVote.json
+             */
+            readonly $schema?: string;
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+        };
         EnvResponse: {
             /**
              * Format: uri
@@ -339,6 +568,40 @@ export interface components {
             /** @example Theo Matis */
             usual_full_name: string;
         };
+        LightVote: {
+            /**
+             * Format: int64
+             * @example 4
+             */
+            components_count: number;
+            /**
+             * Format: date-time
+             * @example 2025-10-01T12:00:00Z
+             */
+            created_at: string;
+            creator: components["schemas"]["LightUser"];
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+            /** @example true */
+            visible: boolean;
+        };
         Permission: {
             /**
              * @example [
@@ -348,6 +611,83 @@ export interface components {
             methods: string[];
             /** @example /users */
             path: string;
+        };
+        ResponseLightUser: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightUser.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightUser"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseLightVote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightVote.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightVote"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResultsResponse: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResultsResponse.json
+             */
+            readonly $schema?: string;
+            results: components["schemas"]["ComponentResult"][] | null;
+            /**
+             * Format: int64
+             * @example 290
+             */
+            total_votes: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            vote_id: number;
         };
         Role: {
             /** @example admin role */
@@ -361,6 +701,46 @@ export interface components {
             /** @example admin */
             name: string;
             permissions: components["schemas"]["Permission"][];
+        };
+        UpdateComponent: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/UpdateComponent.json
+             */
+            readonly $schema?: string;
+            /** @example #FF5733 */
+            color?: string | null;
+            /** @example Network infrastructure and connectivity */
+            description?: string | null;
+            /** @example https://example.com/network.png */
+            image_url?: string | null;
+            /** @example Network */
+            name?: string | null;
+        };
+        UpdateVote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/UpdateVote.json
+             */
+            readonly $schema?: string;
+            /** @example Vote for your favorite language! */
+            description?: string | null;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at?: string | null;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at?: string | null;
+            /** @example Best Programming Language 2025 */
+            title?: string | null;
+            /** @example true */
+            visible?: boolean | null;
         };
         User: {
             /**
@@ -409,6 +789,37 @@ export interface components {
             usual_first_name: string | null;
             /** @example Theo Matis */
             usual_full_name: string;
+        };
+        Vote: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Vote.json
+             */
+            readonly $schema?: string;
+            components: components["schemas"]["Component"][] | null;
+            creator: components["schemas"]["LightUser"];
+            /** @example Vote for your favorite language! */
+            description: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-20T23:59:59Z
+             */
+            end_at: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /**
+             * Format: date-time
+             * @example 2025-10-10T00:00:00Z
+             */
+            start_at: string;
+            /** @example Best Programming Language 2025 */
+            title: string;
+            /** @example true */
+            visible: boolean;
         };
     };
     responses: never;
@@ -474,6 +885,74 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteComponent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateComponent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateComponent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Component"];
+                };
             };
             /** @description Error */
             default: {
@@ -596,11 +1075,10 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
-                    "X-Total"?: number;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LightUser"][];
+                    "application/json": components["schemas"]["ResponseLightUser"];
                 };
             };
             /** @description Error */
@@ -701,6 +1179,328 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["User"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAllVotes: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+                /** @example visible */
+                visible?: "all" | "visible";
+                /** @example ongoing */
+                status?: "all" | "ongoing" | "finish" | "not_started";
+                /** @example me */
+                owner?: "all" | "me";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseLightVote"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVote"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vote"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getVoteByID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vote"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVote"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vote"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createComponent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateComponent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Component"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    liveVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": {
+                        data: components["schemas"]["ResultsResponse"];
+                        /**
+                         * @description The event name.
+                         * @constant
+                         */
+                        event?: "message";
+                        /** @description The event ID. */
+                        id?: number;
+                        /** @description The retry time in milliseconds. */
+                        retry?: number;
+                    }[];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getResults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    submitVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": number;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
             /** @description Error */

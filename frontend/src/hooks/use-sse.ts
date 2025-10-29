@@ -1,5 +1,5 @@
 import { type paths } from '@/lib/api/types.ts';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Hook options
 type Opts = {
@@ -27,51 +27,52 @@ type EventStreamOf<Ep extends HasEventStream<paths>> = Ep extends keyof paths
 	: never;
 
 // Extract event types and data from the event stream definition
-type ExtractEventHandlers<T> =
-	T extends Array<infer U>
-		? U extends { event?: infer E; data: infer D }
-			? E extends string
-				? {
-						[K in E]: (
-							data: D,
-							client: EventSource
-						) => void | Promise<void>;
-					}
-				: {
-						message: (
-							data: D,
-							client: EventSource
-						) => void | Promise<void>;
-					}
-			: never
-		: T extends { event?: infer E; data: infer D }
-			? E extends string
-				? {
-						[K in E]: (
-							data: D,
-							client: EventSource
-						) => void | Promise<void>;
-					}
-				: {
-						message: (
-							data: D,
-							client: EventSource
-						) => void | Promise<void>;
-					}
-			: never;
+type ExtractEventHandlers<T> = T extends Array<infer U>
+	? U extends { event?: infer E; data: infer D }
+		? E extends string
+			? {
+					[K in E]: (
+						data: D,
+						client: EventSource
+					) => void | Promise<void>;
+			  }
+			: {
+					message: (
+						data: D,
+						client: EventSource
+					) => void | Promise<void>;
+			  }
+		: never
+	: T extends { event?: infer E; data: infer D }
+	? E extends string
+		? {
+				[K in E]: (
+					data: D,
+					client: EventSource
+				) => void | Promise<void>;
+		  }
+		: {
+				message: (data: D, client: EventSource) => void | Promise<void>;
+		  }
+	: never;
 
 type SseHandlers<Ep extends HasEventStream<paths>> = ExtractEventHandlers<
 	EventStreamOf<Ep>
 >;
 
 export const useSSE = <Ep extends HasEventStream<paths>>(
-	endpoint: Ep,
+	endpoint: string,
 	handlers: SseHandlers<Ep>,
 	opts: Opts = {
 		disabled: false,
 	}
 ) => {
 	const [error, setError] = useState(false);
+	const handlersRef = useRef(handlers);
+
+	useEffect(() => {
+		handlersRef.current = handlers;
+	}, [handlers]);
 
 	useEffect(() => {
 		if (opts.disabled) return undefined;
@@ -80,20 +81,25 @@ export const useSSE = <Ep extends HasEventStream<paths>>(
 
 		sseClient.onerror = () => setError(true);
 
-		for (const [event, handler] of Object.entries(handlers) as Array<
+		for (const [event] of Object.entries(handlers) as Array<
 			[string, (data: any, client: EventSource) => void | Promise<void>]
 		>) {
 			sseClient.addEventListener(event, (ev) => {
 				const data = JSON.parse(ev.data as string);
 
-				const execHandler = async () => await handler(data, sseClient);
+				const execHandler = async () => {
+					const currentHandler = (handlersRef.current as any)[event];
+					if (currentHandler) {
+						await currentHandler(data, sseClient);
+					}
+				};
 
 				void execHandler();
 			});
 		}
 
 		return () => sseClient.close();
-	}, [endpoint, handlers, opts.disabled]);
+	}, [endpoint, opts.disabled]);
 
 	return { error };
 };

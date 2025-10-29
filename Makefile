@@ -49,7 +49,7 @@ check: check-lint  ## Run all checks
 
 ##@ Types Generation
 types-gen:
-	cd frontend && npx openapi-typescript ../docs/pedagodashboard-api.yaml -o ./src/lib/api/types.ts
+	cd frontend && npx openapi-typescript ../docs/42lan-api.yaml -o ./src/lib/api/types.ts
 
 ##@ Database Operations
 

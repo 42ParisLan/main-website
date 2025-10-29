@@ -46,8 +46,8 @@ function WelcomePage() {
 							<h2 className="text-2xl font-semibold tracking-tight">Protected Pages</h2>
 							<div className="flex flex-wrap justify-center gap-4">
 								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/register">
-										Register
+									<Link to="/votes">
+										Votes
 									</Link>
 								</Button>
 							</div>

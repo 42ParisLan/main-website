@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -36,8 +37,26 @@ const (
 	FieldUsualFirstName = "usual_first_name"
 	// FieldRoles holds the string denoting the roles field in the database.
 	FieldRoles = "roles"
+	// EdgeUserVotes holds the string denoting the user_votes edge name in mutations.
+	EdgeUserVotes = "user_votes"
+	// EdgeCreatedVotes holds the string denoting the created_votes edge name in mutations.
+	EdgeCreatedVotes = "created_votes"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// UserVotesTable is the table that holds the user_votes relation/edge.
+	UserVotesTable = "user_votes"
+	// UserVotesInverseTable is the table name for the UserVote entity.
+	// It exists in this package in order to avoid circular dependency with the "uservote" package.
+	UserVotesInverseTable = "user_votes"
+	// UserVotesColumn is the table column denoting the user_votes relation/edge.
+	UserVotesColumn = "user_user_votes"
+	// CreatedVotesTable is the table that holds the created_votes relation/edge.
+	CreatedVotesTable = "votes"
+	// CreatedVotesInverseTable is the table name for the Vote entity.
+	// It exists in this package in order to avoid circular dependency with the "vote" package.
+	CreatedVotesInverseTable = "votes"
+	// CreatedVotesColumn is the table column denoting the created_votes relation/edge.
+	CreatedVotesColumn = "user_created_votes"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -159,4 +178,46 @@ func ByUsualFullName(opts ...sql.OrderTermOption) OrderOption {
 // ByUsualFirstName orders the results by the usual_first_name field.
 func ByUsualFirstName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsualFirstName, opts...).ToFunc()
+}
+
+// ByUserVotesCount orders the results by user_votes count.
+func ByUserVotesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUserVotesStep(), opts...)
+	}
+}
+
+// ByUserVotes orders the results by user_votes terms.
+func ByUserVotes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserVotesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCreatedVotesCount orders the results by created_votes count.
+func ByCreatedVotesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedVotesStep(), opts...)
+	}
+}
+
+// ByCreatedVotes orders the results by created_votes terms.
+func ByCreatedVotes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedVotesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newUserVotesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserVotesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, UserVotesTable, UserVotesColumn),
+	)
+}
+func newCreatedVotesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedVotesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedVotesTable, CreatedVotesColumn),
+	)
 }

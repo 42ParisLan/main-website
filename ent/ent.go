@@ -6,7 +6,10 @@ import (
 	"base-website/ent/authcode"
 	"base-website/ent/authrefreshtoken"
 	"base-website/ent/authtoken"
+	"base-website/ent/component"
 	"base-website/ent/user"
+	"base-website/ent/uservote"
+	"base-website/ent/vote"
 	"context"
 	"errors"
 	"fmt"
@@ -79,7 +82,10 @@ func checkColumn(t, c string) error {
 			authcode.Table:         authcode.ValidColumn,
 			authrefreshtoken.Table: authrefreshtoken.ValidColumn,
 			authtoken.Table:        authtoken.ValidColumn,
+			component.Table:        component.ValidColumn,
 			user.Table:             user.ValidColumn,
+			uservote.Table:         uservote.ValidColumn,
+			vote.Table:             vote.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)
