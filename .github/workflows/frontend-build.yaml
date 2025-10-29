@@ -27,7 +27,10 @@ jobs:
               with:
                   node-version: 23
                   cache: 'pnpm'
-                  package-manager: pnpm@9
+                  cache-dependency-path: ${{ env.WORKING_DIR }}/pnpm-lock.yaml
+
+            - name: Install pnpm
+              run: npm install -g pnpm@9
 
             - name: Install dependencies
               run: pnpm install --prod --frozen-lockfile
