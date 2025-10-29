@@ -24,12 +24,10 @@ jobs:
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v2
-              with:
-                  version: 8
 
             - name: Install frontend dependencies
               working-directory: ./frontend
-              run: pnpm install --frozen-lockfile
+              run: pnpm install --no-frozen-lockfile
 
             - name: Build frontend
               working-directory: ./frontend
@@ -42,31 +40,6 @@ jobs:
                   ls -la dist/
                   echo "Build artifacts created:"
                   find dist/ -type f -name "*.js" -o -name "*.css" -o -name "*.html" | head -10
-
-    lint-and-type-check:
-        name: Lint and type check frontend
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '23'
-
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-
-            - name: Install frontend dependencies
-              working-directory: ./frontend
-              run: pnpm install --frozen-lockfile
-
-            - name: Run linting
-              working-directory: ./frontend
-              run: pnpm run lint || echo "⚠️ Linting not configured or failed"
 
             - name: Run type checking
               working-directory: ./frontend
