@@ -4,4 +4,6 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-ENTRYPOINT [ "ash", "-c", "pnpm install && pnpm dev" ]
+ENV CI=true
+
+ENTRYPOINT [ "ash", "-c", "pnpm install --no-frozen-lockfile && pnpm dev" ]
