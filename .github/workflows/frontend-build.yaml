@@ -24,12 +24,15 @@ jobs:
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v2
+              with:
+                  package_json_file: ${{ env.WORKING_DIR }}/package.json
 
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '23'
                   cache: 'pnpm'
+                  package_json_file: ${{ env.WORKING_DIR }}/package.json
 
             - name: Install frontend dependencies
               run: pnpm install --no-frozen-lockfile
