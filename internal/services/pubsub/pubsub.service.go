@@ -28,9 +28,7 @@ func NewProvider() func(i *do.Injector) (PubSubService, error) {
 
 func New(configService configservice.ConfigService) (PubSubService, error) {
 	config := configService.GetConfig()
-	valkeyClient, err := valkey.NewClient(valkey.ClientOption{
-		InitAddress: []string{config.ValkeyAddress},
-	})
+	valkeyClient, err := valkey.NewClient(valkey.MustParseURL(config.ValkeyAddress))
 	if err != nil {
 		return nil, err
 	}
