@@ -27,12 +27,10 @@ jobs:
               with:
                   node-version: 23
                   cache: 'pnpm'
-
-            - name: Install pnpm
-              run: npm install -g pnpm
+                  package-manager: pnpm@9
 
             - name: Install dependencies
-              run: pnpm install
+              run: pnpm install --prod --frozen-lockfile
 
             - name: Build project
               run: pnpm build
