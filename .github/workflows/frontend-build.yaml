@@ -13,29 +13,33 @@ jobs:
     frontend-build-test:
         name: Test frontend build
         runs-on: ubuntu-latest
+        env:
+            WORKING_DIR: ./frontend
+        defaults:
+            run:
+                working-directory: ${{ env.WORKING_DIR }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
 
             - name: Setup pnpm
+              working-directory: ${{ env.WORKING_DIR }}
               uses: pnpm/action-setup@v2
 
             - name: Setup Node.js
+              working-directory: ${{ env.WORKING_DIR }}
               uses: actions/setup-node@v4
               with:
                   node-version: '23'
                   cache: 'pnpm'
 
             - name: Install frontend dependencies
-              working-directory: ./frontend
               run: pnpm install --no-frozen-lockfile
 
             - name: Build frontend
-              working-directory: ./frontend
               run: pnpm run build
 
             - name: Check build output
-              working-directory: ./frontend
               run: |
                   echo "✅ Frontend build completed successfully"
                   ls -la dist/
@@ -43,5 +47,4 @@ jobs:
                   find dist/ -type f -name "*.js" -o -name "*.css" -o -name "*.html" | head -10
 
             - name: Run type checking
-              working-directory: ./frontend
               run: pnpm run type-check || echo "⚠️ Type checking not configured or failed"
