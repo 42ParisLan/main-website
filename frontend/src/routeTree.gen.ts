@@ -13,6 +13,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VotesIndexRouteImport } from './routes/votes/index'
+import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as TournamentIndexRouteImport } from './routes/tournament/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as VotesVoteidIndexRouteImport } from './routes/votes/$voteid/index'
@@ -43,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const VotesIndexRoute = VotesIndexRouteImport.update({
   id: '/votes/',
   path: '/votes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserIndexRoute = UserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TournamentIndexRoute = TournamentIndexRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/tournament': typeof TournamentIndexRoute
+  '/user': typeof UserIndexRoute
   '/votes': typeof VotesIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
   '/admin/teams': typeof AdminTeamsIndexRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/admin': typeof AdminIndexRoute
   '/tournament': typeof TournamentIndexRoute
+  '/user': typeof UserIndexRoute
   '/votes': typeof VotesIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
   '/admin/teams': typeof AdminTeamsIndexRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/tournament/': typeof TournamentIndexRoute
+  '/user/': typeof UserIndexRoute
   '/votes/': typeof VotesIndexRoute
   '/admin/admins/': typeof AdminAdminsIndexRoute
   '/admin/teams/': typeof AdminTeamsIndexRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/'
     | '/tournament'
+    | '/user'
     | '/votes'
     | '/admin/admins'
     | '/admin/teams'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/tournament'
+    | '/user'
     | '/votes'
     | '/admin/admins'
     | '/admin/teams'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/'
     | '/tournament/'
+    | '/user/'
     | '/votes/'
     | '/admin/admins/'
     | '/admin/teams/'
@@ -210,6 +222,7 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
   TournamentIndexRoute: typeof TournamentIndexRoute
+  UserIndexRoute: typeof UserIndexRoute
   VotesIndexRoute: typeof VotesIndexRoute
   AuthCallbackIndexRoute: typeof AuthCallbackIndexRoute
   VotesVoteidIndexRoute: typeof VotesVoteidIndexRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       path: '/votes'
       fullPath: '/votes'
       preLoaderRoute: typeof VotesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/': {
+      id: '/user/'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof UserIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tournament/': {
@@ -352,6 +372,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
   TournamentIndexRoute: TournamentIndexRoute,
+  UserIndexRoute: UserIndexRoute,
   VotesIndexRoute: VotesIndexRoute,
   AuthCallbackIndexRoute: AuthCallbackIndexRoute,
   VotesVoteidIndexRoute: VotesVoteidIndexRoute,
