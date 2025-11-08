@@ -11,10 +11,12 @@ import (
 
 	"base-website/ent/migrate"
 
+	"base-website/ent/app"
 	"base-website/ent/authcode"
 	"base-website/ent/authrefreshtoken"
 	"base-website/ent/authtoken"
 	"base-website/ent/component"
+	"base-website/ent/consent"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -30,6 +32,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// App is the client for interacting with the App builders.
+	App *AppClient
 	// AuthCode is the client for interacting with the AuthCode builders.
 	AuthCode *AuthCodeClient
 	// AuthRefreshToken is the client for interacting with the AuthRefreshToken builders.
@@ -38,6 +42,8 @@ type Client struct {
 	AuthToken *AuthTokenClient
 	// Component is the client for interacting with the Component builders.
 	Component *ComponentClient
+	// Consent is the client for interacting with the Consent builders.
+	Consent *ConsentClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserVote is the client for interacting with the UserVote builders.
@@ -55,10 +61,12 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.App = NewAppClient(c.config)
 	c.AuthCode = NewAuthCodeClient(c.config)
 	c.AuthRefreshToken = NewAuthRefreshTokenClient(c.config)
 	c.AuthToken = NewAuthTokenClient(c.config)
 	c.Component = NewComponentClient(c.config)
+	c.Consent = NewConsentClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserVote = NewUserVoteClient(c.config)
 	c.Vote = NewVoteClient(c.config)
@@ -154,10 +162,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:              ctx,
 		config:           cfg,
+		App:              NewAppClient(cfg),
 		AuthCode:         NewAuthCodeClient(cfg),
 		AuthRefreshToken: NewAuthRefreshTokenClient(cfg),
 		AuthToken:        NewAuthTokenClient(cfg),
 		Component:        NewComponentClient(cfg),
+		Consent:          NewConsentClient(cfg),
 		User:             NewUserClient(cfg),
 		UserVote:         NewUserVoteClient(cfg),
 		Vote:             NewVoteClient(cfg),
@@ -180,10 +190,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:              ctx,
 		config:           cfg,
+		App:              NewAppClient(cfg),
 		AuthCode:         NewAuthCodeClient(cfg),
 		AuthRefreshToken: NewAuthRefreshTokenClient(cfg),
 		AuthToken:        NewAuthTokenClient(cfg),
 		Component:        NewComponentClient(cfg),
+		Consent:          NewConsentClient(cfg),
 		User:             NewUserClient(cfg),
 		UserVote:         NewUserVoteClient(cfg),
 		Vote:             NewVoteClient(cfg),
@@ -193,7 +205,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		AuthCode.
+//		App.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -216,8 +228,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.User, c.UserVote,
-		c.Vote,
+		c.App, c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.Consent,
+		c.User, c.UserVote, c.Vote,
 	} {
 		n.Use(hooks...)
 	}
@@ -227,8 +239,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.User, c.UserVote,
-		c.Vote,
+		c.App, c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.Consent,
+		c.User, c.UserVote, c.Vote,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -237,6 +249,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AppMutation:
+		return c.App.mutate(ctx, m)
 	case *AuthCodeMutation:
 		return c.AuthCode.mutate(ctx, m)
 	case *AuthRefreshTokenMutation:
@@ -245,6 +259,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthToken.mutate(ctx, m)
 	case *ComponentMutation:
 		return c.Component.mutate(ctx, m)
+	case *ConsentMutation:
+		return c.Consent.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	case *UserVoteMutation:
@@ -253,6 +269,171 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Vote.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AppClient is a client for the App schema.
+type AppClient struct {
+	config
+}
+
+// NewAppClient returns a client for the App from the given config.
+func NewAppClient(c config) *AppClient {
+	return &AppClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `app.Hooks(f(g(h())))`.
+func (c *AppClient) Use(hooks ...Hook) {
+	c.hooks.App = append(c.hooks.App, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `app.Intercept(f(g(h())))`.
+func (c *AppClient) Intercept(interceptors ...Interceptor) {
+	c.inters.App = append(c.inters.App, interceptors...)
+}
+
+// Create returns a builder for creating a App entity.
+func (c *AppClient) Create() *AppCreate {
+	mutation := newAppMutation(c.config, OpCreate)
+	return &AppCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of App entities.
+func (c *AppClient) CreateBulk(builders ...*AppCreate) *AppCreateBulk {
+	return &AppCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AppClient) MapCreateBulk(slice any, setFunc func(*AppCreate, int)) *AppCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AppCreateBulk{err: fmt.Errorf("calling to AppClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AppCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AppCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for App.
+func (c *AppClient) Update() *AppUpdate {
+	mutation := newAppMutation(c.config, OpUpdate)
+	return &AppUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AppClient) UpdateOne(_m *App) *AppUpdateOne {
+	mutation := newAppMutation(c.config, OpUpdateOne, withApp(_m))
+	return &AppUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AppClient) UpdateOneID(id string) *AppUpdateOne {
+	mutation := newAppMutation(c.config, OpUpdateOne, withAppID(id))
+	return &AppUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for App.
+func (c *AppClient) Delete() *AppDelete {
+	mutation := newAppMutation(c.config, OpDelete)
+	return &AppDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AppClient) DeleteOne(_m *App) *AppDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AppClient) DeleteOneID(id string) *AppDeleteOne {
+	builder := c.Delete().Where(app.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AppDeleteOne{builder}
+}
+
+// Query returns a query builder for App.
+func (c *AppClient) Query() *AppQuery {
+	return &AppQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeApp},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a App entity by its id.
+func (c *AppClient) Get(ctx context.Context, id string) (*App, error) {
+	return c.Query().Where(app.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AppClient) GetX(ctx context.Context, id string) *App {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOwner queries the owner edge of a App.
+func (c *AppClient) QueryOwner(_m *App) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(app.Table, app.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, app.OwnerTable, app.OwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryConsents queries the consents edge of a App.
+func (c *AppClient) QueryConsents(_m *App) *ConsentQuery {
+	query := (&ConsentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(app.Table, app.FieldID, id),
+			sqlgraph.To(consent.Table, consent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, app.ConsentsTable, app.ConsentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AppClient) Hooks() []Hook {
+	return c.hooks.App
+}
+
+// Interceptors returns the client interceptors.
+func (c *AppClient) Interceptors() []Interceptor {
+	return c.inters.App
+}
+
+func (c *AppClient) mutate(ctx context.Context, m *AppMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AppCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AppUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AppUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AppDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown App mutation op: %q", m.Op())
 	}
 }
 
@@ -820,6 +1001,171 @@ func (c *ComponentClient) mutate(ctx context.Context, m *ComponentMutation) (Val
 	}
 }
 
+// ConsentClient is a client for the Consent schema.
+type ConsentClient struct {
+	config
+}
+
+// NewConsentClient returns a client for the Consent from the given config.
+func NewConsentClient(c config) *ConsentClient {
+	return &ConsentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `consent.Hooks(f(g(h())))`.
+func (c *ConsentClient) Use(hooks ...Hook) {
+	c.hooks.Consent = append(c.hooks.Consent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `consent.Intercept(f(g(h())))`.
+func (c *ConsentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Consent = append(c.inters.Consent, interceptors...)
+}
+
+// Create returns a builder for creating a Consent entity.
+func (c *ConsentClient) Create() *ConsentCreate {
+	mutation := newConsentMutation(c.config, OpCreate)
+	return &ConsentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Consent entities.
+func (c *ConsentClient) CreateBulk(builders ...*ConsentCreate) *ConsentCreateBulk {
+	return &ConsentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ConsentClient) MapCreateBulk(slice any, setFunc func(*ConsentCreate, int)) *ConsentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ConsentCreateBulk{err: fmt.Errorf("calling to ConsentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ConsentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ConsentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Consent.
+func (c *ConsentClient) Update() *ConsentUpdate {
+	mutation := newConsentMutation(c.config, OpUpdate)
+	return &ConsentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConsentClient) UpdateOne(_m *Consent) *ConsentUpdateOne {
+	mutation := newConsentMutation(c.config, OpUpdateOne, withConsent(_m))
+	return &ConsentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConsentClient) UpdateOneID(id int) *ConsentUpdateOne {
+	mutation := newConsentMutation(c.config, OpUpdateOne, withConsentID(id))
+	return &ConsentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Consent.
+func (c *ConsentClient) Delete() *ConsentDelete {
+	mutation := newConsentMutation(c.config, OpDelete)
+	return &ConsentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConsentClient) DeleteOne(_m *Consent) *ConsentDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ConsentClient) DeleteOneID(id int) *ConsentDeleteOne {
+	builder := c.Delete().Where(consent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConsentDeleteOne{builder}
+}
+
+// Query returns a query builder for Consent.
+func (c *ConsentClient) Query() *ConsentQuery {
+	return &ConsentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeConsent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Consent entity by its id.
+func (c *ConsentClient) Get(ctx context.Context, id int) (*Consent, error) {
+	return c.Query().Where(consent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConsentClient) GetX(ctx context.Context, id int) *Consent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApplication queries the application edge of a Consent.
+func (c *ConsentClient) QueryApplication(_m *Consent) *AppQuery {
+	query := (&AppClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(consent.Table, consent.FieldID, id),
+			sqlgraph.To(app.Table, app.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, consent.ApplicationTable, consent.ApplicationColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUser queries the user edge of a Consent.
+func (c *ConsentClient) QueryUser(_m *Consent) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(consent.Table, consent.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, consent.UserTable, consent.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ConsentClient) Hooks() []Hook {
+	return c.hooks.Consent
+}
+
+// Interceptors returns the client interceptors.
+func (c *ConsentClient) Interceptors() []Interceptor {
+	return c.inters.Consent
+}
+
+func (c *ConsentClient) mutate(ctx context.Context, m *ConsentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ConsentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ConsentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ConsentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ConsentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Consent mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -953,6 +1299,38 @@ func (c *UserClient) QueryCreatedVotes(_m *User) *VoteQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(vote.Table, vote.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedVotesTable, user.CreatedVotesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryApps queries the apps edge of a User.
+func (c *UserClient) QueryApps(_m *User) *AppQuery {
+	query := (&AppClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(app.Table, app.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AppsTable, user.AppsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryConsents queries the consents edge of a User.
+func (c *UserClient) QueryConsents(_m *User) *ConsentQuery {
+	query := (&ConsentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(consent.Table, consent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1318,11 +1696,11 @@ func (c *VoteClient) mutate(ctx context.Context, m *VoteMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AuthCode, AuthRefreshToken, AuthToken, Component, User, UserVote,
+		App, AuthCode, AuthRefreshToken, AuthToken, Component, Consent, User, UserVote,
 		Vote []ent.Hook
 	}
 	inters struct {
-		AuthCode, AuthRefreshToken, AuthToken, Component, User, UserVote,
+		App, AuthCode, AuthRefreshToken, AuthToken, Component, Consent, User, UserVote,
 		Vote []ent.Interceptor
 	}
 )

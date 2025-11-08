@@ -14,7 +14,7 @@ import useQueryClient from "@/hooks/use-query-client";
 import type { components } from "@/lib/api/types";
 import { toast } from "sonner";
 import { IconUserPlus } from "@tabler/icons-react";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/multi-select";
 import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 
 type User = components["schemas"]["LightUser"];
@@ -94,16 +94,24 @@ export default function AdminAddModal({ children }: AdminModalProps) {
 								<p className="text-sm font-medium">Selected user:</p>
 								<p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
 							</div>
-							<MultiSelect
-								defaultValue={roles}
-								options={rbacRoles?.filter((role: components['schemas']['Role']) => role.name !== "user")
-									.map((role: components['schemas']['Role']) => ({
-										value: role.name,
-										label: role.name,
-									})) ?? []}
-								onValueChange={setRoles}
+							<MultiSelector
+								values={roles}
+								onValuesChange={setRoles}
 								className="w-full"
-							/>
+							>
+								<MultiSelectorTrigger>
+								<MultiSelectorInput placeholder="Select Roles" />
+								</MultiSelectorTrigger>
+								<MultiSelectorContent>
+								<MultiSelectorList>
+									{rbacRoles?.filter((role: components['schemas']['Role']) => role.name !== "user").map((role) => (
+										<MultiSelectorItem key={role.name} value={role.name}>
+											{role.name}
+										</MultiSelectorItem>
+									))}
+								</MultiSelectorList>
+								</MultiSelectorContent>
+							</MultiSelector>
 						</>
 					)}
 				</div>

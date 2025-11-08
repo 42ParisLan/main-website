@@ -8,6 +8,34 @@ import (
 )
 
 var (
+	// AppsColumns holds the columns for the "apps" table.
+	AppsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "secret", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "redirect_uris", Type: field.TypeJSON},
+		{Name: "implicit_consent", Type: field.TypeBool},
+		{Name: "description", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "last_login_at", Type: field.TypeTime, Nullable: true},
+		{Name: "roles", Type: field.TypeJSON},
+		{Name: "owner_id", Type: field.TypeInt},
+	}
+	// AppsTable holds the schema information for the "apps" table.
+	AppsTable = &schema.Table{
+		Name:       "apps",
+		Columns:    AppsColumns,
+		PrimaryKey: []*schema.Column{AppsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "apps_users_apps",
+				Columns:    []*schema.Column{AppsColumns[10]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// AuthCodesColumns holds the columns for the "auth_codes" table.
 	AuthCodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -74,6 +102,36 @@ var (
 				Symbol:     "components_votes_components",
 				Columns:    []*schema.Column{ComponentsColumns[5]},
 				RefColumns: []*schema.Column{VotesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// ConsentsColumns holds the columns for the "consents" table.
+	ConsentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "scopes", Type: field.TypeJSON},
+		{Name: "expiration_date", Type: field.TypeTime},
+		{Name: "application_id", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// ConsentsTable holds the schema information for the "consents" table.
+	ConsentsTable = &schema.Table{
+		Name:       "consents",
+		Columns:    ConsentsColumns,
+		PrimaryKey: []*schema.Column{ConsentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "consents_apps_consents",
+				Columns:    []*schema.Column{ConsentsColumns[5]},
+				RefColumns: []*schema.Column{AppsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "consents_users_consents",
+				Columns:    []*schema.Column{ConsentsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -154,10 +212,12 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AppsTable,
 		AuthCodesTable,
 		AuthRefreshTokensTable,
 		AuthTokensTable,
 		ComponentsTable,
+		ConsentsTable,
 		UsersTable,
 		UserVotesTable,
 		VotesTable,
@@ -165,7 +225,10 @@ var (
 )
 
 func init() {
+	AppsTable.ForeignKeys[0].RefTable = UsersTable
 	ComponentsTable.ForeignKeys[0].RefTable = VotesTable
+	ConsentsTable.ForeignKeys[0].RefTable = AppsTable
+	ConsentsTable.ForeignKeys[1].RefTable = UsersTable
 	UserVotesTable.ForeignKeys[0].RefTable = ComponentsTable
 	UserVotesTable.ForeignKeys[1].RefTable = UsersTable
 	VotesTable.ForeignKeys[0].RefTable = UsersTable

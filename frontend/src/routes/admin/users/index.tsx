@@ -20,7 +20,6 @@ function RouteComponent() {
 	const { data, isLoading } = client.useQuery("get", "/users", {
 		params: {
 			query: {
-				kind: "admin",
 				page,
 				limit,
 				query : query?.trim().toLocaleLowerCase()

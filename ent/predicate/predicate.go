@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// App is the predicate function for app builders.
+type App func(*sql.Selector)
+
 // AuthCode is the predicate function for authcode builders.
 type AuthCode func(*sql.Selector)
 
@@ -17,6 +20,9 @@ type AuthToken func(*sql.Selector)
 
 // Component is the predicate function for component builders.
 type Component func(*sql.Selector)
+
+// Consent is the predicate function for consent builders.
+type Consent func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

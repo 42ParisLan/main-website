@@ -3,7 +3,9 @@
 package ent
 
 import (
+	"base-website/ent/app"
 	"base-website/ent/authcode"
+	"base-website/ent/consent"
 	"base-website/ent/schema"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
@@ -15,12 +17,40 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	appFields := schema.App{}.Fields()
+	_ = appFields
+	// appDescCreatedAt is the schema descriptor for created_at field.
+	appDescCreatedAt := appFields[6].Descriptor()
+	// app.DefaultCreatedAt holds the default value on creation for the created_at field.
+	app.DefaultCreatedAt = appDescCreatedAt.Default.(func() time.Time)
+	// appDescUpdatedAt is the schema descriptor for updated_at field.
+	appDescUpdatedAt := appFields[7].Descriptor()
+	// app.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	app.DefaultUpdatedAt = appDescUpdatedAt.Default.(func() time.Time)
+	// app.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	app.UpdateDefaultUpdatedAt = appDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// appDescRoles is the schema descriptor for roles field.
+	appDescRoles := appFields[10].Descriptor()
+	// app.DefaultRoles holds the default value on creation for the roles field.
+	app.DefaultRoles = appDescRoles.Default.([]string)
 	authcodeFields := schema.AuthCode{}.Fields()
 	_ = authcodeFields
 	// authcodeDescExpiration is the schema descriptor for expiration field.
 	authcodeDescExpiration := authcodeFields[2].Descriptor()
 	// authcode.DefaultExpiration holds the default value on creation for the expiration field.
 	authcode.DefaultExpiration = authcodeDescExpiration.Default.(func() time.Time)
+	consentFields := schema.Consent{}.Fields()
+	_ = consentFields
+	// consentDescCreatedAt is the schema descriptor for created_at field.
+	consentDescCreatedAt := consentFields[1].Descriptor()
+	// consent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	consent.DefaultCreatedAt = consentDescCreatedAt.Default.(func() time.Time)
+	// consentDescUpdatedAt is the schema descriptor for updated_at field.
+	consentDescUpdatedAt := consentFields[2].Descriptor()
+	// consent.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	consent.DefaultUpdatedAt = consentDescUpdatedAt.Default.(func() time.Time)
+	// consent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	consent.UpdateDefaultUpdatedAt = consentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescCreatedAt is the schema descriptor for created_at field.

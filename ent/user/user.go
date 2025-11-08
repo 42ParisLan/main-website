@@ -41,6 +41,10 @@ const (
 	EdgeUserVotes = "user_votes"
 	// EdgeCreatedVotes holds the string denoting the created_votes edge name in mutations.
 	EdgeCreatedVotes = "created_votes"
+	// EdgeApps holds the string denoting the apps edge name in mutations.
+	EdgeApps = "apps"
+	// EdgeConsents holds the string denoting the consents edge name in mutations.
+	EdgeConsents = "consents"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserVotesTable is the table that holds the user_votes relation/edge.
@@ -57,6 +61,20 @@ const (
 	CreatedVotesInverseTable = "votes"
 	// CreatedVotesColumn is the table column denoting the created_votes relation/edge.
 	CreatedVotesColumn = "user_created_votes"
+	// AppsTable is the table that holds the apps relation/edge.
+	AppsTable = "apps"
+	// AppsInverseTable is the table name for the App entity.
+	// It exists in this package in order to avoid circular dependency with the "app" package.
+	AppsInverseTable = "apps"
+	// AppsColumn is the table column denoting the apps relation/edge.
+	AppsColumn = "owner_id"
+	// ConsentsTable is the table that holds the consents relation/edge.
+	ConsentsTable = "consents"
+	// ConsentsInverseTable is the table name for the Consent entity.
+	// It exists in this package in order to avoid circular dependency with the "consent" package.
+	ConsentsInverseTable = "consents"
+	// ConsentsColumn is the table column denoting the consents relation/edge.
+	ConsentsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -207,6 +225,34 @@ func ByCreatedVotes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCreatedVotesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByAppsCount orders the results by apps count.
+func ByAppsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAppsStep(), opts...)
+	}
+}
+
+// ByApps orders the results by apps terms.
+func ByApps(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAppsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByConsentsCount orders the results by consents count.
+func ByConsentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newConsentsStep(), opts...)
+	}
+}
+
+// ByConsents orders the results by consents terms.
+func ByConsents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newConsentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserVotesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -219,5 +265,19 @@ func newCreatedVotesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatedVotesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CreatedVotesTable, CreatedVotesColumn),
+	)
+}
+func newAppsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AppsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AppsTable, AppsColumn),
+	)
+}
+func newConsentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ConsentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
 	)
 }

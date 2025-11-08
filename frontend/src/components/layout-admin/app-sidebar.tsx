@@ -80,6 +80,17 @@ const data: SidebarData[] = [
 				role: "super_admin"
 			},
 		],
+	},
+	{
+		title: "Apps",
+		items: [
+			{
+				title: "Apps",
+				url: "/admin/apps",
+				icon: IconUser,
+				role: "super_admin"
+			},
+		],
 	}
 ]
 

@@ -4,6 +4,102 @@
  */
 
 export interface paths {
+    "/apps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Apps
+         * @description This endpoint is used to search apps.
+         */
+        get: operations["searchApps"];
+        put?: never;
+        /**
+         * Create App
+         * @description This endpoint is used to create a new app. **Users only.**
+         */
+        post: operations["createApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apps/{app_id}/me/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get my consent for an app
+         * @description This endpoint is used to get the consent of the current user for an app.
+         */
+        get: operations["getMyConsentForApp"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apps/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get App by ID
+         * @description This endpoint is used to get an app by its ID. **Users only.**
+         */
+        get: operations["getAppByID"];
+        /**
+         * Update App
+         * @description This endpoint is used to update an app by its ID. **Users only.**
+         */
+        put: operations["updateApp"];
+        post?: never;
+        /**
+         * Delete App
+         * @description This endpoint is used to delete an app by its ID. **Users only.**
+         */
+        delete: operations["deleteApp"];
+        options?: never;
+        head?: never;
+        /**
+         * Patch App-By-ID
+         * @description Partial update operation supporting both JSON Merge Patch & JSON Patch updates.
+         */
+        patch: operations["patch-App-By-ID"];
+        trace?: never;
+    };
+    "/apps/{id}/rotate-secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate App Secret
+         * @description This endpoint is used to rotate an app's secret by its ID. **Users only.**
+         */
+        post: operations["rotateAppSecret"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/callback": {
         parameters: {
             query?: never;
@@ -72,6 +168,50 @@ export interface paths {
         patch: operations["updateComponent"];
         trace?: never;
     };
+    "/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Consents
+         * @description This endpoint is used to search consents.
+         */
+        get: operations["searchConsents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/consents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Consent by ID
+         * @description This endpoint is used to get a consent by its ID.
+         */
+        get: operations["getConsentByID"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Consent
+         * @description This endpoint is used to delete a consent by its ID.
+         */
+        delete: operations["deleteConsent"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/env": {
         parameters: {
             query?: never;
@@ -132,6 +272,46 @@ export interface paths {
          * @description This endpoint is used to get the current user.
          */
         get: operations["getCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/apps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get My Apps
+         * @description This endpoint is used to get all apps for the current user. **Users only.**
+         */
+        get: operations["getMyApps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get my consents
+         * @description This endpoint is used to get the consents of the current user.
+         */
+        get: operations["getMyConsents"];
         put?: never;
         post?: never;
         delete?: never;
@@ -212,6 +392,26 @@ export interface paths {
          * @description This endpoint is used to get a user by its ID or login.
          */
         get: operations["getUserByIDOrLogin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/apps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User Apps
+         * @description This endpoint is used to get all apps for a user by their ID. **Users only.**
+         */
+        get: operations["getUserApps"];
         put?: never;
         post?: never;
         delete?: never;
@@ -396,6 +596,92 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        App: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/App.json
+             */
+            readonly $schema?: string;
+            /**
+             * Format: date-time
+             * @example 2024-09-01T00:00:00Z
+             */
+            created_at: string;
+            /** @example My app is the best app */
+            description: string;
+            /** @example 1 */
+            id: string;
+            /**
+             * @default false
+             * @example false
+             */
+            implicit_consent: boolean;
+            /**
+             * Format: date-time
+             * @example 2024-09-01T00:00:00Z
+             */
+            last_login_at?: string;
+            /** @example My App */
+            name: string;
+            owner: components["schemas"]["LightUser"];
+            /** Format: int64 */
+            owner_id?: number;
+            /**
+             * @example [
+             *       "https://myapp.com/login"
+             *     ]
+             */
+            redirect_uris: string[];
+            /**
+             * @example [
+             *       "student-app"
+             *     ]
+             */
+            roles: string[];
+            /** @example my-secret */
+            secret: string;
+            /**
+             * Format: date-time
+             * @example 2024-09-01T00:00:00Z
+             */
+            updated_at: string;
+        } & {
+            [key: string]: unknown;
+        };
+        AppPayload: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/AppPayload.json
+             */
+            readonly $schema?: string;
+            /** @example My app is the best app */
+            description: string;
+            /**
+             * @default false
+             * @example false
+             */
+            implicit_consent: boolean;
+            /** @example My App */
+            name: string;
+            /** Format: int64 */
+            owner_id?: number;
+            /**
+             * @example [
+             *       "https://myapp.com/login"
+             *     ]
+             */
+            redirect_uris: string[];
+            /**
+             * @example [
+             *       "student-app"
+             *     ]
+             */
+            roles: string[];
+        } & {
+            [key: string]: unknown;
+        };
         Component: {
             /**
              * Format: uri
@@ -430,6 +716,50 @@ export interface components {
              * @example 120
              */
             votes: number;
+        };
+        Consent: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Consent.json
+             */
+            readonly $schema?: string;
+            application: components["schemas"]["App"];
+            /** @example 1 */
+            application_id: string;
+            /**
+             * Format: date-time
+             * @example 2024-09-01T00:00:00Z
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @example 2024-09-01T00:00:00Z
+             */
+            expiration_date: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /**
+             * @example [
+             *       "openid",
+             *       "profile"
+             *     ]
+             */
+            scopes: string[];
+            /**
+             * Format: date-time
+             * @example 2024-09-01T00:00:00Z
+             */
+            updated_at: string;
+            user: components["schemas"]["LightUser"];
+            /**
+             * Format: int64
+             * @example 1
+             */
+            user_id: number;
         };
         CreateComponent: {
             /**
@@ -526,6 +856,19 @@ export interface components {
              */
             type: string;
         };
+        JsonPatchOp: {
+            /** @description JSON Pointer for the source of a move or copy */
+            from?: string;
+            /**
+             * @description Operation name
+             * @enum {string}
+             */
+            op: "add" | "remove" | "replace" | "move" | "copy" | "test";
+            /** @description JSON Pointer to the field being operated on, or the destination of a move/copy operation */
+            path: string;
+            /** @description The value to set */
+            value?: unknown;
+        };
         LightUser: {
             /**
              * Format: date-time
@@ -611,6 +954,64 @@ export interface components {
             methods: string[];
             /** @example /users */
             path: string;
+        };
+        ResponseApp: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseApp.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["App"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseConsent: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseConsent.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["Consent"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
         };
         ResponseLightUser: {
             /**
@@ -830,6 +1231,338 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    searchApps: {
+        parameters: {
+            query?: {
+                /** @example tmatis */
+                query?: string;
+                /** @example 1 */
+                owner_id?: string;
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseApp"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AppPayload"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["App"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getMyConsentForApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 1 */
+                app_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Consent"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAppByID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["App"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AppPayload"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["App"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "patch-App-By-ID": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json-patch+json": components["schemas"]["JsonPatchOp"][] | null;
+                "application/merge-patch+json": {
+                    /**
+                     * Format: uri
+                     * @description A URL to the JSON Schema for this object.
+                     * @example /api/schemas/AppPayload.json
+                     */
+                    readonly $schema?: string;
+                    /** @example My app is the best app */
+                    description?: string;
+                    /**
+                     * @default false
+                     * @example false
+                     */
+                    implicit_consent?: boolean;
+                    /** @example My App */
+                    name?: string;
+                    /** Format: int64 */
+                    owner_id?: number;
+                    /**
+                     * @example [
+                     *       "https://myapp.com/login"
+                     *     ]
+                     */
+                    redirect_uris?: string[];
+                    /**
+                     * @example [
+                     *       "student-app"
+                     *     ]
+                     */
+                    roles?: string[];
+                } & {
+                    [key: string]: unknown;
+                };
+                "application/merge-patch+shorthand": {
+                    /**
+                     * Format: uri
+                     * @description A URL to the JSON Schema for this object.
+                     * @example /api/schemas/AppPayload.json
+                     */
+                    readonly $schema?: string;
+                    /** @example My app is the best app */
+                    description?: string;
+                    /**
+                     * @default false
+                     * @example false
+                     */
+                    implicit_consent?: boolean;
+                    /** @example My App */
+                    name?: string;
+                    /** Format: int64 */
+                    owner_id?: number;
+                    /**
+                     * @example [
+                     *       "https://myapp.com/login"
+                     *     ]
+                     */
+                    redirect_uris?: string[];
+                    /**
+                     * @example [
+                     *       "student-app"
+                     *     ]
+                     */
+                    roles?: string[];
+                } & {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["App"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    rotateAppSecret: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["App"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getOAuthCallback: {
         parameters: {
             query: {
@@ -965,6 +1698,108 @@ export interface operations {
             };
         };
     };
+    searchConsents: {
+        parameters: {
+            query?: {
+                /** @example 1 */
+                user_id?: string;
+                /** @example 1 */
+                application_id?: string;
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseConsent"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getConsentByID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 1 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Consent"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteConsent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 1 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getCurrentUser: {
         parameters: {
             query?: never;
@@ -981,6 +1816,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["User"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getMyApps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseApp"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getMyConsents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseConsent"];
                 };
             };
             /** @description Error */
@@ -1111,6 +2004,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["User"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getUserApps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseApp"];
                 };
             };
             /** @description Error */

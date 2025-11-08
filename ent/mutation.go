@@ -3,10 +3,12 @@
 package ent
 
 import (
+	"base-website/ent/app"
 	"base-website/ent/authcode"
 	"base-website/ent/authrefreshtoken"
 	"base-website/ent/authtoken"
 	"base-website/ent/component"
+	"base-website/ent/consent"
 	"base-website/ent/predicate"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
@@ -30,14 +32,1030 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeApp              = "App"
 	TypeAuthCode         = "AuthCode"
 	TypeAuthRefreshToken = "AuthRefreshToken"
 	TypeAuthToken        = "AuthToken"
 	TypeComponent        = "Component"
+	TypeConsent          = "Consent"
 	TypeUser             = "User"
 	TypeUserVote         = "UserVote"
 	TypeVote             = "Vote"
 )
+
+// AppMutation represents an operation that mutates the App nodes in the graph.
+type AppMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *string
+	secret              *string
+	name                *string
+	redirect_uris       *[]string
+	appendredirect_uris []string
+	implicit_consent    *bool
+	description         *string
+	created_at          *time.Time
+	updated_at          *time.Time
+	last_login_at       *time.Time
+	roles               *[]string
+	appendroles         []string
+	clearedFields       map[string]struct{}
+	owner               *int
+	clearedowner        bool
+	consents            map[int]struct{}
+	removedconsents     map[int]struct{}
+	clearedconsents     bool
+	done                bool
+	oldValue            func(context.Context) (*App, error)
+	predicates          []predicate.App
+}
+
+var _ ent.Mutation = (*AppMutation)(nil)
+
+// appOption allows management of the mutation configuration using functional options.
+type appOption func(*AppMutation)
+
+// newAppMutation creates new mutation for the App entity.
+func newAppMutation(c config, op Op, opts ...appOption) *AppMutation {
+	m := &AppMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeApp,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAppID sets the ID field of the mutation.
+func withAppID(id string) appOption {
+	return func(m *AppMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *App
+		)
+		m.oldValue = func(ctx context.Context) (*App, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().App.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withApp sets the old App of the mutation.
+func withApp(node *App) appOption {
+	return func(m *AppMutation) {
+		m.oldValue = func(context.Context) (*App, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AppMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AppMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of App entities.
+func (m *AppMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AppMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AppMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().App.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSecret sets the "secret" field.
+func (m *AppMutation) SetSecret(s string) {
+	m.secret = &s
+}
+
+// Secret returns the value of the "secret" field in the mutation.
+func (m *AppMutation) Secret() (r string, exists bool) {
+	v := m.secret
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSecret returns the old "secret" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldSecret(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSecret is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSecret requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSecret: %w", err)
+	}
+	return oldValue.Secret, nil
+}
+
+// ResetSecret resets all changes to the "secret" field.
+func (m *AppMutation) ResetSecret() {
+	m.secret = nil
+}
+
+// SetName sets the "name" field.
+func (m *AppMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *AppMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *AppMutation) ResetName() {
+	m.name = nil
+}
+
+// SetRedirectUris sets the "redirect_uris" field.
+func (m *AppMutation) SetRedirectUris(s []string) {
+	m.redirect_uris = &s
+	m.appendredirect_uris = nil
+}
+
+// RedirectUris returns the value of the "redirect_uris" field in the mutation.
+func (m *AppMutation) RedirectUris() (r []string, exists bool) {
+	v := m.redirect_uris
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRedirectUris returns the old "redirect_uris" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldRedirectUris(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRedirectUris is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRedirectUris requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRedirectUris: %w", err)
+	}
+	return oldValue.RedirectUris, nil
+}
+
+// AppendRedirectUris adds s to the "redirect_uris" field.
+func (m *AppMutation) AppendRedirectUris(s []string) {
+	m.appendredirect_uris = append(m.appendredirect_uris, s...)
+}
+
+// AppendedRedirectUris returns the list of values that were appended to the "redirect_uris" field in this mutation.
+func (m *AppMutation) AppendedRedirectUris() ([]string, bool) {
+	if len(m.appendredirect_uris) == 0 {
+		return nil, false
+	}
+	return m.appendredirect_uris, true
+}
+
+// ResetRedirectUris resets all changes to the "redirect_uris" field.
+func (m *AppMutation) ResetRedirectUris() {
+	m.redirect_uris = nil
+	m.appendredirect_uris = nil
+}
+
+// SetImplicitConsent sets the "implicit_consent" field.
+func (m *AppMutation) SetImplicitConsent(b bool) {
+	m.implicit_consent = &b
+}
+
+// ImplicitConsent returns the value of the "implicit_consent" field in the mutation.
+func (m *AppMutation) ImplicitConsent() (r bool, exists bool) {
+	v := m.implicit_consent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImplicitConsent returns the old "implicit_consent" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldImplicitConsent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImplicitConsent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImplicitConsent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImplicitConsent: %w", err)
+	}
+	return oldValue.ImplicitConsent, nil
+}
+
+// ResetImplicitConsent resets all changes to the "implicit_consent" field.
+func (m *AppMutation) ResetImplicitConsent() {
+	m.implicit_consent = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *AppMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *AppMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *AppMutation) ResetDescription() {
+	m.description = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AppMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AppMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AppMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AppMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AppMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AppMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetLastLoginAt sets the "last_login_at" field.
+func (m *AppMutation) SetLastLoginAt(t time.Time) {
+	m.last_login_at = &t
+}
+
+// LastLoginAt returns the value of the "last_login_at" field in the mutation.
+func (m *AppMutation) LastLoginAt() (r time.Time, exists bool) {
+	v := m.last_login_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastLoginAt returns the old "last_login_at" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldLastLoginAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastLoginAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastLoginAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastLoginAt: %w", err)
+	}
+	return oldValue.LastLoginAt, nil
+}
+
+// ClearLastLoginAt clears the value of the "last_login_at" field.
+func (m *AppMutation) ClearLastLoginAt() {
+	m.last_login_at = nil
+	m.clearedFields[app.FieldLastLoginAt] = struct{}{}
+}
+
+// LastLoginAtCleared returns if the "last_login_at" field was cleared in this mutation.
+func (m *AppMutation) LastLoginAtCleared() bool {
+	_, ok := m.clearedFields[app.FieldLastLoginAt]
+	return ok
+}
+
+// ResetLastLoginAt resets all changes to the "last_login_at" field.
+func (m *AppMutation) ResetLastLoginAt() {
+	m.last_login_at = nil
+	delete(m.clearedFields, app.FieldLastLoginAt)
+}
+
+// SetOwnerID sets the "owner_id" field.
+func (m *AppMutation) SetOwnerID(i int) {
+	m.owner = &i
+}
+
+// OwnerID returns the value of the "owner_id" field in the mutation.
+func (m *AppMutation) OwnerID() (r int, exists bool) {
+	v := m.owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOwnerID returns the old "owner_id" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldOwnerID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOwnerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOwnerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOwnerID: %w", err)
+	}
+	return oldValue.OwnerID, nil
+}
+
+// ResetOwnerID resets all changes to the "owner_id" field.
+func (m *AppMutation) ResetOwnerID() {
+	m.owner = nil
+}
+
+// SetRoles sets the "roles" field.
+func (m *AppMutation) SetRoles(s []string) {
+	m.roles = &s
+	m.appendroles = nil
+}
+
+// Roles returns the value of the "roles" field in the mutation.
+func (m *AppMutation) Roles() (r []string, exists bool) {
+	v := m.roles
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoles returns the old "roles" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldRoles(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoles is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoles requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoles: %w", err)
+	}
+	return oldValue.Roles, nil
+}
+
+// AppendRoles adds s to the "roles" field.
+func (m *AppMutation) AppendRoles(s []string) {
+	m.appendroles = append(m.appendroles, s...)
+}
+
+// AppendedRoles returns the list of values that were appended to the "roles" field in this mutation.
+func (m *AppMutation) AppendedRoles() ([]string, bool) {
+	if len(m.appendroles) == 0 {
+		return nil, false
+	}
+	return m.appendroles, true
+}
+
+// ResetRoles resets all changes to the "roles" field.
+func (m *AppMutation) ResetRoles() {
+	m.roles = nil
+	m.appendroles = nil
+}
+
+// ClearOwner clears the "owner" edge to the User entity.
+func (m *AppMutation) ClearOwner() {
+	m.clearedowner = true
+	m.clearedFields[app.FieldOwnerID] = struct{}{}
+}
+
+// OwnerCleared reports if the "owner" edge to the User entity was cleared.
+func (m *AppMutation) OwnerCleared() bool {
+	return m.clearedowner
+}
+
+// OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
+func (m *AppMutation) OwnerIDs() (ids []int) {
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOwner resets all changes to the "owner" edge.
+func (m *AppMutation) ResetOwner() {
+	m.owner = nil
+	m.clearedowner = false
+}
+
+// AddConsentIDs adds the "consents" edge to the Consent entity by ids.
+func (m *AppMutation) AddConsentIDs(ids ...int) {
+	if m.consents == nil {
+		m.consents = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.consents[ids[i]] = struct{}{}
+	}
+}
+
+// ClearConsents clears the "consents" edge to the Consent entity.
+func (m *AppMutation) ClearConsents() {
+	m.clearedconsents = true
+}
+
+// ConsentsCleared reports if the "consents" edge to the Consent entity was cleared.
+func (m *AppMutation) ConsentsCleared() bool {
+	return m.clearedconsents
+}
+
+// RemoveConsentIDs removes the "consents" edge to the Consent entity by IDs.
+func (m *AppMutation) RemoveConsentIDs(ids ...int) {
+	if m.removedconsents == nil {
+		m.removedconsents = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.consents, ids[i])
+		m.removedconsents[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedConsents returns the removed IDs of the "consents" edge to the Consent entity.
+func (m *AppMutation) RemovedConsentsIDs() (ids []int) {
+	for id := range m.removedconsents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ConsentsIDs returns the "consents" edge IDs in the mutation.
+func (m *AppMutation) ConsentsIDs() (ids []int) {
+	for id := range m.consents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetConsents resets all changes to the "consents" edge.
+func (m *AppMutation) ResetConsents() {
+	m.consents = nil
+	m.clearedconsents = false
+	m.removedconsents = nil
+}
+
+// Where appends a list predicates to the AppMutation builder.
+func (m *AppMutation) Where(ps ...predicate.App) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AppMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AppMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.App, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AppMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AppMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (App).
+func (m *AppMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AppMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.secret != nil {
+		fields = append(fields, app.FieldSecret)
+	}
+	if m.name != nil {
+		fields = append(fields, app.FieldName)
+	}
+	if m.redirect_uris != nil {
+		fields = append(fields, app.FieldRedirectUris)
+	}
+	if m.implicit_consent != nil {
+		fields = append(fields, app.FieldImplicitConsent)
+	}
+	if m.description != nil {
+		fields = append(fields, app.FieldDescription)
+	}
+	if m.created_at != nil {
+		fields = append(fields, app.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, app.FieldUpdatedAt)
+	}
+	if m.last_login_at != nil {
+		fields = append(fields, app.FieldLastLoginAt)
+	}
+	if m.owner != nil {
+		fields = append(fields, app.FieldOwnerID)
+	}
+	if m.roles != nil {
+		fields = append(fields, app.FieldRoles)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AppMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case app.FieldSecret:
+		return m.Secret()
+	case app.FieldName:
+		return m.Name()
+	case app.FieldRedirectUris:
+		return m.RedirectUris()
+	case app.FieldImplicitConsent:
+		return m.ImplicitConsent()
+	case app.FieldDescription:
+		return m.Description()
+	case app.FieldCreatedAt:
+		return m.CreatedAt()
+	case app.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case app.FieldLastLoginAt:
+		return m.LastLoginAt()
+	case app.FieldOwnerID:
+		return m.OwnerID()
+	case app.FieldRoles:
+		return m.Roles()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AppMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case app.FieldSecret:
+		return m.OldSecret(ctx)
+	case app.FieldName:
+		return m.OldName(ctx)
+	case app.FieldRedirectUris:
+		return m.OldRedirectUris(ctx)
+	case app.FieldImplicitConsent:
+		return m.OldImplicitConsent(ctx)
+	case app.FieldDescription:
+		return m.OldDescription(ctx)
+	case app.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case app.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case app.FieldLastLoginAt:
+		return m.OldLastLoginAt(ctx)
+	case app.FieldOwnerID:
+		return m.OldOwnerID(ctx)
+	case app.FieldRoles:
+		return m.OldRoles(ctx)
+	}
+	return nil, fmt.Errorf("unknown App field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AppMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case app.FieldSecret:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSecret(v)
+		return nil
+	case app.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case app.FieldRedirectUris:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRedirectUris(v)
+		return nil
+	case app.FieldImplicitConsent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImplicitConsent(v)
+		return nil
+	case app.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case app.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case app.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case app.FieldLastLoginAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastLoginAt(v)
+		return nil
+	case app.FieldOwnerID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOwnerID(v)
+		return nil
+	case app.FieldRoles:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoles(v)
+		return nil
+	}
+	return fmt.Errorf("unknown App field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AppMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AppMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AppMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown App numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AppMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(app.FieldLastLoginAt) {
+		fields = append(fields, app.FieldLastLoginAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AppMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AppMutation) ClearField(name string) error {
+	switch name {
+	case app.FieldLastLoginAt:
+		m.ClearLastLoginAt()
+		return nil
+	}
+	return fmt.Errorf("unknown App nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AppMutation) ResetField(name string) error {
+	switch name {
+	case app.FieldSecret:
+		m.ResetSecret()
+		return nil
+	case app.FieldName:
+		m.ResetName()
+		return nil
+	case app.FieldRedirectUris:
+		m.ResetRedirectUris()
+		return nil
+	case app.FieldImplicitConsent:
+		m.ResetImplicitConsent()
+		return nil
+	case app.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case app.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case app.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case app.FieldLastLoginAt:
+		m.ResetLastLoginAt()
+		return nil
+	case app.FieldOwnerID:
+		m.ResetOwnerID()
+		return nil
+	case app.FieldRoles:
+		m.ResetRoles()
+		return nil
+	}
+	return fmt.Errorf("unknown App field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AppMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.owner != nil {
+		edges = append(edges, app.EdgeOwner)
+	}
+	if m.consents != nil {
+		edges = append(edges, app.EdgeConsents)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AppMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case app.EdgeOwner:
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
+		}
+	case app.EdgeConsents:
+		ids := make([]ent.Value, 0, len(m.consents))
+		for id := range m.consents {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AppMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedconsents != nil {
+		edges = append(edges, app.EdgeConsents)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AppMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case app.EdgeConsents:
+		ids := make([]ent.Value, 0, len(m.removedconsents))
+		for id := range m.removedconsents {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AppMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedowner {
+		edges = append(edges, app.EdgeOwner)
+	}
+	if m.clearedconsents {
+		edges = append(edges, app.EdgeConsents)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AppMutation) EdgeCleared(name string) bool {
+	switch name {
+	case app.EdgeOwner:
+		return m.clearedowner
+	case app.EdgeConsents:
+		return m.clearedconsents
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AppMutation) ClearEdge(name string) error {
+	switch name {
+	case app.EdgeOwner:
+		m.ClearOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown App unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AppMutation) ResetEdge(name string) error {
+	switch name {
+	case app.EdgeOwner:
+		m.ResetOwner()
+		return nil
+	case app.EdgeConsents:
+		m.ResetConsents()
+		return nil
+	}
+	return fmt.Errorf("unknown App edge %s", name)
+}
 
 // AuthCodeMutation represents an operation that mutates the AuthCode nodes in the graph.
 type AuthCodeMutation struct {
@@ -2571,6 +3589,727 @@ func (m *ComponentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Component edge %s", name)
 }
 
+// ConsentMutation represents an operation that mutates the Consent nodes in the graph.
+type ConsentMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int
+	created_at         *time.Time
+	updated_at         *time.Time
+	scopes             *[]string
+	appendscopes       []string
+	expiration_date    *time.Time
+	clearedFields      map[string]struct{}
+	application        *string
+	clearedapplication bool
+	user               *int
+	cleareduser        bool
+	done               bool
+	oldValue           func(context.Context) (*Consent, error)
+	predicates         []predicate.Consent
+}
+
+var _ ent.Mutation = (*ConsentMutation)(nil)
+
+// consentOption allows management of the mutation configuration using functional options.
+type consentOption func(*ConsentMutation)
+
+// newConsentMutation creates new mutation for the Consent entity.
+func newConsentMutation(c config, op Op, opts ...consentOption) *ConsentMutation {
+	m := &ConsentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeConsent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withConsentID sets the ID field of the mutation.
+func withConsentID(id int) consentOption {
+	return func(m *ConsentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Consent
+		)
+		m.oldValue = func(ctx context.Context) (*Consent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Consent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withConsent sets the old Consent of the mutation.
+func withConsent(node *Consent) consentOption {
+	return func(m *ConsentMutation) {
+		m.oldValue = func(context.Context) (*Consent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ConsentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ConsentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Consent entities.
+func (m *ConsentMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ConsentMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ConsentMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Consent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ConsentMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ConsentMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Consent entity.
+// If the Consent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConsentMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ConsentMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ConsentMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ConsentMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Consent entity.
+// If the Consent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConsentMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ConsentMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetApplicationID sets the "application_id" field.
+func (m *ConsentMutation) SetApplicationID(s string) {
+	m.application = &s
+}
+
+// ApplicationID returns the value of the "application_id" field in the mutation.
+func (m *ConsentMutation) ApplicationID() (r string, exists bool) {
+	v := m.application
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApplicationID returns the old "application_id" field's value of the Consent entity.
+// If the Consent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConsentMutation) OldApplicationID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldApplicationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldApplicationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApplicationID: %w", err)
+	}
+	return oldValue.ApplicationID, nil
+}
+
+// ResetApplicationID resets all changes to the "application_id" field.
+func (m *ConsentMutation) ResetApplicationID() {
+	m.application = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ConsentMutation) SetUserID(i int) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ConsentMutation) UserID() (r int, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Consent entity.
+// If the Consent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConsentMutation) OldUserID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ConsentMutation) ResetUserID() {
+	m.user = nil
+}
+
+// SetScopes sets the "scopes" field.
+func (m *ConsentMutation) SetScopes(s []string) {
+	m.scopes = &s
+	m.appendscopes = nil
+}
+
+// Scopes returns the value of the "scopes" field in the mutation.
+func (m *ConsentMutation) Scopes() (r []string, exists bool) {
+	v := m.scopes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopes returns the old "scopes" field's value of the Consent entity.
+// If the Consent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConsentMutation) OldScopes(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopes: %w", err)
+	}
+	return oldValue.Scopes, nil
+}
+
+// AppendScopes adds s to the "scopes" field.
+func (m *ConsentMutation) AppendScopes(s []string) {
+	m.appendscopes = append(m.appendscopes, s...)
+}
+
+// AppendedScopes returns the list of values that were appended to the "scopes" field in this mutation.
+func (m *ConsentMutation) AppendedScopes() ([]string, bool) {
+	if len(m.appendscopes) == 0 {
+		return nil, false
+	}
+	return m.appendscopes, true
+}
+
+// ResetScopes resets all changes to the "scopes" field.
+func (m *ConsentMutation) ResetScopes() {
+	m.scopes = nil
+	m.appendscopes = nil
+}
+
+// SetExpirationDate sets the "expiration_date" field.
+func (m *ConsentMutation) SetExpirationDate(t time.Time) {
+	m.expiration_date = &t
+}
+
+// ExpirationDate returns the value of the "expiration_date" field in the mutation.
+func (m *ConsentMutation) ExpirationDate() (r time.Time, exists bool) {
+	v := m.expiration_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpirationDate returns the old "expiration_date" field's value of the Consent entity.
+// If the Consent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConsentMutation) OldExpirationDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpirationDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpirationDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpirationDate: %w", err)
+	}
+	return oldValue.ExpirationDate, nil
+}
+
+// ResetExpirationDate resets all changes to the "expiration_date" field.
+func (m *ConsentMutation) ResetExpirationDate() {
+	m.expiration_date = nil
+}
+
+// ClearApplication clears the "application" edge to the App entity.
+func (m *ConsentMutation) ClearApplication() {
+	m.clearedapplication = true
+	m.clearedFields[consent.FieldApplicationID] = struct{}{}
+}
+
+// ApplicationCleared reports if the "application" edge to the App entity was cleared.
+func (m *ConsentMutation) ApplicationCleared() bool {
+	return m.clearedapplication
+}
+
+// ApplicationIDs returns the "application" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ApplicationID instead. It exists only for internal usage by the builders.
+func (m *ConsentMutation) ApplicationIDs() (ids []string) {
+	if id := m.application; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetApplication resets all changes to the "application" edge.
+func (m *ConsentMutation) ResetApplication() {
+	m.application = nil
+	m.clearedapplication = false
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *ConsentMutation) ClearUser() {
+	m.cleareduser = true
+	m.clearedFields[consent.FieldUserID] = struct{}{}
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *ConsentMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *ConsentMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *ConsentMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the ConsentMutation builder.
+func (m *ConsentMutation) Where(ps ...predicate.Consent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ConsentMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ConsentMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Consent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ConsentMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ConsentMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Consent).
+func (m *ConsentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ConsentMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, consent.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, consent.FieldUpdatedAt)
+	}
+	if m.application != nil {
+		fields = append(fields, consent.FieldApplicationID)
+	}
+	if m.user != nil {
+		fields = append(fields, consent.FieldUserID)
+	}
+	if m.scopes != nil {
+		fields = append(fields, consent.FieldScopes)
+	}
+	if m.expiration_date != nil {
+		fields = append(fields, consent.FieldExpirationDate)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ConsentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case consent.FieldCreatedAt:
+		return m.CreatedAt()
+	case consent.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case consent.FieldApplicationID:
+		return m.ApplicationID()
+	case consent.FieldUserID:
+		return m.UserID()
+	case consent.FieldScopes:
+		return m.Scopes()
+	case consent.FieldExpirationDate:
+		return m.ExpirationDate()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ConsentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case consent.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case consent.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case consent.FieldApplicationID:
+		return m.OldApplicationID(ctx)
+	case consent.FieldUserID:
+		return m.OldUserID(ctx)
+	case consent.FieldScopes:
+		return m.OldScopes(ctx)
+	case consent.FieldExpirationDate:
+		return m.OldExpirationDate(ctx)
+	}
+	return nil, fmt.Errorf("unknown Consent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ConsentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case consent.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case consent.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case consent.FieldApplicationID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApplicationID(v)
+		return nil
+	case consent.FieldUserID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case consent.FieldScopes:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopes(v)
+		return nil
+	case consent.FieldExpirationDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpirationDate(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Consent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ConsentMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ConsentMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ConsentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Consent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ConsentMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ConsentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ConsentMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Consent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ConsentMutation) ResetField(name string) error {
+	switch name {
+	case consent.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case consent.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case consent.FieldApplicationID:
+		m.ResetApplicationID()
+		return nil
+	case consent.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case consent.FieldScopes:
+		m.ResetScopes()
+		return nil
+	case consent.FieldExpirationDate:
+		m.ResetExpirationDate()
+		return nil
+	}
+	return fmt.Errorf("unknown Consent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ConsentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.application != nil {
+		edges = append(edges, consent.EdgeApplication)
+	}
+	if m.user != nil {
+		edges = append(edges, consent.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ConsentMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case consent.EdgeApplication:
+		if id := m.application; id != nil {
+			return []ent.Value{*id}
+		}
+	case consent.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ConsentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ConsentMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ConsentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedapplication {
+		edges = append(edges, consent.EdgeApplication)
+	}
+	if m.cleareduser {
+		edges = append(edges, consent.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ConsentMutation) EdgeCleared(name string) bool {
+	switch name {
+	case consent.EdgeApplication:
+		return m.clearedapplication
+	case consent.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ConsentMutation) ClearEdge(name string) error {
+	switch name {
+	case consent.EdgeApplication:
+		m.ClearApplication()
+		return nil
+	case consent.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown Consent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ConsentMutation) ResetEdge(name string) error {
+	switch name {
+	case consent.EdgeApplication:
+		m.ResetApplication()
+		return nil
+	case consent.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown Consent edge %s", name)
+}
+
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
@@ -2596,6 +4335,12 @@ type UserMutation struct {
 	created_votes        map[int]struct{}
 	removedcreated_votes map[int]struct{}
 	clearedcreated_votes bool
+	apps                 map[string]struct{}
+	removedapps          map[string]struct{}
+	clearedapps          bool
+	consents             map[int]struct{}
+	removedconsents      map[int]struct{}
+	clearedconsents      bool
 	done                 bool
 	oldValue             func(context.Context) (*User, error)
 	predicates           []predicate.User
@@ -3250,6 +4995,114 @@ func (m *UserMutation) ResetCreatedVotes() {
 	m.removedcreated_votes = nil
 }
 
+// AddAppIDs adds the "apps" edge to the App entity by ids.
+func (m *UserMutation) AddAppIDs(ids ...string) {
+	if m.apps == nil {
+		m.apps = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.apps[ids[i]] = struct{}{}
+	}
+}
+
+// ClearApps clears the "apps" edge to the App entity.
+func (m *UserMutation) ClearApps() {
+	m.clearedapps = true
+}
+
+// AppsCleared reports if the "apps" edge to the App entity was cleared.
+func (m *UserMutation) AppsCleared() bool {
+	return m.clearedapps
+}
+
+// RemoveAppIDs removes the "apps" edge to the App entity by IDs.
+func (m *UserMutation) RemoveAppIDs(ids ...string) {
+	if m.removedapps == nil {
+		m.removedapps = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.apps, ids[i])
+		m.removedapps[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedApps returns the removed IDs of the "apps" edge to the App entity.
+func (m *UserMutation) RemovedAppsIDs() (ids []string) {
+	for id := range m.removedapps {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AppsIDs returns the "apps" edge IDs in the mutation.
+func (m *UserMutation) AppsIDs() (ids []string) {
+	for id := range m.apps {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetApps resets all changes to the "apps" edge.
+func (m *UserMutation) ResetApps() {
+	m.apps = nil
+	m.clearedapps = false
+	m.removedapps = nil
+}
+
+// AddConsentIDs adds the "consents" edge to the Consent entity by ids.
+func (m *UserMutation) AddConsentIDs(ids ...int) {
+	if m.consents == nil {
+		m.consents = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.consents[ids[i]] = struct{}{}
+	}
+}
+
+// ClearConsents clears the "consents" edge to the Consent entity.
+func (m *UserMutation) ClearConsents() {
+	m.clearedconsents = true
+}
+
+// ConsentsCleared reports if the "consents" edge to the Consent entity was cleared.
+func (m *UserMutation) ConsentsCleared() bool {
+	return m.clearedconsents
+}
+
+// RemoveConsentIDs removes the "consents" edge to the Consent entity by IDs.
+func (m *UserMutation) RemoveConsentIDs(ids ...int) {
+	if m.removedconsents == nil {
+		m.removedconsents = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.consents, ids[i])
+		m.removedconsents[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedConsents returns the removed IDs of the "consents" edge to the Consent entity.
+func (m *UserMutation) RemovedConsentsIDs() (ids []int) {
+	for id := range m.removedconsents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ConsentsIDs returns the "consents" edge IDs in the mutation.
+func (m *UserMutation) ConsentsIDs() (ids []int) {
+	for id := range m.consents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetConsents resets all changes to the "consents" edge.
+func (m *UserMutation) ResetConsents() {
+	m.consents = nil
+	m.clearedconsents = false
+	m.removedconsents = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -3568,12 +5421,18 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.user_votes != nil {
 		edges = append(edges, user.EdgeUserVotes)
 	}
 	if m.created_votes != nil {
 		edges = append(edges, user.EdgeCreatedVotes)
+	}
+	if m.apps != nil {
+		edges = append(edges, user.EdgeApps)
+	}
+	if m.consents != nil {
+		edges = append(edges, user.EdgeConsents)
 	}
 	return edges
 }
@@ -3594,18 +5453,36 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeApps:
+		ids := make([]ent.Value, 0, len(m.apps))
+		for id := range m.apps {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeConsents:
+		ids := make([]ent.Value, 0, len(m.consents))
+		for id := range m.consents {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.removeduser_votes != nil {
 		edges = append(edges, user.EdgeUserVotes)
 	}
 	if m.removedcreated_votes != nil {
 		edges = append(edges, user.EdgeCreatedVotes)
+	}
+	if m.removedapps != nil {
+		edges = append(edges, user.EdgeApps)
+	}
+	if m.removedconsents != nil {
+		edges = append(edges, user.EdgeConsents)
 	}
 	return edges
 }
@@ -3626,18 +5503,36 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeApps:
+		ids := make([]ent.Value, 0, len(m.removedapps))
+		for id := range m.removedapps {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeConsents:
+		ids := make([]ent.Value, 0, len(m.removedconsents))
+		for id := range m.removedconsents {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.cleareduser_votes {
 		edges = append(edges, user.EdgeUserVotes)
 	}
 	if m.clearedcreated_votes {
 		edges = append(edges, user.EdgeCreatedVotes)
+	}
+	if m.clearedapps {
+		edges = append(edges, user.EdgeApps)
+	}
+	if m.clearedconsents {
+		edges = append(edges, user.EdgeConsents)
 	}
 	return edges
 }
@@ -3650,6 +5545,10 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.cleareduser_votes
 	case user.EdgeCreatedVotes:
 		return m.clearedcreated_votes
+	case user.EdgeApps:
+		return m.clearedapps
+	case user.EdgeConsents:
+		return m.clearedconsents
 	}
 	return false
 }
@@ -3671,6 +5570,12 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeCreatedVotes:
 		m.ResetCreatedVotes()
+		return nil
+	case user.EdgeApps:
+		m.ResetApps()
+		return nil
+	case user.EdgeConsents:
+		m.ResetConsents()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
