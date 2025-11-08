@@ -8,6 +8,18 @@ import (
 	"fmt"
 )
 
+// The AppFunc type is an adapter to allow the use of ordinary
+// function as App mutator.
+type AppFunc func(context.Context, *ent.AppMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AppFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AppMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppMutation", m)
+}
+
 // The AuthCodeFunc type is an adapter to allow the use of ordinary
 // function as AuthCode mutator.
 type AuthCodeFunc func(context.Context, *ent.AuthCodeMutation) (ent.Value, error)
@@ -54,6 +66,18 @@ func (f ComponentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ComponentMutation", m)
+}
+
+// The ConsentFunc type is an adapter to allow the use of ordinary
+// function as Consent mutator.
+type ConsentFunc func(context.Context, *ent.ConsentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConsentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConsentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConsentMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

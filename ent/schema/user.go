@@ -36,5 +36,7 @@ func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("user_votes", UserVote.Type),
 		edge.To("created_votes", Vote.Type),
+		edge.To("apps", App.Type),
+		edge.To("consents", Consent.Type),
 	}
 }

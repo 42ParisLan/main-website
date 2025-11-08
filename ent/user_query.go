@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"base-website/ent/app"
+	"base-website/ent/consent"
 	"base-website/ent/predicate"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
@@ -27,6 +29,8 @@ type UserQuery struct {
 	predicates       []predicate.User
 	withUserVotes    *UserVoteQuery
 	withCreatedVotes *VoteQuery
+	withApps         *AppQuery
+	withConsents     *ConsentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -100,6 +104,50 @@ func (_q *UserQuery) QueryCreatedVotes() *VoteQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(vote.Table, vote.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedVotesTable, user.CreatedVotesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryApps chains the current query on the "apps" edge.
+func (_q *UserQuery) QueryApps() *AppQuery {
+	query := (&AppClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(app.Table, app.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AppsTable, user.AppsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryConsents chains the current query on the "consents" edge.
+func (_q *UserQuery) QueryConsents() *ConsentQuery {
+	query := (&ConsentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(consent.Table, consent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +349,8 @@ func (_q *UserQuery) Clone() *UserQuery {
 		predicates:       append([]predicate.User{}, _q.predicates...),
 		withUserVotes:    _q.withUserVotes.Clone(),
 		withCreatedVotes: _q.withCreatedVotes.Clone(),
+		withApps:         _q.withApps.Clone(),
+		withConsents:     _q.withConsents.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -326,6 +376,28 @@ func (_q *UserQuery) WithCreatedVotes(opts ...func(*VoteQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withCreatedVotes = query
+	return _q
+}
+
+// WithApps tells the query-builder to eager-load the nodes that are connected to
+// the "apps" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithApps(opts ...func(*AppQuery)) *UserQuery {
+	query := (&AppClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withApps = query
+	return _q
+}
+
+// WithConsents tells the query-builder to eager-load the nodes that are connected to
+// the "consents" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithConsents(opts ...func(*ConsentQuery)) *UserQuery {
+	query := (&ConsentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withConsents = query
 	return _q
 }
 
@@ -407,9 +479,11 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			_q.withUserVotes != nil,
 			_q.withCreatedVotes != nil,
+			_q.withApps != nil,
+			_q.withConsents != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -441,6 +515,20 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadCreatedVotes(ctx, query, nodes,
 			func(n *User) { n.Edges.CreatedVotes = []*Vote{} },
 			func(n *User, e *Vote) { n.Edges.CreatedVotes = append(n.Edges.CreatedVotes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withApps; query != nil {
+		if err := _q.loadApps(ctx, query, nodes,
+			func(n *User) { n.Edges.Apps = []*App{} },
+			func(n *User, e *App) { n.Edges.Apps = append(n.Edges.Apps, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withConsents; query != nil {
+		if err := _q.loadConsents(ctx, query, nodes,
+			func(n *User) { n.Edges.Consents = []*Consent{} },
+			func(n *User, e *Consent) { n.Edges.Consents = append(n.Edges.Consents, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -504,6 +592,66 @@ func (_q *UserQuery) loadCreatedVotes(ctx context.Context, query *VoteQuery, nod
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_created_votes" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadApps(ctx context.Context, query *AppQuery, nodes []*User, init func(*User), assign func(*User, *App)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(app.FieldOwnerID)
+	}
+	query.Where(predicate.App(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.AppsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.OwnerID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "owner_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, nodes []*User, init func(*User), assign func(*User, *Consent)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(consent.FieldUserID)
+	}
+	query.Where(predicate.Consent(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ConsentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

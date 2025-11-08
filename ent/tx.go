@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// App is the client for interacting with the App builders.
+	App *AppClient
 	// AuthCode is the client for interacting with the AuthCode builders.
 	AuthCode *AuthCodeClient
 	// AuthRefreshToken is the client for interacting with the AuthRefreshToken builders.
@@ -20,6 +22,8 @@ type Tx struct {
 	AuthToken *AuthTokenClient
 	// Component is the client for interacting with the Component builders.
 	Component *ComponentClient
+	// Consent is the client for interacting with the Consent builders.
+	Consent *ConsentClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserVote is the client for interacting with the UserVote builders.
@@ -157,10 +161,12 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.App = NewAppClient(tx.config)
 	tx.AuthCode = NewAuthCodeClient(tx.config)
 	tx.AuthRefreshToken = NewAuthRefreshTokenClient(tx.config)
 	tx.AuthToken = NewAuthTokenClient(tx.config)
 	tx.Component = NewComponentClient(tx.config)
+	tx.Consent = NewConsentClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserVote = NewUserVoteClient(tx.config)
 	tx.Vote = NewVoteClient(tx.config)
@@ -173,7 +179,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: AuthCode.QueryXXX(), the query will be executed
+// applies a query, for example: App.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

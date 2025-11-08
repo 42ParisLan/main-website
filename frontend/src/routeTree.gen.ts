@@ -20,10 +20,13 @@ import { Route as AuthCallbackIndexRouteImport } from './routes/auth/callback/in
 import { Route as AdminVotesIndexRouteImport } from './routes/admin/votes/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
 import { Route as AdminTeamsIndexRouteImport } from './routes/admin/teams/index'
+import { Route as AdminAppsIndexRouteImport } from './routes/admin/apps/index'
 import { Route as AdminAdminsIndexRouteImport } from './routes/admin/admins/index'
 import { Route as VotesVoteidResultsIndexRouteImport } from './routes/votes/$voteid/results/index'
 import { Route as VotesVoteidLiveIndexRouteImport } from './routes/votes/$voteid/live/index'
 import { Route as AdminVotesVoteidIndexRouteImport } from './routes/admin/votes/$voteid/index'
+import { Route as AdminAppsMeIndexRouteImport } from './routes/admin/apps/me/index'
+import { Route as AdminAppsAppidIndexRouteImport } from './routes/admin/apps/$appid/index'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -80,6 +83,11 @@ const AdminTeamsIndexRoute = AdminTeamsIndexRouteImport.update({
   path: '/teams/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAppsIndexRoute = AdminAppsIndexRouteImport.update({
+  id: '/apps/',
+  path: '/apps/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAdminsIndexRoute = AdminAdminsIndexRouteImport.update({
   id: '/admins/',
   path: '/admins/',
@@ -100,6 +108,16 @@ const AdminVotesVoteidIndexRoute = AdminVotesVoteidIndexRouteImport.update({
   path: '/votes/$voteid/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAppsMeIndexRoute = AdminAppsMeIndexRouteImport.update({
+  id: '/apps/me/',
+  path: '/apps/me/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAppsAppidIndexRoute = AdminAppsAppidIndexRouteImport.update({
+  id: '/apps/$appid/',
+  path: '/apps/$appid/',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -109,11 +127,14 @@ export interface FileRoutesByFullPath {
   '/tournament': typeof TournamentIndexRoute
   '/votes': typeof VotesIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
+  '/admin/apps': typeof AdminAppsIndexRoute
   '/admin/teams': typeof AdminTeamsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/admin/votes': typeof AdminVotesIndexRoute
   '/auth/callback': typeof AuthCallbackIndexRoute
   '/votes/$voteid': typeof VotesVoteidIndexRoute
+  '/admin/apps/$appid': typeof AdminAppsAppidIndexRoute
+  '/admin/apps/me': typeof AdminAppsMeIndexRoute
   '/admin/votes/$voteid': typeof AdminVotesVoteidIndexRoute
   '/votes/$voteid/live': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
@@ -125,11 +146,14 @@ export interface FileRoutesByTo {
   '/tournament': typeof TournamentIndexRoute
   '/votes': typeof VotesIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
+  '/admin/apps': typeof AdminAppsIndexRoute
   '/admin/teams': typeof AdminTeamsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/admin/votes': typeof AdminVotesIndexRoute
   '/auth/callback': typeof AuthCallbackIndexRoute
   '/votes/$voteid': typeof VotesVoteidIndexRoute
+  '/admin/apps/$appid': typeof AdminAppsAppidIndexRoute
+  '/admin/apps/me': typeof AdminAppsMeIndexRoute
   '/admin/votes/$voteid': typeof AdminVotesVoteidIndexRoute
   '/votes/$voteid/live': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
@@ -143,11 +167,14 @@ export interface FileRoutesById {
   '/tournament/': typeof TournamentIndexRoute
   '/votes/': typeof VotesIndexRoute
   '/admin/admins/': typeof AdminAdminsIndexRoute
+  '/admin/apps/': typeof AdminAppsIndexRoute
   '/admin/teams/': typeof AdminTeamsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/admin/votes/': typeof AdminVotesIndexRoute
   '/auth/callback/': typeof AuthCallbackIndexRoute
   '/votes/$voteid/': typeof VotesVoteidIndexRoute
+  '/admin/apps/$appid/': typeof AdminAppsAppidIndexRoute
+  '/admin/apps/me/': typeof AdminAppsMeIndexRoute
   '/admin/votes/$voteid/': typeof AdminVotesVoteidIndexRoute
   '/votes/$voteid/live/': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results/': typeof VotesVoteidResultsIndexRoute
@@ -162,11 +189,14 @@ export interface FileRouteTypes {
     | '/tournament'
     | '/votes'
     | '/admin/admins'
+    | '/admin/apps'
     | '/admin/teams'
     | '/admin/users'
     | '/admin/votes'
     | '/auth/callback'
     | '/votes/$voteid'
+    | '/admin/apps/$appid'
+    | '/admin/apps/me'
     | '/admin/votes/$voteid'
     | '/votes/$voteid/live'
     | '/votes/$voteid/results'
@@ -178,11 +208,14 @@ export interface FileRouteTypes {
     | '/tournament'
     | '/votes'
     | '/admin/admins'
+    | '/admin/apps'
     | '/admin/teams'
     | '/admin/users'
     | '/admin/votes'
     | '/auth/callback'
     | '/votes/$voteid'
+    | '/admin/apps/$appid'
+    | '/admin/apps/me'
     | '/admin/votes/$voteid'
     | '/votes/$voteid/live'
     | '/votes/$voteid/results'
@@ -195,11 +228,14 @@ export interface FileRouteTypes {
     | '/tournament/'
     | '/votes/'
     | '/admin/admins/'
+    | '/admin/apps/'
     | '/admin/teams/'
     | '/admin/users/'
     | '/admin/votes/'
     | '/auth/callback/'
     | '/votes/$voteid/'
+    | '/admin/apps/$appid/'
+    | '/admin/apps/me/'
     | '/admin/votes/$voteid/'
     | '/votes/$voteid/live/'
     | '/votes/$voteid/results/'
@@ -296,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTeamsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/apps/': {
+      id: '/admin/apps/'
+      path: '/apps'
+      fullPath: '/admin/apps'
+      preLoaderRoute: typeof AdminAppsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/admins/': {
       id: '/admin/admins/'
       path: '/admins'
@@ -324,24 +367,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVotesVoteidIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/apps/me/': {
+      id: '/admin/apps/me/'
+      path: '/apps/me'
+      fullPath: '/admin/apps/me'
+      preLoaderRoute: typeof AdminAppsMeIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/apps/$appid/': {
+      id: '/admin/apps/$appid/'
+      path: '/apps/$appid'
+      fullPath: '/admin/apps/$appid'
+      preLoaderRoute: typeof AdminAppsAppidIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAdminsIndexRoute: typeof AdminAdminsIndexRoute
+  AdminAppsIndexRoute: typeof AdminAppsIndexRoute
   AdminTeamsIndexRoute: typeof AdminTeamsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVotesIndexRoute: typeof AdminVotesIndexRoute
+  AdminAppsAppidIndexRoute: typeof AdminAppsAppidIndexRoute
+  AdminAppsMeIndexRoute: typeof AdminAppsMeIndexRoute
   AdminVotesVoteidIndexRoute: typeof AdminVotesVoteidIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminAdminsIndexRoute: AdminAdminsIndexRoute,
+  AdminAppsIndexRoute: AdminAppsIndexRoute,
   AdminTeamsIndexRoute: AdminTeamsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVotesIndexRoute: AdminVotesIndexRoute,
+  AdminAppsAppidIndexRoute: AdminAppsAppidIndexRoute,
+  AdminAppsMeIndexRoute: AdminAppsMeIndexRoute,
   AdminVotesVoteidIndexRoute: AdminVotesVoteidIndexRoute,
 }
 

@@ -3,10 +3,12 @@
 package ent
 
 import (
+	"base-website/ent/app"
 	"base-website/ent/authcode"
 	"base-website/ent/authrefreshtoken"
 	"base-website/ent/authtoken"
 	"base-website/ent/component"
+	"base-website/ent/consent"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -79,10 +81,12 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			app.Table:              app.ValidColumn,
 			authcode.Table:         authcode.ValidColumn,
 			authrefreshtoken.Table: authrefreshtoken.ValidColumn,
 			authtoken.Table:        authtoken.ValidColumn,
 			component.Table:        component.ValidColumn,
+			consent.Table:          consent.ValidColumn,
 			user.Table:             user.ValidColumn,
 			uservote.Table:         uservote.ValidColumn,
 			vote.Table:             vote.ValidColumn,

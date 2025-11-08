@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"base-website/ent/app"
+	"base-website/ent/consent"
 	"base-website/ent/predicate"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
@@ -203,6 +205,36 @@ func (_u *UserUpdate) AddCreatedVotes(v ...*Vote) *UserUpdate {
 	return _u.AddCreatedVoteIDs(ids...)
 }
 
+// AddAppIDs adds the "apps" edge to the App entity by IDs.
+func (_u *UserUpdate) AddAppIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddAppIDs(ids...)
+	return _u
+}
+
+// AddApps adds the "apps" edges to the App entity.
+func (_u *UserUpdate) AddApps(v ...*App) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAppIDs(ids...)
+}
+
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (_u *UserUpdate) AddConsentIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddConsentIDs(ids...)
+	return _u
+}
+
+// AddConsents adds the "consents" edges to the Consent entity.
+func (_u *UserUpdate) AddConsents(v ...*Consent) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddConsentIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
@@ -248,6 +280,48 @@ func (_u *UserUpdate) RemoveCreatedVotes(v ...*Vote) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCreatedVoteIDs(ids...)
+}
+
+// ClearApps clears all "apps" edges to the App entity.
+func (_u *UserUpdate) ClearApps() *UserUpdate {
+	_u.mutation.ClearApps()
+	return _u
+}
+
+// RemoveAppIDs removes the "apps" edge to App entities by IDs.
+func (_u *UserUpdate) RemoveAppIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveAppIDs(ids...)
+	return _u
+}
+
+// RemoveApps removes "apps" edges to App entities.
+func (_u *UserUpdate) RemoveApps(v ...*App) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAppIDs(ids...)
+}
+
+// ClearConsents clears all "consents" edges to the Consent entity.
+func (_u *UserUpdate) ClearConsents() *UserUpdate {
+	_u.mutation.ClearConsents()
+	return _u
+}
+
+// RemoveConsentIDs removes the "consents" edge to Consent entities by IDs.
+func (_u *UserUpdate) RemoveConsentIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveConsentIDs(ids...)
+	return _u
+}
+
+// RemoveConsents removes "consents" edges to Consent entities.
+func (_u *UserUpdate) RemoveConsents(v ...*Consent) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveConsentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -432,6 +506,96 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAppsIDs(); len(nodes) > 0 && !_u.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AppsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ConsentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !_u.mutation.ConsentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ConsentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -631,6 +795,36 @@ func (_u *UserUpdateOne) AddCreatedVotes(v ...*Vote) *UserUpdateOne {
 	return _u.AddCreatedVoteIDs(ids...)
 }
 
+// AddAppIDs adds the "apps" edge to the App entity by IDs.
+func (_u *UserUpdateOne) AddAppIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddAppIDs(ids...)
+	return _u
+}
+
+// AddApps adds the "apps" edges to the App entity.
+func (_u *UserUpdateOne) AddApps(v ...*App) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAppIDs(ids...)
+}
+
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (_u *UserUpdateOne) AddConsentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddConsentIDs(ids...)
+	return _u
+}
+
+// AddConsents adds the "consents" edges to the Consent entity.
+func (_u *UserUpdateOne) AddConsents(v ...*Consent) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddConsentIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
@@ -676,6 +870,48 @@ func (_u *UserUpdateOne) RemoveCreatedVotes(v ...*Vote) *UserUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCreatedVoteIDs(ids...)
+}
+
+// ClearApps clears all "apps" edges to the App entity.
+func (_u *UserUpdateOne) ClearApps() *UserUpdateOne {
+	_u.mutation.ClearApps()
+	return _u
+}
+
+// RemoveAppIDs removes the "apps" edge to App entities by IDs.
+func (_u *UserUpdateOne) RemoveAppIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveAppIDs(ids...)
+	return _u
+}
+
+// RemoveApps removes "apps" edges to App entities.
+func (_u *UserUpdateOne) RemoveApps(v ...*App) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAppIDs(ids...)
+}
+
+// ClearConsents clears all "consents" edges to the Consent entity.
+func (_u *UserUpdateOne) ClearConsents() *UserUpdateOne {
+	_u.mutation.ClearConsents()
+	return _u
+}
+
+// RemoveConsentIDs removes the "consents" edge to Consent entities by IDs.
+func (_u *UserUpdateOne) RemoveConsentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveConsentIDs(ids...)
+	return _u
+}
+
+// RemoveConsents removes "consents" edges to Consent entities.
+func (_u *UserUpdateOne) RemoveConsents(v ...*Consent) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveConsentIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -890,6 +1126,96 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAppsIDs(); len(nodes) > 0 && !_u.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AppsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ConsentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !_u.mutation.ConsentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ConsentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

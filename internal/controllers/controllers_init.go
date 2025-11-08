@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	appsccontroller "base-website/internal/controllers/apps"
 	authcontroller "base-website/internal/controllers/auth"
+	consentscontroller "base-website/internal/controllers/consents"
 	envcontroller "base-website/internal/controllers/env"
 	rbaccrontroller "base-website/internal/controllers/rbac"
 	userscontroller "base-website/internal/controllers/users"
@@ -23,6 +25,8 @@ func controllersList() []controllerInitFunc {
 		rbaccrontroller.Init,
 		envcontroller.Init,
 		votescontroller.Init,
+		consentscontroller.Init,
+		appsccontroller.Init,
 	}
 }
 

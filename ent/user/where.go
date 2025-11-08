@@ -721,6 +721,52 @@ func HasCreatedVotesWith(preds ...predicate.Vote) predicate.User {
 	})
 }
 
+// HasApps applies the HasEdge predicate on the "apps" edge.
+func HasApps() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AppsTable, AppsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAppsWith applies the HasEdge predicate on the "apps" edge with a given conditions (other predicates).
+func HasAppsWith(preds ...predicate.App) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newAppsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasConsents applies the HasEdge predicate on the "consents" edge.
+func HasConsents() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasConsentsWith applies the HasEdge predicate on the "consents" edge with a given conditions (other predicates).
+func HasConsentsWith(preds ...predicate.Consent) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newConsentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

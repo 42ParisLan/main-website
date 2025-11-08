@@ -3,6 +3,7 @@ package security
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -15,8 +16,32 @@ type Claims struct {
 	Subject string
 }
 
+type SubjectType string
+
+const (
+	SubjectTypeUser   SubjectType = "user"
+	SubjectTypeClient SubjectType = "client"
+)
+
+func (c *Claims) GetSubjectType() SubjectType {
+	if strings.HasPrefix(c.Subject, "clients/") {
+		return SubjectTypeClient
+	}
+	return SubjectTypeUser
+}
+
 func (c *Claims) GetUserID() (int, error) {
-	return strconv.Atoi(c.Subject)
+	if c.GetSubjectType() == SubjectTypeUser {
+		return strconv.Atoi(c.Subject)
+	}
+	return 0, huma.Error403Forbidden("this endpoint is only available for users")
+}
+
+func (c *Claims) GetClientID() (string, error) {
+	if c.GetSubjectType() == SubjectTypeClient {
+		return strings.TrimPrefix(c.Subject, "client;"), nil
+	}
+	return "", huma.Error403Forbidden("this endpoint is only available for applications")
 }
 
 func GetClaimsFromHumaContext(ctx huma.Context) (*Claims, error) {

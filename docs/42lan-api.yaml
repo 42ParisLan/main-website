@@ -1,5 +1,112 @@
 components:
   schemas:
+    App:
+      additionalProperties: true
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/App.json
+          format: uri
+          readOnly: true
+          type: string
+        created_at:
+          example: "2024-09-01T00:00:00Z"
+          format: date-time
+          type: string
+        description:
+          example: My app is the best app
+          type: string
+        id:
+          example: "1"
+          type: string
+        implicit_consent:
+          default: false
+          example: false
+          type: boolean
+        last_login_at:
+          example: "2024-09-01T00:00:00Z"
+          format: date-time
+          type: string
+        name:
+          example: My App
+          type: string
+        owner:
+          $ref: "#/components/schemas/LightUser"
+        owner_id:
+          format: int64
+          type: integer
+        redirect_uris:
+          example:
+            - https://myapp.com/login
+          items:
+            type: string
+          type: array
+        roles:
+          example:
+            - student-app
+          items:
+            type: string
+          type: array
+        secret:
+          example: my-secret
+          type: string
+        updated_at:
+          example: "2024-09-01T00:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - id
+        - secret
+        - created_at
+        - updated_at
+        - owner
+        - name
+        - redirect_uris
+        - description
+        - implicit_consent
+        - roles
+      type: object
+    AppPayload:
+      additionalProperties: true
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/AppPayload.json
+          format: uri
+          readOnly: true
+          type: string
+        description:
+          example: My app is the best app
+          type: string
+        implicit_consent:
+          default: false
+          example: false
+          type: boolean
+        name:
+          example: My App
+          type: string
+        owner_id:
+          format: int64
+          type: integer
+        redirect_uris:
+          example:
+            - https://myapp.com/login
+          items:
+            type: string
+          type: array
+        roles:
+          example:
+            - student-app
+          items:
+            type: string
+          type: array
+      required:
+        - name
+        - redirect_uris
+        - description
+        - implicit_consent
+        - roles
+      type: object
     Component:
       additionalProperties: false
       properties:
@@ -50,6 +157,60 @@ components:
         - component_id
         - name
         - votes
+      type: object
+    Consent:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Consent.json
+          format: uri
+          readOnly: true
+          type: string
+        application:
+          $ref: "#/components/schemas/App"
+        application_id:
+          example: "1"
+          type: string
+        created_at:
+          example: "2024-09-01T00:00:00Z"
+          format: date-time
+          type: string
+        expiration_date:
+          example: "2024-09-01T00:00:00Z"
+          format: date-time
+          type: string
+        id:
+          example: 1
+          format: int64
+          type: integer
+        scopes:
+          example:
+            - openid
+            - profile
+          items:
+            type: string
+          type: array
+        updated_at:
+          example: "2024-09-01T00:00:00Z"
+          format: date-time
+          type: string
+        user:
+          $ref: "#/components/schemas/LightUser"
+        user_id:
+          example: 1
+          format: int64
+          type: integer
+      required:
+        - id
+        - created_at
+        - updated_at
+        - application_id
+        - application
+        - user_id
+        - user
+        - scopes
+        - expiration_date
       type: object
     CreateComponent:
       additionalProperties: false
@@ -176,6 +337,31 @@ components:
           format: uri
           type: string
       type: object
+    JsonPatchOp:
+      additionalProperties: false
+      properties:
+        from:
+          description: JSON Pointer for the source of a move or copy
+          type: string
+        op:
+          description: Operation name
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+          type: string
+        path:
+          description: JSON Pointer to the field being operated on, or the destination of a move/copy operation
+          type: string
+        value:
+          description: The value to set
+      required:
+        - op
+        - path
+      type: object
     LightUser:
       additionalProperties: false
       properties:
@@ -300,6 +486,80 @@ components:
       required:
         - path
         - methods
+      type: object
+    ResponseApp:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseApp.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/App"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseConsent:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseConsent.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/Consent"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
       type: object
     ResponseLightUser:
       additionalProperties: false
@@ -675,6 +935,359 @@ info:
   version: 1.2.0
 openapi: 3.0.3
 paths:
+  /apps:
+    get:
+      description: This endpoint is used to search apps.
+      operationId: searchApps
+      parameters:
+        - example: tmatis
+          explode: false
+          in: query
+          name: query
+          schema:
+            example: tmatis
+            type: string
+        - example: "1"
+          explode: false
+          in: query
+          name: owner_id
+          schema:
+            example: "1"
+            type: string
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseApp"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Search Apps
+      tags:
+        - Apps
+    post:
+      description: This endpoint is used to create a new app. **Users only.**
+      operationId: createApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppPayload"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Create App
+      tags:
+        - Apps
+  /apps/{app_id}/me/consent:
+    get:
+      description: This endpoint is used to get the consent of the current user for an app.
+      operationId: getMyConsentForApp
+      parameters:
+        - example: "1"
+          in: path
+          name: app_id
+          required: true
+          schema:
+            example: "1"
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Consent"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get my consent for an app
+      tags:
+        - Consents
+        - Apps
+  /apps/{id}:
+    delete:
+      description: This endpoint is used to delete an app by its ID. **Users only.**
+      operationId: deleteApp
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Delete App
+      tags:
+        - Apps
+    get:
+      description: This endpoint is used to get an app by its ID. **Users only.**
+      operationId: getAppByID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Get App by ID
+      tags:
+        - Apps
+    patch:
+      description: Partial update operation supporting both JSON Merge Patch & JSON Patch updates.
+      operationId: patch-App-By-ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              items:
+                $ref: "#/components/schemas/JsonPatchOp"
+              nullable: true
+              type: array
+          application/merge-patch+json:
+            schema:
+              additionalProperties: true
+              properties:
+                $schema:
+                  description: A URL to the JSON Schema for this object.
+                  example: /api/schemas/AppPayload.json
+                  format: uri
+                  readOnly: true
+                  type: string
+                description:
+                  example: My app is the best app
+                  type: string
+                implicit_consent:
+                  default: false
+                  example: false
+                  type: boolean
+                name:
+                  example: My App
+                  type: string
+                owner_id:
+                  format: int64
+                  type: integer
+                redirect_uris:
+                  example:
+                    - https://myapp.com/login
+                  items:
+                    type: string
+                  type: array
+                roles:
+                  example:
+                    - student-app
+                  items:
+                    type: string
+                  type: array
+              type: object
+          application/merge-patch+shorthand:
+            schema:
+              additionalProperties: true
+              properties:
+                $schema:
+                  description: A URL to the JSON Schema for this object.
+                  example: /api/schemas/AppPayload.json
+                  format: uri
+                  readOnly: true
+                  type: string
+                description:
+                  example: My app is the best app
+                  type: string
+                implicit_consent:
+                  default: false
+                  example: false
+                  type: boolean
+                name:
+                  example: My App
+                  type: string
+                owner_id:
+                  format: int64
+                  type: integer
+                redirect_uris:
+                  example:
+                    - https://myapp.com/login
+                  items:
+                    type: string
+                  type: array
+                roles:
+                  example:
+                    - student-app
+                  items:
+                    type: string
+                  type: array
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Patch App-By-ID
+      tags:
+        - Apps
+    put:
+      description: This endpoint is used to update an app by its ID. **Users only.**
+      operationId: updateApp
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppPayload"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Update App
+      tags:
+        - Apps
+  /apps/{id}/rotate-secret:
+    post:
+      description: This endpoint is used to rotate an app's secret by its ID. **Users only.**
+      operationId: rotateAppSecret
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Rotate App Secret
+      tags:
+        - Apps
   /auth/callback:
     get:
       description: |-
@@ -813,6 +1426,135 @@ paths:
       summary: Update Component
       tags:
         - Vote
+  /consents:
+    get:
+      description: This endpoint is used to search consents.
+      operationId: searchConsents
+      parameters:
+        - example: "1"
+          explode: false
+          in: query
+          name: user_id
+          schema:
+            example: "1"
+            type: string
+        - example: "1"
+          explode: false
+          in: query
+          name: application_id
+          schema:
+            example: "1"
+            type: string
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseConsent"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Search Consents
+      tags:
+        - Consents
+  /consents/{id}:
+    delete:
+      description: This endpoint is used to delete a consent by its ID.
+      operationId: deleteConsent
+      parameters:
+        - example: 1
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 1
+            format: int64
+            type: integer
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Delete Consent
+      tags:
+        - Consents
+    get:
+      description: This endpoint is used to get a consent by its ID.
+      operationId: getConsentByID
+      parameters:
+        - example: 1
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 1
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Consent"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - security
+      summary: Get Consent by ID
+      tags:
+        - Consents
   /env:
     get:
       description: Returns frontend environment variables needed for OAuth
@@ -855,6 +1597,53 @@ paths:
       summary: Get current user
       tags:
         - Users
+  /me/apps:
+    get:
+      description: This endpoint is used to get all apps for the current user. **Users only.**
+      operationId: getMyApps
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseApp"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get My Apps
+      tags:
+        - Apps
+        - Users
+  /me/consents:
+    get:
+      description: This endpoint is used to get the consents of the current user.
+      operationId: getMyConsents
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseConsent"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get my consents
+      tags:
+        - Consents
   /me/permissions:
     get:
       description: This endpoint is used to get the current user RBAC permissions.
@@ -1010,6 +1799,37 @@ paths:
             - profile
       summary: Get User by ID or Login
       tags:
+        - Users
+  /users/{id}/apps:
+    get:
+      description: This endpoint is used to get all apps for a user by their ID. **Users only.**
+      operationId: getUserApps
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseApp"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get User Apps
+      tags:
+        - Apps
         - Users
   /users/{id}/permissions:
     get:

@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"base-website/ent/app"
+	"base-website/ent/consent"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -162,6 +164,36 @@ func (_c *UserCreate) AddCreatedVotes(v ...*Vote) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddCreatedVoteIDs(ids...)
+}
+
+// AddAppIDs adds the "apps" edge to the App entity by IDs.
+func (_c *UserCreate) AddAppIDs(ids ...string) *UserCreate {
+	_c.mutation.AddAppIDs(ids...)
+	return _c
+}
+
+// AddApps adds the "apps" edges to the App entity.
+func (_c *UserCreate) AddApps(v ...*App) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddAppIDs(ids...)
+}
+
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (_c *UserCreate) AddConsentIDs(ids ...int) *UserCreate {
+	_c.mutation.AddConsentIDs(ids...)
+	return _c
+}
+
+// AddConsents adds the "consents" edges to the Consent entity.
+func (_c *UserCreate) AddConsents(v ...*Consent) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddConsentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -352,6 +384,38 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(vote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.AppsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppsTable,
+			Columns: []string{user.AppsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(app.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ConsentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
