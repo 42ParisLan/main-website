@@ -35,9 +35,6 @@ type Config struct {
 	MinioSecretKey string `mapstructure:"MINIO_SECRET_KEY" validate:"required"`
 	MinioBucket    string `mapstructure:"MINIO_BUCKET" validate:"required"`
 	MinioUseSSL    bool   `mapstructure:"MINIO_USE_SSL" default:"false"`
-	// MinioPublicEndpoint is an optional host:port or full host (example: localhost:9000 or storage.example.com)
-	// that will be used to replace the host in generated presigned URLs so they are reachable from the browser.
-	MinioPublicEndpoint string `mapstructure:"MINIO_PUBLIC_ENDPOINT" default:""`
 
 	OpenIDIssuer         string `mapstructure:"OPENID_ISSUER" validate:"required"`
 	ConsentDayExpiration int    `mapstructure:"CONSENT_DAY_EXPIRATION" default:"30" validate:"required"`
