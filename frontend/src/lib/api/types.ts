@@ -168,6 +168,26 @@ export interface paths {
         patch: operations["updateComponent"];
         trace?: never;
     };
+    "/components/{id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Component Image
+         * @description This endpoint is used to update component image.
+         */
+        patch: operations["updateComponentImage"];
+        trace?: never;
+    };
     "/consents": {
         parameters: {
             query?: never;
@@ -772,8 +792,6 @@ export interface components {
             color: string;
             /** @example Network infrastructure and connectivity */
             description: string;
-            /** @example https://example.com/network.png */
-            image_url: string;
             /** @example Network */
             name: string;
         };
@@ -1114,8 +1132,6 @@ export interface components {
             color?: string | null;
             /** @example Network infrastructure and connectivity */
             description?: string | null;
-            /** @example https://example.com/network.png */
-            image_url?: string | null;
             /** @example Network */
             name?: string | null;
         };
@@ -1675,6 +1691,50 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["UpdateComponent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Component"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateComponentImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description filename of the file being uploaded
+                     */
+                    filename?: string;
+                    /** @description general purpose name for multipart form value */
+                    name?: string;
+                };
             };
         };
         responses: {
