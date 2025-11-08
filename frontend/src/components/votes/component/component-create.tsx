@@ -25,6 +25,10 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 	const client = useQueryClient();
 	const reactQueryClient = useReactQueryClient();
 
+	// file upload state (selected file and preview URL)
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string>("");
+
 	const {mutate, isPending} = client.useMutation("post", "/votes/{id}/components", {
 		onSuccess: () => {
 			toast.success("Component Created Successfully");
@@ -50,37 +54,78 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 		defaultValues: {
 			color: "",
 			description: "",
-			image_url: "",
 			name: "",
 		},
 		onSubmit: async ({ value }) => {
 			const body: components["schemas"]["CreateComponent"] = {
 				color: value.color,
 				description: value.description,
-				image_url: value.image_url,
 				name: value.name,
 			};
+
+			// Create the component and capture the response so we can get the id
+			let createResp: any = null;
 			await new Promise<void>((resolve, reject) => {
 				mutate({
 					params: {
 						path: {
-							id: voteid
-						}
+							id: voteid,
+						},
 					},
-					body
+					body,
 				}, {
-					onSuccess: () => resolve(),
+					onSuccess: (res: any) => {
+						createResp = res;
+						resolve();
+					},
 					onError: (err) => reject(err as any),
 				});
 			});
+
+			// If a file was selected, upload it to /components/{id}/image
+			try {
+				// Try to extract an id from common response shapes
+				const componentId =
+					createResp?.data?.id ?? createResp?.id ?? (createResp && typeof createResp === 'number' ? createResp : undefined);
+
+				if (selectedFile && componentId) {
+					const formData = new FormData();
+					formData.append('image', selectedFile);
+
+					const uploadResp = await fetch(`/components/${componentId}/image`, {
+						method: 'POST',
+						body: formData,
+					});
+
+					if (!uploadResp.ok) {
+						// bubble error so the surrounding try/catch handles it
+						throw new Error(`Image upload failed with status ${uploadResp.status}`);
+					}
+				}
+			} catch (err) {
+				// Let the caller know the upload failed, but keep the created resource
+				console.error('Failed to upload component image', err);
+				toast.error('Component created but image upload failed');
+			}
 		},
 	});
 
-	const [previewColor, setPreviewColor] = useState<string>(form.state.values.color || "");
+	const [previewColor, setPreviewColor] = useState<string>("");
 
 	useEffect(() => {
 		setPreviewColor(form.state.values.color || "");
 	}, [open]);
+
+	// Revoke object URL when selectedFile changes or on unmount
+	useEffect(() => {
+		if (!selectedFile) {
+			setPreviewUrl("");
+			return;
+		}
+		const url = URL.createObjectURL(selectedFile);
+		setPreviewUrl(url);
+		return () => URL.revokeObjectURL(url);
+	}, [selectedFile]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -203,44 +248,46 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 							)}
 						</form.Field>
 
-						<form.Field
-							name="image_url"
-						>
-							{(field) => (
-								<div className="grid gap-2">
-									<Label htmlFor={field.name}>Image</Label>
-									<Input
-										id={field.name}
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={field.handleBlur}
-										placeholder="https://example.com/image.png"
-										required
+						<div className="grid gap-2">
+							<Label htmlFor="component-image">Image</Label>
+							<input
+								id="component-image"
+								type="file"
+								accept="image/*"
+								onChange={(e) => {
+									const file = e.target.files?.[0] ?? null;
+									setSelectedFile(file);
+								}}
+								className="file-input"
+							/>
+							<div
+								className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
+								style={{
+									background: previewColor == ""
+										? 'transparent'
+										: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
+								}}
+							>
+								{previewUrl ? (
+									<img
+										className="w-full h-full object-cover"
+										src={previewUrl}
+										alt="component preview"
 									/>
-									<div
-										className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
-										style={{
-											background: previewColor == ""
-												? 'transparent'
-												: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
-										}}
-									>
-										<img
-											className="w-full h-full object-cover"
-											src={field.state.value == "" ? "https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg" : field.state.value}
-											alt="component preview"
-										/>
-									</div>
-									{field.state.meta.errors?.[0] && (
-										<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
-									)}
-								</div>
-							)}
-						</form.Field>
+								) : (
+									<img
+										className="w-full h-full object-cover"
+										src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+										alt="component preview"
+									/>
+								)}
+							</div>
+						</div>
 					</div>
 
 					<DialogFooter className="mt-2">
 						<Button
+							type="button"
 							variant="outline"
 							onClick={() => setOpen(false)}
 							disabled={isPending || form.state.isSubmitting}

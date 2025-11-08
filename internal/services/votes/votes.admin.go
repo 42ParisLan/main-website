@@ -11,6 +11,10 @@ import (
 	"base-website/pkg/authz"
 	"context"
 	"fmt"
+	"io"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 func (svc *votesService) CreateVote(
@@ -47,7 +51,7 @@ func (svc *votesService) CreateVote(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewVoteFromEnt(reloaded), nil
+	return lightmodels.NewVoteFromEnt(ctx, reloaded, svc.s3service), nil
 }
 
 func (svc *votesService) UpdateVote(
@@ -182,14 +186,13 @@ func (svc *votesService) CreateComponent(
 		Create().
 		SetName(input.Name).
 		SetDescription(input.Description).
-		SetImageURL(input.ImageURL).
 		SetColor(input.Color).
 		SetVoteID(VoteID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return lightmodels.NewComponentFromEnt(entComponent), nil
+	return lightmodels.NewComponentFromEnt(ctx, entComponent, svc.s3service), nil
 }
 
 func (svc *votesService) UpdateComponent(
@@ -236,9 +239,6 @@ func (svc *votesService) UpdateComponent(
 	if input.Description != nil {
 		update.SetDescription(*input.Description)
 	}
-	if input.ImageURL != nil {
-		update.SetImageURL(*input.ImageURL)
-	}
 	if input.Color != nil {
 		update.SetColor(*input.Color)
 	}
@@ -251,7 +251,7 @@ func (svc *votesService) UpdateComponent(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewComponentFromEnt(component), nil
+	return lightmodels.NewComponentFromEnt(ctx, component, svc.s3service), nil
 }
 
 func (svc *votesService) DeleteComponent(
@@ -290,4 +290,65 @@ func (svc *votesService) DeleteComponent(
 	}
 
 	return nil
+}
+
+func (svc *votesService) UpdateComponentImage(
+	ctx context.Context,
+	componentID int,
+	reader io.Reader,
+	size int64,
+	contentType string,
+	filename string,
+) (*lightmodels.Component, error) {
+	// Fetch component with owning vote and its creator for ownership checks
+	compWithOwner, err := svc.databaseService.Component.
+		Query().
+		Where(component.IDEQ(componentID)).
+		WithVote(func(vq *ent.VoteQuery) {
+			vq.WithCreator()
+		}).
+		Only(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+
+	// Check ownership or admin
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var creatorID int
+	if compWithOwner.Edges.Vote != nil && compWithOwner.Edges.Vote.Edges.Creator != nil {
+		creatorID = compWithOwner.Edges.Vote.Edges.Creator.ID
+	}
+	if creatorID != userID {
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "super_admin"); err != nil {
+			return nil, fmt.Errorf("only the vote creator or an admin can update this component")
+		}
+	}
+
+	// Sanitize filename and build object name
+	sanitized := strings.ReplaceAll(filename, " ", "_")
+	ext := filepath.Ext(sanitized)
+	base := strings.TrimSuffix(sanitized, ext)
+	if base == "" {
+		base = "file"
+	}
+	objectName := fmt.Sprintf("components/%d/%d_%s%s", componentID, time.Now().UnixNano(), base, ext)
+
+	// Upload to S3
+	if err := svc.s3service.UploadObject(ctx, objectName, reader, size, contentType); err != nil {
+		return nil, svc.errorFilter.Filter(err, "upload")
+	}
+
+	// Update component record with image object name
+	if _, err := svc.databaseService.Component.UpdateOneID(componentID).SetImageURL(objectName).Save(ctx); err != nil {
+		return nil, svc.errorFilter.Filter(err, "update_image")
+	}
+
+	component, err := svc.databaseService.Component.Get(ctx, componentID)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+	return lightmodels.NewComponentFromEnt(ctx, component, svc.s3service), nil
 }

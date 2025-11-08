@@ -88,7 +88,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Default: "components/default.png"},
 		{Name: "color", Type: field.TypeString, Nullable: true},
 		{Name: "vote_components", Type: field.TypeInt},
 	}

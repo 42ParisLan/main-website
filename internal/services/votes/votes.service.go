@@ -10,6 +10,7 @@ import (
 	"base-website/internal/security"
 	databaseservice "base-website/internal/services/database"
 	rbacservice "base-website/internal/services/rbac"
+	s3service "base-website/internal/services/s3"
 	votesmodels "base-website/internal/services/votes/models"
 	"base-website/pkg/authz"
 	"base-website/pkg/errorfilters"
@@ -17,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/samber/do"
@@ -36,6 +38,7 @@ type VotesService interface {
 
 	CreateComponent(ctx context.Context, input votesmodels.CreateComponent, VoteID int) (*lightmodels.Component, error)
 	UpdateComponent(ctx context.Context, componentID int, input *votesmodels.UpdateComponent) (*lightmodels.Component, error)
+	UpdateComponentImage(ctx context.Context, componentID int, reader io.Reader, size int64, contentType string, filename string) (*lightmodels.Component, error)
 	DeleteComponent(ctx context.Context, componentID int) error
 }
 
@@ -43,6 +46,7 @@ type votesService struct {
 	databaseService databaseservice.DatabaseService
 	errorFilter     errorfilters.ErrorFilter
 	rbacService     rbacservice.RBACService
+	s3service       s3service.S3Service
 }
 
 func NewProvider() func(i *do.Injector) (VotesService, error) {
@@ -50,6 +54,7 @@ func NewProvider() func(i *do.Injector) (VotesService, error) {
 		return New(
 			do.MustInvoke[databaseservice.DatabaseService](i),
 			do.MustInvoke[rbacservice.RBACService](i),
+			do.MustInvoke[s3service.S3Service](i),
 		)
 	}
 }
@@ -57,11 +62,13 @@ func NewProvider() func(i *do.Injector) (VotesService, error) {
 func New(
 	databaseService databaseservice.DatabaseService,
 	rbacService rbacservice.RBACService,
+	s3service s3service.S3Service,
 ) (VotesService, error) {
 	return &votesService{
 		databaseService: databaseService,
 		errorFilter:     errorfilters.NewEntErrorFilter().WithEntityTypeName("user"),
 		rbacService:     rbacService,
+		s3service:       s3service,
 	}, nil
 }
 
@@ -143,7 +150,7 @@ func (svc *votesService) GetVoteByID(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewVoteFromEnt(entVote), nil
+	return lightmodels.NewVoteFromEnt(ctx, entVote, svc.s3service), nil
 }
 
 func (svc *votesService) SubmitVote(

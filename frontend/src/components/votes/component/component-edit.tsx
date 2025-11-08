@@ -24,6 +24,10 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 	const client = useQueryClient();
 	const reactQueryClient = useReactQueryClient();
 
+	// file upload state (selected file and preview URL)
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string>(component.image_url);
+
 	const {mutate, isPending} = client.useMutation("patch", "/components/{id}", {
 		onSuccess: () => {
 			toast.success("Component Edited Successfully");
@@ -49,7 +53,6 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 		color: component.color,
 		description: component.description,
 		id: component.id,
-		image_url: component.image_url,
 		name: component.name
 	}), [component]);
 
@@ -65,9 +68,6 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 			}
 			if (value.description != initialValues.description) {
 				body.description = value.description
-			}
-			if (value.image_url != initialValues.image_url) {
-				body.image_url = value.image_url
 			}
 			await new Promise<void>((resolve, reject) => {
 				mutate({
@@ -85,11 +85,18 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 		},
 	});
 
-	const [previewColor, setPreviewColor] = useState<string>(form.state.values.color || "");
+	const [previewColor, setPreviewColor] = useState<string>(component.color || "");
 
+	// Revoke object URL when selectedFile changes or on unmount
 	useEffect(() => {
-		setPreviewColor(form.state.values.color || "");
-	}, [open]);
+		if (!selectedFile) {
+			setPreviewUrl(component.image_url);
+			return;
+		}
+		const url = URL.createObjectURL(selectedFile);
+		setPreviewUrl(url);
+		return () => URL.revokeObjectURL(url);
+	}, [selectedFile]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -213,7 +220,7 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 								<div className="grid gap-2">
 									<Label htmlFor={field.name}>Color</Label>
 									<ColorPicker
-										defaultValue={field.state.value == "" ? undefined : field.state.value}
+										defaultValue={field.state.value}
 										onChange={(value) => {
 											try {
 												const color = Color(value);
@@ -241,44 +248,46 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 							)}
 						</form.Field>
 
-						<form.Field
-							name="image_url"
-						>
-							{(field) => (
-								<div className="grid gap-2">
-									<Label htmlFor={field.name}>Image</Label>
-									<Input
-										id={field.name}
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={field.handleBlur}
-										placeholder="https://example.com/image.png"
-										required
+						<div className="grid gap-2">
+							<Label htmlFor="component-image">Image</Label>
+							<input
+								id="component-image"
+								type="file"
+								accept="image/*"
+								onChange={(e) => {
+									const file = e.target.files?.[0] ?? null;
+									setSelectedFile(file);
+								}}
+								className="file-input"
+							/>
+							<div
+								className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
+								style={{
+									background: previewColor == ""
+										? 'transparent'
+										: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
+								}}
+							>
+								{previewUrl ? (
+									<img
+										className="w-full h-full object-cover"
+										src={previewUrl}
+										alt="component preview"
 									/>
-									<div
-										className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
-										style={{
-											background: previewColor == ""
-												? 'transparent'
-												: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
-										}}
-									>
-										<img
-											className="w-full h-full object-cover"
-											src={field.state.value == "" ? "https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg" : field.state.value}
-											alt="component preview"
-										/>
-									</div>
-									{field.state.meta.errors?.[0] && (
-										<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
-									)}
-								</div>
-							)}
-						</form.Field>
+								) : (
+									<img
+										className="w-full h-full object-cover"
+										src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+										alt="component preview"
+									/>
+								)}
+							</div>
+						</div>
 					</div>
 
 					<DialogFooter className="mt-2">
 						<Button
+							type="button"
 							variant="outline"
 							onClick={() => setOpen(false)}
 							disabled={isPending || form.state.isSubmitting}

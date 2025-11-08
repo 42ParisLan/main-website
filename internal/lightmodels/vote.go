@@ -1,9 +1,11 @@
 package lightmodels
 
 import (
+	"context"
 	"time"
 
 	"base-website/ent"
+	s3service "base-website/internal/services/s3"
 )
 
 type LightVote struct {
@@ -60,12 +62,12 @@ func NewLightVotesFromEnt(entVotes []*ent.Vote) []*LightVote {
 	return votes
 }
 
-func NewVoteFromEnt(entVote *ent.Vote) *Vote {
+func NewVoteFromEnt(ctx context.Context, entVote *ent.Vote, S3Service s3service.S3Service) *Vote {
 	if entVote == nil {
 		return nil
 	}
 
-	components := NewComponentsFromEnt(entVote.Edges.Components)
+	components := NewComponentsFromEnt(ctx, entVote.Edges.Components, S3Service)
 
 	return &Vote{
 		ID:          entVote.ID,
@@ -79,10 +81,10 @@ func NewVoteFromEnt(entVote *ent.Vote) *Vote {
 	}
 }
 
-func NewVotesFromEnt(entVotes []*ent.Vote) []*Vote {
+func NewVotesFromEnt(ctx context.Context, entVotes []*ent.Vote, S3Service s3service.S3Service) []*Vote {
 	votes := make([]*Vote, len(entVotes))
 	for i, entVote := range entVotes {
-		votes[i] = NewVoteFromEnt(entVote)
+		votes[i] = NewVoteFromEnt(ctx, entVote, S3Service)
 	}
 	return votes
 }

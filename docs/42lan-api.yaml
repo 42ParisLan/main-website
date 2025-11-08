@@ -227,16 +227,12 @@ components:
         description:
           example: Network infrastructure and connectivity
           type: string
-        image_url:
-          example: https://example.com/network.png
-          type: string
         name:
           example: Network
           type: string
       required:
         - name
         - description
-        - image_url
         - color
       type: object
     CreateVote:
@@ -702,10 +698,6 @@ components:
           type: string
         description:
           example: Network infrastructure and connectivity
-          nullable: true
-          type: string
-        image_url:
-          example: https://example.com/network.png
           nullable: true
           type: string
         name:
@@ -1424,6 +1416,53 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: Update Component
+      tags:
+        - Vote
+  /components/{id}/image:
+    patch:
+      description: This endpoint is used to update component image.
+      operationId: updateComponentImage
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                filename:
+                  contentMediaType: application/octet-stream
+                  description: filename of the file being uploaded
+                  format: binary
+                  type: string
+                name:
+                  description: general purpose name for multipart form value
+                  type: string
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Component Image
       tags:
         - Vote
   /consents:

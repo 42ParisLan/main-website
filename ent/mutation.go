@@ -3124,22 +3124,9 @@ func (m *ComponentMutation) OldImageURL(ctx context.Context) (v string, err erro
 	return oldValue.ImageURL, nil
 }
 
-// ClearImageURL clears the value of the "image_url" field.
-func (m *ComponentMutation) ClearImageURL() {
-	m.image_url = nil
-	m.clearedFields[component.FieldImageURL] = struct{}{}
-}
-
-// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
-func (m *ComponentMutation) ImageURLCleared() bool {
-	_, ok := m.clearedFields[component.FieldImageURL]
-	return ok
-}
-
 // ResetImageURL resets all changes to the "image_url" field.
 func (m *ComponentMutation) ResetImageURL() {
 	m.image_url = nil
-	delete(m.clearedFields, component.FieldImageURL)
 }
 
 // SetColor sets the "color" field.
@@ -3434,9 +3421,6 @@ func (m *ComponentMutation) ClearedFields() []string {
 	if m.FieldCleared(component.FieldDescription) {
 		fields = append(fields, component.FieldDescription)
 	}
-	if m.FieldCleared(component.FieldImageURL) {
-		fields = append(fields, component.FieldImageURL)
-	}
 	if m.FieldCleared(component.FieldColor) {
 		fields = append(fields, component.FieldColor)
 	}
@@ -3456,9 +3440,6 @@ func (m *ComponentMutation) ClearField(name string) error {
 	switch name {
 	case component.FieldDescription:
 		m.ClearDescription()
-		return nil
-	case component.FieldImageURL:
-		m.ClearImageURL()
 		return nil
 	case component.FieldColor:
 		m.ClearColor()

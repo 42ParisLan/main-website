@@ -20,6 +20,8 @@ services:
     build:
       context: ./
       dockerfile: ./cmd/api/Dockerfile.dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     working_dir: /app
     ports:
       - "3000:3000"
@@ -40,7 +42,13 @@ services:
       - DB_PASS=base-website
       - DB_NAME=base-website
       - DB_PORT=5432
-      - 'VALKEY_ADDRESS=redis://valkey:6379'
+      - VALKEY_ADDRESS=redis://valkey:6379
+      - MINIO_ENDPOINT=host.docker.internal:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=false
+      - MINIO_BUCKET=42lanwebsite
+      - MINIO_PUBLIC_ENDPOINT=127.0.0.1:9000
       - API_PREFIX=/api
       - OPENID_ISSUER=http://localhost:3000/api/openid
       - LOGIN_URL=http://localhost:8080/auth/authorize
@@ -73,9 +81,24 @@ services:
     networks:
       - base-website
 
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio-data:/data
+    networks:
+      - base-website
+
 networks:
   base-website:
 
 volumes:
   # db-data:
   go-cache:
+  minio-data:

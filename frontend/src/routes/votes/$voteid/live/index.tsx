@@ -18,7 +18,6 @@ function DiagonalSplit({ left, right }: { left: string; right: string }) {
 			if (width === 0) return;
 			const rad = Math.atan2(width, height);
 			const deg = 90 + rad * (180 / Math.PI);
-			console.log(deg, rad)
 			setAngle(deg);
 		};
 

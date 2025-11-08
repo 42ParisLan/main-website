@@ -71,7 +71,6 @@ export const ColorPicker = ({
   try{
     defaultColor = Color(defaultValue);
   } catch (error) {
-
   }
 
   const [hue, setHue] = useState(

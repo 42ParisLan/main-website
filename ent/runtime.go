@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/app"
 	"base-website/ent/authcode"
+	"base-website/ent/component"
 	"base-website/ent/consent"
 	"base-website/ent/schema"
 	"base-website/ent/user"
@@ -39,6 +40,12 @@ func init() {
 	authcodeDescExpiration := authcodeFields[2].Descriptor()
 	// authcode.DefaultExpiration holds the default value on creation for the expiration field.
 	authcode.DefaultExpiration = authcodeDescExpiration.Default.(func() time.Time)
+	componentFields := schema.Component{}.Fields()
+	_ = componentFields
+	// componentDescImageURL is the schema descriptor for image_url field.
+	componentDescImageURL := componentFields[2].Descriptor()
+	// component.DefaultImageURL holds the default value on creation for the image_url field.
+	component.DefaultImageURL = componentDescImageURL.Default.(string)
 	consentFields := schema.Consent{}.Fields()
 	_ = consentFields
 	// consentDescCreatedAt is the schema descriptor for created_at field.
