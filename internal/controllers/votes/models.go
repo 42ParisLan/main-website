@@ -4,6 +4,7 @@ import (
 	"base-website/internal/lightmodels"
 	votesmodels "base-website/internal/services/votes/models"
 	"base-website/pkg/paging"
+	"mime/multipart"
 )
 
 type BodyMessage struct {
@@ -62,6 +63,8 @@ type updateComponentInput struct {
 	Body *votesmodels.UpdateComponent `required:"true"`
 }
 
-type liveMessage struct {
-	Message string `json:"message" example:"heartbeat" description:"Live event message"`
+type updateComponentImageInput struct {
+	ComponentID int `path:"id" required:"true" example:"42" description:"The component ID"`
+
+	RawBody multipart.Form
 }

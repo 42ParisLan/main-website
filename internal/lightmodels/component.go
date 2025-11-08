@@ -1,6 +1,11 @@
 package lightmodels
 
-import "base-website/ent"
+import (
+	"base-website/ent"
+	s3service "base-website/internal/services/s3"
+	"context"
+	"time"
+)
 
 type Component struct {
 	ID          int    `json:"id" example:"1" description:"The ID of the component"`
@@ -10,23 +15,28 @@ type Component struct {
 	Color       string `json:"color" example:"#FF5733" description:"The color of the component"`
 }
 
-func NewComponentFromEnt(entComponent *ent.Component) *Component {
+func NewComponentFromEnt(ctx context.Context, entComponent *ent.Component, S3Service s3service.S3Service) *Component {
 	if entComponent == nil {
 		return nil
+	}
+
+	var imageUrl string
+	if entComponent.ImageURL != "" {
+		imageUrl, _ = S3Service.PresignedGet(ctx, entComponent.ImageURL, time.Hour)
 	}
 	return &Component{
 		ID:          entComponent.ID,
 		Name:        entComponent.Name,
 		Description: entComponent.Description,
-		ImageURL:    entComponent.ImageURL,
+		ImageURL:    imageUrl,
 		Color:       entComponent.Color,
 	}
 }
 
-func NewComponentsFromEnt(entComponents []*ent.Component) []*Component {
+func NewComponentsFromEnt(ctx context.Context, entComponents []*ent.Component, S3Service s3service.S3Service) []*Component {
 	components := make([]*Component, len(entComponents))
 	for i, entComponent := range entComponents {
-		components[i] = NewComponentFromEnt(entComponent)
+		components[i] = NewComponentFromEnt(ctx, entComponent, S3Service)
 	}
 	return components
 }

@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/sse"
@@ -119,6 +120,16 @@ func (ctrl *voteController) Register(api huma.API) {
 		OperationID: "updateComponent",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.updateComponent)
+
+	huma.Register(api, huma.Operation{
+		Method:      "PATCH",
+		Path:        "/components/{id}/image",
+		Summary:     "Update Component Image",
+		Description: `This endpoint is used to update component image.`,
+		Tags:        []string{"Vote"},
+		OperationID: "updateComponentImage",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.updateComponentImage)
 
 	huma.Register(api, huma.Operation{
 		Method:      "DELETE",
@@ -270,6 +281,42 @@ func (ctrl *voteController) updateComponent(
 	return &oneComponentOutput{
 		Body: component,
 	}, nil
+}
+
+func (ctrl *voteController) updateComponentImage(
+	ctx context.Context,
+	input *updateComponentImageInput,
+) (*oneComponentOutput, error) {
+	if input == nil || len(input.RawBody.File) == 0 {
+		return nil, fmt.Errorf("invalid input: image file required")
+	}
+
+	for _, fhs := range input.RawBody.File {
+		fh := fhs[0]
+
+		ct := fh.Header.Get("Content-Type")
+		if ct == "" || !strings.HasPrefix(ct, "image/") {
+			return nil, fmt.Errorf("invalid content type: %s", ct)
+		}
+
+		file, err := fh.Open()
+		if err != nil {
+			return nil, err
+		}
+
+		comp, err := ctrl.votesService.UpdateComponentImage(ctx, input.ComponentID, file, fh.Size, ct, fh.Filename)
+
+		_ = file.Close()
+		if err != nil {
+			return nil, err
+		}
+
+		return &oneComponentOutput{
+			Body: comp,
+		}, nil
+	}
+
+	return nil, fmt.Errorf("no file processed")
 }
 
 func (ctrl *voteController) deleteComponent(

@@ -102,6 +102,7 @@ func (_c *ComponentCreate) Mutation() *ComponentMutation {
 
 // Save creates the Component in the database.
 func (_c *ComponentCreate) Save(ctx context.Context) (*Component, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -127,10 +128,21 @@ func (_c *ComponentCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_c *ComponentCreate) defaults() {
+	if _, ok := _c.mutation.ImageURL(); !ok {
+		v := component.DefaultImageURL
+		_c.mutation.SetImageURL(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_c *ComponentCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Component.name"`)}
+	}
+	if _, ok := _c.mutation.ImageURL(); !ok {
+		return &ValidationError{Name: "image_url", err: errors.New(`ent: missing required field "Component.image_url"`)}
 	}
 	if len(_c.mutation.VoteIDs()) == 0 {
 		return &ValidationError{Name: "vote", err: errors.New(`ent: missing required edge "Component.vote"`)}
@@ -231,6 +243,7 @@ func (_c *ComponentCreateBulk) Save(ctx context.Context) ([]*Component, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ComponentMutation)
 				if !ok {

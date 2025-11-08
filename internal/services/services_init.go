@@ -10,6 +10,7 @@ import (
 	openidservice "base-website/internal/services/openid"
 	pubsubservice "base-website/internal/services/pubsub"
 	rbacservice "base-website/internal/services/rbac"
+	s3service "base-website/internal/services/s3"
 	usersservice "base-website/internal/services/users"
 	votesservice "base-website/internal/services/votes"
 
@@ -21,6 +22,7 @@ func InitServices(i *do.Injector) error {
 	do.Provide(i, rbacservice.NewProvider())
 	do.Provide(i, databaseservice.NewProvider())
 	do.Provide(i, openidservice.NewProvider())
+	do.Provide(i, s3service.NewProvider())
 	do.Provide(i, authservice.NewProvider())
 	do.Provide(i, intraservice.NewProvider())
 	do.Provide(i, usersservice.NewProvider())
