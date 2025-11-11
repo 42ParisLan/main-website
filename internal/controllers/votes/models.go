@@ -4,7 +4,7 @@ import (
 	"base-website/internal/lightmodels"
 	votesmodels "base-website/internal/services/votes/models"
 	"base-website/pkg/paging"
-	"mime/multipart"
+	"github.com/danielgtaylor/huma/v2"
 )
 
 type BodyMessage struct {
@@ -54,17 +54,11 @@ type oneComponentOutput struct {
 type createComponentInput struct {
 	VoteID int `path:"id" required:"true" example:"42" description:"The vote ID"`
 
-	Body *votesmodels.CreateComponent `required:"true"`
+	RawBody huma.MultipartFormFiles[votesmodels.CreateComponent] `required:"true"`
 }
 
 type updateComponentInput struct {
 	ComponentID int `path:"id" required:"true" example:"42" description:"The vote ID"`
 
-	Body *votesmodels.UpdateComponent `required:"true"`
-}
-
-type updateComponentImageInput struct {
-	ComponentID int `path:"id" required:"true" example:"42" description:"The component ID"`
-
-	RawBody multipart.Form
+	RawBody huma.MultipartFormFiles[votesmodels.UpdateComponent] `required:"true"`
 }

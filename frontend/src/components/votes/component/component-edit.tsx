@@ -53,22 +53,24 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 		color: component.color,
 		description: component.description,
 		id: component.id,
-		name: component.name
+		name: component.name,
+		image_url: component.image_url,
 	}), [component]);
 
 	const form = useForm({
 		defaultValues: component,
 		onSubmit: async ({ value }) => {
-			const body: components["schemas"]["UpdateComponent"] = {};
+			const formData = new FormData();
 			if (value.name != initialValues.name) {
-				body.name = value.name
+				formData.append("name", value.name)
 			}
 			if (value.color != initialValues.color) {
-				body.color = value.color
+				formData.append("color", value.color)
 			}
 			if (value.description != initialValues.description) {
-				body.description = value.description
+				formData.append("description", value.description)
 			}
+			if (value.image_url != initialValues.image_url) formData.append("image", value.image);
 			await new Promise<void>((resolve, reject) => {
 				mutate({
 					params: {
@@ -76,7 +78,7 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 							id: component.id
 						}
 					},
-					body
+					body: formData
 				}, {
 					onSuccess: () => resolve(),
 					onError: (err) => reject(err as any),

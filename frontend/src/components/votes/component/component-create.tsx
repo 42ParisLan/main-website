@@ -5,7 +5,6 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
-import type { components } from "@/lib/api/types";
 import { useForm } from "@tanstack/react-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -55,58 +54,23 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 			color: "",
 			description: "",
 			name: "",
+			image: null as File | null,
 		},
 		onSubmit: async ({ value }) => {
-			const body: components["schemas"]["CreateComponent"] = {
-				color: value.color,
-				description: value.description,
-				name: value.name,
-			};
+			const formData = new FormData();
+			formData.append("color", value.color);
+			formData.append("description", value.description);
+			formData.append("name", value.name);
+			if (value.image) formData.append("image", value.image);
 
-			// Create the component and capture the response so we can get the id
-			let createResp: any = null;
-			await new Promise<void>((resolve, reject) => {
-				mutate({
-					params: {
-						path: {
-							id: voteid,
-						},
+			mutate({
+				params: {
+					path: {
+						id: voteid,
 					},
-					body,
-				}, {
-					onSuccess: (res: any) => {
-						createResp = res;
-						resolve();
-					},
-					onError: (err) => reject(err as any),
-				});
+				},
+				body:formData
 			});
-
-			// If a file was selected, upload it to /components/{id}/image
-			try {
-				// Try to extract an id from common response shapes
-				const componentId =
-					createResp?.data?.id ?? createResp?.id ?? (createResp && typeof createResp === 'number' ? createResp : undefined);
-
-				if (selectedFile && componentId) {
-					const formData = new FormData();
-					formData.append('image', selectedFile);
-
-					const uploadResp = await fetch(`/components/${componentId}/image`, {
-						method: 'POST',
-						body: formData,
-					});
-
-					if (!uploadResp.ok) {
-						// bubble error so the surrounding try/catch handles it
-						throw new Error(`Image upload failed with status ${uploadResp.status}`);
-					}
-				}
-			} catch (err) {
-				// Let the caller know the upload failed, but keep the created resource
-				console.error('Failed to upload component image', err);
-				toast.error('Component created but image upload failed');
-			}
 		},
 	});
 
@@ -248,41 +212,48 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 							)}
 						</form.Field>
 
-						<div className="grid gap-2">
-							<Label htmlFor="component-image">Image</Label>
-							<input
-								id="component-image"
-								type="file"
-								accept="image/*"
-								onChange={(e) => {
-									const file = e.target.files?.[0] ?? null;
-									setSelectedFile(file);
-								}}
-								className="file-input"
-							/>
-							<div
-								className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
-								style={{
-									background: previewColor == ""
-										? 'transparent'
-										: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
-								}}
-							>
-								{previewUrl ? (
-									<img
-										className="w-full h-full object-cover"
-										src={previewUrl}
-										alt="component preview"
+						<form.Field
+							name="image"
+						>
+							{(field) => (
+								<div className="grid gap-2">
+									<Label htmlFor="component-image">Image</Label>
+									<input
+										id="component-image"
+										type="file"
+										accept="image/*"
+										onChange={(e) => {
+											const file = e.target.files?.[0] ?? null;
+											field.handleChange(file)
+											setSelectedFile(file)
+										}}
+										className="file-input"
 									/>
-								) : (
-									<img
-										className="w-full h-full object-cover"
-										src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
-										alt="component preview"
-									/>
-								)}
-							</div>
-						</div>
+									<div
+										className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
+										style={{
+											background: previewColor == ""
+												? 'transparent'
+												: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
+										}}
+									>
+										{previewUrl ? (
+											<img
+												className="w-full h-full object-cover"
+												src={previewUrl}
+												alt="component preview"
+											/>
+										) : (
+											<img
+												className="w-full h-full object-cover"
+												src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+												alt="component preview"
+											/>
+										)}
+									</div>
+								</div>
+							)}
+						</form.Field>
 					</div>
 
 					<DialogFooter className="mt-2">

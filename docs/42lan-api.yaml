@@ -212,29 +212,6 @@ components:
         - scopes
         - expiration_date
       type: object
-    CreateComponent:
-      additionalProperties: false
-      properties:
-        $schema:
-          description: A URL to the JSON Schema for this object.
-          example: /api/schemas/CreateComponent.json
-          format: uri
-          readOnly: true
-          type: string
-        color:
-          example: "#FF5733"
-          type: string
-        description:
-          example: Network infrastructure and connectivity
-          type: string
-        name:
-          example: Network
-          type: string
-      required:
-        - name
-        - description
-        - color
-      type: object
     CreateVote:
       additionalProperties: false
       properties:
@@ -332,6 +309,24 @@ components:
           example: https://example.com/errors/example
           format: uri
           type: string
+      type: object
+    FormFile:
+      additionalProperties: false
+      properties:
+        ContentType:
+          type: string
+        Filename:
+          type: string
+        IsSet:
+          type: boolean
+        Size:
+          format: int64
+          type: integer
+      required:
+        - ContentType
+        - IsSet
+        - Size
+        - Filename
       type: object
     JsonPatchOp:
       additionalProperties: false
@@ -682,28 +677,6 @@ components:
         - description
         - permissions
         - inherits
-      type: object
-    UpdateComponent:
-      additionalProperties: false
-      properties:
-        $schema:
-          description: A URL to the JSON Schema for this object.
-          example: /api/schemas/UpdateComponent.json
-          format: uri
-          readOnly: true
-          type: string
-        color:
-          example: "#FF5733"
-          nullable: true
-          type: string
-        description:
-          example: Network infrastructure and connectivity
-          nullable: true
-          type: string
-        name:
-          example: Network
-          nullable: true
-          type: string
       type: object
     UpdateVote:
       additionalProperties: false
@@ -1395,10 +1368,33 @@ paths:
             type: integer
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
+            encoding:
+              color:
+                contentType: text/plain
+              description:
+                contentType: text/plain
+              image:
+                contentType: text/plain
+              name:
+                contentType: text/plain
             schema:
-              $ref: "#/components/schemas/UpdateComponent"
-        required: true
+              properties:
+                color:
+                  example: "#FF5733"
+                  nullable: true
+                  type: string
+                description:
+                  example: Network infrastructure and connectivity
+                  nullable: true
+                  type: string
+                image:
+                  $ref: "#/components/schemas/FormFile"
+                name:
+                  example: Network
+                  nullable: true
+                  type: string
+              type: object
       responses:
         "200":
           content:
@@ -1416,53 +1412,6 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: Update Component
-      tags:
-        - Vote
-  /components/{id}/image:
-    patch:
-      description: This endpoint is used to update component image.
-      operationId: updateComponentImage
-      parameters:
-        - example: 42
-          in: path
-          name: id
-          required: true
-          schema:
-            example: 42
-            format: int64
-            type: integer
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              properties:
-                filename:
-                  contentMediaType: application/octet-stream
-                  description: filename of the file being uploaded
-                  format: binary
-                  type: string
-                name:
-                  description: general purpose name for multipart form value
-                  type: string
-              type: object
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Component"
-          description: OK
-        default:
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ErrorModel"
-          description: Error
-      security:
-        - OAuth2 Auth:
-            - profile
-      summary: Update Component Image
       tags:
         - Vote
   /consents:
@@ -2180,10 +2129,38 @@ paths:
             type: integer
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
+            encoding:
+              color:
+                contentType: text/plain
+              description:
+                contentType: text/plain
+              image:
+                contentType: iamge/*
+              name:
+                contentType: text/plain
             schema:
-              $ref: "#/components/schemas/CreateComponent"
-        required: true
+              properties:
+                color:
+                  example: "#FF5733"
+                  type: string
+                description:
+                  example: Network infrastructure and connectivity
+                  type: string
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                name:
+                  example: Network
+                  type: string
+              required:
+                - name
+                - description
+                - color
+                - image
+              type: object
       responses:
         "200":
           content:
