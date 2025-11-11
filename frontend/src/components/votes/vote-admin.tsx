@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { components } from '@/lib/api/types';
 import { useAuth } from '@/providers/auth.provider';
+import { useHasRole } from '@/hooks/use-can';
 
 interface VoteCardProps {
 	vote: components['schemas']['LightVote'];
@@ -10,6 +11,7 @@ interface VoteCardProps {
 export default function VoteAdmin({ vote }: VoteCardProps) {
 	const {me} = useAuth();
 	const [status, setStatus] = useState<'pending' | 'active' | 'finished'>('pending');
+	const hasRole = useHasRole();
 
 	useEffect(() => {
 		const updateCountdown = () => {
@@ -54,7 +56,7 @@ export default function VoteAdmin({ vote }: VoteCardProps) {
 				>
 					See Live
 				</a>
-				{vote.creator.id == me.id && (
+				{(vote.creator.id == me.id || hasRole(['super_admin'])) && (
 					<a 
 						href={`/admin/votes/${vote.id}`}
 						className="text-primary hover:underline"
