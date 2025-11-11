@@ -310,24 +310,6 @@ components:
           format: uri
           type: string
       type: object
-    FormFile:
-      additionalProperties: false
-      properties:
-        ContentType:
-          type: string
-        Filename:
-          type: string
-        IsSet:
-          type: boolean
-        Size:
-          format: int64
-          type: integer
-      required:
-        - ContentType
-        - IsSet
-        - Size
-        - Filename
-      type: object
     JsonPatchOp:
       additionalProperties: false
       properties:
@@ -1375,24 +1357,24 @@ paths:
               description:
                 contentType: text/plain
               image:
-                contentType: text/plain
+                contentType: image/*
               name:
                 contentType: text/plain
             schema:
               properties:
                 color:
                   example: "#FF5733"
-                  nullable: true
                   type: string
                 description:
                   example: Network infrastructure and connectivity
-                  nullable: true
                   type: string
                 image:
-                  $ref: "#/components/schemas/FormFile"
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
                 name:
                   example: Network
-                  nullable: true
                   type: string
               type: object
       responses:
@@ -2136,7 +2118,7 @@ paths:
               description:
                 contentType: text/plain
               image:
-                contentType: iamge/*
+                contentType: image/*
               name:
                 contentType: text/plain
             schema:

@@ -27,7 +27,7 @@ function RouteComponent() {
 		}
 	}, [canAddAdmin, router]);
 
-	const { data, isLoading } = client.useQuery("get", "/users", {
+	const { data, isLoading, refetch } = client.useQuery("get", "/users", {
 		params: {
 			query: {
 				kind: "admin",
@@ -49,7 +49,7 @@ function RouteComponent() {
 						<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 							Admins
 						</CardTitle>
-						{canAddAdmin && <AdminAddModal />}
+						{canAddAdmin && <AdminAddModal refetchUsers={refetch} />}
 					</CardHeader>
 					<CardContent>
 						<PaginatedListControlled<components['schemas']['User']>

@@ -4,7 +4,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import useQueryClient from "@/hooks/use-query-client";
 import { toast } from "sonner";
-import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import type { components } from "@/lib/api/types";
@@ -17,11 +16,11 @@ import { toIsoString, toDatetimeLocal } from "@/lib/date.utils";
 
 interface VoteEditModalProps {
 	vote: components['schemas']['Vote'];
+	refetchVote: () => any;
 }
 
-export default function VoteEdit({ vote }: VoteEditModalProps) {
+export default function VoteEdit({ vote, refetchVote }: VoteEditModalProps) {
 	const client = useQueryClient();
-	const reactQueryClient = useReactQueryClient();
 	const router = useRouter();
 
 	const [isDefault, setIsDefault] = useState<boolean>(true);
@@ -84,7 +83,7 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 	const { mutate, isPending } = client.useMutation("patch", "/votes/{id}", {
 		onSuccess: () => {
 			toast.success("Vote Edited Successfully");
-			reactQueryClient.invalidateQueries({ queryKey: ["/votes/{id}"] });
+			refetchVote();
 		},
 		onError: (error: any) => {
 			toast.error("Failed to create vote");
@@ -297,13 +296,6 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 					Dates are interpreted in your local timezone and saved in UTC.
 				</p>
 
-				<div className="grid md:grid-cols-2 gap-4">
-					{vote.components?.map((component) => (
-						<ComponentEdit key={component.id} component={component}/>
-					))}
-					<ComponentCreate voteid={vote.id}/>
-				</div>
-
 				<CardFooter className="flex justify-end gap-4 mt-2">
 					<Button
 						variant="destructive"
@@ -322,6 +314,17 @@ export default function VoteEdit({ vote }: VoteEditModalProps) {
 			</form>
 		</>
 	);
+}
+
+export function VoteComponentEdit({ vote, refetchVote }: VoteEditModalProps) {
+	return (
+		<div className="grid md:grid-cols-2 gap-4">
+			{vote.components?.map((component) => (
+				<ComponentEdit key={component.id} component={component} refetchVote={refetchVote}/>
+			))}
+			<ComponentCreate voteid={vote.id} refetchVote={refetchVote}/>
+		</div>
+	)
 }
 
 

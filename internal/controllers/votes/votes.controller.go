@@ -248,33 +248,32 @@ func (ctrl *voteController) createComponent(
 	ctx context.Context,
 	input *createComponentInput,
 ) (*oneComponentOutput, error) {
-	_ = input.RawBody.Data()
+	RawBody := input.RawBody.Data()
 
-	// component, err := ctrl.votesService.CreateComponent(ctx, *input.Body, input.VoteID)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	component, err := ctrl.votesService.CreateComponent(ctx, *RawBody, input.VoteID)
+	if err != nil {
+		return nil, err
+	}
 
-	// return &oneComponentOutput{
-	// 	Body: component,
-	// }, nil
-	return nil, nil
+	return &oneComponentOutput{
+		Body: component,
+	}, nil
 }
 
 func (ctrl *voteController) updateComponent(
 	ctx context.Context,
 	input *updateComponentInput,
 ) (*oneComponentOutput, error) {
-	_ = input.RawBody.Data()
-	// component, err := ctrl.votesService.UpdateComponent(ctx, input.ComponentID, input.Body)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	RawBody := input.RawBody.Data()
 
-	// return &oneComponentOutput{
-	// 	Body: component,
-	// }, nil
-	return nil, nil
+	component, err := ctrl.votesService.UpdateComponent(ctx, input.ComponentID, RawBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return &oneComponentOutput{
+		Body: component,
+	}, nil
 }
 
 func (ctrl *voteController) deleteComponent(

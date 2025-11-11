@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import useQueryClient from "@/hooks/use-query-client";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 import type { components } from "@/lib/api/types";
 import { useForm } from "@tanstack/react-form";
 import { Label } from "@/components/ui/label";
@@ -16,13 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ComponentEditModalProps {
 	component: components['schemas']['Component'];
+	refetchVote: () => any;
 }
 
-export default function ComponentEdit({ component }: ComponentEditModalProps) {
+export default function ComponentEdit({ component, refetchVote }: ComponentEditModalProps) {
 	// keep modal closed by default (consistent with other modals)
 	const [open, setOpen] = useState<boolean>(false);
 	const client = useQueryClient();
-	const reactQueryClient = useReactQueryClient();
 
 	// file upload state (selected file and preview URL)
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -32,10 +31,22 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 		onSuccess: () => {
 			toast.success("Component Edited Successfully");
 			setOpen(false);
-			reactQueryClient.invalidateQueries({ queryKey: ["/votes/{id}"] });
+			refetchVote();
 		},
 		onError: (error: any) => {
 			toast.error("Failed to edit Component for vote");
+			console.error(error);
+		},
+	})
+
+	const {mutate: mutateDelete, isPending: isPendingDelete} = client.useMutation("delete", "/components/{id}", {
+		onSuccess: () => {
+			toast.success("Component Deleted Successfully");
+			setOpen(false);
+			refetchVote();
+		},
+		onError: (error: any) => {
+			toast.error("Failed to delete Component");
 			console.error(error);
 		},
 	})
@@ -58,7 +69,13 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 	}), [component]);
 
 	const form = useForm({
-		defaultValues: component,
+		defaultValues: {
+			color: component.color,
+			description: component.description,
+			id: component.id,
+			name: component.name,
+			image: null as File | null
+		},
 		onSubmit: async ({ value }) => {
 			const formData = new FormData();
 			if (value.name != initialValues.name) {
@@ -70,19 +87,19 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 			if (value.description != initialValues.description) {
 				formData.append("description", value.description)
 			}
-			if (value.image_url != initialValues.image_url) formData.append("image", value.image);
-			await new Promise<void>((resolve, reject) => {
-				mutate({
-					params: {
-						path: {
-							id: component.id
-						}
-					},
-					body: formData
-				}, {
-					onSuccess: () => resolve(),
-					onError: (err) => reject(err as any),
-				});
+			console.log(`1: '${previewUrl.toString()}' 2: '${initialValues.image_url}'`)
+			if (previewUrl.toString() != initialValues.image_url && value.image) {
+				console.log("image changed")
+				formData.append("image", value.image);
+			}
+
+			mutate({
+				params: {
+					path: {
+						id: component.id
+					}
+				},
+				body: formData as any,
 			});
 		},
 	});
@@ -250,41 +267,48 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 							)}
 						</form.Field>
 
-						<div className="grid gap-2">
-							<Label htmlFor="component-image">Image</Label>
-							<input
-								id="component-image"
-								type="file"
-								accept="image/*"
-								onChange={(e) => {
-									const file = e.target.files?.[0] ?? null;
-									setSelectedFile(file);
-								}}
-								className="file-input"
-							/>
-							<div
-								className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
-								style={{
-									background: previewColor == ""
-										? 'transparent'
-										: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
-								}}
-							>
-								{previewUrl ? (
-									<img
-										className="w-full h-full object-cover"
-										src={previewUrl}
-										alt="component preview"
+						<form.Field
+							name="image"
+						>
+							{(field) => (
+								<div className="grid gap-2">
+									<Label htmlFor="component-image">Image</Label>
+									<input
+										id="component-image"
+										type="file"
+										accept="image/*"
+										onChange={(e) => {
+											const file = e.target.files?.[0] ?? null;
+											field.handleChange(file)
+											setSelectedFile(file)
+										}}
+										className="file-input"
 									/>
-								) : (
-									<img
-										className="w-full h-full object-cover"
-										src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
-										alt="component preview"
-									/>
-								)}
-							</div>
-						</div>
+									<div
+										className="w-full aspect-square rounded-xl overflow-hidden shadow-lg"
+										style={{
+											background: previewColor == ""
+												? 'transparent'
+												: `linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06)), ${previewColor}`,
+										}}
+									>
+										{previewUrl ? (
+											<img
+												className="w-full h-full object-cover"
+												src={previewUrl}
+												alt="component preview"
+											/>
+										) : (
+											<img
+												className="w-full h-full object-cover"
+												src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+												alt="component preview"
+											/>
+										)}
+									</div>
+								</div>
+							)}
+						</form.Field>
 					</div>
 
 					<DialogFooter className="mt-2">
@@ -295,6 +319,23 @@ export default function ComponentEdit({ component }: ComponentEditModalProps) {
 							disabled={isPending || form.state.isSubmitting}
 						>
 							Cancel
+						</Button>
+						<Button
+							type="button"
+							variant="destructive"
+							onClick={() => {
+								if (!confirm('Delete this component? This action cannot be undone.')) return;
+								mutateDelete({
+									params: {
+										path: {
+											id: component.id,
+										},
+									},
+								});
+							}}
+							disabled={isPendingDelete}
+						>
+							{isPendingDelete ? 'Deleting...' : 'Delete'}
 						</Button>
 						<Button
 							type="submit"

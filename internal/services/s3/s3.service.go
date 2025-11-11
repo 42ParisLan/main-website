@@ -19,6 +19,7 @@ type S3Service interface {
 	EnsureBucket(ctx context.Context) error
 	UploadObject(ctx context.Context, objectName string, reader io.Reader, size int64, contentType string) error
 	PresignedGet(ctx context.Context, objectName string, expiry time.Duration) (string, error)
+	RemoveObject(ctx context.Context, objectName string) error
 }
 
 type s3 struct {
@@ -87,4 +88,8 @@ func (s *s3) PresignedGet(ctx context.Context, objectName string, expiry time.Du
 		return "", err
 	}
 	return u.String(), nil
+}
+
+func (s *s3) RemoveObject(ctx context.Context, objectName string) error {
+	return s.client.RemoveObject(ctx, s.cfg.MinioBucket, objectName, minio.RemoveObjectOptions{})
 }

@@ -4,7 +4,6 @@ import useQueryClient from "@/hooks/use-query-client";
 import { IconPlus } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 import { useForm } from "@tanstack/react-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,14 +14,14 @@ import Color from "color";
 
 interface ComponentCreateModalProps {
 	children?: React.ReactNode;
-	voteid: number
+	voteid: number;
+	refetchVote: () => any;
 }
 
-export default function ComponentCreate({ children, voteid }: ComponentCreateModalProps) {
+export default function ComponentCreate({ children, voteid, refetchVote }: ComponentCreateModalProps) {
 	// keep modal closed by default (consistent with other modals)
 	const [open, setOpen] = useState<boolean>(false);
 	const client = useQueryClient();
-	const reactQueryClient = useReactQueryClient();
 
 	// file upload state (selected file and preview URL)
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -32,7 +31,7 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 		onSuccess: () => {
 			toast.success("Component Created Successfully");
 			setOpen(false);
-			reactQueryClient.invalidateQueries({ queryKey: ["/votes/{id}"] });
+			refetchVote();
 		},
 		onError: (error: any) => {
 			toast.error("Failed to create Component for vote");
@@ -69,7 +68,7 @@ export default function ComponentCreate({ children, voteid }: ComponentCreateMod
 						id: voteid,
 					},
 				},
-				body:formData
+				body:formData as any
 			});
 		},
 	});

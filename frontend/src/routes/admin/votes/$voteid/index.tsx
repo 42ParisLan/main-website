@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import VoteEdit from '@/components/votes/vote-edit';
+import VoteEdit, { VoteComponentEdit } from '@/components/votes/vote-edit';
 import useQueryClient from '@/hooks/use-query-client'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 
@@ -12,7 +12,7 @@ function RouteComponent() {
 	const client = useQueryClient();
 	const router = useRouter();
 
-	const {data: vote, error: errorVote} = client.useQuery("get", "/votes/{id}", {
+	const {data: vote, error: errorVote, refetch} = client.useQuery("get", "/votes/{id}", {
 		params: {
 			path: {
 				id: Number(voteid)
@@ -33,7 +33,17 @@ function RouteComponent() {
 				</CardHeader>
 				<CardContent>
 				{vote && (
-					<VoteEdit vote={vote}/>
+					<VoteEdit vote={vote} refetchVote={refetch}/>
+				)}
+				</CardContent>
+			</Card>
+			<Card className="@container/card">
+				<CardHeader>
+					<CardTitle>Edit Vote Components</CardTitle>
+				</CardHeader>
+				<CardContent>
+				{vote && (
+					<VoteComponentEdit vote={vote} refetchVote={refetch} />
 				)}
 				</CardContent>
 			</Card>
