@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/samber/do"
@@ -38,7 +37,6 @@ type VotesService interface {
 
 	CreateComponent(ctx context.Context, input votesmodels.CreateComponent, VoteID int) (*lightmodels.Component, error)
 	UpdateComponent(ctx context.Context, componentID int, input *votesmodels.UpdateComponent) (*lightmodels.Component, error)
-	UpdateComponentImage(ctx context.Context, componentID int, reader io.Reader, size int64, contentType string, filename string) (*lightmodels.Component, error)
 	DeleteComponent(ctx context.Context, componentID int) error
 }
 

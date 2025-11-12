@@ -15,21 +15,20 @@ import type { components } from "@/lib/api/types";
 import { toast } from "sonner";
 import { IconUserPlus } from "@tabler/icons-react";
 import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/multi-select";
-import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 
 type User = components["schemas"]["LightUser"];
 
 interface AdminModalProps {
 	children?: React.ReactNode;
+	refetchUsers: () => any;
 }
 
-export default function AdminAddModal({ children }: AdminModalProps) {
+export default function AdminAddModal({ children, refetchUsers }: AdminModalProps) {
 	const [roles, setRoles] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 	const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
 	const client = useQueryClient();
-	const reactQueryClient = useReactQueryClient();
 
 	const { data: rbacRoles } = client.useQuery("get", "/roles");
 	
@@ -39,7 +38,7 @@ export default function AdminAddModal({ children }: AdminModalProps) {
 			setOpen(false);
 			setSelectedUser(null);
 			setSelectedUsers(new Set());
-			reactQueryClient.invalidateQueries({ queryKey: ["/users"] });
+			refetchUsers();
 		},
 		onError: (error: any) => {
 			toast.error("Failed to update user as admin");

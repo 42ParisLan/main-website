@@ -168,26 +168,6 @@ export interface paths {
         patch: operations["updateComponent"];
         trace?: never;
     };
-    "/components/{id}/image": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update Component Image
-         * @description This endpoint is used to update component image.
-         */
-        patch: operations["updateComponentImage"];
-        trace?: never;
-    };
     "/consents": {
         parameters: {
             query?: never;
@@ -781,20 +761,6 @@ export interface components {
              */
             user_id: number;
         };
-        CreateComponent: {
-            /**
-             * Format: uri
-             * @description A URL to the JSON Schema for this object.
-             * @example /api/schemas/CreateComponent.json
-             */
-            readonly $schema?: string;
-            /** @example #FF5733 */
-            color: string;
-            /** @example Network infrastructure and connectivity */
-            description: string;
-            /** @example Network */
-            name: string;
-        };
         CreateVote: {
             /**
              * Format: uri
@@ -873,6 +839,13 @@ export interface components {
              * @example https://example.com/errors/example
              */
             type: string;
+        };
+        FormFile: {
+            ContentType: string;
+            Filename: string;
+            IsSet: boolean;
+            /** Format: int64 */
+            Size: number;
         };
         JsonPatchOp: {
             /** @description JSON Pointer for the source of a move or copy */
@@ -1120,20 +1093,6 @@ export interface components {
             /** @example admin */
             name: string;
             permissions: components["schemas"]["Permission"][];
-        };
-        UpdateComponent: {
-            /**
-             * Format: uri
-             * @description A URL to the JSON Schema for this object.
-             * @example /api/schemas/UpdateComponent.json
-             */
-            readonly $schema?: string;
-            /** @example #FF5733 */
-            color?: string | null;
-            /** @example Network infrastructure and connectivity */
-            description?: string | null;
-            /** @example Network */
-            name?: string | null;
         };
         UpdateVote: {
             /**
@@ -1688,52 +1647,16 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateComponent"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Component"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    updateComponentImage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @example 42 */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
+        requestBody?: {
             content: {
                 "multipart/form-data": {
-                    /**
-                     * Format: binary
-                     * @description filename of the file being uploaded
-                     */
-                    filename?: string;
-                    /** @description general purpose name for multipart form value */
-                    name?: string;
+                    /** @example #FF5733 */
+                    color?: string | null;
+                    /** @example Network infrastructure and connectivity */
+                    description?: string | null;
+                    image?: components["schemas"]["FormFile"];
+                    /** @example Network */
+                    name?: string | null;
                 };
             };
         };
@@ -2361,9 +2284,18 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
-                "application/json": components["schemas"]["CreateComponent"];
+                "multipart/form-data": {
+                    /** @example #FF5733 */
+                    color: string;
+                    /** @example Network infrastructure and connectivity */
+                    description: string;
+                    /** Format: binary */
+                    image: string;
+                    /** @example Network */
+                    name: string;
+                };
             };
         };
         responses: {

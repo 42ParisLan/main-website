@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import useQueryClient from "@/hooks/use-query-client";
 import { toast } from "sonner";
 import { IconPlus } from "@tabler/icons-react";
-import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import type { components } from "@/lib/api/types";
@@ -23,12 +22,12 @@ import { toIsoString, toDatetimeLocal } from "@/lib/date.utils";
 
 interface VoteCreateModalProps {
 	children?: React.ReactNode;
+	refetchVotes: () => any;
 }
 
-export default function VoteCreateModal({ children }: VoteCreateModalProps) {
+export default function VoteCreateModal({ children, refetchVotes }: VoteCreateModalProps) {
 	const [open, setOpen] = useState(false);
 	const client = useQueryClient();
-	const reactQueryClient = useReactQueryClient();
 
 	// Zod schemas for field-level validation
 
@@ -69,7 +68,7 @@ export default function VoteCreateModal({ children }: VoteCreateModalProps) {
 		onSuccess: () => {
 			toast.success("Vote Created Successfully");
 			setOpen(false);
-			reactQueryClient.invalidateQueries({ queryKey: ["/votes"] });
+			refetchVotes();
 		},
 		onError: (error: any) => {
 			toast.error("Failed to create vote");

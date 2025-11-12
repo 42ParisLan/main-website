@@ -14,27 +14,26 @@ import { toast } from "sonner"
 import type { components } from "@/lib/api/types";
 import { IconUserPlus } from "@tabler/icons-react";
 import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/multi-select";
-import { useQueryClient as useReactQueryClient } from "@tanstack/react-query";
 
 type User = components["schemas"]["LightUser"];
 
 interface AdminModalProps {
 	children?: React.ReactNode
-	user: User
+	user: User;
+	refetchUsers: () => any;
 }
 
-export default function AdminEditModal({ children, user }: AdminModalProps) {
+export default function AdminEditModal({ children, user, refetchUsers }: AdminModalProps) {
 	const [roles, setRoles] = useState<string[]>(user.roles);
 	const [open, setOpen] = useState(false);
 	const client = useQueryClient();
-	const reactQueryClient = useReactQueryClient();
 
 	const { mutate, isPending } = client.useMutation("post", "/users/{id}/roles", {
 		onSuccess: () => {
 			toast.success("Admin roles updated successfully");
 			setOpen(false);
 			if (roles.length == 0) {
-				reactQueryClient.invalidateQueries({ queryKey: ["/users"]})
+				refetchUsers();
 			}
 		},
 		onError: (error: any) => {

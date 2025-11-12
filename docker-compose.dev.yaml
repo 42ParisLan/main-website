@@ -42,7 +42,7 @@ services:
       - DB_PASS=base-website
       - DB_NAME=base-website
       - DB_PORT=5432
-      - VALKEY_ADDRESS=redis://valkey:6379
+      - VALKEY_ADDRESS=redis://valkey:6380
       - MINIO_ENDPOINT=host.docker.internal:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
@@ -76,8 +76,9 @@ services:
 
   valkey:
     image: valkey/valkey:8.1.1
+    command: valkey-server --port 6380
     ports:
-      - 6379:6379
+      - 6380:6380
     networks:
       - base-website
 

@@ -11,7 +11,6 @@ import (
 	"base-website/pkg/authz"
 	"context"
 	"fmt"
-	"io"
 	"path/filepath"
 	"strings"
 	"time"
@@ -180,18 +179,42 @@ func (svc *votesService) DeleteVote(
 func (svc *votesService) CreateComponent(
 	ctx context.Context,
 	input votesmodels.CreateComponent,
-	VoteID int,
+	voteID int,
 ) (*lightmodels.Component, error) {
 	entComponent, err := svc.databaseService.Component.
 		Create().
 		SetName(input.Name).
 		SetDescription(input.Description).
 		SetColor(input.Color).
-		SetVoteID(VoteID).
+		SetVoteID(voteID).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		return nil, svc.errorFilter.Filter(err, "create component")
 	}
+
+	sanitized := strings.ReplaceAll(input.Image.Filename, " ", "_")
+	ext := filepath.Ext(sanitized)
+	base := strings.TrimSuffix(sanitized, ext)
+	if base == "" {
+		base = "file"
+	}
+
+	objectName := fmt.Sprintf("components/%d/%d_%s%s", entComponent.ID, time.Now().UnixNano(), base, ext)
+
+	if err := svc.s3service.UploadObject(ctx, objectName, input.Image.File, input.Image.Size, input.Image.ContentType); err != nil {
+		return nil, svc.errorFilter.Filter(err, "upload image")
+	}
+
+	entComponent, err = svc.databaseService.Component.
+		UpdateOneID(entComponent.ID).
+		SetImageURL(objectName).
+		Save(ctx)
+	if err != nil {
+		svc.s3service.RemoveObject(ctx, objectName)
+		svc.databaseService.Component.Delete().Where(component.ID(entComponent.ID)).Exec(ctx)
+		return nil, svc.errorFilter.Filter(err, "update component image")
+	}
+
 	return lightmodels.NewComponentFromEnt(ctx, entComponent, svc.s3service), nil
 }
 
@@ -204,7 +227,6 @@ func (svc *votesService) UpdateComponent(
 		return nil, fmt.Errorf("invalid input")
 	}
 
-	// Fetch component with owning vote and its creator for ownership checks
 	compWithOwner, err := svc.databaseService.Component.
 		Query().
 		Where(component.IDEQ(componentID)).
@@ -216,7 +238,6 @@ func (svc *votesService) UpdateComponent(
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
 
-	// Check ownership or admin
 	userID, err := security.GetUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -233,32 +254,47 @@ func (svc *votesService) UpdateComponent(
 
 	update := svc.databaseService.Component.UpdateOneID(componentID)
 
-	if input.Name != nil {
-		update.SetName(*input.Name)
+	if input.Name != "" {
+		update.SetName(input.Name)
 	}
-	if input.Description != nil {
-		update.SetDescription(*input.Description)
+	if input.Description != "" {
+		update.SetDescription(input.Description)
 	}
-	if input.Color != nil {
-		update.SetColor(*input.Color)
+	if input.Color != "" {
+		update.SetColor(input.Color)
 	}
 
-	if _, err := update.Save(ctx); err != nil {
+	if input.Image.Filename != "" {
+		sanitized := strings.ReplaceAll(input.Image.Filename, " ", "_")
+		ext := filepath.Ext(sanitized)
+		base := strings.TrimSuffix(sanitized, ext)
+		if base == "" {
+			base = "file"
+		}
+
+		objectName := fmt.Sprintf("components/%d/%d_%s%s", componentID, time.Now().UnixNano(), base, ext)
+
+		if err := svc.s3service.UploadObject(ctx, objectName, input.Image.File, input.Image.Size, input.Image.ContentType); err != nil {
+			return nil, svc.errorFilter.Filter(err, "upload image")
+		}
+
+		svc.s3service.RemoveObject(ctx, compWithOwner.ImageURL)
+
+		update.SetImageURL(objectName)
+	}
+
+	savedComponent, err := update.Save(ctx)
+	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "update")
 	}
 
-	component, err := svc.databaseService.Component.Get(ctx, componentID)
-	if err != nil {
-		return nil, svc.errorFilter.Filter(err, "get")
-	}
-	return lightmodels.NewComponentFromEnt(ctx, component, svc.s3service), nil
+	return lightmodels.NewComponentFromEnt(ctx, savedComponent, svc.s3service), nil
 }
 
 func (svc *votesService) DeleteComponent(
 	ctx context.Context,
 	componentID int,
 ) error {
-	// Fetch component with owning vote and its creator for ownership checks
 	compWithOwner, err := svc.databaseService.Component.
 		Query().
 		Where(component.IDEQ(componentID)).
@@ -270,7 +306,6 @@ func (svc *votesService) DeleteComponent(
 		return svc.errorFilter.Filter(err, "get")
 	}
 
-	// Check ownership or admin
 	userID, err := security.GetUserIDFromContext(ctx)
 	if err != nil {
 		return err
@@ -289,66 +324,7 @@ func (svc *votesService) DeleteComponent(
 		return svc.errorFilter.Filter(err, "delete_component")
 	}
 
+	svc.s3service.RemoveObject(ctx, compWithOwner.ImageURL)
+
 	return nil
-}
-
-func (svc *votesService) UpdateComponentImage(
-	ctx context.Context,
-	componentID int,
-	reader io.Reader,
-	size int64,
-	contentType string,
-	filename string,
-) (*lightmodels.Component, error) {
-	// Fetch component with owning vote and its creator for ownership checks
-	compWithOwner, err := svc.databaseService.Component.
-		Query().
-		Where(component.IDEQ(componentID)).
-		WithVote(func(vq *ent.VoteQuery) {
-			vq.WithCreator()
-		}).
-		Only(ctx)
-	if err != nil {
-		return nil, svc.errorFilter.Filter(err, "get")
-	}
-
-	// Check ownership or admin
-	userID, err := security.GetUserIDFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var creatorID int
-	if compWithOwner.Edges.Vote != nil && compWithOwner.Edges.Vote.Edges.Creator != nil {
-		creatorID = compWithOwner.Edges.Vote.Edges.Creator.ID
-	}
-	if creatorID != userID {
-		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "super_admin"); err != nil {
-			return nil, fmt.Errorf("only the vote creator or an admin can update this component")
-		}
-	}
-
-	// Sanitize filename and build object name
-	sanitized := strings.ReplaceAll(filename, " ", "_")
-	ext := filepath.Ext(sanitized)
-	base := strings.TrimSuffix(sanitized, ext)
-	if base == "" {
-		base = "file"
-	}
-	objectName := fmt.Sprintf("components/%d/%d_%s%s", componentID, time.Now().UnixNano(), base, ext)
-
-	// Upload to S3
-	if err := svc.s3service.UploadObject(ctx, objectName, reader, size, contentType); err != nil {
-		return nil, svc.errorFilter.Filter(err, "upload")
-	}
-
-	// Update component record with image object name
-	if _, err := svc.databaseService.Component.UpdateOneID(componentID).SetImageURL(objectName).Save(ctx); err != nil {
-		return nil, svc.errorFilter.Filter(err, "update_image")
-	}
-
-	component, err := svc.databaseService.Component.Get(ctx, componentID)
-	if err != nil {
-		return nil, svc.errorFilter.Filter(err, "get")
-	}
-	return lightmodels.NewComponentFromEnt(ctx, component, svc.s3service), nil
 }

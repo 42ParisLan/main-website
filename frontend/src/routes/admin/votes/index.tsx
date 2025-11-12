@@ -17,7 +17,7 @@ function RouteComponent() {
 	const [page, setPage] = useState<number>(0);
 	const client = useQueryClient();
 
-	const { data, isLoading } = client.useQuery("get", "/votes", {
+	const { data, isLoading, refetch } = client.useQuery("get", "/votes", {
 		params: {
 			query: {
 				page,
@@ -53,7 +53,7 @@ function RouteComponent() {
 								<SelectItem value="all">All Votes</SelectItem>
 							</SelectContent>
 						</Select>
-						<VoteCreateModal/>
+						<VoteCreateModal refetchVotes={refetch}/>
 					</div>
 				</CardHeader>
 				<CardContent>

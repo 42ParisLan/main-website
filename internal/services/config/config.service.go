@@ -35,6 +35,7 @@ type Config struct {
 	MinioSecretKey string `mapstructure:"MINIO_SECRET_KEY" validate:"required"`
 	MinioBucket    string `mapstructure:"MINIO_BUCKET" validate:"required"`
 	MinioUseSSL    bool   `mapstructure:"MINIO_USE_SSL" default:"false"`
+	MinioPublicEndpoint string `mapstructure:"MINIO_PUBLIC_ENDPOINT" default:""`
 
 	OpenIDIssuer         string `mapstructure:"OPENID_ISSUER" validate:"required"`
 	ConsentDayExpiration int    `mapstructure:"CONSENT_DAY_EXPIRATION" default:"30" validate:"required"`
