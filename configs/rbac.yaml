@@ -28,10 +28,18 @@ roles:
             - path: /votes/*/results
               methods: [GET]
 
+    basic_admin:
+        name: 'basic_admin'
+        description: 'User who can create and manage voting sessions'
+        inherits: [user]
+        permissions:
+            - path: /votes/{id}/live
+              methods: [GET]
+
     vote_admin:
         name: 'vote_admin'
         description: 'User who can create and manage voting sessions'
-        inherits: [user]
+        inherits: [basic_admin]
         permissions:
             - path: /votes
               methods: [POST]
@@ -46,10 +54,10 @@ roles:
             - path: /components/*
               methods: [DELETE]
 
-    team_admin:
-        name: 'team_admin'
-        description: 'User who can manage teams and team members'
-        inherits: [user]
+    tournament_admin:
+        name: 'tournament_admin'
+        description: 'User who can manage create Tournaments'
+        inherits: [basic_admin]
         permissions:
 
     super_admin:

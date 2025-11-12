@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/admin/teams/')({
+export const Route = createFileRoute('/admin/tournaments/')({
 	component: RouteComponent,
 })
 
@@ -12,13 +12,14 @@ function RouteComponent() {
 				<Card className="@container/card">
 					<CardHeader>
 						<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-							Teams
+							Tournaments
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5'>
-							Modify /frontend/src/routes/admin/teams/index.tsx
+							Modify /frontend/src/routes/admin/tournaments/index.tsx
 						</div>
+						<a href='/admin/tournaments/1'>See tournament 1</a>
 					</CardContent>
 				</Card>
 			</div>

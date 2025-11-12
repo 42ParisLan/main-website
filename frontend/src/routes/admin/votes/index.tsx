@@ -3,6 +3,7 @@ import { PaginatedListControlled } from '@/components/ui/paginated-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import VoteAdmin from '@/components/votes/vote-admin';
 import VoteCreateModal from '@/components/votes/vote-create-modal';
+import { useHasRole } from '@/hooks/use-can';
 import useQueryClient from '@/hooks/use-query-client';
 import type { components } from '@/lib/api/types';
 import { createFileRoute } from '@tanstack/react-router'
@@ -16,6 +17,7 @@ function RouteComponent() {
 	const [owner, setOwner] = useState<"me" | "all">("me");
 	const [page, setPage] = useState<number>(0);
 	const client = useQueryClient();
+	const hasRole = useHasRole();
 
 	const { data, isLoading, refetch } = client.useQuery("get", "/votes", {
 		params: {
@@ -53,7 +55,9 @@ function RouteComponent() {
 								<SelectItem value="all">All Votes</SelectItem>
 							</SelectContent>
 						</Select>
-						<VoteCreateModal refetchVotes={refetch}/>
+						{hasRole(['vote_admin']) && (
+							<VoteCreateModal refetchVotes={refetch}/>
+						)}
 					</div>
 				</CardHeader>
 				<CardContent>

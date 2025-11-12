@@ -6,6 +6,7 @@ import {
 	IconUser,
 	IconUserCode,
 	IconUsersGroup,
+	IconBox,
 	type Icon,
 } from "@tabler/icons-react"
 
@@ -49,18 +50,16 @@ const data: SidebarData[] = [
 				title: "Votes",
 				url: "/admin/votes",
 				icon: IconNotes,
-				role: "vote_admin"
 			},
 		],
 	},
 	{
-		title: "Teams",
+		title: "Tournaments",
 		items: [
 			{
-				title: "Teams",
-				url: "/admin/teams",
+				title: "Tournaments",
+				url: "/admin/tournaments",
 				icon: IconUsersGroup,
-				role: "team_admin"
 			},
 		],
 	},
@@ -71,7 +70,6 @@ const data: SidebarData[] = [
 				title: "Users",
 				url: "/admin/users",
 				icon: IconUser,
-				role: "super_admin"
 			},
 			{
 				title: "Admins",
@@ -87,7 +85,7 @@ const data: SidebarData[] = [
 			{
 				title: "Apps",
 				url: "/admin/apps",
-				icon: IconUser,
+				icon: IconBox,
 				role: "super_admin"
 			},
 		],
