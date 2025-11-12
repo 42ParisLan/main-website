@@ -91,6 +91,9 @@ func verifyToken(
 		return nil, fmt.Errorf("failed to decrypt token: %v", err)
 	}
 	tokenIdParts := strings.Split(tokenIDSubject, ":")
+	if len(tokenIdParts) != 2 {
+		return nil, fmt.Errorf("invalid token format")
+	}
 	tokenID, subject := tokenIdParts[0], tokenIdParts[1]
 	if tokenID == "" || subject == "" {
 		return nil, fmt.Errorf("invalid token format")
