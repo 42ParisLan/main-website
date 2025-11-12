@@ -840,13 +840,6 @@ export interface components {
              */
             type: string;
         };
-        FormFile: {
-            ContentType: string;
-            Filename: string;
-            IsSet: boolean;
-            /** Format: int64 */
-            Size: number;
-        };
         JsonPatchOp: {
             /** @description JSON Pointer for the source of a move or copy */
             from?: string;
@@ -1651,12 +1644,13 @@ export interface operations {
             content: {
                 "multipart/form-data": {
                     /** @example #FF5733 */
-                    color?: string | null;
+                    color?: string;
                     /** @example Network infrastructure and connectivity */
-                    description?: string | null;
-                    image?: components["schemas"]["FormFile"];
+                    description?: string;
+                    /** Format: binary */
+                    image?: string;
                     /** @example Network */
-                    name?: string | null;
+                    name?: string;
                 };
             };
         };
