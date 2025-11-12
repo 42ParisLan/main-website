@@ -57,7 +57,7 @@ function RouteComponent() {
 							isLoading={isLoading}
 							page={page}
 							onPageChange={handlePageChange}
-							renderItem={(user) => <AdminCard user={user} />}
+							renderItem={(user) => <AdminCard user={user} refetchUsers={refetch} />}
 							getItemKey={(user) => user.id}
 							itemsContainerClassName="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5"
 							itemLabel="admin"

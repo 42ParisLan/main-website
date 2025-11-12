@@ -5,7 +5,7 @@ import { IconTrash } from "@tabler/icons-react";
 import AdminEditModal from "./admin-edit-modal";
 import { memo } from "react";
 
-function AdminCard({user}: {user: components['schemas']['User']}) {
+function AdminCard({user, refetchUsers}: {user: components['schemas']['User']; refetchUsers: () => any}) {
 	return (
 		<Card className="group relative overflow-hidden">
 			<CardContent>
@@ -23,7 +23,7 @@ function AdminCard({user}: {user: components['schemas']['User']}) {
 					</div>
 				</div>
 				<div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-					<AdminEditModal user={user}>
+					<AdminEditModal user={user} refetchUsers={refetchUsers}>
 						<Button
 							size="lg"
 							className="gap-2"
