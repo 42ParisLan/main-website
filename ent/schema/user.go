@@ -18,15 +18,11 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("id"),
 		field.String("username").Unique(),
-		field.String("first_name"),
-		field.String("last_name"),
 		field.String("email"),
 		field.Time("created_at").Immutable().Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 		field.String("picture").Optional().Nillable(),
 		field.Enum("kind").Values("user", "admin").Default("user"),
-		field.String("usual_full_name"),
-		field.String("usual_first_name").Optional().Nillable(),
 		field.Strings("roles").Default([]string{"user"}),
 	}
 }
@@ -38,5 +34,10 @@ func (User) Edges() []ent.Edge {
 		edge.To("created_votes", Vote.Type),
 		edge.To("apps", App.Type),
 		edge.To("consents", Consent.Type),
+		edge.To("team_memberships", TeamMember.Type),
+		edge.To("received_invitations", Invitation.Type),
+		edge.To("created_teams", Team.Type),
+		edge.To("created_tournaments", Tournament.Type),
+		edge.To("tournament_admin_roles", TournamentAdmin.Type),
 	}
 }

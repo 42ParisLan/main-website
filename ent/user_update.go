@@ -5,7 +5,12 @@ package ent
 import (
 	"base-website/ent/app"
 	"base-website/ent/consent"
+	"base-website/ent/invitation"
 	"base-website/ent/predicate"
+	"base-website/ent/team"
+	"base-website/ent/teammember"
+	"base-website/ent/tournament"
+	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -43,34 +48,6 @@ func (_u *UserUpdate) SetUsername(v string) *UserUpdate {
 func (_u *UserUpdate) SetNillableUsername(v *string) *UserUpdate {
 	if v != nil {
 		_u.SetUsername(*v)
-	}
-	return _u
-}
-
-// SetFirstName sets the "first_name" field.
-func (_u *UserUpdate) SetFirstName(v string) *UserUpdate {
-	_u.mutation.SetFirstName(v)
-	return _u
-}
-
-// SetNillableFirstName sets the "first_name" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableFirstName(v *string) *UserUpdate {
-	if v != nil {
-		_u.SetFirstName(*v)
-	}
-	return _u
-}
-
-// SetLastName sets the "last_name" field.
-func (_u *UserUpdate) SetLastName(v string) *UserUpdate {
-	_u.mutation.SetLastName(v)
-	return _u
-}
-
-// SetNillableLastName sets the "last_name" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableLastName(v *string) *UserUpdate {
-	if v != nil {
-		_u.SetLastName(*v)
 	}
 	return _u
 }
@@ -126,40 +103,6 @@ func (_u *UserUpdate) SetNillableKind(v *user.Kind) *UserUpdate {
 	if v != nil {
 		_u.SetKind(*v)
 	}
-	return _u
-}
-
-// SetUsualFullName sets the "usual_full_name" field.
-func (_u *UserUpdate) SetUsualFullName(v string) *UserUpdate {
-	_u.mutation.SetUsualFullName(v)
-	return _u
-}
-
-// SetNillableUsualFullName sets the "usual_full_name" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableUsualFullName(v *string) *UserUpdate {
-	if v != nil {
-		_u.SetUsualFullName(*v)
-	}
-	return _u
-}
-
-// SetUsualFirstName sets the "usual_first_name" field.
-func (_u *UserUpdate) SetUsualFirstName(v string) *UserUpdate {
-	_u.mutation.SetUsualFirstName(v)
-	return _u
-}
-
-// SetNillableUsualFirstName sets the "usual_first_name" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableUsualFirstName(v *string) *UserUpdate {
-	if v != nil {
-		_u.SetUsualFirstName(*v)
-	}
-	return _u
-}
-
-// ClearUsualFirstName clears the value of the "usual_first_name" field.
-func (_u *UserUpdate) ClearUsualFirstName() *UserUpdate {
-	_u.mutation.ClearUsualFirstName()
 	return _u
 }
 
@@ -233,6 +176,81 @@ func (_u *UserUpdate) AddConsents(v ...*Consent) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.AddConsentIDs(ids...)
+}
+
+// AddTeamMembershipIDs adds the "team_memberships" edge to the TeamMember entity by IDs.
+func (_u *UserUpdate) AddTeamMembershipIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddTeamMembershipIDs(ids...)
+	return _u
+}
+
+// AddTeamMemberships adds the "team_memberships" edges to the TeamMember entity.
+func (_u *UserUpdate) AddTeamMemberships(v ...*TeamMember) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTeamMembershipIDs(ids...)
+}
+
+// AddReceivedInvitationIDs adds the "received_invitations" edge to the Invitation entity by IDs.
+func (_u *UserUpdate) AddReceivedInvitationIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddReceivedInvitationIDs(ids...)
+	return _u
+}
+
+// AddReceivedInvitations adds the "received_invitations" edges to the Invitation entity.
+func (_u *UserUpdate) AddReceivedInvitations(v ...*Invitation) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddReceivedInvitationIDs(ids...)
+}
+
+// AddCreatedTeamIDs adds the "created_teams" edge to the Team entity by IDs.
+func (_u *UserUpdate) AddCreatedTeamIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddCreatedTeamIDs(ids...)
+	return _u
+}
+
+// AddCreatedTeams adds the "created_teams" edges to the Team entity.
+func (_u *UserUpdate) AddCreatedTeams(v ...*Team) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCreatedTeamIDs(ids...)
+}
+
+// AddCreatedTournamentIDs adds the "created_tournaments" edge to the Tournament entity by IDs.
+func (_u *UserUpdate) AddCreatedTournamentIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddCreatedTournamentIDs(ids...)
+	return _u
+}
+
+// AddCreatedTournaments adds the "created_tournaments" edges to the Tournament entity.
+func (_u *UserUpdate) AddCreatedTournaments(v ...*Tournament) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCreatedTournamentIDs(ids...)
+}
+
+// AddTournamentAdminRoleIDs adds the "tournament_admin_roles" edge to the TournamentAdmin entity by IDs.
+func (_u *UserUpdate) AddTournamentAdminRoleIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddTournamentAdminRoleIDs(ids...)
+	return _u
+}
+
+// AddTournamentAdminRoles adds the "tournament_admin_roles" edges to the TournamentAdmin entity.
+func (_u *UserUpdate) AddTournamentAdminRoles(v ...*TournamentAdmin) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTournamentAdminRoleIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -324,6 +342,111 @@ func (_u *UserUpdate) RemoveConsents(v ...*Consent) *UserUpdate {
 	return _u.RemoveConsentIDs(ids...)
 }
 
+// ClearTeamMemberships clears all "team_memberships" edges to the TeamMember entity.
+func (_u *UserUpdate) ClearTeamMemberships() *UserUpdate {
+	_u.mutation.ClearTeamMemberships()
+	return _u
+}
+
+// RemoveTeamMembershipIDs removes the "team_memberships" edge to TeamMember entities by IDs.
+func (_u *UserUpdate) RemoveTeamMembershipIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveTeamMembershipIDs(ids...)
+	return _u
+}
+
+// RemoveTeamMemberships removes "team_memberships" edges to TeamMember entities.
+func (_u *UserUpdate) RemoveTeamMemberships(v ...*TeamMember) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTeamMembershipIDs(ids...)
+}
+
+// ClearReceivedInvitations clears all "received_invitations" edges to the Invitation entity.
+func (_u *UserUpdate) ClearReceivedInvitations() *UserUpdate {
+	_u.mutation.ClearReceivedInvitations()
+	return _u
+}
+
+// RemoveReceivedInvitationIDs removes the "received_invitations" edge to Invitation entities by IDs.
+func (_u *UserUpdate) RemoveReceivedInvitationIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveReceivedInvitationIDs(ids...)
+	return _u
+}
+
+// RemoveReceivedInvitations removes "received_invitations" edges to Invitation entities.
+func (_u *UserUpdate) RemoveReceivedInvitations(v ...*Invitation) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveReceivedInvitationIDs(ids...)
+}
+
+// ClearCreatedTeams clears all "created_teams" edges to the Team entity.
+func (_u *UserUpdate) ClearCreatedTeams() *UserUpdate {
+	_u.mutation.ClearCreatedTeams()
+	return _u
+}
+
+// RemoveCreatedTeamIDs removes the "created_teams" edge to Team entities by IDs.
+func (_u *UserUpdate) RemoveCreatedTeamIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveCreatedTeamIDs(ids...)
+	return _u
+}
+
+// RemoveCreatedTeams removes "created_teams" edges to Team entities.
+func (_u *UserUpdate) RemoveCreatedTeams(v ...*Team) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCreatedTeamIDs(ids...)
+}
+
+// ClearCreatedTournaments clears all "created_tournaments" edges to the Tournament entity.
+func (_u *UserUpdate) ClearCreatedTournaments() *UserUpdate {
+	_u.mutation.ClearCreatedTournaments()
+	return _u
+}
+
+// RemoveCreatedTournamentIDs removes the "created_tournaments" edge to Tournament entities by IDs.
+func (_u *UserUpdate) RemoveCreatedTournamentIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveCreatedTournamentIDs(ids...)
+	return _u
+}
+
+// RemoveCreatedTournaments removes "created_tournaments" edges to Tournament entities.
+func (_u *UserUpdate) RemoveCreatedTournaments(v ...*Tournament) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCreatedTournamentIDs(ids...)
+}
+
+// ClearTournamentAdminRoles clears all "tournament_admin_roles" edges to the TournamentAdmin entity.
+func (_u *UserUpdate) ClearTournamentAdminRoles() *UserUpdate {
+	_u.mutation.ClearTournamentAdminRoles()
+	return _u
+}
+
+// RemoveTournamentAdminRoleIDs removes the "tournament_admin_roles" edge to TournamentAdmin entities by IDs.
+func (_u *UserUpdate) RemoveTournamentAdminRoleIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveTournamentAdminRoleIDs(ids...)
+	return _u
+}
+
+// RemoveTournamentAdminRoles removes "tournament_admin_roles" edges to TournamentAdmin entities.
+func (_u *UserUpdate) RemoveTournamentAdminRoles(v ...*TournamentAdmin) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTournamentAdminRoleIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *UserUpdate) Save(ctx context.Context) (int, error) {
 	_u.defaults()
@@ -385,12 +508,6 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.FirstName(); ok {
-		_spec.SetField(user.FieldFirstName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.LastName(); ok {
-		_spec.SetField(user.FieldLastName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
@@ -405,15 +522,6 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(user.FieldKind, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.UsualFullName(); ok {
-		_spec.SetField(user.FieldUsualFullName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.UsualFirstName(); ok {
-		_spec.SetField(user.FieldUsualFirstName, field.TypeString, value)
-	}
-	if _u.mutation.UsualFirstNameCleared() {
-		_spec.ClearField(user.FieldUsualFirstName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Roles(); ok {
 		_spec.SetField(user.FieldRoles, field.TypeJSON, value)
@@ -603,6 +711,231 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.TeamMembershipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTeamMembershipsIDs(); len(nodes) > 0 && !_u.mutation.TeamMembershipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TeamMembershipsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ReceivedInvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedReceivedInvitationsIDs(); len(nodes) > 0 && !_u.mutation.ReceivedInvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ReceivedInvitationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatedTeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCreatedTeamsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedTeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatedTournamentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCreatedTournamentsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTournamentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedTournamentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TournamentAdminRolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminRolesTable,
+			Columns: []string{user.TournamentAdminRolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTournamentAdminRolesIDs(); len(nodes) > 0 && !_u.mutation.TournamentAdminRolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminRolesTable,
+			Columns: []string{user.TournamentAdminRolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TournamentAdminRolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminRolesTable,
+			Columns: []string{user.TournamentAdminRolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -633,34 +966,6 @@ func (_u *UserUpdateOne) SetUsername(v string) *UserUpdateOne {
 func (_u *UserUpdateOne) SetNillableUsername(v *string) *UserUpdateOne {
 	if v != nil {
 		_u.SetUsername(*v)
-	}
-	return _u
-}
-
-// SetFirstName sets the "first_name" field.
-func (_u *UserUpdateOne) SetFirstName(v string) *UserUpdateOne {
-	_u.mutation.SetFirstName(v)
-	return _u
-}
-
-// SetNillableFirstName sets the "first_name" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableFirstName(v *string) *UserUpdateOne {
-	if v != nil {
-		_u.SetFirstName(*v)
-	}
-	return _u
-}
-
-// SetLastName sets the "last_name" field.
-func (_u *UserUpdateOne) SetLastName(v string) *UserUpdateOne {
-	_u.mutation.SetLastName(v)
-	return _u
-}
-
-// SetNillableLastName sets the "last_name" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableLastName(v *string) *UserUpdateOne {
-	if v != nil {
-		_u.SetLastName(*v)
 	}
 	return _u
 }
@@ -716,40 +1021,6 @@ func (_u *UserUpdateOne) SetNillableKind(v *user.Kind) *UserUpdateOne {
 	if v != nil {
 		_u.SetKind(*v)
 	}
-	return _u
-}
-
-// SetUsualFullName sets the "usual_full_name" field.
-func (_u *UserUpdateOne) SetUsualFullName(v string) *UserUpdateOne {
-	_u.mutation.SetUsualFullName(v)
-	return _u
-}
-
-// SetNillableUsualFullName sets the "usual_full_name" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableUsualFullName(v *string) *UserUpdateOne {
-	if v != nil {
-		_u.SetUsualFullName(*v)
-	}
-	return _u
-}
-
-// SetUsualFirstName sets the "usual_first_name" field.
-func (_u *UserUpdateOne) SetUsualFirstName(v string) *UserUpdateOne {
-	_u.mutation.SetUsualFirstName(v)
-	return _u
-}
-
-// SetNillableUsualFirstName sets the "usual_first_name" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableUsualFirstName(v *string) *UserUpdateOne {
-	if v != nil {
-		_u.SetUsualFirstName(*v)
-	}
-	return _u
-}
-
-// ClearUsualFirstName clears the value of the "usual_first_name" field.
-func (_u *UserUpdateOne) ClearUsualFirstName() *UserUpdateOne {
-	_u.mutation.ClearUsualFirstName()
 	return _u
 }
 
@@ -823,6 +1094,81 @@ func (_u *UserUpdateOne) AddConsents(v ...*Consent) *UserUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.AddConsentIDs(ids...)
+}
+
+// AddTeamMembershipIDs adds the "team_memberships" edge to the TeamMember entity by IDs.
+func (_u *UserUpdateOne) AddTeamMembershipIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddTeamMembershipIDs(ids...)
+	return _u
+}
+
+// AddTeamMemberships adds the "team_memberships" edges to the TeamMember entity.
+func (_u *UserUpdateOne) AddTeamMemberships(v ...*TeamMember) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTeamMembershipIDs(ids...)
+}
+
+// AddReceivedInvitationIDs adds the "received_invitations" edge to the Invitation entity by IDs.
+func (_u *UserUpdateOne) AddReceivedInvitationIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddReceivedInvitationIDs(ids...)
+	return _u
+}
+
+// AddReceivedInvitations adds the "received_invitations" edges to the Invitation entity.
+func (_u *UserUpdateOne) AddReceivedInvitations(v ...*Invitation) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddReceivedInvitationIDs(ids...)
+}
+
+// AddCreatedTeamIDs adds the "created_teams" edge to the Team entity by IDs.
+func (_u *UserUpdateOne) AddCreatedTeamIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddCreatedTeamIDs(ids...)
+	return _u
+}
+
+// AddCreatedTeams adds the "created_teams" edges to the Team entity.
+func (_u *UserUpdateOne) AddCreatedTeams(v ...*Team) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCreatedTeamIDs(ids...)
+}
+
+// AddCreatedTournamentIDs adds the "created_tournaments" edge to the Tournament entity by IDs.
+func (_u *UserUpdateOne) AddCreatedTournamentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddCreatedTournamentIDs(ids...)
+	return _u
+}
+
+// AddCreatedTournaments adds the "created_tournaments" edges to the Tournament entity.
+func (_u *UserUpdateOne) AddCreatedTournaments(v ...*Tournament) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCreatedTournamentIDs(ids...)
+}
+
+// AddTournamentAdminRoleIDs adds the "tournament_admin_roles" edge to the TournamentAdmin entity by IDs.
+func (_u *UserUpdateOne) AddTournamentAdminRoleIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddTournamentAdminRoleIDs(ids...)
+	return _u
+}
+
+// AddTournamentAdminRoles adds the "tournament_admin_roles" edges to the TournamentAdmin entity.
+func (_u *UserUpdateOne) AddTournamentAdminRoles(v ...*TournamentAdmin) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTournamentAdminRoleIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -912,6 +1258,111 @@ func (_u *UserUpdateOne) RemoveConsents(v ...*Consent) *UserUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveConsentIDs(ids...)
+}
+
+// ClearTeamMemberships clears all "team_memberships" edges to the TeamMember entity.
+func (_u *UserUpdateOne) ClearTeamMemberships() *UserUpdateOne {
+	_u.mutation.ClearTeamMemberships()
+	return _u
+}
+
+// RemoveTeamMembershipIDs removes the "team_memberships" edge to TeamMember entities by IDs.
+func (_u *UserUpdateOne) RemoveTeamMembershipIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveTeamMembershipIDs(ids...)
+	return _u
+}
+
+// RemoveTeamMemberships removes "team_memberships" edges to TeamMember entities.
+func (_u *UserUpdateOne) RemoveTeamMemberships(v ...*TeamMember) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTeamMembershipIDs(ids...)
+}
+
+// ClearReceivedInvitations clears all "received_invitations" edges to the Invitation entity.
+func (_u *UserUpdateOne) ClearReceivedInvitations() *UserUpdateOne {
+	_u.mutation.ClearReceivedInvitations()
+	return _u
+}
+
+// RemoveReceivedInvitationIDs removes the "received_invitations" edge to Invitation entities by IDs.
+func (_u *UserUpdateOne) RemoveReceivedInvitationIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveReceivedInvitationIDs(ids...)
+	return _u
+}
+
+// RemoveReceivedInvitations removes "received_invitations" edges to Invitation entities.
+func (_u *UserUpdateOne) RemoveReceivedInvitations(v ...*Invitation) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveReceivedInvitationIDs(ids...)
+}
+
+// ClearCreatedTeams clears all "created_teams" edges to the Team entity.
+func (_u *UserUpdateOne) ClearCreatedTeams() *UserUpdateOne {
+	_u.mutation.ClearCreatedTeams()
+	return _u
+}
+
+// RemoveCreatedTeamIDs removes the "created_teams" edge to Team entities by IDs.
+func (_u *UserUpdateOne) RemoveCreatedTeamIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveCreatedTeamIDs(ids...)
+	return _u
+}
+
+// RemoveCreatedTeams removes "created_teams" edges to Team entities.
+func (_u *UserUpdateOne) RemoveCreatedTeams(v ...*Team) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCreatedTeamIDs(ids...)
+}
+
+// ClearCreatedTournaments clears all "created_tournaments" edges to the Tournament entity.
+func (_u *UserUpdateOne) ClearCreatedTournaments() *UserUpdateOne {
+	_u.mutation.ClearCreatedTournaments()
+	return _u
+}
+
+// RemoveCreatedTournamentIDs removes the "created_tournaments" edge to Tournament entities by IDs.
+func (_u *UserUpdateOne) RemoveCreatedTournamentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveCreatedTournamentIDs(ids...)
+	return _u
+}
+
+// RemoveCreatedTournaments removes "created_tournaments" edges to Tournament entities.
+func (_u *UserUpdateOne) RemoveCreatedTournaments(v ...*Tournament) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCreatedTournamentIDs(ids...)
+}
+
+// ClearTournamentAdminRoles clears all "tournament_admin_roles" edges to the TournamentAdmin entity.
+func (_u *UserUpdateOne) ClearTournamentAdminRoles() *UserUpdateOne {
+	_u.mutation.ClearTournamentAdminRoles()
+	return _u
+}
+
+// RemoveTournamentAdminRoleIDs removes the "tournament_admin_roles" edge to TournamentAdmin entities by IDs.
+func (_u *UserUpdateOne) RemoveTournamentAdminRoleIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveTournamentAdminRoleIDs(ids...)
+	return _u
+}
+
+// RemoveTournamentAdminRoles removes "tournament_admin_roles" edges to TournamentAdmin entities.
+func (_u *UserUpdateOne) RemoveTournamentAdminRoles(v ...*TournamentAdmin) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTournamentAdminRoleIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -1005,12 +1456,6 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if value, ok := _u.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.FirstName(); ok {
-		_spec.SetField(user.FieldFirstName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.LastName(); ok {
-		_spec.SetField(user.FieldLastName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
@@ -1025,15 +1470,6 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(user.FieldKind, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.UsualFullName(); ok {
-		_spec.SetField(user.FieldUsualFullName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.UsualFirstName(); ok {
-		_spec.SetField(user.FieldUsualFirstName, field.TypeString, value)
-	}
-	if _u.mutation.UsualFirstNameCleared() {
-		_spec.ClearField(user.FieldUsualFirstName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Roles(); ok {
 		_spec.SetField(user.FieldRoles, field.TypeJSON, value)
@@ -1216,6 +1652,231 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TeamMembershipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTeamMembershipsIDs(); len(nodes) > 0 && !_u.mutation.TeamMembershipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TeamMembershipsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ReceivedInvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedReceivedInvitationsIDs(); len(nodes) > 0 && !_u.mutation.ReceivedInvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ReceivedInvitationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatedTeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCreatedTeamsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedTeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatedTournamentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCreatedTournamentsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTournamentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedTournamentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TournamentAdminRolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminRolesTable,
+			Columns: []string{user.TournamentAdminRolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTournamentAdminRolesIDs(); len(nodes) > 0 && !_u.mutation.TournamentAdminRolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminRolesTable,
+			Columns: []string{user.TournamentAdminRolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TournamentAdminRolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminRolesTable,
+			Columns: []string{user.TournamentAdminRolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

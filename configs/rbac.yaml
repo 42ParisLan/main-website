@@ -56,13 +56,14 @@ roles:
 
     tournament_admin:
         name: 'tournament_admin'
-        description: 'User who can manage create Tournaments'
+        description: 'User who can manage and create Tournaments'
         inherits: [basic_admin]
         permissions:
 
     super_admin:
         name: 'super_admin'
         description: 'Full system administrator with all permissions'
+        inherits: [basic_admin]
         permissions:
             - path: '*'
               methods: ['*']

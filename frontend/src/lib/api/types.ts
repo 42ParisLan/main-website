@@ -360,6 +360,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tournaments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Tournaments
+         * @description This endpoint is used to get all tournaments.
+         */
+        get: operations["getAllTournaments"];
+        put?: never;
+        /**
+         * Create Tournament
+         * @description This endpoint is used to create a tournament.
+         */
+        post: operations["createTournament"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tournament by ID
+         * @description This endpoint is used to get a tournament.
+         */
+        get: operations["getTournamentByID"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users": {
         parameters: {
             query?: never;
@@ -761,6 +805,48 @@ export interface components {
              */
             user_id: number;
         };
+        CreateTournament: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateTournament.json
+             */
+            readonly $schema?: string;
+            custom_page_component?: string;
+            /** @example School-wide League of Legends tournament */
+            description: string;
+            external_link?: string;
+            /**
+             * Format: int64
+             * @example 32
+             */
+            max_teams: number;
+            /** @example Spring Cup 2025 */
+            name: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-10T23:59:59Z
+             */
+            registration_end: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-01T00:00:00Z
+             */
+            registration_start: string;
+            /** @example spring-cup-2025 */
+            slug: string;
+            team_structure: unknown;
+            /**
+             * Format: date-time
+             * @example 2025-03-20T23:59:59Z
+             */
+            tournament_end: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-15T00:00:00Z
+             */
+            tournament_start: string;
+        };
         CreateVote: {
             /**
              * Format: uri
@@ -853,6 +939,100 @@ export interface components {
             /** @description The value to set */
             value?: unknown;
         };
+        LightRankGroup: {
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /** @example Top 8 */
+            name: string;
+            /**
+             * Format: int64
+             * @example 8
+             */
+            rank_max: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            rank_min: number;
+        };
+        LightTeam: {
+            /** Format: date-time */
+            created_at: string;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
+            image_url?: string;
+            is_locked: boolean;
+            members?: components["schemas"]["LightTeamMember"][] | null;
+            /** @example Team Phoenix */
+            name: string;
+            rank_group?: components["schemas"]["LightRankGroup"];
+            /** Format: int64 */
+            score?: number;
+            /** @example DRAFT */
+            status: string;
+        };
+        LightTeamMember: {
+            /** @example player */
+            role: string;
+            user: components["schemas"]["LightUser"];
+        };
+        LightTournament: {
+            /** Format: date-time */
+            created_at: string;
+            creator: components["schemas"]["LightUser"];
+            custom_page_component?: string;
+            /** @example School-wide League of Legends tournament */
+            description?: string;
+            external_link?: string;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
+            is_visible: boolean;
+            /**
+             * Format: int64
+             * @example 32
+             */
+            max_teams: number;
+            /** @example Spring Cup 2025 */
+            name: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-10T23:59:59Z
+             */
+            registration_end: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-01T00:00:00Z
+             */
+            registration_start: string;
+            results?: unknown;
+            /** @example spring-cup-2025 */
+            slug: string;
+            team_structure: unknown;
+            /**
+             * Format: date-time
+             * @example 2025-03-20T23:59:59Z
+             */
+            tournament_end: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-15T00:00:00Z
+             */
+            tournament_start: string;
+        };
+        LightTournamentAdmin: {
+            /** @example admin */
+            role: string;
+            user: components["schemas"]["LightUser"];
+        };
         LightUser: {
             /**
              * Format: date-time
@@ -861,8 +1041,6 @@ export interface components {
             created_at: string;
             /** @example froz@42paris.fr */
             email: string;
-            /** @example Theo */
-            first_name: string;
             /**
              * Format: int64
              * @example 42
@@ -873,8 +1051,6 @@ export interface components {
              * @enum {string}
              */
             kind: "user" | "admin";
-            /** @example Matis */
-            last_name: string;
             /** @example https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg */
             picture: string | null;
             /**
@@ -890,10 +1066,6 @@ export interface components {
             updated_at: string;
             /** @example froz */
             username: string;
-            /** @example Theo */
-            usual_first_name: string | null;
-            /** @example Theo Matis */
-            usual_full_name: string;
         };
         LightVote: {
             /**
@@ -976,6 +1148,35 @@ export interface components {
              */
             readonly $schema?: string;
             items: components["schemas"]["Consent"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseLightTournament: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightTournament.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightTournament"][] | null;
             /**
              * Format: int64
              * @example 10
@@ -1087,6 +1288,45 @@ export interface components {
             name: string;
             permissions: components["schemas"]["Permission"][];
         };
+        Tournament: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Tournament.json
+             */
+            readonly $schema?: string;
+            admins?: components["schemas"]["LightTournamentAdmin"][] | null;
+            /** Format: date-time */
+            created_at: string;
+            creator: components["schemas"]["LightUser"];
+            custom_page_component?: string;
+            description?: string;
+            external_link?: string;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
+            is_visible: boolean;
+            /** Format: int64 */
+            max_teams: number;
+            /** @example Spring Cup 2025 */
+            name: string;
+            rank_groups?: components["schemas"]["LightRankGroup"][] | null;
+            /** Format: date-time */
+            registration_end: string;
+            /** Format: date-time */
+            registration_start: string;
+            results?: unknown;
+            /** @example spring-cup-2025 */
+            slug: string;
+            team_structure: unknown;
+            teams?: components["schemas"]["LightTeam"][] | null;
+            /** Format: date-time */
+            tournament_end: string;
+            /** Format: date-time */
+            tournament_start: string;
+        };
         UpdateVote: {
             /**
              * Format: uri
@@ -1125,8 +1365,6 @@ export interface components {
             created_at: string;
             /** @example froz@42paris.fr */
             email: string;
-            /** @example Theo */
-            first_name: string;
             /**
              * Format: int64
              * @example 42
@@ -1137,8 +1375,6 @@ export interface components {
              * @enum {string}
              */
             kind: "user" | "admin";
-            /** @example Matis */
-            last_name: string;
             /** @example https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg */
             picture: string | null;
             /**
@@ -1154,10 +1390,6 @@ export interface components {
             updated_at: string;
             /** @example froz */
             username: string;
-            /** @example Theo */
-            usual_first_name: string | null;
-            /** @example Theo Matis */
-            usual_full_name: string;
         };
         Vote: {
             /**
@@ -1909,6 +2141,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Role"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAllTournaments: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+                /** @example visible */
+                visible?: "all" | "visible";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseLightTournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTournament"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getTournamentByID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
                 };
             };
             /** @description Error */

@@ -11,6 +11,7 @@ import (
 	pubsubservice "base-website/internal/services/pubsub"
 	rbacservice "base-website/internal/services/rbac"
 	s3service "base-website/internal/services/s3"
+	tournamentsservice "base-website/internal/services/tournaments"
 	usersservice "base-website/internal/services/users"
 	votesservice "base-website/internal/services/votes"
 
@@ -28,6 +29,7 @@ func InitServices(i *do.Injector) error {
 	do.Provide(i, usersservice.NewProvider())
 	do.Provide(i, pubsubservice.NewProvider())
 	do.Provide(i, votesservice.NewProvider())
+	do.Provide(i, tournamentsservice.NewProvider())
 	do.Provide(i, appsservice.NewProvider())
 	do.Provide(i, consentsservice.NewProvider())
 	return nil

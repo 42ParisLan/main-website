@@ -212,6 +212,60 @@ components:
         - scopes
         - expiration_date
       type: object
+    CreateTournament:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/CreateTournament.json
+          format: uri
+          readOnly: true
+          type: string
+        custom_page_component:
+          type: string
+        description:
+          example: School-wide League of Legends tournament
+          type: string
+        external_link:
+          type: string
+        max_teams:
+          example: 32
+          format: int64
+          type: integer
+        name:
+          example: Spring Cup 2025
+          type: string
+        registration_end:
+          example: "2025-03-10T23:59:59Z"
+          format: date-time
+          type: string
+        registration_start:
+          example: "2025-03-01T00:00:00Z"
+          format: date-time
+          type: string
+        slug:
+          example: spring-cup-2025
+          type: string
+        team_structure: {}
+        tournament_end:
+          example: "2025-03-20T23:59:59Z"
+          format: date-time
+          type: string
+        tournament_start:
+          example: "2025-03-15T00:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - slug
+        - name
+        - description
+        - registration_start
+        - registration_end
+        - tournament_start
+        - tournament_end
+        - max_teams
+        - team_structure
+      type: object
     CreateVote:
       additionalProperties: false
       properties:
@@ -335,6 +389,154 @@ components:
         - op
         - path
       type: object
+    LightRankGroup:
+      additionalProperties: false
+      properties:
+        id:
+          example: 1
+          format: int64
+          type: integer
+        name:
+          example: Top 8
+          type: string
+        rank_max:
+          example: 8
+          format: int64
+          type: integer
+        rank_min:
+          example: 1
+          format: int64
+          type: integer
+      required:
+        - id
+        - name
+        - rank_min
+        - rank_max
+      type: object
+    LightTeam:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        image_url:
+          type: string
+        is_locked:
+          type: boolean
+        members:
+          items:
+            $ref: "#/components/schemas/LightTeamMember"
+          nullable: true
+          type: array
+        name:
+          example: Team Phoenix
+          type: string
+        rank_group:
+          $ref: "#/components/schemas/LightRankGroup"
+        score:
+          format: int64
+          type: integer
+        status:
+          example: DRAFT
+          type: string
+      required:
+        - id
+        - name
+        - status
+        - is_locked
+        - created_at
+      type: object
+    LightTeamMember:
+      additionalProperties: false
+      properties:
+        role:
+          example: player
+          type: string
+        user:
+          $ref: "#/components/schemas/LightUser"
+      required:
+        - user
+        - role
+      type: object
+    LightTournament:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        custom_page_component:
+          type: string
+        description:
+          example: School-wide League of Legends tournament
+          type: string
+        external_link:
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        is_visible:
+          type: boolean
+        max_teams:
+          example: 32
+          format: int64
+          type: integer
+        name:
+          example: Spring Cup 2025
+          type: string
+        registration_end:
+          example: "2025-03-10T23:59:59Z"
+          format: date-time
+          type: string
+        registration_start:
+          example: "2025-03-01T00:00:00Z"
+          format: date-time
+          type: string
+        results: {}
+        slug:
+          example: spring-cup-2025
+          type: string
+        team_structure: {}
+        tournament_end:
+          example: "2025-03-20T23:59:59Z"
+          format: date-time
+          type: string
+        tournament_start:
+          example: "2025-03-15T00:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - id
+        - slug
+        - name
+        - is_visible
+        - registration_start
+        - registration_end
+        - tournament_start
+        - tournament_end
+        - max_teams
+        - team_structure
+        - creator
+        - created_at
+      type: object
+    LightTournamentAdmin:
+      additionalProperties: false
+      properties:
+        role:
+          example: admin
+          type: string
+        user:
+          $ref: "#/components/schemas/LightUser"
+      required:
+        - user
+        - role
+      type: object
     LightUser:
       additionalProperties: false
       properties:
@@ -345,9 +547,6 @@ components:
         email:
           example: froz@42paris.fr
           type: string
-        first_name:
-          example: Theo
-          type: string
         id:
           example: 42
           format: int64
@@ -357,9 +556,6 @@ components:
             - user
             - admin
           example: user
-          type: string
-        last_name:
-          example: Matis
           type: string
         picture:
           example: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg
@@ -378,25 +574,14 @@ components:
         username:
           example: froz
           type: string
-        usual_first_name:
-          example: Theo
-          nullable: true
-          type: string
-        usual_full_name:
-          example: Theo Matis
-          type: string
       required:
         - id
         - username
-        - first_name
-        - last_name
         - email
         - created_at
         - updated_at
         - picture
         - kind
-        - usual_full_name
-        - usual_first_name
         - roles
       type: object
     LightVote:
@@ -509,6 +694,43 @@ components:
         items:
           items:
             $ref: "#/components/schemas/Consent"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseLightTournament:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightTournament.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightTournament"
           nullable: true
           type: array
         limit:
@@ -660,6 +882,84 @@ components:
         - permissions
         - inherits
       type: object
+    Tournament:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Tournament.json
+          format: uri
+          readOnly: true
+          type: string
+        admins:
+          items:
+            $ref: "#/components/schemas/LightTournamentAdmin"
+          nullable: true
+          type: array
+        created_at:
+          format: date-time
+          type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        custom_page_component:
+          type: string
+        description:
+          type: string
+        external_link:
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        is_visible:
+          type: boolean
+        max_teams:
+          format: int64
+          type: integer
+        name:
+          example: Spring Cup 2025
+          type: string
+        rank_groups:
+          items:
+            $ref: "#/components/schemas/LightRankGroup"
+          nullable: true
+          type: array
+        registration_end:
+          format: date-time
+          type: string
+        registration_start:
+          format: date-time
+          type: string
+        results: {}
+        slug:
+          example: spring-cup-2025
+          type: string
+        team_structure: {}
+        teams:
+          items:
+            $ref: "#/components/schemas/LightTeam"
+          nullable: true
+          type: array
+        tournament_end:
+          format: date-time
+          type: string
+        tournament_start:
+          format: date-time
+          type: string
+      required:
+        - id
+        - slug
+        - name
+        - is_visible
+        - registration_start
+        - registration_end
+        - tournament_start
+        - tournament_end
+        - max_teams
+        - team_structure
+        - creator
+        - created_at
+      type: object
     UpdateVote:
       additionalProperties: false
       properties:
@@ -708,9 +1008,6 @@ components:
         email:
           example: froz@42paris.fr
           type: string
-        first_name:
-          example: Theo
-          type: string
         id:
           example: 42
           format: int64
@@ -720,9 +1017,6 @@ components:
             - user
             - admin
           example: user
-          type: string
-        last_name:
-          example: Matis
           type: string
         picture:
           example: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg
@@ -741,25 +1035,14 @@ components:
         username:
           example: froz
           type: string
-        usual_first_name:
-          example: Theo
-          nullable: true
-          type: string
-        usual_full_name:
-          example: Theo Matis
-          type: string
       required:
         - id
         - username
-        - first_name
-        - last_name
         - email
         - created_at
         - updated_at
         - picture
         - kind
-        - usual_full_name
-        - usual_first_name
         - roles
       type: object
     Vote:
@@ -1666,6 +1949,133 @@ paths:
       tags:
         - RBAC
         - Roles
+  /tournaments:
+    get:
+      description: This endpoint is used to get all tournaments.
+      operationId: getAllTournaments
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: visible
+          explode: false
+          in: query
+          name: visible
+          schema:
+            default: visible
+            enum:
+              - all
+              - visible
+            example: visible
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseLightTournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get All Tournaments
+      tags:
+        - Tournament
+    post:
+      description: This endpoint is used to create a tournament.
+      operationId: createTournament
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTournament"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Tournament
+      tags:
+        - Tournament
+  /tournaments/{id}:
+    get:
+      description: This endpoint is used to get a tournament.
+      operationId: getTournamentByID
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Tournament by ID
+      tags:
+        - Tournament
   /users:
     get:
       description: This endpoint is used to search users.

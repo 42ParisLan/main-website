@@ -17,10 +17,6 @@ const (
 	FieldID = "id"
 	// FieldUsername holds the string denoting the username field in the database.
 	FieldUsername = "username"
-	// FieldFirstName holds the string denoting the first_name field in the database.
-	FieldFirstName = "first_name"
-	// FieldLastName holds the string denoting the last_name field in the database.
-	FieldLastName = "last_name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -31,10 +27,6 @@ const (
 	FieldPicture = "picture"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
-	// FieldUsualFullName holds the string denoting the usual_full_name field in the database.
-	FieldUsualFullName = "usual_full_name"
-	// FieldUsualFirstName holds the string denoting the usual_first_name field in the database.
-	FieldUsualFirstName = "usual_first_name"
 	// FieldRoles holds the string denoting the roles field in the database.
 	FieldRoles = "roles"
 	// EdgeUserVotes holds the string denoting the user_votes edge name in mutations.
@@ -45,6 +37,16 @@ const (
 	EdgeApps = "apps"
 	// EdgeConsents holds the string denoting the consents edge name in mutations.
 	EdgeConsents = "consents"
+	// EdgeTeamMemberships holds the string denoting the team_memberships edge name in mutations.
+	EdgeTeamMemberships = "team_memberships"
+	// EdgeReceivedInvitations holds the string denoting the received_invitations edge name in mutations.
+	EdgeReceivedInvitations = "received_invitations"
+	// EdgeCreatedTeams holds the string denoting the created_teams edge name in mutations.
+	EdgeCreatedTeams = "created_teams"
+	// EdgeCreatedTournaments holds the string denoting the created_tournaments edge name in mutations.
+	EdgeCreatedTournaments = "created_tournaments"
+	// EdgeTournamentAdminRoles holds the string denoting the tournament_admin_roles edge name in mutations.
+	EdgeTournamentAdminRoles = "tournament_admin_roles"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserVotesTable is the table that holds the user_votes relation/edge.
@@ -75,21 +77,52 @@ const (
 	ConsentsInverseTable = "consents"
 	// ConsentsColumn is the table column denoting the consents relation/edge.
 	ConsentsColumn = "user_id"
+	// TeamMembershipsTable is the table that holds the team_memberships relation/edge.
+	TeamMembershipsTable = "team_members"
+	// TeamMembershipsInverseTable is the table name for the TeamMember entity.
+	// It exists in this package in order to avoid circular dependency with the "teammember" package.
+	TeamMembershipsInverseTable = "team_members"
+	// TeamMembershipsColumn is the table column denoting the team_memberships relation/edge.
+	TeamMembershipsColumn = "user_team_memberships"
+	// ReceivedInvitationsTable is the table that holds the received_invitations relation/edge.
+	ReceivedInvitationsTable = "invitations"
+	// ReceivedInvitationsInverseTable is the table name for the Invitation entity.
+	// It exists in this package in order to avoid circular dependency with the "invitation" package.
+	ReceivedInvitationsInverseTable = "invitations"
+	// ReceivedInvitationsColumn is the table column denoting the received_invitations relation/edge.
+	ReceivedInvitationsColumn = "user_received_invitations"
+	// CreatedTeamsTable is the table that holds the created_teams relation/edge.
+	CreatedTeamsTable = "teams"
+	// CreatedTeamsInverseTable is the table name for the Team entity.
+	// It exists in this package in order to avoid circular dependency with the "team" package.
+	CreatedTeamsInverseTable = "teams"
+	// CreatedTeamsColumn is the table column denoting the created_teams relation/edge.
+	CreatedTeamsColumn = "user_created_teams"
+	// CreatedTournamentsTable is the table that holds the created_tournaments relation/edge.
+	CreatedTournamentsTable = "tournaments"
+	// CreatedTournamentsInverseTable is the table name for the Tournament entity.
+	// It exists in this package in order to avoid circular dependency with the "tournament" package.
+	CreatedTournamentsInverseTable = "tournaments"
+	// CreatedTournamentsColumn is the table column denoting the created_tournaments relation/edge.
+	CreatedTournamentsColumn = "user_created_tournaments"
+	// TournamentAdminRolesTable is the table that holds the tournament_admin_roles relation/edge.
+	TournamentAdminRolesTable = "tournament_admins"
+	// TournamentAdminRolesInverseTable is the table name for the TournamentAdmin entity.
+	// It exists in this package in order to avoid circular dependency with the "tournamentadmin" package.
+	TournamentAdminRolesInverseTable = "tournament_admins"
+	// TournamentAdminRolesColumn is the table column denoting the tournament_admin_roles relation/edge.
+	TournamentAdminRolesColumn = "user_tournament_admin_roles"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
 	FieldUsername,
-	FieldFirstName,
-	FieldLastName,
 	FieldEmail,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldPicture,
 	FieldKind,
-	FieldUsualFullName,
-	FieldUsualFirstName,
 	FieldRoles,
 }
 
@@ -153,16 +186,6 @@ func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsername, opts...).ToFunc()
 }
 
-// ByFirstName orders the results by the first_name field.
-func ByFirstName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFirstName, opts...).ToFunc()
-}
-
-// ByLastName orders the results by the last_name field.
-func ByLastName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastName, opts...).ToFunc()
-}
-
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
@@ -186,16 +209,6 @@ func ByPicture(opts ...sql.OrderTermOption) OrderOption {
 // ByKind orders the results by the kind field.
 func ByKind(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKind, opts...).ToFunc()
-}
-
-// ByUsualFullName orders the results by the usual_full_name field.
-func ByUsualFullName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUsualFullName, opts...).ToFunc()
-}
-
-// ByUsualFirstName orders the results by the usual_first_name field.
-func ByUsualFirstName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUsualFirstName, opts...).ToFunc()
 }
 
 // ByUserVotesCount orders the results by user_votes count.
@@ -253,6 +266,76 @@ func ByConsents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newConsentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTeamMembershipsCount orders the results by team_memberships count.
+func ByTeamMembershipsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTeamMembershipsStep(), opts...)
+	}
+}
+
+// ByTeamMemberships orders the results by team_memberships terms.
+func ByTeamMemberships(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamMembershipsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByReceivedInvitationsCount orders the results by received_invitations count.
+func ByReceivedInvitationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReceivedInvitationsStep(), opts...)
+	}
+}
+
+// ByReceivedInvitations orders the results by received_invitations terms.
+func ByReceivedInvitations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReceivedInvitationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCreatedTeamsCount orders the results by created_teams count.
+func ByCreatedTeamsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedTeamsStep(), opts...)
+	}
+}
+
+// ByCreatedTeams orders the results by created_teams terms.
+func ByCreatedTeams(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedTeamsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCreatedTournamentsCount orders the results by created_tournaments count.
+func ByCreatedTournamentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedTournamentsStep(), opts...)
+	}
+}
+
+// ByCreatedTournaments orders the results by created_tournaments terms.
+func ByCreatedTournaments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedTournamentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTournamentAdminRolesCount orders the results by tournament_admin_roles count.
+func ByTournamentAdminRolesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTournamentAdminRolesStep(), opts...)
+	}
+}
+
+// ByTournamentAdminRoles orders the results by tournament_admin_roles terms.
+func ByTournamentAdminRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTournamentAdminRolesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserVotesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -279,5 +362,40 @@ func newConsentsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ConsentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
+	)
+}
+func newTeamMembershipsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TeamMembershipsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TeamMembershipsTable, TeamMembershipsColumn),
+	)
+}
+func newReceivedInvitationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReceivedInvitationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReceivedInvitationsTable, ReceivedInvitationsColumn),
+	)
+}
+func newCreatedTeamsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedTeamsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedTeamsTable, CreatedTeamsColumn),
+	)
+}
+func newCreatedTournamentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedTournamentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedTournamentsTable, CreatedTournamentsColumn),
+	)
+}
+func newTournamentAdminRolesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TournamentAdminRolesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TournamentAdminRolesTable, TournamentAdminRolesColumn),
 	)
 }

@@ -1,0 +1,84 @@
+package lightmodels
+
+import (
+	"time"
+
+	"base-website/ent"
+)
+
+type LightTeamMember struct {
+	User LightUser `json:"user" description:"The user information of the team member"`
+	Role string    `json:"role" example:"player" description:"The role of the user in the team, e.g., player, coach, substitute"`
+}
+
+func NewLightTeamMemberFromEnt(entTeamMember *ent.TeamMember) *LightTeamMember {
+	if entTeamMember == nil {
+		return nil
+	}
+
+	var user *LightUser
+	if entTeamMember.Edges.User != nil {
+		user = NewLightUserFromEnt(entTeamMember.Edges.User)
+	}
+
+	return &LightTeamMember{
+		User: *user,
+		Role: entTeamMember.Role,
+	}
+}
+
+func NewLightTeamMembersFromEnt(entTeamMembers []*ent.TeamMember) []*LightTeamMember {
+	members := make([]*LightTeamMember, len(entTeamMembers))
+	for i, t := range entTeamMembers {
+		members[i] = NewLightTeamMemberFromEnt(t)
+	}
+	return members
+}
+
+type LightTeam struct {
+	ID        int                `json:"id" example:"42"`
+	Name      string             `json:"name" example:"Team Phoenix"`
+	ImageURL  *string            `json:"image_url,omitempty"`
+	Status    string             `json:"status" example:"DRAFT"`
+	IsLocked  bool               `json:"is_locked"`
+	Score     *int               `json:"score,omitempty"`
+	RankGroup *LightRankGroup    `json:"rank_group,omitempty"`
+	Members   []*LightTeamMember `json:"members,omitempty"`
+	CreatedAt time.Time          `json:"created_at"`
+}
+
+func NewLightTeamFromEnt(entTeam *ent.Team) *LightTeam {
+	if entTeam == nil {
+		return nil
+	}
+
+	var members []*LightTeamMember
+	if entTeam.Edges.Members != nil {
+		members = NewLightTeamMembersFromEnt(entTeam.Edges.Members)
+	}
+
+	var rankGroup *LightRankGroup
+	if entTeam.Edges.RankGroup != nil {
+		rankGroup = NewLightRankGroupFromEnt(entTeam.Edges.RankGroup)
+	}
+
+	return &LightTeam{
+		ID:        entTeam.ID,
+		Name:      entTeam.Name,
+		ImageURL:  &entTeam.ImageURL,
+		Status:    string(entTeam.Status),
+		IsLocked:  entTeam.IsLocked,
+		Score:     &entTeam.Score,
+		RankGroup: rankGroup,
+		Members:   members,
+		CreatedAt: entTeam.CreatedAt,
+	}
+}
+
+func NewLightTeamsFromEnt(entTeams []*ent.Team) []*LightTeam {
+	teams := make([]*LightTeam, len(entTeams))
+	for i, t := range entTeams {
+		teams[i] = NewLightTeamFromEnt(t)
+	}
+	return teams
+}

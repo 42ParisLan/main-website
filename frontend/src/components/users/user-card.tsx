@@ -14,7 +14,6 @@ export default function UserCard({user}: {user: components['schemas']['User']}) 
 						/>
 					</div>
 					<div className="flex flex-col items-center">
-						<h3 className="text-lg font-bold">{user.usual_first_name ?? user.first_name} {user.last_name}</h3>
 						<h2>@{user.username}</h2>
 					</div>
 				</div>

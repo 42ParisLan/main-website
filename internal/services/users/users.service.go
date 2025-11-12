@@ -86,11 +86,7 @@ func (svc *usersService) UpsertUserFromIntra(
 		updateQuery := svc.databaseService.User.UpdateOneID(intraUser.ID).
 			SetUsername(intraUser.Login).
 			SetEmail(intraUser.Email).
-			SetFirstName(intraUser.FirstName).
-			SetLastName(intraUser.LastName).
-			SetEmail(intraUser.Email).
-			SetUsualFullName(intraUser.UsualFullName).
-			SetNillableUsualFirstName(intraUser.UsualFirstName)
+			SetEmail(intraUser.Email)
 		if intraUser.Image != nil {
 			updateQuery.SetPicture(intraUser.Image.Versions.Medium)
 		}
@@ -105,11 +101,7 @@ func (svc *usersService) UpsertUserFromIntra(
 		SetID(intraUser.ID).
 		SetUsername(intraUser.Login).
 		SetEmail(intraUser.Email).
-		SetFirstName(intraUser.FirstName).
-		SetLastName(intraUser.LastName).
-		SetEmail(intraUser.Email).
-		SetUsualFullName(intraUser.UsualFullName).
-		SetNillableUsualFirstName(intraUser.UsualFirstName)
+		SetEmail(intraUser.Email)
 
 	if intraUser.ID == svc.configService.GetConfig().SuperAdminUser {
 		userCreateQuery.SetKind(user.KindAdmin)
@@ -183,9 +175,6 @@ func (svc *usersService) SearchUsers(
 		query.Where(
 			user.Or(
 				user.UsernameContains(params.Query),
-				user.FirstNameContains(params.Query),
-				user.LastNameContains(params.Query),
-				user.UsualFullNameContains(params.Query),
 			),
 		)
 	}
