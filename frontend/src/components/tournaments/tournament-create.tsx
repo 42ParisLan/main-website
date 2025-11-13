@@ -36,7 +36,6 @@ export default function TournamentCreate() {
 			name: "",
 			registration_end: "",
 			registration_start: "",
-			team_structure: {},
 			tournament_end: "",
 			tournament_start: "",
 		},
@@ -56,8 +55,6 @@ export default function TournamentCreate() {
 					}
 					team_structure[r.name] = { min, max }
 				}
-			} else {
-				team_structure = (value.team_structure as Record<string, { min: number; max: number }>) || {}
 			}
 
 			const body: components["schemas"]["CreateTournament"] = {
