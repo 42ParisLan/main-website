@@ -7796,22 +7796,9 @@ func (m *TournamentMutation) OldCustomPageComponent(ctx context.Context) (v stri
 	return oldValue.CustomPageComponent, nil
 }
 
-// ClearCustomPageComponent clears the value of the "custom_page_component" field.
-func (m *TournamentMutation) ClearCustomPageComponent() {
-	m.custom_page_component = nil
-	m.clearedFields[tournament.FieldCustomPageComponent] = struct{}{}
-}
-
-// CustomPageComponentCleared returns if the "custom_page_component" field was cleared in this mutation.
-func (m *TournamentMutation) CustomPageComponentCleared() bool {
-	_, ok := m.clearedFields[tournament.FieldCustomPageComponent]
-	return ok
-}
-
 // ResetCustomPageComponent resets all changes to the "custom_page_component" field.
 func (m *TournamentMutation) ResetCustomPageComponent() {
 	m.custom_page_component = nil
-	delete(m.clearedFields, tournament.FieldCustomPageComponent)
 }
 
 // SetExternalLink sets the "external_link" field.
@@ -8468,9 +8455,6 @@ func (m *TournamentMutation) ClearedFields() []string {
 	if m.FieldCleared(tournament.FieldTeamStructure) {
 		fields = append(fields, tournament.FieldTeamStructure)
 	}
-	if m.FieldCleared(tournament.FieldCustomPageComponent) {
-		fields = append(fields, tournament.FieldCustomPageComponent)
-	}
 	if m.FieldCleared(tournament.FieldExternalLink) {
 		fields = append(fields, tournament.FieldExternalLink)
 	}
@@ -8493,9 +8477,6 @@ func (m *TournamentMutation) ClearField(name string) error {
 	switch name {
 	case tournament.FieldTeamStructure:
 		m.ClearTeamStructure()
-		return nil
-	case tournament.FieldCustomPageComponent:
-		m.ClearCustomPageComponent()
 		return nil
 	case tournament.FieldExternalLink:
 		m.ClearExternalLink()

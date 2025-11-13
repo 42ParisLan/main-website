@@ -129,6 +129,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultIsVisible holds the default value on creation for the "is_visible" field.
 	DefaultIsVisible bool
+	// DefaultCustomPageComponent holds the default value on creation for the "custom_page_component" field.
+	DefaultCustomPageComponent string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )

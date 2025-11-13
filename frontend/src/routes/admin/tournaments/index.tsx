@@ -14,11 +14,22 @@ function RouteComponent() {
 	const [page, setPage] = useState<number>(0);
 	const client = useQueryClient();
 
-	const { data, isLoading } = client.useQuery("get", "/tournaments", {
+	const { data: tournamentsOngoing, isLoading: isLoadingOngoing } = client.useQuery("get", "/tournaments", {
 		params: {
 			query: {
 				page,
 				visible: "all",
+				status: 'ongoing',
+			}
+		}
+	})
+
+	const { data: tournamentsFinish, isLoading: isLoadingFinish } = client.useQuery("get", "/tournaments", {
+		params: {
+			query: {
+				page,
+				visible: "all",
+				status: 'finish',
 			}
 		}
 	})
@@ -38,8 +49,8 @@ function RouteComponent() {
 					</CardHeader>
 					<CardContent>
 						<PaginatedListControlled<components['schemas']['Tournament']>
-							data={data}
-							isLoading={isLoading}
+							data={tournamentsOngoing}
+							isLoading={isLoadingOngoing}
 							page={page}
 							onPageChange={handlePageChange}
 							renderItem={(tournament) => <TournamentCard tournament={tournament} />}
@@ -58,8 +69,8 @@ function RouteComponent() {
 					</CardHeader>
 					<CardContent>
 						<PaginatedListControlled<components['schemas']['Tournament']>
-							data={data}
-							isLoading={isLoading}
+							data={tournamentsFinish}
+							isLoading={isLoadingFinish}
 							page={page}
 							onPageChange={handlePageChange}
 							renderItem={(tournament) => <TournamentCard tournament={tournament} />}

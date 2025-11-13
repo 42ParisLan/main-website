@@ -269,7 +269,7 @@ var (
 		{Name: "state", Type: field.TypeEnum, Enums: []string{"DRAFT", "REGISTRATION_OPEN", "REGISTRATION_CLOSED", "ONGOING", "FINISHED"}, Default: "DRAFT"},
 		{Name: "max_teams", Type: field.TypeInt},
 		{Name: "team_structure", Type: field.TypeJSON, Nullable: true},
-		{Name: "custom_page_component", Type: field.TypeString, Nullable: true},
+		{Name: "custom_page_component", Type: field.TypeString, Default: "default"},
 		{Name: "external_link", Type: field.TypeString, Nullable: true},
 		{Name: "results", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},

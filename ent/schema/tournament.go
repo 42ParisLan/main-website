@@ -27,7 +27,7 @@ func (Tournament) Fields() []ent.Field {
 			Default("DRAFT"),
 		field.Int("max_teams"),
 		field.JSON("team_structure", map[string]interface{}{}).Optional(),
-		field.String("custom_page_component").Optional(),
+		field.String("custom_page_component").Default("default"),
 		field.String("external_link").Optional(),
 		field.JSON("results", map[string]interface{}{}).Optional(),
 		field.Time("created_at").Default(time.Now),

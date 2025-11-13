@@ -1,6 +1,7 @@
-h1:YzwGNTm0vyQ/yPCATX8uFydsXOx5hxCku35DKLFQr2Y=
+h1:HIadDtNUIwvUpLrUmgXbvnJ0L13XhCeBV8MlaBfNdhg=
 20251022225758_init.sql h1:b86D5jswhFzW4QWG7HkJ6hLER4a59sFicFbGmSrlvOI=
 20251108151941_app.sql h1:U+qQCtSn/mZgv3CfJmqx5GfbTE86Oy5fOyLTJLKi7wU=
 20251108205344_image_url_default.sql h1:IGNZf9i8IbfJhVf6VAUaIeTqaSW5QZRo6Bw5Tnsp/7A=
 20251112222810_tournament.sql h1:3uwtBmZrEeKP1zt22uQgJoWbBaOpaoaBV73P6xwlhqA=
 20251112232430_remove_personnal_info.sql h1:L6YOog1VWSREbs65gx2Sh//3v1EW+euiMWawAZhJ+PE=
+20251113234316_gen_default.sql h1:DXWewYpGPWe3ohnrY0XyBhtaxMSqmX2xBcq4h4CmISw=

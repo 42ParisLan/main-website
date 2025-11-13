@@ -7,6 +7,7 @@ import {
 	IconUserCode,
 	IconUsersGroup,
 	IconBox,
+	IconSquareRoundedPlus,
 	type Icon,
 } from "@tabler/icons-react"
 
@@ -60,6 +61,11 @@ const data: SidebarData[] = [
 				title: "Tournaments",
 				url: "/admin/tournaments",
 				icon: IconUsersGroup,
+			},
+			{
+				title: "Create Tournament",
+				url: "/admin/tournaments/create",
+				icon: IconSquareRoundedPlus,
 			},
 		],
 	},

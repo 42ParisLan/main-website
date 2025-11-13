@@ -1997,6 +1997,18 @@ paths:
               - visible
             example: visible
             type: string
+        - example: ongoing
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: all
+            enum:
+              - all
+              - ongoing
+              - finish
+            example: ongoing
+            type: string
       responses:
         "200":
           content:

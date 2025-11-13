@@ -2165,6 +2165,8 @@ export interface operations {
                 order?: "asc" | "desc";
                 /** @example visible */
                 visible?: "all" | "visible";
+                /** @example ongoing */
+                status?: "all" | "ongoing" | "finish";
             };
             header?: never;
             path?: never;

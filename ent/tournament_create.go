@@ -253,6 +253,10 @@ func (_c *TournamentCreate) defaults() {
 		v := tournament.DefaultState
 		_c.mutation.SetState(v)
 	}
+	if _, ok := _c.mutation.CustomPageComponent(); !ok {
+		v := tournament.DefaultCustomPageComponent
+		_c.mutation.SetCustomPageComponent(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := tournament.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -295,6 +299,9 @@ func (_c *TournamentCreate) check() error {
 	}
 	if _, ok := _c.mutation.MaxTeams(); !ok {
 		return &ValidationError{Name: "max_teams", err: errors.New(`ent: missing required field "Tournament.max_teams"`)}
+	}
+	if _, ok := _c.mutation.CustomPageComponent(); !ok {
+		return &ValidationError{Name: "custom_page_component", err: errors.New(`ent: missing required field "Tournament.custom_page_component"`)}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Tournament.created_at"`)}

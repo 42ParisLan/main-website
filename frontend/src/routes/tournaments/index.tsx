@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/tournament/')({
+export const Route = createFileRoute('/tournaments/')({
 	component: RouteComponent,
 })
 

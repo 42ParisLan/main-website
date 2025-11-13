@@ -83,6 +83,10 @@ func init() {
 	tournamentDescIsVisible := tournamentFields[3].Descriptor()
 	// tournament.DefaultIsVisible holds the default value on creation for the is_visible field.
 	tournament.DefaultIsVisible = tournamentDescIsVisible.Default.(bool)
+	// tournamentDescCustomPageComponent is the schema descriptor for custom_page_component field.
+	tournamentDescCustomPageComponent := tournamentFields[11].Descriptor()
+	// tournament.DefaultCustomPageComponent holds the default value on creation for the custom_page_component field.
+	tournament.DefaultCustomPageComponent = tournamentDescCustomPageComponent.Default.(string)
 	// tournamentDescCreatedAt is the schema descriptor for created_at field.
 	tournamentDescCreatedAt := tournamentFields[14].Descriptor()
 	// tournament.DefaultCreatedAt holds the default value on creation for the created_at field.

@@ -205,12 +205,6 @@ func (_u *TournamentUpdate) SetNillableCustomPageComponent(v *string) *Tournamen
 	return _u
 }
 
-// ClearCustomPageComponent clears the value of the "custom_page_component" field.
-func (_u *TournamentUpdate) ClearCustomPageComponent() *TournamentUpdate {
-	_u.mutation.ClearCustomPageComponent()
-	return _u
-}
-
 // SetExternalLink sets the "external_link" field.
 func (_u *TournamentUpdate) SetExternalLink(v string) *TournamentUpdate {
 	_u.mutation.SetExternalLink(v)
@@ -480,9 +474,6 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if value, ok := _u.mutation.CustomPageComponent(); ok {
 		_spec.SetField(tournament.FieldCustomPageComponent, field.TypeString, value)
-	}
-	if _u.mutation.CustomPageComponentCleared() {
-		_spec.ClearField(tournament.FieldCustomPageComponent, field.TypeString)
 	}
 	if value, ok := _u.mutation.ExternalLink(); ok {
 		_spec.SetField(tournament.FieldExternalLink, field.TypeString, value)
@@ -856,12 +847,6 @@ func (_u *TournamentUpdateOne) SetNillableCustomPageComponent(v *string) *Tourna
 	return _u
 }
 
-// ClearCustomPageComponent clears the value of the "custom_page_component" field.
-func (_u *TournamentUpdateOne) ClearCustomPageComponent() *TournamentUpdateOne {
-	_u.mutation.ClearCustomPageComponent()
-	return _u
-}
-
 // SetExternalLink sets the "external_link" field.
 func (_u *TournamentUpdateOne) SetExternalLink(v string) *TournamentUpdateOne {
 	_u.mutation.SetExternalLink(v)
@@ -1161,9 +1146,6 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	}
 	if value, ok := _u.mutation.CustomPageComponent(); ok {
 		_spec.SetField(tournament.FieldCustomPageComponent, field.TypeString, value)
-	}
-	if _u.mutation.CustomPageComponentCleared() {
-		_spec.ClearField(tournament.FieldCustomPageComponent, field.TypeString)
 	}
 	if value, ok := _u.mutation.ExternalLink(); ok {
 		_spec.SetField(tournament.FieldExternalLink, field.TypeString, value)

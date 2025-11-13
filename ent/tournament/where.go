@@ -605,16 +605,6 @@ func CustomPageComponentHasSuffix(v string) predicate.Tournament {
 	return predicate.Tournament(sql.FieldHasSuffix(FieldCustomPageComponent, v))
 }
 
-// CustomPageComponentIsNil applies the IsNil predicate on the "custom_page_component" field.
-func CustomPageComponentIsNil() predicate.Tournament {
-	return predicate.Tournament(sql.FieldIsNull(FieldCustomPageComponent))
-}
-
-// CustomPageComponentNotNil applies the NotNil predicate on the "custom_page_component" field.
-func CustomPageComponentNotNil() predicate.Tournament {
-	return predicate.Tournament(sql.FieldNotNull(FieldCustomPageComponent))
-}
-
 // CustomPageComponentEqualFold applies the EqualFold predicate on the "custom_page_component" field.
 func CustomPageComponentEqualFold(v string) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEqualFold(FieldCustomPageComponent, v))
