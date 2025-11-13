@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import { NavBar } from '@/components/home-page/navbar'
 import { Link } from '@tanstack/react-router'
 import { IconChalkboardTeacher } from '@tabler/icons-react'
 
@@ -11,11 +10,11 @@ export const Route = createFileRoute('/')({
 function WelcomePage() {
 	return (
 		<div className="min-h-screen bg-background">
-			<div className="mx-2 px-4 py-16">
+			<div className=" py-1">
 				<div className="flex flex-col items-center justify-center space-y-8 text-center">
 					{/* Logo */}
 					
-					<NavBar/>
+					{/* <NavBar/> */}
 
 					{/* Navigation Sections */}
 					<div className="pt-8 space-y-8 w-full max-w-xl">

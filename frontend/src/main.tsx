@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { Header } from '@/components/home-page/header'
 
 // Import Tailwind CSS
 import './styles.css'
@@ -26,6 +27,7 @@ if (!rootElement.innerHTML) {
 	root.render(
 		<StrictMode>
 			<EnvProvider>
+				<Header/>
 				<RouterProvider router={router} />
 			</EnvProvider>
 		</StrictMode>
