@@ -6,7 +6,7 @@ export default function MyStatsCard({user}: {user: components['schemas']['User']
     return (
         <Card>
             <CardContent>
-                <div className="h-[700px]">
+                <div className="h-[600px]">
                     <div className="relative">
                         <p>STATS</p>
                     </div>

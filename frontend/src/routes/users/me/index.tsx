@@ -3,8 +3,9 @@ import LoadingPage from '@/components/loading-page';
 import { createFileRoute } from '@tanstack/react-router'
 import MyProfileCard from '@/components/public-users/my-profile/my-profile-card';
 import MyStatsCard from '@/components/public-users/my-profile/my-stats-card';
-
 import { Card, CardContent } from '@/components/ui/card';
+import { Header } from '@/components/home-page/header'
+
 
 
 export const Route = createFileRoute('/users/me/')({
@@ -23,11 +24,14 @@ export default function MyProfileContent() {
   }
   
   return (
-    <Card>
-      <CardContent>
-        <MyProfileCard user={user}/>
-        <MyStatsCard user={user}/>
-      </CardContent>
-    </Card>
+    <div>
+      <Header/>
+      <Card>
+        <CardContent>
+          <MyProfileCard user={user}/>
+          <MyStatsCard user={user}/>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
