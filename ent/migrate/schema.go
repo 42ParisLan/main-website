@@ -265,13 +265,12 @@ var (
 		{Name: "registration_start", Type: field.TypeTime},
 		{Name: "registration_end", Type: field.TypeTime},
 		{Name: "tournament_start", Type: field.TypeTime},
-		{Name: "tournament_end", Type: field.TypeTime},
+		{Name: "tournament_end", Type: field.TypeTime, Nullable: true},
 		{Name: "state", Type: field.TypeEnum, Enums: []string{"DRAFT", "REGISTRATION_OPEN", "REGISTRATION_CLOSED", "ONGOING", "FINISHED"}, Default: "DRAFT"},
 		{Name: "max_teams", Type: field.TypeInt},
 		{Name: "team_structure", Type: field.TypeJSON, Nullable: true},
 		{Name: "custom_page_component", Type: field.TypeString, Default: "default"},
 		{Name: "external_link", Type: field.TypeString, Nullable: true},
-		{Name: "results", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "user_created_tournaments", Type: field.TypeInt},
 	}
@@ -283,7 +282,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "tournaments_users_created_tournaments",
-				Columns:    []*schema.Column{TournamentsColumns[16]},
+				Columns:    []*schema.Column{TournamentsColumns[15]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

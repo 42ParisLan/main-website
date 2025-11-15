@@ -1,5 +1,28 @@
 components:
   schemas:
+    AddTournamentAdminBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/AddTournamentAdminBody.json
+          format: uri
+          readOnly: true
+          type: string
+        role:
+          enum:
+            - ADMIN
+            - SUPER_ADMIN
+          example: ADMIN
+          type: string
+        user_id:
+          example: 42
+          format: int64
+          type: integer
+      required:
+        - user_id
+        - role
+      type: object
     App:
       additionalProperties: true
       properties:
@@ -226,8 +249,6 @@ components:
         description:
           example: School-wide League of Legends tournament
           type: string
-        external_link:
-          type: string
         max_teams:
           example: 32
           format: int64
@@ -246,11 +267,10 @@ components:
         slug:
           example: spring-cup-2025
           type: string
-        team_structure: {}
-        tournament_end:
-          example: "2025-03-20T23:59:59Z"
-          format: date-time
-          type: string
+        team_structure:
+          additionalProperties:
+            $ref: "#/components/schemas/TeamStructure"
+          type: object
         tournament_start:
           example: "2025-03-15T00:00:00Z"
           format: date-time
@@ -262,7 +282,6 @@ components:
         - registration_start
         - registration_end
         - tournament_start
-        - tournament_end
         - max_teams
         - team_structure
       type: object
@@ -498,11 +517,13 @@ components:
           example: "2025-03-01T00:00:00Z"
           format: date-time
           type: string
-        results: {}
         slug:
           example: spring-cup-2025
           type: string
-        team_structure: {}
+        team_structure:
+          additionalProperties:
+            $ref: "#/components/schemas/TeamStructure"
+          type: object
         tournament_end:
           example: "2025-03-20T23:59:59Z"
           format: date-time
@@ -529,7 +550,10 @@ components:
       additionalProperties: false
       properties:
         role:
-          example: admin
+          enum:
+            - ADMIN
+            - SUPER_ADMIN
+          example: ADMIN
           type: string
         user:
           $ref: "#/components/schemas/LightUser"
@@ -882,6 +906,19 @@ components:
         - permissions
         - inherits
       type: object
+    TeamStructure:
+      additionalProperties: false
+      properties:
+        max:
+          format: int64
+          type: integer
+        min:
+          format: int64
+          type: integer
+      required:
+        - min
+        - max
+      type: object
     Tournament:
       additionalProperties: false
       properties:
@@ -930,11 +967,13 @@ components:
         registration_start:
           format: date-time
           type: string
-        results: {}
         slug:
           example: spring-cup-2025
           type: string
-        team_structure: {}
+        team_structure:
+          additionalProperties:
+            $ref: "#/components/schemas/TeamStructure"
+          type: object
         teams:
           items:
             $ref: "#/components/schemas/LightTeam"
@@ -950,6 +989,7 @@ components:
         - id
         - slug
         - name
+        - description
         - is_visible
         - registration_start
         - registration_end
@@ -957,7 +997,9 @@ components:
         - tournament_end
         - max_teams
         - team_structure
+        - custom_page_component
         - creator
+        - admins
         - created_at
       type: object
     UpdateVote:
@@ -2056,14 +2098,91 @@ paths:
       summary: Create Tournament
       tags:
         - Tournament
-  /tournaments/{id}:
+  /tournaments/{id_or_slug}:
     get:
       description: This endpoint is used to get a tournament.
       operationId: getTournamentByID
       parameters:
+        - example: "42"
+          in: path
+          name: id_or_slug
+          required: true
+          schema:
+            example: "42"
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Tournament by ID
+      tags:
+        - Tournament
+  /tournaments/{id}/admin:
+    post:
+      description: Add a user as an admin to a tournament.
+      operationId: addTournamentAdmin
+      parameters:
         - example: 42
           in: path
           name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTournamentAdminBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Add admin to tournament
+      tags:
+        - Tournament
+  /tournaments/{id}/admin/{admin_id}:
+    delete:
+      description: Delete an admin of a tournament.
+      operationId: deleteTournamentAdmin
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 42
+          in: path
+          name: admin_id
           required: true
           schema:
             example: 42
@@ -2085,7 +2204,56 @@ paths:
       security:
         - OAuth2 Auth:
             - profile
-      summary: Get Tournament by ID
+      summary: delete admin of tournament
+      tags:
+        - Tournament
+    patch:
+      description: Edit an admin of a tournament.
+      operationId: editTournamentAdmin
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 42
+          in: path
+          name: admin_id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              enum:
+                - ADMIN
+                - SUPER_ADMIN
+              example: ADMIN
+              type: string
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: edit admin of tournament
       tags:
         - Tournament
   /users:

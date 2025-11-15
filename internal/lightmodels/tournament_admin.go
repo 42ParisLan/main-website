@@ -4,7 +4,7 @@ import "base-website/ent"
 
 type LightTournamentAdmin struct {
 	User LightUser `json:"user" description:"The user information of the tournament admin"`
-	Role string    `json:"role" example:"admin" description:"The role of the admin in the tournament, e.g., admin, super_admin"`
+	Role string    `json:"role" example:"ADMIN" enum:"ADMIN,SUPER_ADMIN" description:"The role of the admin in the tournament"`
 }
 
 func NewLightTournamentAdminFromEnt(entTournamentAdmin *ent.TournamentAdmin) *LightTournamentAdmin {
@@ -28,9 +28,11 @@ func NewLightTournamentAdminFromEnt(entTournamentAdmin *ent.TournamentAdmin) *Li
 }
 
 func NewLightTournamentAdminsFromEnt(entTournamentAdmins []*ent.TournamentAdmin) []*LightTournamentAdmin {
-	admins := make([]*LightTournamentAdmin, len(entTournamentAdmins))
-	for i, t := range entTournamentAdmins {
-		admins[i] = NewLightTournamentAdminFromEnt(t)
+	admins := make([]*LightTournamentAdmin, 0, len(entTournamentAdmins))
+	for _, t := range entTournamentAdmins {
+		if a := NewLightTournamentAdminFromEnt(t); a != nil {
+			admins = append(admins, a)
+		}
 	}
 	return admins
 }

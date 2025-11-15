@@ -384,7 +384,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tournaments/{id}": {
+    "/tournaments/{id_or_slug}": {
         parameters: {
             query?: never;
             header?: never;
@@ -402,6 +402,50 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add admin to tournament
+         * @description Add a user as an admin to a tournament.
+         */
+        post: operations["addTournamentAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}/admin/{admin_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * delete admin of tournament
+         * @description Delete an admin of a tournament.
+         */
+        delete: operations["deleteTournamentAdmin"];
+        options?: never;
+        head?: never;
+        /**
+         * edit admin of tournament
+         * @description Edit an admin of a tournament.
+         */
+        patch: operations["editTournamentAdmin"];
         trace?: never;
     };
     "/users": {
@@ -640,6 +684,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddTournamentAdminBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/AddTournamentAdminBody.json
+             */
+            readonly $schema?: string;
+            /**
+             * @example ADMIN
+             * @enum {string}
+             */
+            role: "ADMIN" | "SUPER_ADMIN";
+            /**
+             * Format: int64
+             * @example 42
+             */
+            user_id: number;
+        };
         App: {
             /**
              * Format: uri
@@ -815,7 +877,6 @@ export interface components {
             custom_page_component?: string;
             /** @example School-wide League of Legends tournament */
             description: string;
-            external_link?: string;
             /**
              * Format: int64
              * @example 32
@@ -835,12 +896,9 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
-            team_structure: unknown;
-            /**
-             * Format: date-time
-             * @example 2025-03-20T23:59:59Z
-             */
-            tournament_end: string;
+            team_structure: {
+                [key: string]: components["schemas"]["TeamStructure"];
+            };
             /**
              * Format: date-time
              * @example 2025-03-15T00:00:00Z
@@ -1013,10 +1071,11 @@ export interface components {
              * @example 2025-03-01T00:00:00Z
              */
             registration_start: string;
-            results?: unknown;
             /** @example spring-cup-2025 */
             slug: string;
-            team_structure: unknown;
+            team_structure: {
+                [key: string]: components["schemas"]["TeamStructure"];
+            };
             /**
              * Format: date-time
              * @example 2025-03-20T23:59:59Z
@@ -1029,8 +1088,11 @@ export interface components {
             tournament_start: string;
         };
         LightTournamentAdmin: {
-            /** @example admin */
-            role: string;
+            /**
+             * @example ADMIN
+             * @enum {string}
+             */
+            role: "ADMIN" | "SUPER_ADMIN";
             user: components["schemas"]["LightUser"];
         };
         LightUser: {
@@ -1288,6 +1350,12 @@ export interface components {
             name: string;
             permissions: components["schemas"]["Permission"][];
         };
+        TeamStructure: {
+            /** Format: int64 */
+            max: number;
+            /** Format: int64 */
+            min: number;
+        };
         Tournament: {
             /**
              * Format: uri
@@ -1295,12 +1363,12 @@ export interface components {
              * @example /api/schemas/Tournament.json
              */
             readonly $schema?: string;
-            admins?: components["schemas"]["LightTournamentAdmin"][] | null;
+            admins: components["schemas"]["LightTournamentAdmin"][] | null;
             /** Format: date-time */
             created_at: string;
             creator: components["schemas"]["LightUser"];
-            custom_page_component?: string;
-            description?: string;
+            custom_page_component: string;
+            description: string;
             external_link?: string;
             /**
              * Format: int64
@@ -1317,10 +1385,11 @@ export interface components {
             registration_end: string;
             /** Format: date-time */
             registration_start: string;
-            results?: unknown;
             /** @example spring-cup-2025 */
             slug: string;
-            team_structure: unknown;
+            team_structure: {
+                [key: string]: components["schemas"]["TeamStructure"];
+            };
             teams?: components["schemas"]["LightTeam"][] | null;
             /** Format: date-time */
             tournament_end: string;
@@ -2233,11 +2302,119 @@ export interface operations {
             header?: never;
             path: {
                 /** @example 42 */
-                id: number;
+                id_or_slug: string;
             };
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    addTournamentAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddTournamentAdminBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteTournamentAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+                /** @example 42 */
+                admin_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    editTournamentAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+                /** @example 42 */
+                admin_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": "ADMIN" | "SUPER_ADMIN";
+            };
+        };
         responses: {
             /** @description OK */
             200: {

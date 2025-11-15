@@ -4,18 +4,18 @@ import { useRouter } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import type { components } from "@/lib/api/types";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../ui/select";
 import { useMemo, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { toDatetimeLocal, toIsoString } from "@/lib/date.utils";
 
 export default function TournamentCreate() {
 	const router = useRouter();
 	const client = useQueryClient();
 
-	const {mutate} = client.useMutation("post", "/tournaments", {
+	const {mutate, isPending} = client.useMutation("post", "/tournaments", {
 		onSuccess(data) {
 			console.log("Tournament created successfully")
 			router.navigate({to : `/admin/tournaments/${data.id}`})
@@ -36,11 +36,10 @@ export default function TournamentCreate() {
 			name: "",
 			registration_end: "",
 			registration_start: "",
-			tournament_end: "",
 			tournament_start: "",
 		},
 		onSubmit: async ({ value }) => {
-			let team_structure: Record<string, { min: number; max: number }> = {}
+			let team_structure: components["schemas"]["CreateTournament"]["team_structure"] = {}
 			if (teamRoles.length > 0) {
 				for (const r of teamRoles) {
 					if (!r.name || r.min === "" || r.max === "") {
@@ -60,14 +59,12 @@ export default function TournamentCreate() {
 			const body: components["schemas"]["CreateTournament"] = {
 				custom_page_component: value.custom_page_component,
 				description: value.description,
-				external_link: value.external_link,
 				max_teams: value.max_teams,
 				name: value.name,
 				registration_end: value.registration_end,
 				registration_start: value.registration_start,
 				slug: value.name.toLocaleLowerCase().replaceAll(" ", "-"),
 				team_structure,
-				tournament_end: value.tournament_end,
 				tournament_start: value.tournament_start,
 			};
 			mutate({ body });
@@ -85,7 +82,11 @@ export default function TournamentCreate() {
 		name: string;
 		min: number | "";
 		max: number | "";
-	}[]>([])
+	}[]>([{
+		name:"player",
+		min: 1,
+		max: 1,
+	}])
 
 	function addRole() {
 		setTeamRoles((s) => [...s, { name: "", min: "", max: "" }])
@@ -207,9 +208,15 @@ export default function TournamentCreate() {
 					{teamRoles.map((r, i) => (
 						<div key={i} className="flex items-center gap-2">
 							<Input placeholder="role name" value={r.name} onChange={(e) => updateRole(i, { name: e.target.value })} />
-							<Input placeholder="min" type="number" value={r.min === "" ? "" : String(r.min)} onChange={(e) => updateRole(i, { min: e.target.value === "" ? "" : Number(e.target.value) })} className="w-20" />
-							<Input placeholder="max" type="number" value={r.max === "" ? "" : String(r.max)} onChange={(e) => updateRole(i, { max: e.target.value === "" ? "" : Number(e.target.value) })} className="w-20" />
-							<Button variant="outline" size="sm" type="button" onClick={() => removeRole(i)}>Remove</Button>
+							{r.name == "player" ? (
+								<Input placeholder="nb" type="number" value={r.min === "" ? "" : String(r.min)} onChange={(e) => updateRole(i, { min: e.target.value === "" ? "" : Number(e.target.value), max: e.target.value === "" ? "" : Number(e.target.value) })} className="w-20" />
+							) : (
+								<>
+									<Input placeholder="min" type="number" value={r.min === "" ? "" : String(r.min)} onChange={(e) => updateRole(i, { min: e.target.value === "" ? "" : Number(e.target.value) })} className="w-20" />
+									<Input placeholder="max" type="number" value={r.max === "" ? "" : String(r.max)} onChange={(e) => updateRole(i, { max: e.target.value === "" ? "" : Number(e.target.value) })} className="w-20" />
+									<Button variant="outline" size="sm" type="button" onClick={() => removeRole(i)}>Remove</Button>
+								</>
+							)}
 						</div>
 					))}
 				</div>
@@ -281,26 +288,12 @@ export default function TournamentCreate() {
 				)}
 			</form.Field>
 
-			<form.Field
-				name="tournament_end"
+			<Button
+				type="submit"
+				disabled={!form.state.canSubmit || isPending || form.state.isSubmitting}
 			>
-				{(field) => (
-					<div className="grid gap-2">
-						<Label htmlFor={field.name}>Tournament End date</Label>
-						<Input
-							id={field.name}
-							type="datetime-local"
-							value={toDatetimeLocal(field.state.value)}
-							onChange={(e) => field.handleChange(toIsoString(e.target.value))}
-							onBlur={field.handleBlur}
-							required
-						/>
-						{field.state.meta.errors?.[0] && (
-							<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
-						)}
-					</div>
-				)}
-			</form.Field>
+				{isPending || form.state.isSubmitting ? "Creating..." : "Create Vote"}
+			</Button>
 		</form>
 	)
 }

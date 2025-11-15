@@ -144,6 +144,12 @@ func (_u *TournamentUpdate) SetNillableTournamentEnd(v *time.Time) *TournamentUp
 	return _u
 }
 
+// ClearTournamentEnd clears the value of the "tournament_end" field.
+func (_u *TournamentUpdate) ClearTournamentEnd() *TournamentUpdate {
+	_u.mutation.ClearTournamentEnd()
+	return _u
+}
+
 // SetState sets the "state" field.
 func (_u *TournamentUpdate) SetState(v tournament.State) *TournamentUpdate {
 	_u.mutation.SetState(v)
@@ -222,18 +228,6 @@ func (_u *TournamentUpdate) SetNillableExternalLink(v *string) *TournamentUpdate
 // ClearExternalLink clears the value of the "external_link" field.
 func (_u *TournamentUpdate) ClearExternalLink() *TournamentUpdate {
 	_u.mutation.ClearExternalLink()
-	return _u
-}
-
-// SetResults sets the "results" field.
-func (_u *TournamentUpdate) SetResults(v map[string]interface{}) *TournamentUpdate {
-	_u.mutation.SetResults(v)
-	return _u
-}
-
-// ClearResults clears the value of the "results" field.
-func (_u *TournamentUpdate) ClearResults() *TournamentUpdate {
-	_u.mutation.ClearResults()
 	return _u
 }
 
@@ -457,6 +451,9 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.TournamentEnd(); ok {
 		_spec.SetField(tournament.FieldTournamentEnd, field.TypeTime, value)
 	}
+	if _u.mutation.TournamentEndCleared() {
+		_spec.ClearField(tournament.FieldTournamentEnd, field.TypeTime)
+	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(tournament.FieldState, field.TypeEnum, value)
 	}
@@ -480,12 +477,6 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if _u.mutation.ExternalLinkCleared() {
 		_spec.ClearField(tournament.FieldExternalLink, field.TypeString)
-	}
-	if value, ok := _u.mutation.Results(); ok {
-		_spec.SetField(tournament.FieldResults, field.TypeJSON, value)
-	}
-	if _u.mutation.ResultsCleared() {
-		_spec.ClearField(tournament.FieldResults, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
@@ -786,6 +777,12 @@ func (_u *TournamentUpdateOne) SetNillableTournamentEnd(v *time.Time) *Tournamen
 	return _u
 }
 
+// ClearTournamentEnd clears the value of the "tournament_end" field.
+func (_u *TournamentUpdateOne) ClearTournamentEnd() *TournamentUpdateOne {
+	_u.mutation.ClearTournamentEnd()
+	return _u
+}
+
 // SetState sets the "state" field.
 func (_u *TournamentUpdateOne) SetState(v tournament.State) *TournamentUpdateOne {
 	_u.mutation.SetState(v)
@@ -864,18 +861,6 @@ func (_u *TournamentUpdateOne) SetNillableExternalLink(v *string) *TournamentUpd
 // ClearExternalLink clears the value of the "external_link" field.
 func (_u *TournamentUpdateOne) ClearExternalLink() *TournamentUpdateOne {
 	_u.mutation.ClearExternalLink()
-	return _u
-}
-
-// SetResults sets the "results" field.
-func (_u *TournamentUpdateOne) SetResults(v map[string]interface{}) *TournamentUpdateOne {
-	_u.mutation.SetResults(v)
-	return _u
-}
-
-// ClearResults clears the value of the "results" field.
-func (_u *TournamentUpdateOne) ClearResults() *TournamentUpdateOne {
-	_u.mutation.ClearResults()
 	return _u
 }
 
@@ -1129,6 +1114,9 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	if value, ok := _u.mutation.TournamentEnd(); ok {
 		_spec.SetField(tournament.FieldTournamentEnd, field.TypeTime, value)
 	}
+	if _u.mutation.TournamentEndCleared() {
+		_spec.ClearField(tournament.FieldTournamentEnd, field.TypeTime)
+	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(tournament.FieldState, field.TypeEnum, value)
 	}
@@ -1152,12 +1140,6 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	}
 	if _u.mutation.ExternalLinkCleared() {
 		_spec.ClearField(tournament.FieldExternalLink, field.TypeString)
-	}
-	if value, ok := _u.mutation.Results(); ok {
-		_spec.SetField(tournament.FieldResults, field.TypeJSON, value)
-	}
-	if _u.mutation.ResultsCleared() {
-		_spec.ClearField(tournament.FieldResults, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)

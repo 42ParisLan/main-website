@@ -1,7 +1,9 @@
 import type { components } from "@/lib/api/types";
-import { Card, CardContent } from "../ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../../ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "../../ui/avatar";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Link } from "@tanstack/react-router";
 
 function formatDate(iso?: string) {
 	if (!iso) return "—";
@@ -18,9 +20,8 @@ function formatDate(iso?: string) {
 export default function TournamentCard({
 	tournament,
 }: {
-	tournament: components["schemas"]["Tournament"];
+	tournament: components["schemas"]["LightTournament"];
 }) {
-	const teamsCount = tournament.teams ? tournament.teams.length : 0;
 	const creatorUsername = tournament.creator?.username ?? "unknown";
 
 	const initials = creatorUsername
@@ -57,16 +58,12 @@ export default function TournamentCard({
 								<Badge variant={tournament.is_visible ? "secondary" : "outline"}>
 									{tournament.is_visible ? "Public" : "Private"}
 								</Badge>
-								<Badge variant="outline">Teams {teamsCount}/{tournament.max_teams}</Badge>
 							</div>
 						</div>
 
-						<div className="mt-2 text-xs text-muted-foreground grid grid-cols-1 sm:grid-cols-2 gap-1">
+						<div className="mt-2 text-xs text-muted-foreground grid grid-cols-1 gap-1">
 							<div>
 								<strong>Starts:</strong> {formatDate(tournament.tournament_start)}
-							</div>
-							<div>
-								<strong>Ends:</strong> {formatDate(tournament.tournament_end)}
 							</div>
 							<div>
 								<strong>Registration:</strong>
@@ -81,22 +78,16 @@ export default function TournamentCard({
 
 						<div className="mt-3 flex items-center gap-3">
 							{tournament.external_link ? (
-								<a
-									href={tournament.external_link}
-									target="_blank"
-									rel="noreferrer"
-									className="text-sm underline text-primary"
-								>
-									External link
-								</a>
+								<Button variant="outline" size="sm" asChild>
+									<a href={tournament.external_link} target="_blank" rel="noreferrer">
+										External link
+									</a>
+								</Button>
 							) : null}
 
-							<a
-								href={`/admin/tournaments/${tournament.id}`}
-								className="text-sm text-muted-foreground hover:text-foreground underline"
-							>
-								View
-							</a>
+							<Button variant="secondary" size="sm" asChild>
+								<Link to={`/admin/tournaments/$tournamentid`} params={{tournamentid: tournament.slug}}>View</Link>
+							</Button>
 						</div>
 					</div>
 				</div>

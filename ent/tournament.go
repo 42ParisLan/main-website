@@ -45,8 +45,6 @@ type Tournament struct {
 	CustomPageComponent string `json:"custom_page_component,omitempty"`
 	// ExternalLink holds the value of the "external_link" field.
 	ExternalLink string `json:"external_link,omitempty"`
-	// Results holds the value of the "results" field.
-	Results map[string]interface{} `json:"results,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -114,7 +112,7 @@ func (*Tournament) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case tournament.FieldTeamStructure, tournament.FieldResults:
+		case tournament.FieldTeamStructure:
 			values[i] = new([]byte)
 		case tournament.FieldIsVisible:
 			values[i] = new(sql.NullBool)
@@ -227,14 +225,6 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ExternalLink = value.String
 			}
-		case tournament.FieldResults:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field results", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.Results); err != nil {
-					return fmt.Errorf("unmarshal field results: %w", err)
-				}
-			}
 		case tournament.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -342,9 +332,6 @@ func (_m *Tournament) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("external_link=")
 	builder.WriteString(_m.ExternalLink)
-	builder.WriteString(", ")
-	builder.WriteString("results=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Results))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

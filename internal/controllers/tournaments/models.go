@@ -11,7 +11,7 @@ type BodyMessage struct {
 }
 
 type TournamentIDInput struct {
-	TournamentID int `path:"id" required:"true" example:"42" description:"The tournament ID"`
+	TournamentIDOrSlug string `path:"id_or_slug" required:"true" example:"42" description:"The tournament ID or slug"`
 }
 
 type oneTournamentOutput struct {
@@ -30,4 +30,24 @@ type updateTournamentInput struct {
 	TournamentID int `path:"id" required:"true" example:"42" description:"The tournament ID"`
 
 	Body *tournamentsmodels.UpdateTournament `required:"true"`
+}
+
+type addTournamentAdminBody struct {
+	UserID int    `json:"user_id" required:"true" example:"42" description:"ID of the user to add as admin"`
+	Role   string `json:"role" required:"true" example:"ADMIN" enum:"ADMIN,SUPER_ADMIN" description:"Role for the admin: ADMIN or SUPER_ADMIN"`
+}
+
+type addTournamentAdminInput struct {
+	TournamentID int                     `path:"id" required:"true" example:"42" description:"The tournament ID"`
+	Body         *addTournamentAdminBody `required:"true"`
+}
+type editTournamentAdminInput struct {
+	TournamentID int    `path:"id" required:"true" example:"42" description:"The tournament ID"`
+	AdminID      int    `path:"admin_id" required:"true" example:"42" description:"ID of the user to edit"`
+	Body         string `required:"true" example:"ADMIN" enum:"ADMIN,SUPER_ADMIN" description:"Role for the admin: ADMIN or SUPER_ADMIN"`
+}
+
+type deleteTournamentAdminInput struct {
+	TournamentID int `path:"id" required:"true" example:"42" description:"The tournament ID"`
+	AdminID      int `path:"admin_id" required:"true" example:"42" description:"ID of the user to edit"`
 }

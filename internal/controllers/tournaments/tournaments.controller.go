@@ -6,6 +6,7 @@ import (
 	tournamentsservice "base-website/internal/services/tournaments"
 	tournamentsmodels "base-website/internal/services/tournaments/models"
 	"context"
+	"strconv"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/samber/do"
@@ -38,7 +39,7 @@ func (ctrl *tournamentController) Register(api huma.API) {
 
 	huma.Register(api, huma.Operation{
 		Method:      "GET",
-		Path:        "/tournaments/{id}",
+		Path:        "/tournaments/{id_or_slug}",
 		Summary:     "Get Tournament by ID",
 		Description: `This endpoint is used to get a tournament.`,
 		Tags:        []string{"Tournament"},
@@ -56,6 +57,36 @@ func (ctrl *tournamentController) Register(api huma.API) {
 		OperationID: "createTournament",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.createTournament)
+
+	huma.Register(api, huma.Operation{
+		Method:      "POST",
+		Path:        "/tournaments/{id}/admin",
+		Summary:     "Add admin to tournament",
+		Description: `Add a user as an admin to a tournament.`,
+		Tags:        []string{"Tournament"},
+		OperationID: "addTournamentAdmin",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.addTournamentAdmin)
+
+	huma.Register(api, huma.Operation{
+		Method:      "PATCH",
+		Path:        "/tournaments/{id}/admin/{admin_id}",
+		Summary:     "edit admin of tournament",
+		Description: `Edit an admin of a tournament.`,
+		Tags:        []string{"Tournament"},
+		OperationID: "editTournamentAdmin",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.editTournamentAdmin)
+
+	huma.Register(api, huma.Operation{
+		Method:      "DELETE",
+		Path:        "/tournaments/{id}/admin/{admin_id}",
+		Summary:     "delete admin of tournament",
+		Description: `Delete an admin of a tournament.`,
+		Tags:        []string{"Tournament"},
+		OperationID: "deleteTournamentAdmin",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.deleteTournamentAdmin)
 
 	// huma.Register(api, huma.Operation{
 	// 	Method:      "PATCH",
@@ -95,13 +126,21 @@ func (ctrl *tournamentController) getTournamentByID(
 	ctx context.Context,
 	input *TournamentIDInput,
 ) (*oneTournamentOutput, error) {
-	tournament, err := ctrl.tournamentsService.GetTournamentByID(ctx, input.TournamentID)
+	idOrSlug := input.TournamentIDOrSlug
+
+	if id, err := strconv.Atoi(idOrSlug); err == nil {
+		tournament, err := ctrl.tournamentsService.GetTournamentByID(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return &oneTournamentOutput{Body: tournament}, nil
+	}
+
+	tournament, err := ctrl.tournamentsService.GetTournamentBySlug(ctx, idOrSlug)
 	if err != nil {
 		return nil, err
 	}
-	return &oneTournamentOutput{
-		Body: tournament,
-	}, nil
+	return &oneTournamentOutput{Body: tournament}, nil
 }
 
 func (ctrl *tournamentController) createTournament(
@@ -116,6 +155,39 @@ func (ctrl *tournamentController) createTournament(
 	return &oneTournamentOutput{
 		Body: tournament,
 	}, nil
+}
+
+func (ctrl *tournamentController) addTournamentAdmin(
+	ctx context.Context,
+	input *addTournamentAdminInput,
+) (*oneTournamentOutput, error) {
+	tournament, err := ctrl.tournamentsService.AddAdminToTournament(ctx, input.TournamentID, input.Body.UserID, input.Body.Role)
+	if err != nil {
+		return nil, err
+	}
+	return &oneTournamentOutput{Body: tournament}, nil
+}
+
+func (ctrl *tournamentController) editTournamentAdmin(
+	ctx context.Context,
+	input *editTournamentAdminInput,
+) (*oneTournamentOutput, error) {
+	tournament, err := ctrl.tournamentsService.EditAdminToTournament(ctx, input.TournamentID, input.AdminID, input.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &oneTournamentOutput{Body: tournament}, nil
+}
+
+func (ctrl *tournamentController) deleteTournamentAdmin(
+	ctx context.Context,
+	input *deleteTournamentAdminInput,
+) (*oneTournamentOutput, error) {
+	tournament, err := ctrl.tournamentsService.DeleteAdminToTournament(ctx, input.TournamentID, input.AdminID)
+	if err != nil {
+		return nil, err
+	}
+	return &oneTournamentOutput{Body: tournament}, nil
 }
 
 // func (ctrl *tournamentController) updateTournament(

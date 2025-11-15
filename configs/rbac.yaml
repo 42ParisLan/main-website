@@ -27,6 +27,10 @@ roles:
               methods: [POST]
             - path: /votes/*/results
               methods: [GET]
+            - path: /tournaments
+              methods: [GET]
+            - path: /tournaments/{id_or_slug}
+              methods: [GET]
 
     basic_admin:
         name: 'basic_admin'
@@ -35,6 +39,12 @@ roles:
         permissions:
             - path: /votes/{id}/live
               methods: [GET]
+            - path: /tournaments/{id}/admin
+              methods: [POST]
+            - path: /tournaments/{id}/admin/{admin_id}
+              methods: [PATCH]
+            - path: /tournaments/{id}/admin/{admin_id}
+              methods: [DELETE]
 
     vote_admin:
         name: 'vote_admin'
@@ -59,6 +69,8 @@ roles:
         description: 'User who can manage and create Tournaments'
         inherits: [basic_admin]
         permissions:
+            - path: /tournaments
+              methods: [POST]
 
     super_admin:
         name: 'super_admin'

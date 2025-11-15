@@ -1,4 +1,4 @@
-import TournamentCreate from '@/components/tournaments/tournament-create'
+import TournamentCreate from '@/components/tournaments/admin/tournament-create'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute } from '@tanstack/react-router'
 

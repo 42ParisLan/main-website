@@ -88,7 +88,7 @@ func init() {
 	// tournament.DefaultCustomPageComponent holds the default value on creation for the custom_page_component field.
 	tournament.DefaultCustomPageComponent = tournamentDescCustomPageComponent.Default.(string)
 	// tournamentDescCreatedAt is the schema descriptor for created_at field.
-	tournamentDescCreatedAt := tournamentFields[14].Descriptor()
+	tournamentDescCreatedAt := tournamentFields[13].Descriptor()
 	// tournament.DefaultCreatedAt holds the default value on creation for the created_at field.
 	tournament.DefaultCreatedAt = tournamentDescCreatedAt.Default.(func() time.Time)
 	tournamentadminFields := schema.TournamentAdmin{}.Fields()

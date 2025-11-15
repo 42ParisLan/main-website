@@ -1,4 +1,4 @@
-import TournamentCard from '@/components/tournaments/tournament-card'
+import TournamentCard from '@/components/tournaments/admin/tournament-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PaginatedListControlled } from '@/components/ui/paginated-list'
 import useQueryClient from '@/hooks/use-query-client'
@@ -48,7 +48,7 @@ function RouteComponent() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<PaginatedListControlled<components['schemas']['Tournament']>
+						<PaginatedListControlled<components['schemas']['LightTournament']>
 							data={tournamentsOngoing}
 							isLoading={isLoadingOngoing}
 							page={page}
@@ -68,7 +68,7 @@ function RouteComponent() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<PaginatedListControlled<components['schemas']['Tournament']>
+						<PaginatedListControlled<components['schemas']['LightTournament']>
 							data={tournamentsFinish}
 							isLoading={isLoadingFinish}
 							page={page}

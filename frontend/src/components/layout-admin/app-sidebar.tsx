@@ -66,6 +66,7 @@ const data: SidebarData[] = [
 				title: "Create Tournament",
 				url: "/admin/tournaments/create",
 				icon: IconSquareRoundedPlus,
+				role: "tournament_admin"
 			},
 		],
 	},

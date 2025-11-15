@@ -21,8 +21,12 @@ type TournamentsService interface {
 	// User
 	ListTournaments(ctx context.Context, params *tournamentsmodels.ListTournamentsParams) (*paging.Response[*lightmodels.LightTournament], error)
 	GetTournamentByID(ctx context.Context, tournamentID int) (*lightmodels.Tournament, error)
+	GetTournamentBySlug(ctx context.Context, slug string) (*lightmodels.Tournament, error)
 	// Admins
 	CreateTournament(ctx context.Context, input tournamentsmodels.CreateTournament) (*lightmodels.Tournament, error)
+	AddAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
+	EditAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
+	DeleteAdminToTournament(ctx context.Context, tournamentID int, userID int) (*lightmodels.Tournament, error)
 }
 
 type tournamentsService struct {
@@ -68,8 +72,16 @@ func (svc *tournamentsService) ListTournaments(
 		if err != nil {
 			return nil, err
 		}
-		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "admin", "super_admin"); err != nil {
+		if err := authz.CheckRoles(ctx, svc.databaseService, userID, "basic_admin", "super_admin"); err != nil {
 			return nil, err
+		}
+	}
+
+	if params.Status != "all" {
+		if params.Status == "finish" {
+			query = query.Where(tournament.StateEQ("FINISHED"))
+		} else {
+			query = query.Where(tournament.StateNEQ("FINISHED"))
 		}
 	}
 
@@ -103,8 +115,38 @@ func (svc *tournamentsService) GetTournamentByID(
 	entTournament, err := svc.databaseService.Tournament.
 		Query().
 		Where(tournament.IDEQ(tournamentID)).
-		WithAdmins().
-		WithTeams().
+		WithAdmins(func(adminQuery *ent.TournamentAdminQuery) {
+			adminQuery.WithUser()
+		}).
+		WithTeams(func(teamQuery *ent.TeamQuery) {
+			teamQuery.
+				WithMembers().
+				WithRankGroup()
+		}).
+		WithCreator().
+		WithRankGroups().
+		Only(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+	return lightmodels.NewTournamentFromEnt(entTournament), nil
+}
+
+func (svc *tournamentsService) GetTournamentBySlug(
+	ctx context.Context,
+	slug string,
+) (*lightmodels.Tournament, error) {
+	entTournament, err := svc.databaseService.Tournament.
+		Query().
+		Where(tournament.SlugEQ(slug)).
+		WithAdmins(func(adminQuery *ent.TournamentAdminQuery) {
+			adminQuery.WithUser()
+		}).
+		WithTeams(func(teamQuery *ent.TeamQuery) {
+			teamQuery.
+				WithMembers().
+				WithRankGroup()
+		}).
 		WithCreator().
 		WithRankGroups().
 		Only(ctx)

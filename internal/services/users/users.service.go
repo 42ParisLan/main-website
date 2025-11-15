@@ -82,10 +82,8 @@ func (svc *usersService) UpsertUserFromIntra(
 
 	_, err = svc.databaseService.User.Get(ctx, intraUser.ID)
 	if err == nil {
-		// The user already exists, we update it
 		updateQuery := svc.databaseService.User.UpdateOneID(intraUser.ID).
 			SetUsername(intraUser.Login).
-			SetEmail(intraUser.Email).
 			SetEmail(intraUser.Email)
 		if intraUser.Image != nil {
 			updateQuery.SetPicture(intraUser.Image.Versions.Medium)
@@ -100,18 +98,17 @@ func (svc *usersService) UpsertUserFromIntra(
 	userCreateQuery := svc.databaseService.User.Create().
 		SetID(intraUser.ID).
 		SetUsername(intraUser.Login).
-		SetEmail(intraUser.Email).
 		SetEmail(intraUser.Email)
 
 	if intraUser.ID == svc.configService.GetConfig().SuperAdminUser {
 		userCreateQuery.SetKind(user.KindAdmin)
-		userCreateQuery.SetRoles([]string{"super_admin"})
+		userCreateQuery.SetRoles([]string{"basic_admin", "super_admin"})
 	}
 
 	if intraUser.Image != nil {
 		userCreateQuery.SetPicture(
 			intraUser.Image.Versions.Medium,
-		) // it can happen that the image is nil
+		)
 	}
 
 	user, err := userCreateQuery.Save(ctx)

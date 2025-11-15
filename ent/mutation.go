@@ -7219,7 +7219,6 @@ type TournamentMutation struct {
 	team_structure        *map[string]interface{}
 	custom_page_component *string
 	external_link         *string
-	results               *map[string]interface{}
 	created_at            *time.Time
 	clearedFields         map[string]struct{}
 	creator               *int
@@ -7619,9 +7618,22 @@ func (m *TournamentMutation) OldTournamentEnd(ctx context.Context) (v time.Time,
 	return oldValue.TournamentEnd, nil
 }
 
+// ClearTournamentEnd clears the value of the "tournament_end" field.
+func (m *TournamentMutation) ClearTournamentEnd() {
+	m.tournament_end = nil
+	m.clearedFields[tournament.FieldTournamentEnd] = struct{}{}
+}
+
+// TournamentEndCleared returns if the "tournament_end" field was cleared in this mutation.
+func (m *TournamentMutation) TournamentEndCleared() bool {
+	_, ok := m.clearedFields[tournament.FieldTournamentEnd]
+	return ok
+}
+
 // ResetTournamentEnd resets all changes to the "tournament_end" field.
 func (m *TournamentMutation) ResetTournamentEnd() {
 	m.tournament_end = nil
+	delete(m.clearedFields, tournament.FieldTournamentEnd)
 }
 
 // SetState sets the "state" field.
@@ -7848,55 +7860,6 @@ func (m *TournamentMutation) ExternalLinkCleared() bool {
 func (m *TournamentMutation) ResetExternalLink() {
 	m.external_link = nil
 	delete(m.clearedFields, tournament.FieldExternalLink)
-}
-
-// SetResults sets the "results" field.
-func (m *TournamentMutation) SetResults(value map[string]interface{}) {
-	m.results = &value
-}
-
-// Results returns the value of the "results" field in the mutation.
-func (m *TournamentMutation) Results() (r map[string]interface{}, exists bool) {
-	v := m.results
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldResults returns the old "results" field's value of the Tournament entity.
-// If the Tournament object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TournamentMutation) OldResults(ctx context.Context) (v map[string]interface{}, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldResults is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldResults requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldResults: %w", err)
-	}
-	return oldValue.Results, nil
-}
-
-// ClearResults clears the value of the "results" field.
-func (m *TournamentMutation) ClearResults() {
-	m.results = nil
-	m.clearedFields[tournament.FieldResults] = struct{}{}
-}
-
-// ResultsCleared returns if the "results" field was cleared in this mutation.
-func (m *TournamentMutation) ResultsCleared() bool {
-	_, ok := m.clearedFields[tournament.FieldResults]
-	return ok
-}
-
-// ResetResults resets all changes to the "results" field.
-func (m *TournamentMutation) ResetResults() {
-	m.results = nil
-	delete(m.clearedFields, tournament.FieldResults)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -8170,7 +8133,7 @@ func (m *TournamentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TournamentMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 14)
 	if m.slug != nil {
 		fields = append(fields, tournament.FieldSlug)
 	}
@@ -8210,9 +8173,6 @@ func (m *TournamentMutation) Fields() []string {
 	if m.external_link != nil {
 		fields = append(fields, tournament.FieldExternalLink)
 	}
-	if m.results != nil {
-		fields = append(fields, tournament.FieldResults)
-	}
 	if m.created_at != nil {
 		fields = append(fields, tournament.FieldCreatedAt)
 	}
@@ -8250,8 +8210,6 @@ func (m *TournamentMutation) Field(name string) (ent.Value, bool) {
 		return m.CustomPageComponent()
 	case tournament.FieldExternalLink:
 		return m.ExternalLink()
-	case tournament.FieldResults:
-		return m.Results()
 	case tournament.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -8289,8 +8247,6 @@ func (m *TournamentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldCustomPageComponent(ctx)
 	case tournament.FieldExternalLink:
 		return m.OldExternalLink(ctx)
-	case tournament.FieldResults:
-		return m.OldResults(ctx)
 	case tournament.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -8393,13 +8349,6 @@ func (m *TournamentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetExternalLink(v)
 		return nil
-	case tournament.FieldResults:
-		v, ok := value.(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetResults(v)
-		return nil
 	case tournament.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -8452,14 +8401,14 @@ func (m *TournamentMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *TournamentMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(tournament.FieldTournamentEnd) {
+		fields = append(fields, tournament.FieldTournamentEnd)
+	}
 	if m.FieldCleared(tournament.FieldTeamStructure) {
 		fields = append(fields, tournament.FieldTeamStructure)
 	}
 	if m.FieldCleared(tournament.FieldExternalLink) {
 		fields = append(fields, tournament.FieldExternalLink)
-	}
-	if m.FieldCleared(tournament.FieldResults) {
-		fields = append(fields, tournament.FieldResults)
 	}
 	return fields
 }
@@ -8475,14 +8424,14 @@ func (m *TournamentMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *TournamentMutation) ClearField(name string) error {
 	switch name {
+	case tournament.FieldTournamentEnd:
+		m.ClearTournamentEnd()
+		return nil
 	case tournament.FieldTeamStructure:
 		m.ClearTeamStructure()
 		return nil
 	case tournament.FieldExternalLink:
 		m.ClearExternalLink()
-		return nil
-	case tournament.FieldResults:
-		m.ClearResults()
 		return nil
 	}
 	return fmt.Errorf("unknown Tournament nullable field %s", name)
@@ -8530,9 +8479,6 @@ func (m *TournamentMutation) ResetField(name string) error {
 		return nil
 	case tournament.FieldExternalLink:
 		m.ResetExternalLink()
-		return nil
-	case tournament.FieldResults:
-		m.ResetResults()
 		return nil
 	case tournament.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -480,6 +480,16 @@ func TournamentEndLTE(v time.Time) predicate.Tournament {
 	return predicate.Tournament(sql.FieldLTE(FieldTournamentEnd, v))
 }
 
+// TournamentEndIsNil applies the IsNil predicate on the "tournament_end" field.
+func TournamentEndIsNil() predicate.Tournament {
+	return predicate.Tournament(sql.FieldIsNull(FieldTournamentEnd))
+}
+
+// TournamentEndNotNil applies the NotNil predicate on the "tournament_end" field.
+func TournamentEndNotNil() predicate.Tournament {
+	return predicate.Tournament(sql.FieldNotNull(FieldTournamentEnd))
+}
+
 // StateEQ applies the EQ predicate on the "state" field.
 func StateEQ(v State) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldState, v))
@@ -688,16 +698,6 @@ func ExternalLinkEqualFold(v string) predicate.Tournament {
 // ExternalLinkContainsFold applies the ContainsFold predicate on the "external_link" field.
 func ExternalLinkContainsFold(v string) predicate.Tournament {
 	return predicate.Tournament(sql.FieldContainsFold(FieldExternalLink, v))
-}
-
-// ResultsIsNil applies the IsNil predicate on the "results" field.
-func ResultsIsNil() predicate.Tournament {
-	return predicate.Tournament(sql.FieldIsNull(FieldResults))
-}
-
-// ResultsNotNil applies the NotNil predicate on the "results" field.
-func ResultsNotNil() predicate.Tournament {
-	return predicate.Tournament(sql.FieldNotNull(FieldResults))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

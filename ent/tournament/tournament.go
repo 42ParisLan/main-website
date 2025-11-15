@@ -41,8 +41,6 @@ const (
 	FieldCustomPageComponent = "custom_page_component"
 	// FieldExternalLink holds the string denoting the external_link field in the database.
 	FieldExternalLink = "external_link"
-	// FieldResults holds the string denoting the results field in the database.
-	FieldResults = "results"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeCreator holds the string denoting the creator edge name in mutations.
@@ -101,7 +99,6 @@ var Columns = []string{
 	FieldTeamStructure,
 	FieldCustomPageComponent,
 	FieldExternalLink,
-	FieldResults,
 	FieldCreatedAt,
 }
 

@@ -12,10 +12,10 @@ function RouteComponent() {
 
 	const client = useQueryClient();
 
-	const {data, isLoading, isError} = client.useQuery("get", "/tournaments/{id}", {
+	const {data, isLoading, isError} = client.useQuery("get", "/tournaments/{id_or_slug}", {
 		params:{
 			path: {
-				id: Number(tournamentid)
+				id_or_slug: tournamentid
 			}
 		}
 	})

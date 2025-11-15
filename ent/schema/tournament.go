@@ -21,7 +21,7 @@ func (Tournament) Fields() []ent.Field {
 		field.Time("registration_start"),
 		field.Time("registration_end"),
 		field.Time("tournament_start"),
-		field.Time("tournament_end"),
+		field.Time("tournament_end").Optional(),
 		field.Enum("state").
 			Values("DRAFT", "REGISTRATION_OPEN", "REGISTRATION_CLOSED", "ONGOING", "FINISHED").
 			Default("DRAFT"),
@@ -29,7 +29,6 @@ func (Tournament) Fields() []ent.Field {
 		field.JSON("team_structure", map[string]interface{}{}).Optional(),
 		field.String("custom_page_component").Default("default"),
 		field.String("external_link").Optional(),
-		field.JSON("results", map[string]interface{}{}).Optional(),
 		field.Time("created_at").Default(time.Now),
 	}
 }

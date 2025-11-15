@@ -80,6 +80,14 @@ func (_c *TournamentCreate) SetTournamentEnd(v time.Time) *TournamentCreate {
 	return _c
 }
 
+// SetNillableTournamentEnd sets the "tournament_end" field if the given value is not nil.
+func (_c *TournamentCreate) SetNillableTournamentEnd(v *time.Time) *TournamentCreate {
+	if v != nil {
+		_c.SetTournamentEnd(*v)
+	}
+	return _c
+}
+
 // SetState sets the "state" field.
 func (_c *TournamentCreate) SetState(v tournament.State) *TournamentCreate {
 	_c.mutation.SetState(v)
@@ -131,12 +139,6 @@ func (_c *TournamentCreate) SetNillableExternalLink(v *string) *TournamentCreate
 	if v != nil {
 		_c.SetExternalLink(*v)
 	}
-	return _c
-}
-
-// SetResults sets the "results" field.
-func (_c *TournamentCreate) SetResults(v map[string]interface{}) *TournamentCreate {
-	_c.mutation.SetResults(v)
 	return _c
 }
 
@@ -286,9 +288,6 @@ func (_c *TournamentCreate) check() error {
 	if _, ok := _c.mutation.TournamentStart(); !ok {
 		return &ValidationError{Name: "tournament_start", err: errors.New(`ent: missing required field "Tournament.tournament_start"`)}
 	}
-	if _, ok := _c.mutation.TournamentEnd(); !ok {
-		return &ValidationError{Name: "tournament_end", err: errors.New(`ent: missing required field "Tournament.tournament_end"`)}
-	}
 	if _, ok := _c.mutation.State(); !ok {
 		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Tournament.state"`)}
 	}
@@ -386,10 +385,6 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ExternalLink(); ok {
 		_spec.SetField(tournament.FieldExternalLink, field.TypeString, value)
 		_node.ExternalLink = value
-	}
-	if value, ok := _c.mutation.Results(); ok {
-		_spec.SetField(tournament.FieldResults, field.TypeJSON, value)
-		_node.Results = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
