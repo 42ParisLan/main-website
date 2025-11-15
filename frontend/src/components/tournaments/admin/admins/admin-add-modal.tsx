@@ -21,11 +21,12 @@ type User = components["schemas"]["LightUser"];
 interface AdminModalProps {
 	children?: React.ReactNode;
 	tournamentid: number;
+	myRole: components["schemas"]["LightTournamentAdmin"]["role"] | undefined;
 	refetchTournament: () => any;
 }
 
-export default function TournamentAdminAddModal({ children, tournamentid, refetchTournament }: AdminModalProps) {
-	const [role, setRole] = useState<components["schemas"]["LightTournamentAdmin"]["role"] | undefined>(undefined);
+export default function TournamentAdminAddModal({ children, myRole, tournamentid, refetchTournament }: AdminModalProps) {
+	const [role, setRole] = useState<"ADMIN" | "SUPER_ADMIN" | undefined>(undefined);
 	const [open, setOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 	const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
@@ -62,12 +63,19 @@ export default function TournamentAdminAddModal({ children, tournamentid, refetc
 			},
 			body: {
 				user_id: selectedUser.id,
-				role
+				role: role
 			}
 		});
 	}, [mutate, selectedUser, tournamentid, role])
 
-	const roles: components['schemas']['LightTournamentAdmin']["role"][] = ["ADMIN", "SUPER_ADMIN"]
+	if (!myRole || myRole == "ADMIN") {
+		return
+	}
+
+	let roles: components['schemas']['LightTournamentAdmin']["role"][] = ["ADMIN"]
+	if (myRole == "CREATOR") {
+		roles.push("SUPER_ADMIN")
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -98,7 +106,7 @@ export default function TournamentAdminAddModal({ children, tournamentid, refetc
 								<p className="text-sm font-medium">Selected user:</p>
 								<p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
 							</div>
-							<Select value={role} onValueChange={(v) => setRole(v as components['schemas']['LightTournamentAdmin']["role"]) }>
+							<Select value={role} onValueChange={(v) => setRole(v as "ADMIN" | "SUPER_ADMIN") }>
 								<SelectTrigger className="w-full">
 									<SelectValue placeholder="Select Role" />
 								</SelectTrigger>

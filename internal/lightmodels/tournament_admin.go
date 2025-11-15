@@ -4,7 +4,7 @@ import "base-website/ent"
 
 type LightTournamentAdmin struct {
 	User LightUser `json:"user" description:"The user information of the tournament admin"`
-	Role string    `json:"role" example:"ADMIN" enum:"ADMIN,SUPER_ADMIN" description:"The role of the admin in the tournament"`
+	Role string    `json:"role" example:"ADMIN" enum:"ADMIN,SUPER_ADMIN,CREATOR" description:"The role of the admin in the tournament"`
 }
 
 func NewLightTournamentAdminFromEnt(entTournamentAdmin *ent.TournamentAdmin) *LightTournamentAdmin {

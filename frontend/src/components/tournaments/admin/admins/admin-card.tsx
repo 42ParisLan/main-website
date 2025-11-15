@@ -1,11 +1,9 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { IconTrash } from "@tabler/icons-react";
 import TournamentAdminEditModal from "./admin-edit-modal";
 import { memo } from "react";
 
-function TournamentAdminCard({admin, tournamentid, modify, refetchTournament}: {admin: components['schemas']['LightTournamentAdmin']; tournamentid: number; modify: boolean; refetchTournament: () => any}) {
+function TournamentAdminCard({admin, tournamentid, myRole, refetchTournament}: {admin: components['schemas']['LightTournamentAdmin']; tournamentid: number; myRole: components["schemas"]["LightTournamentAdmin"]["role"] | undefined; refetchTournament: () => any}) {
 	return (
 		<Card className="group relative overflow-hidden">
 			<CardContent>
@@ -22,17 +20,7 @@ function TournamentAdminCard({admin, tournamentid, modify, refetchTournament}: {
 					</div>
 				</div>
 				<div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-					{modify && (
-						<TournamentAdminEditModal admin={admin} refetchTournament={refetchTournament} tournamentid={tournamentid}>
-							<Button
-								size="lg"
-								className="gap-2"
-							>
-								<IconTrash className="w-5 h-5" />
-								Edit Admin
-							</Button>
-						</TournamentAdminEditModal>
-					)}
+					<TournamentAdminEditModal myRole={myRole} admin={admin} refetchTournament={refetchTournament} tournamentid={tournamentid}/>
 				</div>
 			</CardContent>
 		</Card>

@@ -13,12 +13,14 @@ export default function TournamentAdminList({tournament, refetchTournament} : {t
 	const hasRole = useHasRole();
 
 	useEffect(() => {
-		setRole(tournament.admins?.find((admin) => admin.user.id === me.id)?.role)
-		if (!role && hasRole(['super_admin'])) {
-			setRole("SUPER_ADMIN")
+		let tempRole = tournament.admins?.find((admin) => admin.user.id === me.id)?.role;
+
+		if (!tempRole && hasRole(['super_admin'])) {
+			tempRole = "SUPER_ADMIN"
 		}
-	}, [])
-	
+		setRole(tempRole)
+	}, [tournament.admins, me.id])
+
 	return (
 		<Card className="@container/card">
 			<CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -29,14 +31,20 @@ export default function TournamentAdminList({tournament, refetchTournament} : {t
 					<p className="text-sm text-muted-foreground">Manage tournament administrators and their roles.</p>
 				</div>
 				<div className="flex items-center gap-2">
-					{role == "SUPER_ADMIN" && <TournamentAdminAddModal tournamentid={tournament.id} refetchTournament={refetchTournament} />}
+					<TournamentAdminAddModal myRole={role} tournamentid={tournament.id} refetchTournament={refetchTournament} />
 				</div>
 			</CardHeader>
 			<CardContent className='flex flex-col gap-4'>
 				<section aria-labelledby="creator-heading">
 					<h3 id="creator-heading" className="text-lg font-medium">Creator</h3>
 					<div className="mt-2">
-						<UserCard user={tournament.creator} className="max-w-sm w-full"/>
+						{((tournament.admins ?? []).filter((admin) => admin.role == "CREATOR")).length === 0 ? (
+							<div className="col-span-full text-sm text-muted-foreground">No creator found.</div>
+						) : (
+							(tournament.admins ?? []).filter((admin) => admin.role == "CREATOR").map((admin) => (
+								<UserCard user={admin.user} className="max-w-sm w-full" key={admin.user.id}/>
+							))
+						)}
 					</div>
 				</section>
 
@@ -46,11 +54,11 @@ export default function TournamentAdminList({tournament, refetchTournament} : {t
 						<p className="text-sm text-muted-foreground">Elevated permissions</p>
 					</div>
 					<div className='mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-						{((tournament.admins ?? []).filter((admin) => admin.role == "SUPER_ADMIN" && admin.user.id != tournament.creator.id)).length === 0 ? (
+						{((tournament.admins ?? []).filter((admin) => admin.role == "SUPER_ADMIN")).length === 0 ? (
 							<div className="col-span-full text-sm text-muted-foreground">No super admins defined.</div>
 						) : (
-							(tournament.admins ?? []).filter((admin) => admin.role == "SUPER_ADMIN" && admin.user.id != tournament.creator.id).map((admin) => (
-								<TournamentAdminCard admin={admin} tournamentid={tournament.id} modify={role == "SUPER_ADMIN"} refetchTournament={refetchTournament} key={admin.user.id}/>
+							(tournament.admins ?? []).filter((admin) => admin.role == "SUPER_ADMIN").map((admin) => (
+								<TournamentAdminCard myRole={role} admin={admin} tournamentid={tournament.id} refetchTournament={refetchTournament} key={admin.user.id}/>
 							))
 						)}
 					</div>
@@ -62,11 +70,11 @@ export default function TournamentAdminList({tournament, refetchTournament} : {t
 						<p className="text-sm text-muted-foreground">Standard admins with limited permissions</p>
 					</div>
 					<div className='mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-						{((tournament.admins ?? []).filter((admin) => admin.role == "ADMIN" && admin.user.id != tournament.creator.id)).length === 0 ? (
+						{((tournament.admins ?? []).filter((admin) => admin.role == "ADMIN")).length === 0 ? (
 							<div className="col-span-full text-sm text-muted-foreground">No admins defined.</div>
 						) : (
-							(tournament.admins ?? []).filter((admin) => admin.role == "ADMIN" && admin.user.id != tournament.creator.id).map((admin) => (
-								<TournamentAdminCard admin={admin} tournamentid={tournament.id} modify={role == "SUPER_ADMIN"} refetchTournament={refetchTournament} key={admin.user.id}/>
+							(tournament.admins ?? []).filter((admin) => admin.role == "ADMIN").map((admin) => (
+								<TournamentAdminCard myRole={role} admin={admin} tournamentid={tournament.id} refetchTournament={refetchTournament} key={admin.user.id}/>
 							))
 						)}
 					</div>

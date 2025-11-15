@@ -553,6 +553,7 @@ components:
           enum:
             - ADMIN
             - SUPER_ADMIN
+            - CREATOR
           example: ADMIN
           type: string
         user:

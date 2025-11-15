@@ -71,7 +71,7 @@ export default function TournamentCreate() {
 		},
 	});
 
-	const modules = import.meta.glob('./custom-pages/*.tsx', { eager: true })
+	const modules = import.meta.glob('../custom-pages/*.tsx', { eager: true })
 
 	const pages = useMemo(() => {
 		return Object.keys(modules).map((p) => p.split('/').pop()?.replace('.tsx', '') || p)
@@ -292,7 +292,7 @@ export default function TournamentCreate() {
 				type="submit"
 				disabled={!form.state.canSubmit || isPending || form.state.isSubmitting}
 			>
-				{isPending || form.state.isSubmitting ? "Creating..." : "Create Vote"}
+				{isPending || form.state.isSubmitting ? "Creating..." : "Create Tournament"}
 			</Button>
 		</form>
 	)

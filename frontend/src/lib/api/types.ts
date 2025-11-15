@@ -1092,7 +1092,7 @@ export interface components {
              * @example ADMIN
              * @enum {string}
              */
-            role: "ADMIN" | "SUPER_ADMIN";
+            role: "ADMIN" | "SUPER_ADMIN" | "CREATOR";
             user: components["schemas"]["LightUser"];
         };
         LightUser: {

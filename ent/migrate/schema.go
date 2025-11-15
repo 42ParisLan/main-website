@@ -291,7 +291,7 @@ var (
 	// TournamentAdminsColumns holds the columns for the "tournament_admins" table.
 	TournamentAdminsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "role", Type: field.TypeEnum, Enums: []string{"SUPER_ADMIN", "ADMIN"}, Default: "ADMIN"},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"CREATOR", "SUPER_ADMIN", "ADMIN"}, Default: "ADMIN"},
 		{Name: "tournament_admins", Type: field.TypeInt},
 		{Name: "user_tournament_admin_roles", Type: field.TypeInt},
 	}

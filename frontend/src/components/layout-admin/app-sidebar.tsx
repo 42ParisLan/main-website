@@ -90,7 +90,13 @@ const data: SidebarData[] = [
 		title: "Apps",
 		items: [
 			{
-				title: "Apps",
+				title: "My Apps",
+				url: "/admin/apps/me",
+				icon: IconBox,
+				role: "super_admin"
+			},
+			{
+				title: "All Apps",
 				url: "/admin/apps",
 				icon: IconBox,
 				role: "super_admin"

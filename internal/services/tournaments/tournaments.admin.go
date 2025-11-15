@@ -33,10 +33,14 @@ func (svc *tournamentsService) GetTournamentUserRole(ctx context.Context, tourna
 		if err != nil {
 			return nil, svc.errorFilter.Filter(err, "create")
 		}
-		return &meAdmin.Role, nil
+		if meAdmin != nil {
+			return &meAdmin.Role, nil
+		} else {
+			return nil, nil
+		}
 	}
 
-	r := tournamentadmin.RoleSUPER_ADMIN
+	r := tournamentadmin.RoleCREATOR
 	return &r, nil
 }
 
@@ -95,7 +99,7 @@ func (svc *tournamentsService) CreateTournament(
 
 	_, err = svc.databaseService.TournamentAdmin.
 		Create().
-		SetRole("SUPER_ADMIN").
+		SetRole(tournamentadmin.RoleCREATOR).
 		SetTournamentID(entTournament.ID).
 		SetUserID(userID).
 		Save(ctx)
@@ -133,8 +137,11 @@ func (svc *tournamentsService) AddAdminToTournament(
 	if err != nil {
 		return nil, err
 	}
-	if myRole == nil || *myRole != tournamentadmin.RoleSUPER_ADMIN {
+	if myRole == nil || *myRole == tournamentadmin.RoleADMIN {
 		return nil, huma.Error401Unauthorized("don't have required role")
+	}
+	if role == "SUPER_ADMIN" && *myRole != tournamentadmin.RoleCREATOR {
+		return nil, huma.Error401Unauthorized("don't have required role to give this role")
 	}
 
 	exists, err := svc.databaseService.TournamentAdmin.
@@ -188,8 +195,11 @@ func (svc *tournamentsService) EditAdminToTournament(
 	if err != nil {
 		return nil, err
 	}
-	if myRole == nil || *myRole != tournamentadmin.RoleSUPER_ADMIN {
+	if myRole == nil || *myRole == tournamentadmin.RoleADMIN {
 		return nil, huma.Error401Unauthorized("don't have required role")
+	}
+	if role == "SUPER_ADMIN" && *myRole != tournamentadmin.RoleCREATOR {
+		return nil, huma.Error401Unauthorized("don't have required role to give this role")
 	}
 
 	existing, err := svc.databaseService.TournamentAdmin.
@@ -201,6 +211,10 @@ func (svc *tournamentsService) EditAdminToTournament(
 		Only(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "update")
+	}
+
+	if existing.Role == tournamentadmin.RoleSUPER_ADMIN && *myRole != tournamentadmin.RoleCREATOR {
+		return nil, huma.Error401Unauthorized("don't have required role to edit this user")
 	}
 
 	if _, err := svc.databaseService.TournamentAdmin.
@@ -237,7 +251,7 @@ func (svc *tournamentsService) DeleteAdminToTournament(
 	if err != nil {
 		return nil, err
 	}
-	if myRole == nil || *myRole != tournamentadmin.RoleSUPER_ADMIN {
+	if myRole == nil || *myRole == tournamentadmin.RoleADMIN {
 		return nil, huma.Error401Unauthorized("don't have required role")
 	}
 
@@ -250,6 +264,10 @@ func (svc *tournamentsService) DeleteAdminToTournament(
 		Only(ctx)
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "delete")
+	}
+
+	if existing.Role == tournamentadmin.RoleSUPER_ADMIN && *myRole != tournamentadmin.RoleCREATOR {
+		return nil, huma.Error401Unauthorized("don't have required role to delete this user")
 	}
 
 	if err := svc.databaseService.TournamentAdmin.DeleteOneID(existing.ID).Exec(ctx); err != nil {

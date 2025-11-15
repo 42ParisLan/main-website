@@ -13,7 +13,7 @@ type TournamentAdmin struct {
 func (TournamentAdmin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("role").
-			Values("SUPER_ADMIN", "ADMIN").
+			Values("CREATOR", "SUPER_ADMIN", "ADMIN").
 			Default("ADMIN"),
 	}
 }

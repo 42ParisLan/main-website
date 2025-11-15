@@ -19,11 +19,12 @@ interface AdminModalProps {
 	children?: React.ReactNode
 	admin: components['schemas']['LightTournamentAdmin'];
 	tournamentid: number;
+	myRole: components["schemas"]["LightTournamentAdmin"]["role"] | undefined;
 	refetchTournament: () => any
 }
 
-export default function TournamentAdminEditModal({children, admin, tournamentid, refetchTournament}: AdminModalProps) {
-	const [role, setRole] = useState<"ADMIN" | "SUPER_ADMIN">(admin.role);
+export default function TournamentAdminEditModal({children, myRole, admin, tournamentid, refetchTournament}: AdminModalProps) {
+	const [role, setRole] = useState<"ADMIN" | "SUPER_ADMIN">(admin.role as "ADMIN" | "SUPER_ADMIN");
 	const [open, setOpen] = useState(false);
 	const client = useQueryClient();
 
@@ -74,7 +75,19 @@ export default function TournamentAdminEditModal({children, admin, tournamentid,
 		})
 	}, [nutateDelete, admin.user.id, tournamentid])
 
-	const roles: components['schemas']['LightTournamentAdmin']["role"][] = ["ADMIN", "SUPER_ADMIN"]
+	const canEditAdmin = (() => {
+		if (!myRole) return false;
+		if (myRole === "CREATOR") return true;
+		if (myRole === "SUPER_ADMIN") return admin.role === "ADMIN";
+		return false;
+	})();
+
+	if (!canEditAdmin) return null;
+
+	let roles: components['schemas']['LightTournamentAdmin']["role"][] = ["ADMIN"]
+	if (myRole == "CREATOR") {
+		roles.push("SUPER_ADMIN")
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -94,7 +107,7 @@ export default function TournamentAdminEditModal({children, admin, tournamentid,
 					</DialogDescription>
 				</DialogHeader>
 				<div className="py-4">
-					<Select value={role} onValueChange={(v) => setRole(v as components['schemas']['LightTournamentAdmin']["role"]) }>
+					<Select value={role} onValueChange={(v) => setRole(v as "ADMIN" | "SUPER_ADMIN") }>
 						<SelectTrigger className="w-full">
 							<SelectValue placeholder="Select Role" />
 						</SelectTrigger>
