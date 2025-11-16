@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { components } from '@/lib/api/types';
+import { Link } from '@tanstack/react-router';
 
 interface VoteCardProps {
 	vote: components['schemas']['LightVote'];
@@ -60,23 +61,25 @@ function VoteCard({ vote }: VoteCardProps) {
 				{status === 'active' && (
 					<>
 						<p className="font-mono text-lg">Ends in: {timeLeft}</p>
-						<a 
-							href={`/votes/${vote.id}`}
+						<Link 
+							to="/votes/$voteid"
+							params={{voteid: String(vote.id)}}
 							className="text-primary hover:underline"
 						>
 							Go vote
-						</a>
+						</Link>
 					</>
 				)}
 				{status === 'finished' && (
 					<>
 						<p className="text-muted-foreground">Vote is finished</p>
-						<a 
-							href={`/votes/${vote.id}/results`}
+						<Link 
+							to="/votes/$voteid/results"
+							params={{voteid: String(vote.id)}}
 							className="text-primary hover:underline"
 						>
 							See Results
-						</a>
+						</Link>
 					</>
 				)}
 			</CardContent>

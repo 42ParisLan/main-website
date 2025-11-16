@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/admin/tournaments/$tournamentid/edit/')({
   component: RouteComponent,
@@ -8,7 +8,7 @@ function RouteComponent() {
 	const { tournamentid } = Route.useParams();
 	return (
 		<>
-			<a href={`/admin/tournaments/${tournamentid}`}>Go back to tournament</a>
+			<Link to={`/admin/tournaments/$tournamentid`} params={{tournamentid: tournamentid}}>Go back to tournament</Link>
 			<div>Hello "/admin/tournaments/{tournamentid}/edit"!</div>
 		</>
 	)

@@ -7,6 +7,7 @@ import {
 	IconUserCode,
 	IconUsersGroup,
 	IconBox,
+	IconCrown,
 	IconSquareRoundedPlus,
 	type Icon,
 } from "@tabler/icons-react"
@@ -33,9 +34,12 @@ export type SidebarThemes = {
 
 export type SidebarItem = {
 	title: string
-	url: string
+	redirect: string
+	urlsMatch: string[]
+	exceptions?: string[]
 	icon?: Icon
 	role?: string
+	childs?: SidebarItem[]
 }
 
 interface SidebarData {
@@ -49,7 +53,8 @@ const data: SidebarData[] = [
 		items: [
 			{
 				title: "Votes",
-				url: "/admin/votes",
+				redirect: "/admin/votes",
+				urlsMatch: ["/admin/votes/"],
 				icon: IconNotes,
 			},
 		],
@@ -59,14 +64,37 @@ const data: SidebarData[] = [
 		items: [
 			{
 				title: "Tournaments",
-				url: "/admin/tournaments",
+				redirect: "/admin/tournaments",
+				urlsMatch: ["/admin/tournaments/"],
 				icon: IconUsersGroup,
 			},
 			{
 				title: "Create Tournament",
-				url: "/admin/tournaments/create",
+				redirect: "/admin/tournaments/create/",
+				urlsMatch: ["/admin/tournaments/create/"],
 				icon: IconSquareRoundedPlus,
 				role: "tournament_admin"
+			},
+			{
+				title: "Tournament",
+				redirect: "/admin/tournaments",
+				urlsMatch: [],
+				icon: IconCrown,
+				childs: [
+					{
+						title: "View",
+						redirect: "/admin/tournaments/$tournamentid/",
+						urlsMatch: ["/admin/tournaments/*/", "/admin/tournaments/*/edit/"],
+						exceptions: ["/admin/tournaments/create/"],
+						icon: IconUsersGroup,
+					},
+					{
+						title: "Teams",
+						redirect: "/admin/tournaments/$tournamentid/teams/",
+						urlsMatch: ["/admin/tournaments/*/teams/"],
+						icon: IconUsersGroup,
+					}
+				]
 			},
 		],
 	},
@@ -75,12 +103,14 @@ const data: SidebarData[] = [
 		items: [
 			{
 				title: "Users",
-				url: "/admin/users",
+				redirect: "/admin/users",
+				urlsMatch: ["/admin/users/"],
 				icon: IconUser,
 			},
 			{
 				title: "Admins",
-				url: "/admin/admins",
+				redirect: "/admin/admins",
+				urlsMatch: ["/admin/admins/"],
 				icon: IconUserCode,
 				role: "super_admin"
 			},
@@ -91,13 +121,15 @@ const data: SidebarData[] = [
 		items: [
 			{
 				title: "My Apps",
-				url: "/admin/apps/me",
+				redirect: "/admin/apps/me",
+				urlsMatch: ["/admin/apps/me/"],
 				icon: IconBox,
 				role: "super_admin"
 			},
 			{
 				title: "All Apps",
-				url: "/admin/apps",
+				redirect: "/admin/apps",
+				urlsMatch: ["/admin/apps/"],
 				icon: IconBox,
 				role: "super_admin"
 			},

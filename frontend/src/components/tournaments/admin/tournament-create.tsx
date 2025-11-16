@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { useMemo, useState } from "react";
 import { Button } from "../../ui/button";
 import { toDatetimeLocal, toIsoString } from "@/lib/date.utils";
+import { z } from "zod";
 
 export default function TournamentCreate() {
 	const router = useRouter();
@@ -31,7 +32,6 @@ export default function TournamentCreate() {
 		defaultValues: {
 			custom_page_component: undefined as string | undefined,
 			description: "",
-			external_link: undefined as string | undefined,
 			max_teams: 0,
 			name: "",
 			registration_end: "",
@@ -77,6 +77,12 @@ export default function TournamentCreate() {
 		return Object.keys(modules).map((p) => p.split('/').pop()?.replace('.tsx', '') || p)
 	}, [modules])
 
+	const dateFieldSchema = z
+		.string()
+		.min(1, "Date is required")
+		.refine((v) => !isNaN(new Date(v).getTime()), "Invalid date")
+
+
 
 	const [teamRoles, setTeamRoles] = useState<{
 		name: string;
@@ -110,6 +116,12 @@ export default function TournamentCreate() {
 		>
 			<form.Field
 				name="name"
+				validators={{
+					onChange: ({ value }: { value: unknown }) => {
+						const r = z.string().min(3, "Name must be at least 3 characters").safeParse(value as string)
+						return r.success ? undefined : r.error.errors[0]?.message
+					}
+				}}
 			>
 				{(field) => (
 					<div className="grid gap-2">
@@ -152,6 +164,13 @@ export default function TournamentCreate() {
 
 			<form.Field
 				name="max_teams"
+				validators={{
+					onChange: ({ value }: { value: unknown }) => {
+						// value expected to be a number
+						const r = z.number().min(3, "Max teams must be at least 3").safeParse(Number(value as any))
+						return r.success ? undefined : r.error.errors[0]?.message
+					}
+				}}
 			>
 				{(field) => (
 					<div className="grid gap-2">
@@ -227,6 +246,12 @@ export default function TournamentCreate() {
 
 			<form.Field
 				name="registration_start"
+				validators={{
+					onChange: ({ value }: { value: unknown }) => {
+						const r = dateFieldSchema.safeParse(value as string)
+						return r.success ? undefined : r.error.errors[0]?.message
+					}
+				}}
 			>
 				{(field) => (
 					<div className="grid gap-2">
@@ -248,6 +273,19 @@ export default function TournamentCreate() {
 
 			<form.Field
 				name="registration_end"
+				validators={{
+					onChange: ({ value }: { value: unknown }) => {
+						const r = dateFieldSchema.safeParse(value as string)
+						if (!r.success) return r.error.errors[0]?.message
+						// cross-field check
+						const start = new Date(form.state.values.registration_start)
+						const end = new Date(value as string)
+						if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end <= start) {
+							return "Registration end must be after registration start"
+						}
+						return undefined
+					}
+				}}
 			>
 				{(field) => (
 					<div className="grid gap-2">
@@ -269,6 +307,18 @@ export default function TournamentCreate() {
 
 			<form.Field
 				name="tournament_start"
+				validators={{
+					onChange: ({ value }: { value: unknown }) => {
+						const r = dateFieldSchema.safeParse(value as string)
+						if (!r.success) return r.error.errors[0]?.message
+						const regEnd = new Date(form.state.values.registration_end)
+						const tstart = new Date(value as string)
+						if (!isNaN(regEnd.getTime()) && !isNaN(tstart.getTime()) && tstart <= regEnd) {
+							return "Tournament start must be after registration end"
+						}
+						return undefined
+					}
+				}}
 			>
 				{(field) => (
 					<div className="grid gap-2">
