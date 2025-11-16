@@ -252,6 +252,7 @@ components:
         max_teams:
           example: 32
           format: int64
+          minimum: 3
           type: integer
         name:
           example: Spring Cup 2025
@@ -912,9 +913,11 @@ components:
       properties:
         max:
           format: int64
+          minimum: 1
           type: integer
         min:
           format: int64
+          minimum: 0
           type: integer
       required:
         - min

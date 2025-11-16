@@ -8,8 +8,8 @@ import (
 )
 
 type TeamStructure struct {
-	Min int `json:"min"`
-	Max int `json:"max"`
+	Min int `json:"min" minimum:"0"`
+	Max int `json:"max" minimum:"1"`
 }
 
 type LightTournament struct {

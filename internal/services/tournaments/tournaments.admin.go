@@ -75,6 +75,9 @@ func (svc *tournamentsService) CreateTournament(
 	if input.TeamStructure != nil {
 		ts := make(map[string]interface{}, len(input.TeamStructure))
 		for k, v := range input.TeamStructure {
+			if v.Max < v.Min {
+				return nil, huma.Error400BadRequest("in team structure min can be higher than max")
+			}
 			var any interface{}
 			b, err := json.Marshal(v)
 			if err != nil {
