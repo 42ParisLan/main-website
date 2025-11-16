@@ -147,7 +147,7 @@ func (_c *TournamentAdminCreate) createSpec() (*TournamentAdmin, *sqlgraph.Creat
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   tournamentadmin.UserTable,
 			Columns: []string{tournamentadmin.UserColumn},
 			Bidi:    false,
@@ -158,13 +158,13 @@ func (_c *TournamentAdminCreate) createSpec() (*TournamentAdmin, *sqlgraph.Creat
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_tournament_admin_roles = &nodes[0]
+		_node.tournament_admin_user = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   tournamentadmin.TournamentTable,
 			Columns: []string{tournamentadmin.TournamentColumn},
 			Bidi:    false,
@@ -175,7 +175,7 @@ func (_c *TournamentAdminCreate) createSpec() (*TournamentAdmin, *sqlgraph.Creat
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.tournament_admins = &nodes[0]
+		_node.tournament_admin_tournament = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -69,6 +69,11 @@ func RankMax(v int) predicate.RankGroup {
 	return predicate.RankGroup(sql.FieldEQ(FieldRankMax, v))
 }
 
+// Position applies equality check predicate on the "position" field. It's identical to PositionEQ.
+func Position(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldEQ(FieldPosition, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.RankGroup {
 	return predicate.RankGroup(sql.FieldEQ(FieldName, v))
@@ -214,12 +219,52 @@ func RankMaxLTE(v int) predicate.RankGroup {
 	return predicate.RankGroup(sql.FieldLTE(FieldRankMax, v))
 }
 
+// PositionEQ applies the EQ predicate on the "position" field.
+func PositionEQ(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldEQ(FieldPosition, v))
+}
+
+// PositionNEQ applies the NEQ predicate on the "position" field.
+func PositionNEQ(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldNEQ(FieldPosition, v))
+}
+
+// PositionIn applies the In predicate on the "position" field.
+func PositionIn(vs ...int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldIn(FieldPosition, vs...))
+}
+
+// PositionNotIn applies the NotIn predicate on the "position" field.
+func PositionNotIn(vs ...int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldNotIn(FieldPosition, vs...))
+}
+
+// PositionGT applies the GT predicate on the "position" field.
+func PositionGT(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldGT(FieldPosition, v))
+}
+
+// PositionGTE applies the GTE predicate on the "position" field.
+func PositionGTE(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldGTE(FieldPosition, v))
+}
+
+// PositionLT applies the LT predicate on the "position" field.
+func PositionLT(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldLT(FieldPosition, v))
+}
+
+// PositionLTE applies the LTE predicate on the "position" field.
+func PositionLTE(v int) predicate.RankGroup {
+	return predicate.RankGroup(sql.FieldLTE(FieldPosition, v))
+}
+
 // HasTournament applies the HasEdge predicate on the "tournament" edge.
 func HasTournament() predicate.RankGroup {
 	return predicate.RankGroup(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

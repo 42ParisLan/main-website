@@ -85,6 +85,27 @@ func (_u *RankGroupUpdate) AddRankMax(v int) *RankGroupUpdate {
 	return _u
 }
 
+// SetPosition sets the "position" field.
+func (_u *RankGroupUpdate) SetPosition(v int) *RankGroupUpdate {
+	_u.mutation.ResetPosition()
+	_u.mutation.SetPosition(v)
+	return _u
+}
+
+// SetNillablePosition sets the "position" field if the given value is not nil.
+func (_u *RankGroupUpdate) SetNillablePosition(v *int) *RankGroupUpdate {
+	if v != nil {
+		_u.SetPosition(*v)
+	}
+	return _u
+}
+
+// AddPosition adds value to the "position" field.
+func (_u *RankGroupUpdate) AddPosition(v int) *RankGroupUpdate {
+	_u.mutation.AddPosition(v)
+	return _u
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
 func (_u *RankGroupUpdate) SetTournamentID(id int) *RankGroupUpdate {
 	_u.mutation.SetTournamentID(id)
@@ -205,10 +226,16 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedRankMax(); ok {
 		_spec.AddField(rankgroup.FieldRankMax, field.TypeInt, value)
 	}
+	if value, ok := _u.mutation.Position(); ok {
+		_spec.SetField(rankgroup.FieldPosition, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedPosition(); ok {
+		_spec.AddField(rankgroup.FieldPosition, field.TypeInt, value)
+	}
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -221,7 +248,7 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -352,6 +379,27 @@ func (_u *RankGroupUpdateOne) SetNillableRankMax(v *int) *RankGroupUpdateOne {
 // AddRankMax adds value to the "rank_max" field.
 func (_u *RankGroupUpdateOne) AddRankMax(v int) *RankGroupUpdateOne {
 	_u.mutation.AddRankMax(v)
+	return _u
+}
+
+// SetPosition sets the "position" field.
+func (_u *RankGroupUpdateOne) SetPosition(v int) *RankGroupUpdateOne {
+	_u.mutation.ResetPosition()
+	_u.mutation.SetPosition(v)
+	return _u
+}
+
+// SetNillablePosition sets the "position" field if the given value is not nil.
+func (_u *RankGroupUpdateOne) SetNillablePosition(v *int) *RankGroupUpdateOne {
+	if v != nil {
+		_u.SetPosition(*v)
+	}
+	return _u
+}
+
+// AddPosition adds value to the "position" field.
+func (_u *RankGroupUpdateOne) AddPosition(v int) *RankGroupUpdateOne {
+	_u.mutation.AddPosition(v)
 	return _u
 }
 
@@ -505,10 +553,16 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if value, ok := _u.mutation.AddedRankMax(); ok {
 		_spec.AddField(rankgroup.FieldRankMax, field.TypeInt, value)
 	}
+	if value, ok := _u.mutation.Position(); ok {
+		_spec.SetField(rankgroup.FieldPosition, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedPosition(); ok {
+		_spec.AddField(rankgroup.FieldPosition, field.TypeInt, value)
+	}
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -521,7 +575,7 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,

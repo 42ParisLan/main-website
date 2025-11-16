@@ -2130,6 +2130,38 @@ paths:
       summary: Get Tournament by ID
       tags:
         - Tournament
+  /tournaments/{id}:
+    delete:
+      description: This endpoint is used to delete a tournament.
+      operationId: deleteTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Tournament
+      tags:
+        - Tournament
   /tournaments/{id}/admin:
     post:
       description: Add a user as an admin to a tournament.

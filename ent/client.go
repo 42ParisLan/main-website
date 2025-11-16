@@ -438,7 +438,7 @@ func (c *AppClient) QueryOwner(_m *App) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(app.Table, app.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, app.OwnerTable, app.OwnerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, app.OwnerTable, app.OwnerColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -454,7 +454,7 @@ func (c *AppClient) QueryConsents(_m *App) *ConsentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(app.Table, app.FieldID, id),
 			sqlgraph.To(consent.Table, consent.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, app.ConsentsTable, app.ConsentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, app.ConsentsTable, app.ConsentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1002,7 +1002,7 @@ func (c *ComponentClient) QueryVote(_m *Component) *VoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(component.Table, component.FieldID, id),
 			sqlgraph.To(vote.Table, vote.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, component.VoteTable, component.VoteColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, component.VoteTable, component.VoteColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1018,7 +1018,7 @@ func (c *ComponentClient) QueryUserVotes(_m *Component) *UserVoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(component.Table, component.FieldID, id),
 			sqlgraph.To(uservote.Table, uservote.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, component.UserVotesTable, component.UserVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, component.UserVotesTable, component.UserVotesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1167,7 +1167,7 @@ func (c *ConsentClient) QueryApplication(_m *Consent) *AppQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(consent.Table, consent.FieldID, id),
 			sqlgraph.To(app.Table, app.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, consent.ApplicationTable, consent.ApplicationColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, consent.ApplicationTable, consent.ApplicationColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1183,7 +1183,7 @@ func (c *ConsentClient) QueryUser(_m *Consent) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(consent.Table, consent.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, consent.UserTable, consent.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, consent.UserTable, consent.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1332,7 +1332,7 @@ func (c *InvitationClient) QueryTeam(_m *Invitation) *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(invitation.Table, invitation.FieldID, id),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, invitation.TeamTable, invitation.TeamColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, invitation.TeamTable, invitation.TeamColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1348,7 +1348,7 @@ func (c *InvitationClient) QueryInvitee(_m *Invitation) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(invitation.Table, invitation.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, invitation.InviteeTable, invitation.InviteeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, invitation.InviteeTable, invitation.InviteeColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1497,7 +1497,7 @@ func (c *RankGroupClient) QueryTournament(_m *RankGroup) *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rankgroup.Table, rankgroup.FieldID, id),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, rankgroup.TournamentTable, rankgroup.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, rankgroup.TournamentTable, rankgroup.TournamentColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1662,7 +1662,7 @@ func (c *TeamClient) QueryTournament(_m *Team) *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, id),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, team.TournamentTable, team.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, team.TournamentTable, team.TournamentColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1678,7 +1678,7 @@ func (c *TeamClient) QueryCreator(_m *Team) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, team.CreatorTable, team.CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, team.CreatorTable, team.CreatorColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1694,7 +1694,7 @@ func (c *TeamClient) QueryMembers(_m *Team) *TeamMemberQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, id),
 			sqlgraph.To(teammember.Table, teammember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, team.MembersTable, team.MembersColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, team.MembersTable, team.MembersColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1726,7 +1726,7 @@ func (c *TeamClient) QueryInvitations(_m *Team) *InvitationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, id),
 			sqlgraph.To(invitation.Table, invitation.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, team.InvitationsTable, team.InvitationsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, team.InvitationsTable, team.InvitationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1875,7 +1875,7 @@ func (c *TeamMemberClient) QueryUser(_m *TeamMember) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, teammember.UserTable, teammember.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, teammember.UserTable, teammember.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1891,7 +1891,7 @@ func (c *TeamMemberClient) QueryTeam(_m *TeamMember) *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, id),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, teammember.TeamTable, teammember.TeamColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TeamTable, teammember.TeamColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2040,7 +2040,7 @@ func (c *TournamentClient) QueryCreator(_m *Tournament) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, tournament.CreatorTable, tournament.CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, tournament.CreatorTable, tournament.CreatorColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2056,7 +2056,7 @@ func (c *TournamentClient) QueryAdmins(_m *Tournament) *TournamentAdminQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, id),
 			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, tournament.AdminsTable, tournament.AdminsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, tournament.AdminsTable, tournament.AdminsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2072,7 +2072,7 @@ func (c *TournamentClient) QueryTeams(_m *Tournament) *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, id),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, tournament.TeamsTable, tournament.TeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, tournament.TeamsTable, tournament.TeamsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2088,7 +2088,7 @@ func (c *TournamentClient) QueryRankGroups(_m *Tournament) *RankGroupQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, id),
 			sqlgraph.To(rankgroup.Table, rankgroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, tournament.RankGroupsTable, tournament.RankGroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, tournament.RankGroupsTable, tournament.RankGroupsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2237,7 +2237,7 @@ func (c *TournamentAdminClient) QueryUser(_m *TournamentAdmin) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournamentadmin.Table, tournamentadmin.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, tournamentadmin.UserTable, tournamentadmin.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, tournamentadmin.UserTable, tournamentadmin.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2253,7 +2253,7 @@ func (c *TournamentAdminClient) QueryTournament(_m *TournamentAdmin) *Tournament
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournamentadmin.Table, tournamentadmin.FieldID, id),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, tournamentadmin.TournamentTable, tournamentadmin.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, tournamentadmin.TournamentTable, tournamentadmin.TournamentColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2402,7 +2402,7 @@ func (c *UserClient) QueryUserVotes(_m *User) *UserVoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(uservote.Table, uservote.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.UserVotesTable, user.UserVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.UserVotesTable, user.UserVotesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2418,7 +2418,7 @@ func (c *UserClient) QueryCreatedVotes(_m *User) *VoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(vote.Table, vote.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedVotesTable, user.CreatedVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.CreatedVotesTable, user.CreatedVotesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2434,7 +2434,7 @@ func (c *UserClient) QueryApps(_m *User) *AppQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(app.Table, app.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.AppsTable, user.AppsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.AppsTable, user.AppsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2450,7 +2450,7 @@ func (c *UserClient) QueryConsents(_m *User) *ConsentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(consent.Table, consent.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2466,7 +2466,7 @@ func (c *UserClient) QueryTeamMemberships(_m *User) *TeamMemberQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(teammember.Table, teammember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.TeamMembershipsTable, user.TeamMembershipsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.TeamMembershipsTable, user.TeamMembershipsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2482,7 +2482,7 @@ func (c *UserClient) QueryReceivedInvitations(_m *User) *InvitationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(invitation.Table, invitation.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ReceivedInvitationsTable, user.ReceivedInvitationsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.ReceivedInvitationsTable, user.ReceivedInvitationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2498,7 +2498,7 @@ func (c *UserClient) QueryCreatedTeams(_m *User) *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTeamsTable, user.CreatedTeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.CreatedTeamsTable, user.CreatedTeamsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2514,7 +2514,7 @@ func (c *UserClient) QueryCreatedTournaments(_m *User) *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTournamentsTable, user.CreatedTournamentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.CreatedTournamentsTable, user.CreatedTournamentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2522,15 +2522,15 @@ func (c *UserClient) QueryCreatedTournaments(_m *User) *TournamentQuery {
 	return query
 }
 
-// QueryTournamentAdminRoles queries the tournament_admin_roles edge of a User.
-func (c *UserClient) QueryTournamentAdminRoles(_m *User) *TournamentAdminQuery {
+// QueryTournamentAdmins queries the tournament_admins edge of a User.
+func (c *UserClient) QueryTournamentAdmins(_m *User) *TournamentAdminQuery {
 	query := (&TournamentAdminClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.TournamentAdminRolesTable, user.TournamentAdminRolesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.TournamentAdminsTable, user.TournamentAdminsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2679,7 +2679,7 @@ func (c *UserVoteClient) QueryUser(_m *UserVote) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(uservote.Table, uservote.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, uservote.UserTable, uservote.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, uservote.UserTable, uservote.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2695,7 +2695,7 @@ func (c *UserVoteClient) QueryComponent(_m *UserVote) *ComponentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(uservote.Table, uservote.FieldID, id),
 			sqlgraph.To(component.Table, component.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, uservote.ComponentTable, uservote.ComponentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, uservote.ComponentTable, uservote.ComponentColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2844,7 +2844,7 @@ func (c *VoteClient) QueryComponents(_m *Vote) *ComponentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(vote.Table, vote.FieldID, id),
 			sqlgraph.To(component.Table, component.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, vote.ComponentsTable, vote.ComponentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, vote.ComponentsTable, vote.ComponentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2860,7 +2860,7 @@ func (c *VoteClient) QueryCreator(_m *Vote) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(vote.Table, vote.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, vote.CreatorTable, vote.CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, vote.CreatorTable, vote.CreatorColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

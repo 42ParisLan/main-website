@@ -10,8 +10,12 @@ type BodyMessage struct {
 	Body string `required:"true"`
 }
 
-type TournamentIDInput struct {
+type TournamentIDOrSlugInput struct {
 	TournamentIDOrSlug string `path:"id_or_slug" required:"true" example:"42" description:"The tournament ID or slug"`
+}
+
+type TournamentIDInput struct {
+	TournamentID int `path:"id" required:"true" example:"42" description:"The tournament ID"`
 }
 
 type oneTournamentOutput struct {

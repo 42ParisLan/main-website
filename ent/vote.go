@@ -34,9 +34,9 @@ type Vote struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the VoteQuery when eager-loading is set.
-	Edges              VoteEdges `json:"edges"`
-	user_created_votes *int
-	selectValues       sql.SelectValues
+	Edges        VoteEdges `json:"edges"`
+	vote_creator *int
+	selectValues sql.SelectValues
 }
 
 // VoteEdges holds the relations/edges for other nodes in the graph.
@@ -83,7 +83,7 @@ func (*Vote) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case vote.FieldStartAt, vote.FieldEndAt, vote.FieldCreatedAt, vote.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case vote.ForeignKeys[0]: // user_created_votes
+		case vote.ForeignKeys[0]: // vote_creator
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -150,10 +150,10 @@ func (_m *Vote) assignValues(columns []string, values []any) error {
 			}
 		case vote.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_created_votes", value)
+				return fmt.Errorf("unexpected type %T for edge-field vote_creator", value)
 			} else if value.Valid {
-				_m.user_created_votes = new(int)
-				*_m.user_created_votes = int(value.Int64)
+				_m.vote_creator = new(int)
+				*_m.vote_creator = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

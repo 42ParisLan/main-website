@@ -27,9 +27,9 @@ type Component struct {
 	Color string `json:"color,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ComponentQuery when eager-loading is set.
-	Edges           ComponentEdges `json:"edges"`
-	vote_components *int
-	selectValues    sql.SelectValues
+	Edges          ComponentEdges `json:"edges"`
+	component_vote *int
+	selectValues   sql.SelectValues
 }
 
 // ComponentEdges holds the relations/edges for other nodes in the graph.
@@ -72,7 +72,7 @@ func (*Component) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case component.FieldName, component.FieldDescription, component.FieldImageURL, component.FieldColor:
 			values[i] = new(sql.NullString)
-		case component.ForeignKeys[0]: // vote_components
+		case component.ForeignKeys[0]: // component_vote
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -121,10 +121,10 @@ func (_m *Component) assignValues(columns []string, values []any) error {
 			}
 		case component.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field vote_components", value)
+				return fmt.Errorf("unexpected type %T for edge-field component_vote", value)
 			} else if value.Valid {
-				_m.vote_components = new(int)
-				*_m.vote_components = int(value.Int64)
+				_m.component_vote = new(int)
+				*_m.component_vote = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

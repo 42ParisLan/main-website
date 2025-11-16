@@ -77,7 +77,7 @@ func (_q *TeamMemberQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, teammember.UserTable, teammember.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, teammember.UserTable, teammember.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -99,7 +99,7 @@ func (_q *TeamMemberQuery) QueryTeam() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, teammember.TeamTable, teammember.TeamColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TeamTable, teammember.TeamColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -456,10 +456,10 @@ func (_q *TeamMemberQuery) loadUser(ctx context.Context, query *UserQuery, nodes
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TeamMember)
 	for i := range nodes {
-		if nodes[i].user_team_memberships == nil {
+		if nodes[i].team_member_user == nil {
 			continue
 		}
-		fk := *nodes[i].user_team_memberships
+		fk := *nodes[i].team_member_user
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -476,7 +476,7 @@ func (_q *TeamMemberQuery) loadUser(ctx context.Context, query *UserQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_team_memberships" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "team_member_user" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -488,10 +488,10 @@ func (_q *TeamMemberQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TeamMember)
 	for i := range nodes {
-		if nodes[i].team_members == nil {
+		if nodes[i].team_member_team == nil {
 			continue
 		}
-		fk := *nodes[i].team_members
+		fk := *nodes[i].team_member_team
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -508,7 +508,7 @@ func (_q *TeamMemberQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_members" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "team_member_team" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

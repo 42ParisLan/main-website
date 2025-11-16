@@ -23,10 +23,10 @@ type UserVote struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserVoteQuery when eager-loading is set.
-	Edges                UserVoteEdges `json:"edges"`
-	component_user_votes *int
-	user_user_votes      *int
-	selectValues         sql.SelectValues
+	Edges               UserVoteEdges `json:"edges"`
+	user_vote_user      *int
+	user_vote_component *int
+	selectValues        sql.SelectValues
 }
 
 // UserVoteEdges holds the relations/edges for other nodes in the graph.
@@ -71,9 +71,9 @@ func (*UserVote) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case uservote.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case uservote.ForeignKeys[0]: // component_user_votes
+		case uservote.ForeignKeys[0]: // user_vote_user
 			values[i] = new(sql.NullInt64)
-		case uservote.ForeignKeys[1]: // user_user_votes
+		case uservote.ForeignKeys[1]: // user_vote_component
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -104,17 +104,17 @@ func (_m *UserVote) assignValues(columns []string, values []any) error {
 			}
 		case uservote.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field component_user_votes", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_vote_user", value)
 			} else if value.Valid {
-				_m.component_user_votes = new(int)
-				*_m.component_user_votes = int(value.Int64)
+				_m.user_vote_user = new(int)
+				*_m.user_vote_user = int(value.Int64)
 			}
 		case uservote.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_user_votes", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_vote_component", value)
 			} else if value.Valid {
-				_m.user_user_votes = new(int)
-				*_m.user_user_votes = int(value.Int64)
+				_m.user_vote_component = new(int)
+				*_m.user_vote_component = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

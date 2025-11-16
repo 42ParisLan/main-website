@@ -209,7 +209,7 @@ func (_c *InvitationCreate) createSpec() (*Invitation, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.TeamTable,
 			Columns: []string{invitation.TeamColumn},
 			Bidi:    false,
@@ -220,13 +220,13 @@ func (_c *InvitationCreate) createSpec() (*Invitation, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.team_invitations = &nodes[0]
+		_node.invitation_team = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.InviteeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.InviteeTable,
 			Columns: []string{invitation.InviteeColumn},
 			Bidi:    false,
@@ -237,7 +237,7 @@ func (_c *InvitationCreate) createSpec() (*Invitation, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_received_invitations = &nodes[0]
+		_node.invitation_invitee = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -49,9 +49,9 @@ type Tournament struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TournamentQuery when eager-loading is set.
-	Edges                    TournamentEdges `json:"edges"`
-	user_created_tournaments *int
-	selectValues             sql.SelectValues
+	Edges              TournamentEdges `json:"edges"`
+	tournament_creator *int
+	selectValues       sql.SelectValues
 }
 
 // TournamentEdges holds the relations/edges for other nodes in the graph.
@@ -122,7 +122,7 @@ func (*Tournament) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case tournament.FieldRegistrationStart, tournament.FieldRegistrationEnd, tournament.FieldTournamentStart, tournament.FieldTournamentEnd, tournament.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case tournament.ForeignKeys[0]: // user_created_tournaments
+		case tournament.ForeignKeys[0]: // tournament_creator
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -233,10 +233,10 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			}
 		case tournament.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_created_tournaments", value)
+				return fmt.Errorf("unexpected type %T for edge-field tournament_creator", value)
 			} else if value.Valid {
-				_m.user_created_tournaments = new(int)
-				*_m.user_created_tournaments = int(value.Int64)
+				_m.tournament_creator = new(int)
+				*_m.tournament_creator = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

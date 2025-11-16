@@ -465,7 +465,7 @@ func HasOwner() predicate.App {
 	return predicate.App(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, OwnerTable, OwnerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -488,7 +488,7 @@ func HasConsents() predicate.App {
 	return predicate.App(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, ConsentsTable, ConsentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

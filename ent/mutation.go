@@ -4969,6 +4969,8 @@ type RankGroupMutation struct {
 	addrank_min       *int
 	rank_max          *int
 	addrank_max       *int
+	position          *int
+	addposition       *int
 	clearedFields     map[string]struct{}
 	tournament        *int
 	clearedtournament bool
@@ -5226,6 +5228,62 @@ func (m *RankGroupMutation) ResetRankMax() {
 	m.addrank_max = nil
 }
 
+// SetPosition sets the "position" field.
+func (m *RankGroupMutation) SetPosition(i int) {
+	m.position = &i
+	m.addposition = nil
+}
+
+// Position returns the value of the "position" field in the mutation.
+func (m *RankGroupMutation) Position() (r int, exists bool) {
+	v := m.position
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPosition returns the old "position" field's value of the RankGroup entity.
+// If the RankGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RankGroupMutation) OldPosition(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPosition is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPosition requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPosition: %w", err)
+	}
+	return oldValue.Position, nil
+}
+
+// AddPosition adds i to the "position" field.
+func (m *RankGroupMutation) AddPosition(i int) {
+	if m.addposition != nil {
+		*m.addposition += i
+	} else {
+		m.addposition = &i
+	}
+}
+
+// AddedPosition returns the value that was added to the "position" field in this mutation.
+func (m *RankGroupMutation) AddedPosition() (r int, exists bool) {
+	v := m.addposition
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPosition resets all changes to the "position" field.
+func (m *RankGroupMutation) ResetPosition() {
+	m.position = nil
+	m.addposition = nil
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by id.
 func (m *RankGroupMutation) SetTournamentID(id int) {
 	m.tournament = &id
@@ -5353,7 +5411,7 @@ func (m *RankGroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RankGroupMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, rankgroup.FieldName)
 	}
@@ -5362,6 +5420,9 @@ func (m *RankGroupMutation) Fields() []string {
 	}
 	if m.rank_max != nil {
 		fields = append(fields, rankgroup.FieldRankMax)
+	}
+	if m.position != nil {
+		fields = append(fields, rankgroup.FieldPosition)
 	}
 	return fields
 }
@@ -5377,6 +5438,8 @@ func (m *RankGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.RankMin()
 	case rankgroup.FieldRankMax:
 		return m.RankMax()
+	case rankgroup.FieldPosition:
+		return m.Position()
 	}
 	return nil, false
 }
@@ -5392,6 +5455,8 @@ func (m *RankGroupMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRankMin(ctx)
 	case rankgroup.FieldRankMax:
 		return m.OldRankMax(ctx)
+	case rankgroup.FieldPosition:
+		return m.OldPosition(ctx)
 	}
 	return nil, fmt.Errorf("unknown RankGroup field %s", name)
 }
@@ -5422,6 +5487,13 @@ func (m *RankGroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRankMax(v)
 		return nil
+	case rankgroup.FieldPosition:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPosition(v)
+		return nil
 	}
 	return fmt.Errorf("unknown RankGroup field %s", name)
 }
@@ -5436,6 +5508,9 @@ func (m *RankGroupMutation) AddedFields() []string {
 	if m.addrank_max != nil {
 		fields = append(fields, rankgroup.FieldRankMax)
 	}
+	if m.addposition != nil {
+		fields = append(fields, rankgroup.FieldPosition)
+	}
 	return fields
 }
 
@@ -5448,6 +5523,8 @@ func (m *RankGroupMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedRankMin()
 	case rankgroup.FieldRankMax:
 		return m.AddedRankMax()
+	case rankgroup.FieldPosition:
+		return m.AddedPosition()
 	}
 	return nil, false
 }
@@ -5470,6 +5547,13 @@ func (m *RankGroupMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRankMax(v)
+		return nil
+	case rankgroup.FieldPosition:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPosition(v)
 		return nil
 	}
 	return fmt.Errorf("unknown RankGroup numeric field %s", name)
@@ -5506,6 +5590,9 @@ func (m *RankGroupMutation) ResetField(name string) error {
 		return nil
 	case rankgroup.FieldRankMax:
 		m.ResetRankMax()
+		return nil
+	case rankgroup.FieldPosition:
+		m.ResetPosition()
 		return nil
 	}
 	return fmt.Errorf("unknown RankGroup field %s", name)
@@ -9096,48 +9183,48 @@ func (m *TournamentAdminMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                            Op
-	typ                           string
-	id                            *int
-	username                      *string
-	email                         *string
-	created_at                    *time.Time
-	updated_at                    *time.Time
-	picture                       *string
-	kind                          *user.Kind
-	roles                         *[]string
-	appendroles                   []string
-	clearedFields                 map[string]struct{}
-	user_votes                    map[int]struct{}
-	removeduser_votes             map[int]struct{}
-	cleareduser_votes             bool
-	created_votes                 map[int]struct{}
-	removedcreated_votes          map[int]struct{}
-	clearedcreated_votes          bool
-	apps                          map[string]struct{}
-	removedapps                   map[string]struct{}
-	clearedapps                   bool
-	consents                      map[int]struct{}
-	removedconsents               map[int]struct{}
-	clearedconsents               bool
-	team_memberships              map[int]struct{}
-	removedteam_memberships       map[int]struct{}
-	clearedteam_memberships       bool
-	received_invitations          map[int]struct{}
-	removedreceived_invitations   map[int]struct{}
-	clearedreceived_invitations   bool
-	created_teams                 map[int]struct{}
-	removedcreated_teams          map[int]struct{}
-	clearedcreated_teams          bool
-	created_tournaments           map[int]struct{}
-	removedcreated_tournaments    map[int]struct{}
-	clearedcreated_tournaments    bool
-	tournament_admin_roles        map[int]struct{}
-	removedtournament_admin_roles map[int]struct{}
-	clearedtournament_admin_roles bool
-	done                          bool
-	oldValue                      func(context.Context) (*User, error)
-	predicates                    []predicate.User
+	op                          Op
+	typ                         string
+	id                          *int
+	username                    *string
+	email                       *string
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	picture                     *string
+	kind                        *user.Kind
+	roles                       *[]string
+	appendroles                 []string
+	clearedFields               map[string]struct{}
+	user_votes                  map[int]struct{}
+	removeduser_votes           map[int]struct{}
+	cleareduser_votes           bool
+	created_votes               map[int]struct{}
+	removedcreated_votes        map[int]struct{}
+	clearedcreated_votes        bool
+	apps                        map[string]struct{}
+	removedapps                 map[string]struct{}
+	clearedapps                 bool
+	consents                    map[int]struct{}
+	removedconsents             map[int]struct{}
+	clearedconsents             bool
+	team_memberships            map[int]struct{}
+	removedteam_memberships     map[int]struct{}
+	clearedteam_memberships     bool
+	received_invitations        map[int]struct{}
+	removedreceived_invitations map[int]struct{}
+	clearedreceived_invitations bool
+	created_teams               map[int]struct{}
+	removedcreated_teams        map[int]struct{}
+	clearedcreated_teams        bool
+	created_tournaments         map[int]struct{}
+	removedcreated_tournaments  map[int]struct{}
+	clearedcreated_tournaments  bool
+	tournament_admins           map[int]struct{}
+	removedtournament_admins    map[int]struct{}
+	clearedtournament_admins    bool
+	done                        bool
+	oldValue                    func(context.Context) (*User, error)
+	predicates                  []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -9956,58 +10043,58 @@ func (m *UserMutation) ResetCreatedTournaments() {
 	m.removedcreated_tournaments = nil
 }
 
-// AddTournamentAdminRoleIDs adds the "tournament_admin_roles" edge to the TournamentAdmin entity by ids.
-func (m *UserMutation) AddTournamentAdminRoleIDs(ids ...int) {
-	if m.tournament_admin_roles == nil {
-		m.tournament_admin_roles = make(map[int]struct{})
+// AddTournamentAdminIDs adds the "tournament_admins" edge to the TournamentAdmin entity by ids.
+func (m *UserMutation) AddTournamentAdminIDs(ids ...int) {
+	if m.tournament_admins == nil {
+		m.tournament_admins = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.tournament_admin_roles[ids[i]] = struct{}{}
+		m.tournament_admins[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTournamentAdminRoles clears the "tournament_admin_roles" edge to the TournamentAdmin entity.
-func (m *UserMutation) ClearTournamentAdminRoles() {
-	m.clearedtournament_admin_roles = true
+// ClearTournamentAdmins clears the "tournament_admins" edge to the TournamentAdmin entity.
+func (m *UserMutation) ClearTournamentAdmins() {
+	m.clearedtournament_admins = true
 }
 
-// TournamentAdminRolesCleared reports if the "tournament_admin_roles" edge to the TournamentAdmin entity was cleared.
-func (m *UserMutation) TournamentAdminRolesCleared() bool {
-	return m.clearedtournament_admin_roles
+// TournamentAdminsCleared reports if the "tournament_admins" edge to the TournamentAdmin entity was cleared.
+func (m *UserMutation) TournamentAdminsCleared() bool {
+	return m.clearedtournament_admins
 }
 
-// RemoveTournamentAdminRoleIDs removes the "tournament_admin_roles" edge to the TournamentAdmin entity by IDs.
-func (m *UserMutation) RemoveTournamentAdminRoleIDs(ids ...int) {
-	if m.removedtournament_admin_roles == nil {
-		m.removedtournament_admin_roles = make(map[int]struct{})
+// RemoveTournamentAdminIDs removes the "tournament_admins" edge to the TournamentAdmin entity by IDs.
+func (m *UserMutation) RemoveTournamentAdminIDs(ids ...int) {
+	if m.removedtournament_admins == nil {
+		m.removedtournament_admins = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.tournament_admin_roles, ids[i])
-		m.removedtournament_admin_roles[ids[i]] = struct{}{}
+		delete(m.tournament_admins, ids[i])
+		m.removedtournament_admins[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTournamentAdminRoles returns the removed IDs of the "tournament_admin_roles" edge to the TournamentAdmin entity.
-func (m *UserMutation) RemovedTournamentAdminRolesIDs() (ids []int) {
-	for id := range m.removedtournament_admin_roles {
+// RemovedTournamentAdmins returns the removed IDs of the "tournament_admins" edge to the TournamentAdmin entity.
+func (m *UserMutation) RemovedTournamentAdminsIDs() (ids []int) {
+	for id := range m.removedtournament_admins {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TournamentAdminRolesIDs returns the "tournament_admin_roles" edge IDs in the mutation.
-func (m *UserMutation) TournamentAdminRolesIDs() (ids []int) {
-	for id := range m.tournament_admin_roles {
+// TournamentAdminsIDs returns the "tournament_admins" edge IDs in the mutation.
+func (m *UserMutation) TournamentAdminsIDs() (ids []int) {
+	for id := range m.tournament_admins {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTournamentAdminRoles resets all changes to the "tournament_admin_roles" edge.
-func (m *UserMutation) ResetTournamentAdminRoles() {
-	m.tournament_admin_roles = nil
-	m.clearedtournament_admin_roles = false
-	m.removedtournament_admin_roles = nil
+// ResetTournamentAdmins resets all changes to the "tournament_admins" edge.
+func (m *UserMutation) ResetTournamentAdmins() {
+	m.tournament_admins = nil
+	m.clearedtournament_admins = false
+	m.removedtournament_admins = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -10279,8 +10366,8 @@ func (m *UserMutation) AddedEdges() []string {
 	if m.created_tournaments != nil {
 		edges = append(edges, user.EdgeCreatedTournaments)
 	}
-	if m.tournament_admin_roles != nil {
-		edges = append(edges, user.EdgeTournamentAdminRoles)
+	if m.tournament_admins != nil {
+		edges = append(edges, user.EdgeTournamentAdmins)
 	}
 	return edges
 }
@@ -10337,9 +10424,9 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeTournamentAdminRoles:
-		ids := make([]ent.Value, 0, len(m.tournament_admin_roles))
-		for id := range m.tournament_admin_roles {
+	case user.EdgeTournamentAdmins:
+		ids := make([]ent.Value, 0, len(m.tournament_admins))
+		for id := range m.tournament_admins {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10374,8 +10461,8 @@ func (m *UserMutation) RemovedEdges() []string {
 	if m.removedcreated_tournaments != nil {
 		edges = append(edges, user.EdgeCreatedTournaments)
 	}
-	if m.removedtournament_admin_roles != nil {
-		edges = append(edges, user.EdgeTournamentAdminRoles)
+	if m.removedtournament_admins != nil {
+		edges = append(edges, user.EdgeTournamentAdmins)
 	}
 	return edges
 }
@@ -10432,9 +10519,9 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeTournamentAdminRoles:
-		ids := make([]ent.Value, 0, len(m.removedtournament_admin_roles))
-		for id := range m.removedtournament_admin_roles {
+	case user.EdgeTournamentAdmins:
+		ids := make([]ent.Value, 0, len(m.removedtournament_admins))
+		for id := range m.removedtournament_admins {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10469,8 +10556,8 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedcreated_tournaments {
 		edges = append(edges, user.EdgeCreatedTournaments)
 	}
-	if m.clearedtournament_admin_roles {
-		edges = append(edges, user.EdgeTournamentAdminRoles)
+	if m.clearedtournament_admins {
+		edges = append(edges, user.EdgeTournamentAdmins)
 	}
 	return edges
 }
@@ -10495,8 +10582,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedcreated_teams
 	case user.EdgeCreatedTournaments:
 		return m.clearedcreated_tournaments
-	case user.EdgeTournamentAdminRoles:
-		return m.clearedtournament_admin_roles
+	case user.EdgeTournamentAdmins:
+		return m.clearedtournament_admins
 	}
 	return false
 }
@@ -10537,8 +10624,8 @@ func (m *UserMutation) ResetEdge(name string) error {
 	case user.EdgeCreatedTournaments:
 		m.ResetCreatedTournaments()
 		return nil
-	case user.EdgeTournamentAdminRoles:
-		m.ResetTournamentAdminRoles()
+	case user.EdgeTournamentAdmins:
+		m.ResetTournamentAdmins()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

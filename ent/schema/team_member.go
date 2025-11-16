@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -18,13 +19,13 @@ func (TeamMember) Fields() []ent.Field {
 
 func (TeamMember) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).
-			Ref("team_memberships").
+		edge.To("user", User.Type).
 			Unique().
-			Required(),
-		edge.From("team", Team.Type).
-			Ref("members").
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("team", Team.Type).
 			Unique().
-			Required(),
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }

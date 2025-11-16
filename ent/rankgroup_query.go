@@ -78,7 +78,7 @@ func (_q *RankGroupQuery) QueryTournament() *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rankgroup.Table, rankgroup.FieldID, selector),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, rankgroup.TournamentTable, rankgroup.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, rankgroup.TournamentTable, rankgroup.TournamentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -458,10 +458,10 @@ func (_q *RankGroupQuery) loadTournament(ctx context.Context, query *TournamentQ
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*RankGroup)
 	for i := range nodes {
-		if nodes[i].tournament_rank_groups == nil {
+		if nodes[i].rank_group_tournament == nil {
 			continue
 		}
-		fk := *nodes[i].tournament_rank_groups
+		fk := *nodes[i].rank_group_tournament
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -478,7 +478,7 @@ func (_q *RankGroupQuery) loadTournament(ctx context.Context, query *TournamentQ
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "tournament_rank_groups" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "rank_group_tournament" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

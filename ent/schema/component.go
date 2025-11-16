@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -21,7 +22,11 @@ func (Component) Fields() []ent.Field {
 
 func (Component) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("vote", Vote.Type).Ref("components").Unique().Required(),
-		edge.To("user_votes", UserVote.Type),
+		edge.To("vote", Vote.Type).
+			Unique().
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.From("user_votes", UserVote.Type).
+			Ref("component"),
 	}
 }

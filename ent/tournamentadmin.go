@@ -23,8 +23,8 @@ type TournamentAdmin struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TournamentAdminQuery when eager-loading is set.
 	Edges                       TournamentAdminEdges `json:"edges"`
-	tournament_admins           *int
-	user_tournament_admin_roles *int
+	tournament_admin_user       *int
+	tournament_admin_tournament *int
 	selectValues                sql.SelectValues
 }
 
@@ -70,9 +70,9 @@ func (*TournamentAdmin) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case tournamentadmin.FieldRole:
 			values[i] = new(sql.NullString)
-		case tournamentadmin.ForeignKeys[0]: // tournament_admins
+		case tournamentadmin.ForeignKeys[0]: // tournament_admin_user
 			values[i] = new(sql.NullInt64)
-		case tournamentadmin.ForeignKeys[1]: // user_tournament_admin_roles
+		case tournamentadmin.ForeignKeys[1]: // tournament_admin_tournament
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -103,17 +103,17 @@ func (_m *TournamentAdmin) assignValues(columns []string, values []any) error {
 			}
 		case tournamentadmin.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field tournament_admins", value)
+				return fmt.Errorf("unexpected type %T for edge-field tournament_admin_user", value)
 			} else if value.Valid {
-				_m.tournament_admins = new(int)
-				*_m.tournament_admins = int(value.Int64)
+				_m.tournament_admin_user = new(int)
+				*_m.tournament_admin_user = int(value.Int64)
 			}
 		case tournamentadmin.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_tournament_admin_roles", value)
+				return fmt.Errorf("unexpected type %T for edge-field tournament_admin_tournament", value)
 			} else if value.Valid {
-				_m.user_tournament_admin_roles = new(int)
-				*_m.user_tournament_admin_roles = int(value.Int64)
+				_m.tournament_admin_tournament = new(int)
+				*_m.tournament_admin_tournament = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

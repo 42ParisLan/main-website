@@ -212,7 +212,7 @@ func (_c *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.ApplicationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   consent.ApplicationTable,
 			Columns: []string{consent.ApplicationColumn},
 			Bidi:    false,
@@ -229,7 +229,7 @@ func (_c *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   consent.UserTable,
 			Columns: []string{consent.UserColumn},
 			Bidi:    false,

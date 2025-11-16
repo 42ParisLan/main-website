@@ -56,8 +56,8 @@ type UserEdges struct {
 	CreatedTeams []*Team `json:"created_teams,omitempty"`
 	// CreatedTournaments holds the value of the created_tournaments edge.
 	CreatedTournaments []*Tournament `json:"created_tournaments,omitempty"`
-	// TournamentAdminRoles holds the value of the tournament_admin_roles edge.
-	TournamentAdminRoles []*TournamentAdmin `json:"tournament_admin_roles,omitempty"`
+	// TournamentAdmins holds the value of the tournament_admins edge.
+	TournamentAdmins []*TournamentAdmin `json:"tournament_admins,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [9]bool
@@ -135,13 +135,13 @@ func (e UserEdges) CreatedTournamentsOrErr() ([]*Tournament, error) {
 	return nil, &NotLoadedError{edge: "created_tournaments"}
 }
 
-// TournamentAdminRolesOrErr returns the TournamentAdminRoles value or an error if the edge
+// TournamentAdminsOrErr returns the TournamentAdmins value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) TournamentAdminRolesOrErr() ([]*TournamentAdmin, error) {
+func (e UserEdges) TournamentAdminsOrErr() ([]*TournamentAdmin, error) {
 	if e.loadedTypes[8] {
-		return e.TournamentAdminRoles, nil
+		return e.TournamentAdmins, nil
 	}
-	return nil, &NotLoadedError{edge: "tournament_admin_roles"}
+	return nil, &NotLoadedError{edge: "tournament_admins"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -276,9 +276,9 @@ func (_m *User) QueryCreatedTournaments() *TournamentQuery {
 	return NewUserClient(_m.config).QueryCreatedTournaments(_m)
 }
 
-// QueryTournamentAdminRoles queries the "tournament_admin_roles" edge of the User entity.
-func (_m *User) QueryTournamentAdminRoles() *TournamentAdminQuery {
-	return NewUserClient(_m.config).QueryTournamentAdminRoles(_m)
+// QueryTournamentAdmins queries the "tournament_admins" edge of the User entity.
+func (_m *User) QueryTournamentAdmins() *TournamentAdminQuery {
+	return NewUserClient(_m.config).QueryTournamentAdmins(_m)
 }
 
 // Update returns a builder for updating this User.

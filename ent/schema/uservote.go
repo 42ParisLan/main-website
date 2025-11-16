@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -20,10 +21,14 @@ func (UserVote) Fields() []ent.Field {
 
 func (UserVote) Edges() []ent.Edge {
 	return []ent.Edge{
-		// Each vote belongs to exactly one user
-		edge.From("user", User.Type).Ref("user_votes").Unique().Required(),
+		edge.To("user", User.Type).
+			Unique().
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 
-		// Each vote targets exactly one component
-		edge.From("component", Component.Type).Ref("user_votes").Unique().Required(),
+		edge.To("component", Component.Type).
+			Unique().
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }

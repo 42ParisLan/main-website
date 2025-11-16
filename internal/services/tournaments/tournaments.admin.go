@@ -127,6 +127,25 @@ func (svc *tournamentsService) CreateTournament(
 	return lightmodels.NewTournamentFromEnt(reloaded), nil
 }
 
+func (svc *tournamentsService) DeleteTournament(
+	ctx context.Context,
+	tournamentID int,
+) error {
+	myRole, err := svc.GetTournamentUserRole(ctx, tournamentID)
+	if err != nil {
+		return err
+	}
+	if myRole == nil || *myRole != tournamentadmin.RoleCREATOR {
+		return huma.Error401Unauthorized("don't have required role")
+	}
+
+	if err := svc.databaseService.Tournament.DeleteOneID(tournamentID).Exec(ctx); err != nil {
+		return svc.errorFilter.Filter(err, "delete")
+	}
+
+	return nil
+}
+
 func (svc *tournamentsService) AddAdminToTournament(
 	ctx context.Context,
 	tournamentID int,

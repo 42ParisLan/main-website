@@ -77,7 +77,7 @@ func (_q *TournamentAdminQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournamentadmin.Table, tournamentadmin.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, tournamentadmin.UserTable, tournamentadmin.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, tournamentadmin.UserTable, tournamentadmin.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -99,7 +99,7 @@ func (_q *TournamentAdminQuery) QueryTournament() *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournamentadmin.Table, tournamentadmin.FieldID, selector),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, tournamentadmin.TournamentTable, tournamentadmin.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, tournamentadmin.TournamentTable, tournamentadmin.TournamentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -456,10 +456,10 @@ func (_q *TournamentAdminQuery) loadUser(ctx context.Context, query *UserQuery, 
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TournamentAdmin)
 	for i := range nodes {
-		if nodes[i].user_tournament_admin_roles == nil {
+		if nodes[i].tournament_admin_user == nil {
 			continue
 		}
-		fk := *nodes[i].user_tournament_admin_roles
+		fk := *nodes[i].tournament_admin_user
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -476,7 +476,7 @@ func (_q *TournamentAdminQuery) loadUser(ctx context.Context, query *UserQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_tournament_admin_roles" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "tournament_admin_user" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -488,10 +488,10 @@ func (_q *TournamentAdminQuery) loadTournament(ctx context.Context, query *Tourn
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TournamentAdmin)
 	for i := range nodes {
-		if nodes[i].tournament_admins == nil {
+		if nodes[i].tournament_admin_tournament == nil {
 			continue
 		}
-		fk := *nodes[i].tournament_admins
+		fk := *nodes[i].tournament_admin_tournament
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -508,7 +508,7 @@ func (_q *TournamentAdminQuery) loadTournament(ctx context.Context, query *Tourn
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "tournament_admins" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "tournament_admin_tournament" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

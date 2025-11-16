@@ -40,14 +40,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "component" package.
 	ComponentsInverseTable = "components"
 	// ComponentsColumn is the table column denoting the components relation/edge.
-	ComponentsColumn = "vote_components"
+	ComponentsColumn = "component_vote"
 	// CreatorTable is the table that holds the creator relation/edge.
 	CreatorTable = "votes"
 	// CreatorInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	CreatorInverseTable = "users"
 	// CreatorColumn is the table column denoting the creator relation/edge.
-	CreatorColumn = "user_created_votes"
+	CreatorColumn = "vote_creator"
 )
 
 // Columns holds all SQL columns for vote fields.
@@ -65,7 +65,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "votes"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_created_votes",
+	"vote_creator",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -161,13 +161,13 @@ func newComponentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ComponentsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ComponentsTable, ComponentsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, ComponentsTable, ComponentsColumn),
 	)
 }
 func newCreatorStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
 	)
 }

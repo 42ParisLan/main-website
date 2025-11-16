@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -28,13 +29,13 @@ func (Invitation) Fields() []ent.Field {
 
 func (Invitation) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("team", Team.Type).
-			Ref("invitations").
+		edge.To("team", Team.Type).
 			Unique().
-			Required(),
-		edge.From("invitee", User.Type).
-			Ref("received_invitations").
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("invitee", User.Type).
 			Unique().
-			Required(),
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }

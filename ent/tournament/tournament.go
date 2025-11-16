@@ -59,28 +59,28 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	CreatorInverseTable = "users"
 	// CreatorColumn is the table column denoting the creator relation/edge.
-	CreatorColumn = "user_created_tournaments"
+	CreatorColumn = "tournament_creator"
 	// AdminsTable is the table that holds the admins relation/edge.
 	AdminsTable = "tournament_admins"
 	// AdminsInverseTable is the table name for the TournamentAdmin entity.
 	// It exists in this package in order to avoid circular dependency with the "tournamentadmin" package.
 	AdminsInverseTable = "tournament_admins"
 	// AdminsColumn is the table column denoting the admins relation/edge.
-	AdminsColumn = "tournament_admins"
+	AdminsColumn = "tournament_admin_tournament"
 	// TeamsTable is the table that holds the teams relation/edge.
 	TeamsTable = "teams"
 	// TeamsInverseTable is the table name for the Team entity.
 	// It exists in this package in order to avoid circular dependency with the "team" package.
 	TeamsInverseTable = "teams"
 	// TeamsColumn is the table column denoting the teams relation/edge.
-	TeamsColumn = "tournament_teams"
+	TeamsColumn = "team_tournament"
 	// RankGroupsTable is the table that holds the rank_groups relation/edge.
 	RankGroupsTable = "rank_groups"
 	// RankGroupsInverseTable is the table name for the RankGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "rankgroup" package.
 	RankGroupsInverseTable = "rank_groups"
 	// RankGroupsColumn is the table column denoting the rank_groups relation/edge.
-	RankGroupsColumn = "tournament_rank_groups"
+	RankGroupsColumn = "rank_group_tournament"
 )
 
 // Columns holds all SQL columns for tournament fields.
@@ -105,7 +105,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "tournaments"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_created_tournaments",
+	"tournament_creator",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -286,27 +286,27 @@ func newCreatorStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
 	)
 }
 func newAdminsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AdminsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AdminsTable, AdminsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, AdminsTable, AdminsColumn),
 	)
 }
 func newTeamsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TeamsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TeamsTable, TeamsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
 	)
 }
 func newRankGroupsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RankGroupsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, RankGroupsTable, RankGroupsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, RankGroupsTable, RankGroupsColumn),
 	)
 }

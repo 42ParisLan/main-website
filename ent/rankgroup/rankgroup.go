@@ -18,6 +18,8 @@ const (
 	FieldRankMin = "rank_min"
 	// FieldRankMax holds the string denoting the rank_max field in the database.
 	FieldRankMax = "rank_max"
+	// FieldPosition holds the string denoting the position field in the database.
+	FieldPosition = "position"
 	// EdgeTournament holds the string denoting the tournament edge name in mutations.
 	EdgeTournament = "tournament"
 	// EdgeTeams holds the string denoting the teams edge name in mutations.
@@ -30,7 +32,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "tournament" package.
 	TournamentInverseTable = "tournaments"
 	// TournamentColumn is the table column denoting the tournament relation/edge.
-	TournamentColumn = "tournament_rank_groups"
+	TournamentColumn = "rank_group_tournament"
 	// TeamsTable is the table that holds the teams relation/edge.
 	TeamsTable = "teams"
 	// TeamsInverseTable is the table name for the Team entity.
@@ -46,12 +48,13 @@ var Columns = []string{
 	FieldName,
 	FieldRankMin,
 	FieldRankMax,
+	FieldPosition,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "rank_groups"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"tournament_rank_groups",
+	"rank_group_tournament",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -92,6 +95,11 @@ func ByRankMax(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRankMax, opts...).ToFunc()
 }
 
+// ByPosition orders the results by the position field.
+func ByPosition(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPosition, opts...).ToFunc()
+}
+
 // ByTournamentField orders the results by tournament field.
 func ByTournamentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -116,7 +124,7 @@ func newTournamentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TournamentInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
 	)
 }
 func newTeamsStep() *sqlgraph.Step {

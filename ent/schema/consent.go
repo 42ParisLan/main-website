@@ -30,17 +30,15 @@ func (Consent) Fields() []ent.Field {
 // Edges of the Consent.
 func (Consent) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("application", App.Type).
-			Ref("consents").
+		edge.To("application", App.Type).
 			Field("application_id").
 			Unique().
 			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)),
-		edge.From("user", User.Type).
-			Ref("consents").
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("user", User.Type).
 			Field("user_id").
 			Unique().
 			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)),
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }

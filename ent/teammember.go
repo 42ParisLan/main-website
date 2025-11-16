@@ -22,10 +22,10 @@ type TeamMember struct {
 	Role string `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TeamMemberQuery when eager-loading is set.
-	Edges                 TeamMemberEdges `json:"edges"`
-	team_members          *int
-	user_team_memberships *int
-	selectValues          sql.SelectValues
+	Edges            TeamMemberEdges `json:"edges"`
+	team_member_user *int
+	team_member_team *int
+	selectValues     sql.SelectValues
 }
 
 // TeamMemberEdges holds the relations/edges for other nodes in the graph.
@@ -70,9 +70,9 @@ func (*TeamMember) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case teammember.FieldRole:
 			values[i] = new(sql.NullString)
-		case teammember.ForeignKeys[0]: // team_members
+		case teammember.ForeignKeys[0]: // team_member_user
 			values[i] = new(sql.NullInt64)
-		case teammember.ForeignKeys[1]: // user_team_memberships
+		case teammember.ForeignKeys[1]: // team_member_team
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -103,17 +103,17 @@ func (_m *TeamMember) assignValues(columns []string, values []any) error {
 			}
 		case teammember.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field team_members", value)
+				return fmt.Errorf("unexpected type %T for edge-field team_member_user", value)
 			} else if value.Valid {
-				_m.team_members = new(int)
-				*_m.team_members = int(value.Int64)
+				_m.team_member_user = new(int)
+				*_m.team_member_user = int(value.Int64)
 			}
 		case teammember.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_team_memberships", value)
+				return fmt.Errorf("unexpected type %T for edge-field team_member_team", value)
 			} else if value.Valid {
-				_m.user_team_memberships = new(int)
-				*_m.user_team_memberships = int(value.Int64)
+				_m.team_member_team = new(int)
+				*_m.team_member_team = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

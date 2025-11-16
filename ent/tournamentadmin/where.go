@@ -79,7 +79,7 @@ func HasUser() predicate.TournamentAdmin {
 	return predicate.TournamentAdmin(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -102,7 +102,7 @@ func HasTournament() predicate.TournamentAdmin {
 	return predicate.TournamentAdmin(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

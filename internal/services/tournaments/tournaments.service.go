@@ -24,6 +24,7 @@ type TournamentsService interface {
 	GetTournamentBySlug(ctx context.Context, slug string) (*lightmodels.Tournament, error)
 	// Admins
 	CreateTournament(ctx context.Context, input tournamentsmodels.CreateTournament) (*lightmodels.Tournament, error)
+	DeleteTournament(ctx context.Context, tournamentID int) error
 	AddAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
 	EditAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
 	DeleteAdminToTournament(ctx context.Context, tournamentID int, userID int) (*lightmodels.Tournament, error)

@@ -290,7 +290,7 @@ func HasApplication() predicate.Consent {
 	return predicate.Consent(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApplicationTable, ApplicationColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, ApplicationTable, ApplicationColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -313,7 +313,7 @@ func HasUser() predicate.Consent {
 	return predicate.Consent(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

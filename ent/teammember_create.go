@@ -125,7 +125,7 @@ func (_c *TeamMemberCreate) createSpec() (*TeamMember, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   teammember.UserTable,
 			Columns: []string{teammember.UserColumn},
 			Bidi:    false,
@@ -136,13 +136,13 @@ func (_c *TeamMemberCreate) createSpec() (*TeamMember, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_team_memberships = &nodes[0]
+		_node.team_member_user = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   teammember.TeamTable,
 			Columns: []string{teammember.TeamColumn},
 			Bidi:    false,
@@ -153,7 +153,7 @@ func (_c *TeamMemberCreate) createSpec() (*TeamMember, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.team_members = &nodes[0]
+		_node.team_member_team = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

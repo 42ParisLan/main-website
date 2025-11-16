@@ -405,7 +405,7 @@ func HasComponents() predicate.Vote {
 	return predicate.Vote(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ComponentsTable, ComponentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, ComponentsTable, ComponentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -428,7 +428,7 @@ func HasCreator() predicate.Vote {
 	return predicate.Vote(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

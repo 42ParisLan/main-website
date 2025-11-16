@@ -59,6 +59,16 @@ func (ctrl *tournamentController) Register(api huma.API) {
 	}, ctrl.createTournament)
 
 	huma.Register(api, huma.Operation{
+		Method:      "DELETE",
+		Path:        "/tournaments/{id}",
+		Summary:     "Delete Tournament",
+		Description: `This endpoint is used to delete a tournament.`,
+		Tags:        []string{"Tournament"},
+		OperationID: "deleteTournament",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.deleteTournament)
+
+	huma.Register(api, huma.Operation{
 		Method:      "POST",
 		Path:        "/tournaments/{id}/admin",
 		Summary:     "Add admin to tournament",
@@ -97,16 +107,6 @@ func (ctrl *tournamentController) Register(api huma.API) {
 	// 	OperationID: "updateTournament",
 	// 	Security:    security.WithAuth("profile"),
 	// }, ctrl.updateTournament)
-
-	// huma.Register(api, huma.Operation{
-	// 	Method:      "DELETE",
-	// 	Path:        "/tournaments/{id}",
-	// 	Summary:     "Delete Tournament",
-	// 	Description: `This endpoint is used to delete a tournament.`,
-	// 	Tags:        []string{"Tournament"},
-	// 	OperationID: "deleteTournament",
-	// 	Security:    security.WithAuth("profile"),
-	// }, ctrl.deleteTournament)
 }
 
 func (ctrl *tournamentController) getAllTournaments(
@@ -124,7 +124,7 @@ func (ctrl *tournamentController) getAllTournaments(
 
 func (ctrl *tournamentController) getTournamentByID(
 	ctx context.Context,
-	input *TournamentIDInput,
+	input *TournamentIDOrSlugInput,
 ) (*oneTournamentOutput, error) {
 	idOrSlug := input.TournamentIDOrSlug
 
@@ -154,6 +154,20 @@ func (ctrl *tournamentController) createTournament(
 
 	return &oneTournamentOutput{
 		Body: tournament,
+	}, nil
+}
+
+func (ctrl *tournamentController) deleteTournament(
+	ctx context.Context,
+	input *TournamentIDInput,
+) (*BodyMessage, error) {
+	err := ctrl.tournamentsService.DeleteTournament(ctx, input.TournamentID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &BodyMessage{
+		Body: "Success",
 	}, nil
 }
 
@@ -201,19 +215,5 @@ func (ctrl *tournamentController) deleteTournamentAdmin(
 
 // 	return &oneTournamentOutput{
 // 		Body: tournament,
-// 	}, nil
-// }
-
-// func (ctrl *tournamentController) deleteTournament(
-// 	ctx context.Context,
-// 	input *TournamentIDInput,
-// ) (*BodyMessage, error) {
-// 	err := ctrl.tournamentsService.DeleteTournament(ctx, input.TournamentID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &BodyMessage{
-// 		Body: "Success",
 // 	}, nil
 // }

@@ -30,14 +30,23 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("user_votes", UserVote.Type),
-		edge.To("created_votes", Vote.Type),
-		edge.To("apps", App.Type),
-		edge.To("consents", Consent.Type),
-		edge.To("team_memberships", TeamMember.Type),
-		edge.To("received_invitations", Invitation.Type),
-		edge.To("created_teams", Team.Type),
-		edge.To("created_tournaments", Tournament.Type),
-		edge.To("tournament_admin_roles", TournamentAdmin.Type),
+		edge.From("user_votes", UserVote.Type).
+			Ref("user"),
+		edge.From("created_votes", Vote.Type).
+			Ref("creator"),
+		edge.From("apps", App.Type).
+			Ref("owner"),
+		edge.From("consents", Consent.Type).
+			Ref("user"),
+		edge.From("team_memberships", TeamMember.Type).
+			Ref("user"),
+		edge.From("received_invitations", Invitation.Type).
+			Ref("invitee"),
+		edge.From("created_teams", Team.Type).
+			Ref("creator"),
+		edge.From("created_tournaments", Tournament.Type).
+			Ref("creator"),
+		edge.From("tournament_admins", TournamentAdmin.Type).
+			Ref("user"),
 	}
 }

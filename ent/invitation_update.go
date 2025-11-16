@@ -213,7 +213,7 @@ func (_u *InvitationUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.TeamTable,
 			Columns: []string{invitation.TeamColumn},
 			Bidi:    false,
@@ -226,7 +226,7 @@ func (_u *InvitationUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if nodes := _u.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.TeamTable,
 			Columns: []string{invitation.TeamColumn},
 			Bidi:    false,
@@ -242,7 +242,7 @@ func (_u *InvitationUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.InviteeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.InviteeTable,
 			Columns: []string{invitation.InviteeColumn},
 			Bidi:    false,
@@ -255,7 +255,7 @@ func (_u *InvitationUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if nodes := _u.mutation.InviteeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.InviteeTable,
 			Columns: []string{invitation.InviteeColumn},
 			Bidi:    false,
@@ -501,7 +501,7 @@ func (_u *InvitationUpdateOne) sqlSave(ctx context.Context) (_node *Invitation, 
 	if _u.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.TeamTable,
 			Columns: []string{invitation.TeamColumn},
 			Bidi:    false,
@@ -514,7 +514,7 @@ func (_u *InvitationUpdateOne) sqlSave(ctx context.Context) (_node *Invitation, 
 	if nodes := _u.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.TeamTable,
 			Columns: []string{invitation.TeamColumn},
 			Bidi:    false,
@@ -530,7 +530,7 @@ func (_u *InvitationUpdateOne) sqlSave(ctx context.Context) (_node *Invitation, 
 	if _u.mutation.InviteeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.InviteeTable,
 			Columns: []string{invitation.InviteeColumn},
 			Bidi:    false,
@@ -543,7 +543,7 @@ func (_u *InvitationUpdateOne) sqlSave(ctx context.Context) (_node *Invitation, 
 	if nodes := _u.mutation.InviteeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   invitation.InviteeTable,
 			Columns: []string{invitation.InviteeColumn},
 			Bidi:    false,

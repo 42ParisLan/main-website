@@ -34,11 +34,11 @@ func (App) Fields() []ent.Field {
 // Edges of the App.
 func (App) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("owner", User.Type).
-			Ref("apps").
+		edge.To("owner", User.Type).
 			Field("owner_id").
-			Annotations(entsql.OnDelete(entsql.Cascade)).
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
 			Unique().Required(),
-		edge.To("consents", Consent.Type),
+		edge.From("consents", Consent.Type).
+			Ref("application"),
 	}
 }

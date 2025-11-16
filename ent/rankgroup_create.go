@@ -39,6 +39,12 @@ func (_c *RankGroupCreate) SetRankMax(v int) *RankGroupCreate {
 	return _c
 }
 
+// SetPosition sets the "position" field.
+func (_c *RankGroupCreate) SetPosition(v int) *RankGroupCreate {
+	_c.mutation.SetPosition(v)
+	return _c
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
 func (_c *RankGroupCreate) SetTournamentID(id int) *RankGroupCreate {
 	_c.mutation.SetTournamentID(id)
@@ -108,6 +114,9 @@ func (_c *RankGroupCreate) check() error {
 	if _, ok := _c.mutation.RankMax(); !ok {
 		return &ValidationError{Name: "rank_max", err: errors.New(`ent: missing required field "RankGroup.rank_max"`)}
 	}
+	if _, ok := _c.mutation.Position(); !ok {
+		return &ValidationError{Name: "position", err: errors.New(`ent: missing required field "RankGroup.position"`)}
+	}
 	if len(_c.mutation.TournamentIDs()) == 0 {
 		return &ValidationError{Name: "tournament", err: errors.New(`ent: missing required edge "RankGroup.tournament"`)}
 	}
@@ -149,10 +158,14 @@ func (_c *RankGroupCreate) createSpec() (*RankGroup, *sqlgraph.CreateSpec) {
 		_spec.SetField(rankgroup.FieldRankMax, field.TypeInt, value)
 		_node.RankMax = value
 	}
+	if value, ok := _c.mutation.Position(); ok {
+		_spec.SetField(rankgroup.FieldPosition, field.TypeInt, value)
+		_node.Position = value
+	}
 	if nodes := _c.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -163,7 +176,7 @@ func (_c *RankGroupCreate) createSpec() (*RankGroup, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.tournament_rank_groups = &nodes[0]
+		_node.rank_group_tournament = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.TeamsIDs(); len(nodes) > 0 {

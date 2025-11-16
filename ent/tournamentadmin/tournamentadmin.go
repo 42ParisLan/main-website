@@ -28,14 +28,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
-	UserColumn = "user_tournament_admin_roles"
+	UserColumn = "tournament_admin_user"
 	// TournamentTable is the table that holds the tournament relation/edge.
 	TournamentTable = "tournament_admins"
 	// TournamentInverseTable is the table name for the Tournament entity.
 	// It exists in this package in order to avoid circular dependency with the "tournament" package.
 	TournamentInverseTable = "tournaments"
 	// TournamentColumn is the table column denoting the tournament relation/edge.
-	TournamentColumn = "tournament_admins"
+	TournamentColumn = "tournament_admin_tournament"
 )
 
 // Columns holds all SQL columns for tournamentadmin fields.
@@ -47,8 +47,8 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "tournament_admins"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"tournament_admins",
-	"user_tournament_admin_roles",
+	"tournament_admin_user",
+	"tournament_admin_tournament",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -123,13 +123,13 @@ func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 	)
 }
 func newTournamentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TournamentInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
 	)
 }

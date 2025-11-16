@@ -192,7 +192,7 @@ func (_c *ComponentCreate) createSpec() (*Component, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.VoteIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.VoteTable,
 			Columns: []string{component.VoteColumn},
 			Bidi:    false,
@@ -203,13 +203,13 @@ func (_c *ComponentCreate) createSpec() (*Component, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.vote_components = &nodes[0]
+		_node.component_vote = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Inverse: true,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,

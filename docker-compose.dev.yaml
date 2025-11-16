@@ -57,6 +57,16 @@ services:
       - INTRA_CLIENT_ID=${INTRA_CLIENT_ID}
       - INTRA_CLIENT_SECRET=${INTRA_CLIENT_SECRET}
 
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - base-website
+    depends_on:
+      - db
+
   frontend:
     build:
       context: ./frontend

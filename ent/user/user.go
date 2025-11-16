@@ -45,8 +45,8 @@ const (
 	EdgeCreatedTeams = "created_teams"
 	// EdgeCreatedTournaments holds the string denoting the created_tournaments edge name in mutations.
 	EdgeCreatedTournaments = "created_tournaments"
-	// EdgeTournamentAdminRoles holds the string denoting the tournament_admin_roles edge name in mutations.
-	EdgeTournamentAdminRoles = "tournament_admin_roles"
+	// EdgeTournamentAdmins holds the string denoting the tournament_admins edge name in mutations.
+	EdgeTournamentAdmins = "tournament_admins"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserVotesTable is the table that holds the user_votes relation/edge.
@@ -55,14 +55,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "uservote" package.
 	UserVotesInverseTable = "user_votes"
 	// UserVotesColumn is the table column denoting the user_votes relation/edge.
-	UserVotesColumn = "user_user_votes"
+	UserVotesColumn = "user_vote_user"
 	// CreatedVotesTable is the table that holds the created_votes relation/edge.
 	CreatedVotesTable = "votes"
 	// CreatedVotesInverseTable is the table name for the Vote entity.
 	// It exists in this package in order to avoid circular dependency with the "vote" package.
 	CreatedVotesInverseTable = "votes"
 	// CreatedVotesColumn is the table column denoting the created_votes relation/edge.
-	CreatedVotesColumn = "user_created_votes"
+	CreatedVotesColumn = "vote_creator"
 	// AppsTable is the table that holds the apps relation/edge.
 	AppsTable = "apps"
 	// AppsInverseTable is the table name for the App entity.
@@ -83,35 +83,35 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "teammember" package.
 	TeamMembershipsInverseTable = "team_members"
 	// TeamMembershipsColumn is the table column denoting the team_memberships relation/edge.
-	TeamMembershipsColumn = "user_team_memberships"
+	TeamMembershipsColumn = "team_member_user"
 	// ReceivedInvitationsTable is the table that holds the received_invitations relation/edge.
 	ReceivedInvitationsTable = "invitations"
 	// ReceivedInvitationsInverseTable is the table name for the Invitation entity.
 	// It exists in this package in order to avoid circular dependency with the "invitation" package.
 	ReceivedInvitationsInverseTable = "invitations"
 	// ReceivedInvitationsColumn is the table column denoting the received_invitations relation/edge.
-	ReceivedInvitationsColumn = "user_received_invitations"
+	ReceivedInvitationsColumn = "invitation_invitee"
 	// CreatedTeamsTable is the table that holds the created_teams relation/edge.
 	CreatedTeamsTable = "teams"
 	// CreatedTeamsInverseTable is the table name for the Team entity.
 	// It exists in this package in order to avoid circular dependency with the "team" package.
 	CreatedTeamsInverseTable = "teams"
 	// CreatedTeamsColumn is the table column denoting the created_teams relation/edge.
-	CreatedTeamsColumn = "user_created_teams"
+	CreatedTeamsColumn = "team_creator"
 	// CreatedTournamentsTable is the table that holds the created_tournaments relation/edge.
 	CreatedTournamentsTable = "tournaments"
 	// CreatedTournamentsInverseTable is the table name for the Tournament entity.
 	// It exists in this package in order to avoid circular dependency with the "tournament" package.
 	CreatedTournamentsInverseTable = "tournaments"
 	// CreatedTournamentsColumn is the table column denoting the created_tournaments relation/edge.
-	CreatedTournamentsColumn = "user_created_tournaments"
-	// TournamentAdminRolesTable is the table that holds the tournament_admin_roles relation/edge.
-	TournamentAdminRolesTable = "tournament_admins"
-	// TournamentAdminRolesInverseTable is the table name for the TournamentAdmin entity.
+	CreatedTournamentsColumn = "tournament_creator"
+	// TournamentAdminsTable is the table that holds the tournament_admins relation/edge.
+	TournamentAdminsTable = "tournament_admins"
+	// TournamentAdminsInverseTable is the table name for the TournamentAdmin entity.
 	// It exists in this package in order to avoid circular dependency with the "tournamentadmin" package.
-	TournamentAdminRolesInverseTable = "tournament_admins"
-	// TournamentAdminRolesColumn is the table column denoting the tournament_admin_roles relation/edge.
-	TournamentAdminRolesColumn = "user_tournament_admin_roles"
+	TournamentAdminsInverseTable = "tournament_admins"
+	// TournamentAdminsColumn is the table column denoting the tournament_admins relation/edge.
+	TournamentAdminsColumn = "tournament_admin_user"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -323,79 +323,79 @@ func ByCreatedTournaments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOptio
 	}
 }
 
-// ByTournamentAdminRolesCount orders the results by tournament_admin_roles count.
-func ByTournamentAdminRolesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByTournamentAdminsCount orders the results by tournament_admins count.
+func ByTournamentAdminsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTournamentAdminRolesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newTournamentAdminsStep(), opts...)
 	}
 }
 
-// ByTournamentAdminRoles orders the results by tournament_admin_roles terms.
-func ByTournamentAdminRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByTournamentAdmins orders the results by tournament_admins terms.
+func ByTournamentAdmins(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTournamentAdminRolesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newTournamentAdminsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newUserVotesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserVotesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, UserVotesTable, UserVotesColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, UserVotesTable, UserVotesColumn),
 	)
 }
 func newCreatedVotesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatedVotesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CreatedVotesTable, CreatedVotesColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, CreatedVotesTable, CreatedVotesColumn),
 	)
 }
 func newAppsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AppsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AppsTable, AppsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, AppsTable, AppsColumn),
 	)
 }
 func newConsentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ConsentsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, ConsentsTable, ConsentsColumn),
 	)
 }
 func newTeamMembershipsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TeamMembershipsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TeamMembershipsTable, TeamMembershipsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, TeamMembershipsTable, TeamMembershipsColumn),
 	)
 }
 func newReceivedInvitationsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ReceivedInvitationsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ReceivedInvitationsTable, ReceivedInvitationsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, ReceivedInvitationsTable, ReceivedInvitationsColumn),
 	)
 }
 func newCreatedTeamsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatedTeamsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CreatedTeamsTable, CreatedTeamsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, CreatedTeamsTable, CreatedTeamsColumn),
 	)
 }
 func newCreatedTournamentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatedTournamentsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CreatedTournamentsTable, CreatedTournamentsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, CreatedTournamentsTable, CreatedTournamentsColumn),
 	)
 }
-func newTournamentAdminRolesStep() *sqlgraph.Step {
+func newTournamentAdminsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TournamentAdminRolesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TournamentAdminRolesTable, TournamentAdminRolesColumn),
+		sqlgraph.To(TournamentAdminsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, TournamentAdminsTable, TournamentAdminsColumn),
 	)
 }

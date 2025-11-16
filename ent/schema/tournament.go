@@ -35,12 +35,14 @@ func (Tournament) Fields() []ent.Field {
 
 func (Tournament) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("creator", User.Type).
-			Ref("created_tournaments").
+		edge.To("creator", User.Type).
 			Unique().
 			Required(),
-		edge.To("admins", TournamentAdmin.Type),
-		edge.To("teams", Team.Type),
-		edge.To("rank_groups", RankGroup.Type),
+		edge.From("admins", TournamentAdmin.Type).
+			Ref("tournament"),
+		edge.From("teams", Team.Type).
+			Ref("tournament"),
+		edge.From("rank_groups", RankGroup.Type).
+			Ref("tournament"),
 	}
 }

@@ -77,7 +77,7 @@ func (_q *InvitationQuery) QueryTeam() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(invitation.Table, invitation.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, invitation.TeamTable, invitation.TeamColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, invitation.TeamTable, invitation.TeamColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -99,7 +99,7 @@ func (_q *InvitationQuery) QueryInvitee() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(invitation.Table, invitation.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, invitation.InviteeTable, invitation.InviteeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, invitation.InviteeTable, invitation.InviteeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -456,10 +456,10 @@ func (_q *InvitationQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Invitation)
 	for i := range nodes {
-		if nodes[i].team_invitations == nil {
+		if nodes[i].invitation_team == nil {
 			continue
 		}
-		fk := *nodes[i].team_invitations
+		fk := *nodes[i].invitation_team
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -476,7 +476,7 @@ func (_q *InvitationQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_invitations" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "invitation_team" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -488,10 +488,10 @@ func (_q *InvitationQuery) loadInvitee(ctx context.Context, query *UserQuery, no
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Invitation)
 	for i := range nodes {
-		if nodes[i].user_received_invitations == nil {
+		if nodes[i].invitation_invitee == nil {
 			continue
 		}
-		fk := *nodes[i].user_received_invitations
+		fk := *nodes[i].invitation_invitee
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -508,7 +508,7 @@ func (_q *InvitationQuery) loadInvitee(ctx context.Context, query *UserQuery, no
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_received_invitations" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "invitation_invitee" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

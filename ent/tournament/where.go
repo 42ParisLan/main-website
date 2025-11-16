@@ -745,7 +745,7 @@ func HasCreator() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -768,7 +768,7 @@ func HasAdmins() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AdminsTable, AdminsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, AdminsTable, AdminsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -791,7 +791,7 @@ func HasTeams() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TeamsTable, TeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -814,7 +814,7 @@ func HasRankGroups() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RankGroupsTable, RankGroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, RankGroupsTable, RankGroupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

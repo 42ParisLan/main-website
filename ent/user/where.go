@@ -390,7 +390,7 @@ func HasUserVotes() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, UserVotesTable, UserVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, UserVotesTable, UserVotesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -413,7 +413,7 @@ func HasCreatedVotes() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CreatedVotesTable, CreatedVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, CreatedVotesTable, CreatedVotesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -436,7 +436,7 @@ func HasApps() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AppsTable, AppsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, AppsTable, AppsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -459,7 +459,7 @@ func HasConsents() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, ConsentsTable, ConsentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -482,7 +482,7 @@ func HasTeamMemberships() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TeamMembershipsTable, TeamMembershipsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, TeamMembershipsTable, TeamMembershipsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -505,7 +505,7 @@ func HasReceivedInvitations() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ReceivedInvitationsTable, ReceivedInvitationsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, ReceivedInvitationsTable, ReceivedInvitationsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -528,7 +528,7 @@ func HasCreatedTeams() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CreatedTeamsTable, CreatedTeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, CreatedTeamsTable, CreatedTeamsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -551,7 +551,7 @@ func HasCreatedTournaments() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CreatedTournamentsTable, CreatedTournamentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, CreatedTournamentsTable, CreatedTournamentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -569,21 +569,21 @@ func HasCreatedTournamentsWith(preds ...predicate.Tournament) predicate.User {
 	})
 }
 
-// HasTournamentAdminRoles applies the HasEdge predicate on the "tournament_admin_roles" edge.
-func HasTournamentAdminRoles() predicate.User {
+// HasTournamentAdmins applies the HasEdge predicate on the "tournament_admins" edge.
+func HasTournamentAdmins() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TournamentAdminRolesTable, TournamentAdminRolesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, TournamentAdminsTable, TournamentAdminsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTournamentAdminRolesWith applies the HasEdge predicate on the "tournament_admin_roles" edge with a given conditions (other predicates).
-func HasTournamentAdminRolesWith(preds ...predicate.TournamentAdmin) predicate.User {
+// HasTournamentAdminsWith applies the HasEdge predicate on the "tournament_admins" edge with a given conditions (other predicates).
+func HasTournamentAdminsWith(preds ...predicate.TournamentAdmin) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newTournamentAdminRolesStep()
+		step := newTournamentAdminsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
