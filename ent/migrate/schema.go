@@ -102,7 +102,7 @@ var (
 				Symbol:     "components_votes_vote",
 				Columns:    []*schema.Column{ComponentsColumns[5]},
 				RefColumns: []*schema.Column{VotesColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -156,13 +156,13 @@ var (
 				Symbol:     "invitations_teams_team",
 				Columns:    []*schema.Column{InvitationsColumns[5]},
 				RefColumns: []*schema.Column{TeamsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "invitations_users_invitee",
 				Columns:    []*schema.Column{InvitationsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -330,6 +330,8 @@ var (
 		{Name: "email", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "anonymized_at", Type: field.TypeTime, Nullable: true},
+		{Name: "intra_id", Type: field.TypeInt, Unique: true, Nullable: true},
 		{Name: "picture", Type: field.TypeString, Nullable: true},
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"user", "admin"}, Default: "user"},
 		{Name: "roles", Type: field.TypeJSON},

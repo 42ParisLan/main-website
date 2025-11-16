@@ -106,7 +106,7 @@ func init() {
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescRoles is the schema descriptor for roles field.
-	userDescRoles := userFields[7].Descriptor()
+	userDescRoles := userFields[9].Descriptor()
 	// user.DefaultRoles holds the default value on creation for the roles field.
 	user.DefaultRoles = userDescRoles.Default.([]string)
 	uservoteFields := schema.UserVote{}.Fields()

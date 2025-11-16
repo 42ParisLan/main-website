@@ -19,6 +19,8 @@ roles:
               methods: [GET]
             - path: /me
               methods: [GET]
+            - path: /me/anonymize
+              methods: [POST]
             - path: /votes
               methods: [GET]
             - path: /votes/*
@@ -37,13 +39,15 @@ roles:
         description: 'User who can create and manage voting sessions'
         inherits: [user]
         permissions:
-            - path: /votes/{id}/live
+            - path: /votes/*/live
               methods: [GET]
-            - path: /tournaments/{id}/admin
+            - path: /tournaments/*
               methods: [POST]
-            - path: /tournaments/{id}/admin/{admin_id}
+            - path: /tournaments/*/admin
+              methods: [POST]
+            - path: /tournaments/*/admin/*
               methods: [PATCH]
-            - path: /tournaments/{id}/admin/{admin_id}
+            - path: /tournaments/*/admin/*
               methods: [DELETE]
 
     vote_admin:

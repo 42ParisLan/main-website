@@ -2,9 +2,12 @@ package userscontroller
 
 import (
 	"context"
+	"net/http"
 	"strconv"
+	"time"
 
 	"base-website/internal/security"
+	configservice "base-website/internal/services/config"
 	usersservice "base-website/internal/services/users"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -13,11 +16,13 @@ import (
 
 type userController struct {
 	usersService usersservice.UserService
+	config       configservice.Config
 }
 
 func Init(api huma.API, injector *do.Injector) {
 	authController := &userController{
 		usersService: do.MustInvoke[usersservice.UserService](injector),
+		config:       do.MustInvoke[configservice.ConfigService](injector).GetConfig(),
 	}
 	authController.Register(api)
 }
@@ -62,6 +67,16 @@ func (ctrl *userController) Register(api huma.API) {
 		OperationID: "changeUserRoles",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.changeUserRoles)
+
+	huma.Register(api, huma.Operation{
+		Method:      "POST",
+		Path:        "/me/anonymize",
+		Summary:     "Anonymize current user",
+		Description: `This endpoint is used to anonymize the current user (remove personal data).`,
+		Tags:        []string{"Users"},
+		OperationID: "anonymizeCurrentUser",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.anonymizeUser)
 }
 
 func (ctrl *userController) getUserByID(
@@ -129,4 +144,31 @@ func (ctrl *userController) changeUserRoles(
 	return &oneUserOutput{
 		Body: user,
 	}, nil
+}
+
+func (ctrl *userController) anonymizeUser(
+	ctx context.Context,
+	input *struct{},
+) (*anonymizeOutput, error) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := ctrl.usersService.AnonymizeUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	resp := &anonymizeOutput{
+		Body: user,
+	}
+	resp.AuthCookie = http.Cookie{
+		Name:     "auth",
+		Value:    "",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   ctrl.config.CookieSecure,
+		Expires:  time.Now().Add(-time.Hour),
+	}
+	return resp, nil
 }

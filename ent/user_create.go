@@ -69,6 +69,34 @@ func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
 	return _c
 }
 
+// SetAnonymizedAt sets the "anonymized_at" field.
+func (_c *UserCreate) SetAnonymizedAt(v time.Time) *UserCreate {
+	_c.mutation.SetAnonymizedAt(v)
+	return _c
+}
+
+// SetNillableAnonymizedAt sets the "anonymized_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableAnonymizedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetAnonymizedAt(*v)
+	}
+	return _c
+}
+
+// SetIntraID sets the "intra_id" field.
+func (_c *UserCreate) SetIntraID(v int) *UserCreate {
+	_c.mutation.SetIntraID(v)
+	return _c
+}
+
+// SetNillableIntraID sets the "intra_id" field if the given value is not nil.
+func (_c *UserCreate) SetNillableIntraID(v *int) *UserCreate {
+	if v != nil {
+		_c.SetIntraID(*v)
+	}
+	return _c
+}
+
 // SetPicture sets the "picture" field.
 func (_c *UserCreate) SetPicture(v string) *UserCreate {
 	_c.mutation.SetPicture(v)
@@ -369,6 +397,14 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := _c.mutation.AnonymizedAt(); ok {
+		_spec.SetField(user.FieldAnonymizedAt, field.TypeTime, value)
+		_node.AnonymizedAt = &value
+	}
+	if value, ok := _c.mutation.IntraID(); ok {
+		_spec.SetField(user.FieldIntraID, field.TypeInt, value)
+		_node.IntraID = &value
 	}
 	if value, ok := _c.mutation.Picture(); ok {
 		_spec.SetField(user.FieldPicture, field.TypeString, value)

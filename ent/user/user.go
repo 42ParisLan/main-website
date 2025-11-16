@@ -23,6 +23,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldAnonymizedAt holds the string denoting the anonymized_at field in the database.
+	FieldAnonymizedAt = "anonymized_at"
+	// FieldIntraID holds the string denoting the intra_id field in the database.
+	FieldIntraID = "intra_id"
 	// FieldPicture holds the string denoting the picture field in the database.
 	FieldPicture = "picture"
 	// FieldKind holds the string denoting the kind field in the database.
@@ -121,6 +125,8 @@ var Columns = []string{
 	FieldEmail,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldAnonymizedAt,
+	FieldIntraID,
 	FieldPicture,
 	FieldKind,
 	FieldRoles,
@@ -199,6 +205,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByAnonymizedAt orders the results by the anonymized_at field.
+func ByAnonymizedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAnonymizedAt, opts...).ToFunc()
+}
+
+// ByIntraID orders the results by the intra_id field.
+func ByIntraID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIntraID, opts...).ToFunc()
 }
 
 // ByPicture orders the results by the picture field.

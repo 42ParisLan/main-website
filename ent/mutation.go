@@ -9190,6 +9190,9 @@ type UserMutation struct {
 	email                       *string
 	created_at                  *time.Time
 	updated_at                  *time.Time
+	anonymized_at               *time.Time
+	intra_id                    *int
+	addintra_id                 *int
 	picture                     *string
 	kind                        *user.Kind
 	roles                       *[]string
@@ -9473,6 +9476,125 @@ func (m *UserMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *UserMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetAnonymizedAt sets the "anonymized_at" field.
+func (m *UserMutation) SetAnonymizedAt(t time.Time) {
+	m.anonymized_at = &t
+}
+
+// AnonymizedAt returns the value of the "anonymized_at" field in the mutation.
+func (m *UserMutation) AnonymizedAt() (r time.Time, exists bool) {
+	v := m.anonymized_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnonymizedAt returns the old "anonymized_at" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldAnonymizedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnonymizedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnonymizedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnonymizedAt: %w", err)
+	}
+	return oldValue.AnonymizedAt, nil
+}
+
+// ClearAnonymizedAt clears the value of the "anonymized_at" field.
+func (m *UserMutation) ClearAnonymizedAt() {
+	m.anonymized_at = nil
+	m.clearedFields[user.FieldAnonymizedAt] = struct{}{}
+}
+
+// AnonymizedAtCleared returns if the "anonymized_at" field was cleared in this mutation.
+func (m *UserMutation) AnonymizedAtCleared() bool {
+	_, ok := m.clearedFields[user.FieldAnonymizedAt]
+	return ok
+}
+
+// ResetAnonymizedAt resets all changes to the "anonymized_at" field.
+func (m *UserMutation) ResetAnonymizedAt() {
+	m.anonymized_at = nil
+	delete(m.clearedFields, user.FieldAnonymizedAt)
+}
+
+// SetIntraID sets the "intra_id" field.
+func (m *UserMutation) SetIntraID(i int) {
+	m.intra_id = &i
+	m.addintra_id = nil
+}
+
+// IntraID returns the value of the "intra_id" field in the mutation.
+func (m *UserMutation) IntraID() (r int, exists bool) {
+	v := m.intra_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntraID returns the old "intra_id" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIntraID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntraID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntraID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntraID: %w", err)
+	}
+	return oldValue.IntraID, nil
+}
+
+// AddIntraID adds i to the "intra_id" field.
+func (m *UserMutation) AddIntraID(i int) {
+	if m.addintra_id != nil {
+		*m.addintra_id += i
+	} else {
+		m.addintra_id = &i
+	}
+}
+
+// AddedIntraID returns the value that was added to the "intra_id" field in this mutation.
+func (m *UserMutation) AddedIntraID() (r int, exists bool) {
+	v := m.addintra_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearIntraID clears the value of the "intra_id" field.
+func (m *UserMutation) ClearIntraID() {
+	m.intra_id = nil
+	m.addintra_id = nil
+	m.clearedFields[user.FieldIntraID] = struct{}{}
+}
+
+// IntraIDCleared returns if the "intra_id" field was cleared in this mutation.
+func (m *UserMutation) IntraIDCleared() bool {
+	_, ok := m.clearedFields[user.FieldIntraID]
+	return ok
+}
+
+// ResetIntraID resets all changes to the "intra_id" field.
+func (m *UserMutation) ResetIntraID() {
+	m.intra_id = nil
+	m.addintra_id = nil
+	delete(m.clearedFields, user.FieldIntraID)
 }
 
 // SetPicture sets the "picture" field.
@@ -10131,7 +10253,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 9)
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
 	}
@@ -10143,6 +10265,12 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.updated_at != nil {
 		fields = append(fields, user.FieldUpdatedAt)
+	}
+	if m.anonymized_at != nil {
+		fields = append(fields, user.FieldAnonymizedAt)
+	}
+	if m.intra_id != nil {
+		fields = append(fields, user.FieldIntraID)
 	}
 	if m.picture != nil {
 		fields = append(fields, user.FieldPicture)
@@ -10169,6 +10297,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case user.FieldAnonymizedAt:
+		return m.AnonymizedAt()
+	case user.FieldIntraID:
+		return m.IntraID()
 	case user.FieldPicture:
 		return m.Picture()
 	case user.FieldKind:
@@ -10192,6 +10324,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case user.FieldAnonymizedAt:
+		return m.OldAnonymizedAt(ctx)
+	case user.FieldIntraID:
+		return m.OldIntraID(ctx)
 	case user.FieldPicture:
 		return m.OldPicture(ctx)
 	case user.FieldKind:
@@ -10235,6 +10371,20 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case user.FieldAnonymizedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnonymizedAt(v)
+		return nil
+	case user.FieldIntraID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntraID(v)
+		return nil
 	case user.FieldPicture:
 		v, ok := value.(string)
 		if !ok {
@@ -10263,13 +10413,21 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addintra_id != nil {
+		fields = append(fields, user.FieldIntraID)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldIntraID:
+		return m.AddedIntraID()
+	}
 	return nil, false
 }
 
@@ -10278,6 +10436,13 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case user.FieldIntraID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddIntraID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -10286,6 +10451,12 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(user.FieldAnonymizedAt) {
+		fields = append(fields, user.FieldAnonymizedAt)
+	}
+	if m.FieldCleared(user.FieldIntraID) {
+		fields = append(fields, user.FieldIntraID)
+	}
 	if m.FieldCleared(user.FieldPicture) {
 		fields = append(fields, user.FieldPicture)
 	}
@@ -10303,6 +10474,12 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
+	case user.FieldAnonymizedAt:
+		m.ClearAnonymizedAt()
+		return nil
+	case user.FieldIntraID:
+		m.ClearIntraID()
+		return nil
 	case user.FieldPicture:
 		m.ClearPicture()
 		return nil
@@ -10325,6 +10502,12 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case user.FieldAnonymizedAt:
+		m.ResetAnonymizedAt()
+		return nil
+	case user.FieldIntraID:
+		m.ResetIntraID()
 		return nil
 	case user.FieldPicture:
 		m.ResetPicture()

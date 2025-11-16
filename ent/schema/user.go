@@ -21,6 +21,8 @@ func (User) Fields() []ent.Field {
 		field.String("email"),
 		field.Time("created_at").Immutable().Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("anonymized_at").Optional().Nillable(),
+		field.Int("intra_id").Optional().Nillable().Unique(),
 		field.String("picture").Optional().Nillable(),
 		field.Enum("kind").Values("user", "admin").Default("user"),
 		field.Strings("roles").Default([]string{"user"}),

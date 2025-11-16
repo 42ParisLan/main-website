@@ -26,6 +26,10 @@ type User struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// AnonymizedAt holds the value of the "anonymized_at" field.
+	AnonymizedAt *time.Time `json:"anonymized_at,omitempty"`
+	// IntraID holds the value of the "intra_id" field.
+	IntraID *int `json:"intra_id,omitempty"`
 	// Picture holds the value of the "picture" field.
 	Picture *string `json:"picture,omitempty"`
 	// Kind holds the value of the "kind" field.
@@ -151,11 +155,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldRoles:
 			values[i] = new([]byte)
-		case user.FieldID:
+		case user.FieldID, user.FieldIntraID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldUsername, user.FieldEmail, user.FieldPicture, user.FieldKind:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldAnonymizedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -201,6 +205,20 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
+			}
+		case user.FieldAnonymizedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field anonymized_at", values[i])
+			} else if value.Valid {
+				_m.AnonymizedAt = new(time.Time)
+				*_m.AnonymizedAt = value.Time
+			}
+		case user.FieldIntraID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field intra_id", values[i])
+			} else if value.Valid {
+				_m.IntraID = new(int)
+				*_m.IntraID = int(value.Int64)
 			}
 		case user.FieldPicture:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -315,6 +333,16 @@ func (_m *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := _m.AnonymizedAt; v != nil {
+		builder.WriteString("anonymized_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.IntraID; v != nil {
+		builder.WriteString("intra_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := _m.Picture; v != nil {
 		builder.WriteString("picture=")

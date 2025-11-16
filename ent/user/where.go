@@ -75,6 +75,16 @@ func UpdatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// AnonymizedAt applies equality check predicate on the "anonymized_at" field. It's identical to AnonymizedAtEQ.
+func AnonymizedAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldAnonymizedAt, v))
+}
+
+// IntraID applies equality check predicate on the "intra_id" field. It's identical to IntraIDEQ.
+func IntraID(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIntraID, v))
+}
+
 // Picture applies equality check predicate on the "picture" field. It's identical to PictureEQ.
 func Picture(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPicture, v))
@@ -288,6 +298,106 @@ func UpdatedAtLT(v time.Time) predicate.User {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// AnonymizedAtEQ applies the EQ predicate on the "anonymized_at" field.
+func AnonymizedAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldAnonymizedAt, v))
+}
+
+// AnonymizedAtNEQ applies the NEQ predicate on the "anonymized_at" field.
+func AnonymizedAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldAnonymizedAt, v))
+}
+
+// AnonymizedAtIn applies the In predicate on the "anonymized_at" field.
+func AnonymizedAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldAnonymizedAt, vs...))
+}
+
+// AnonymizedAtNotIn applies the NotIn predicate on the "anonymized_at" field.
+func AnonymizedAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldAnonymizedAt, vs...))
+}
+
+// AnonymizedAtGT applies the GT predicate on the "anonymized_at" field.
+func AnonymizedAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldAnonymizedAt, v))
+}
+
+// AnonymizedAtGTE applies the GTE predicate on the "anonymized_at" field.
+func AnonymizedAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldAnonymizedAt, v))
+}
+
+// AnonymizedAtLT applies the LT predicate on the "anonymized_at" field.
+func AnonymizedAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldAnonymizedAt, v))
+}
+
+// AnonymizedAtLTE applies the LTE predicate on the "anonymized_at" field.
+func AnonymizedAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldAnonymizedAt, v))
+}
+
+// AnonymizedAtIsNil applies the IsNil predicate on the "anonymized_at" field.
+func AnonymizedAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldAnonymizedAt))
+}
+
+// AnonymizedAtNotNil applies the NotNil predicate on the "anonymized_at" field.
+func AnonymizedAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldAnonymizedAt))
+}
+
+// IntraIDEQ applies the EQ predicate on the "intra_id" field.
+func IntraIDEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIntraID, v))
+}
+
+// IntraIDNEQ applies the NEQ predicate on the "intra_id" field.
+func IntraIDNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIntraID, v))
+}
+
+// IntraIDIn applies the In predicate on the "intra_id" field.
+func IntraIDIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldIntraID, vs...))
+}
+
+// IntraIDNotIn applies the NotIn predicate on the "intra_id" field.
+func IntraIDNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldIntraID, vs...))
+}
+
+// IntraIDGT applies the GT predicate on the "intra_id" field.
+func IntraIDGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldIntraID, v))
+}
+
+// IntraIDGTE applies the GTE predicate on the "intra_id" field.
+func IntraIDGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldIntraID, v))
+}
+
+// IntraIDLT applies the LT predicate on the "intra_id" field.
+func IntraIDLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldIntraID, v))
+}
+
+// IntraIDLTE applies the LTE predicate on the "intra_id" field.
+func IntraIDLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldIntraID, v))
+}
+
+// IntraIDIsNil applies the IsNil predicate on the "intra_id" field.
+func IntraIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldIntraID))
+}
+
+// IntraIDNotNil applies the NotNil predicate on the "intra_id" field.
+func IntraIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldIntraID))
 }
 
 // PictureEQ applies the EQ predicate on the "picture" field.

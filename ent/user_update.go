@@ -72,6 +72,53 @@ func (_u *UserUpdate) SetUpdatedAt(v time.Time) *UserUpdate {
 	return _u
 }
 
+// SetAnonymizedAt sets the "anonymized_at" field.
+func (_u *UserUpdate) SetAnonymizedAt(v time.Time) *UserUpdate {
+	_u.mutation.SetAnonymizedAt(v)
+	return _u
+}
+
+// SetNillableAnonymizedAt sets the "anonymized_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableAnonymizedAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetAnonymizedAt(*v)
+	}
+	return _u
+}
+
+// ClearAnonymizedAt clears the value of the "anonymized_at" field.
+func (_u *UserUpdate) ClearAnonymizedAt() *UserUpdate {
+	_u.mutation.ClearAnonymizedAt()
+	return _u
+}
+
+// SetIntraID sets the "intra_id" field.
+func (_u *UserUpdate) SetIntraID(v int) *UserUpdate {
+	_u.mutation.ResetIntraID()
+	_u.mutation.SetIntraID(v)
+	return _u
+}
+
+// SetNillableIntraID sets the "intra_id" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableIntraID(v *int) *UserUpdate {
+	if v != nil {
+		_u.SetIntraID(*v)
+	}
+	return _u
+}
+
+// AddIntraID adds value to the "intra_id" field.
+func (_u *UserUpdate) AddIntraID(v int) *UserUpdate {
+	_u.mutation.AddIntraID(v)
+	return _u
+}
+
+// ClearIntraID clears the value of the "intra_id" field.
+func (_u *UserUpdate) ClearIntraID() *UserUpdate {
+	_u.mutation.ClearIntraID()
+	return _u
+}
+
 // SetPicture sets the "picture" field.
 func (_u *UserUpdate) SetPicture(v string) *UserUpdate {
 	_u.mutation.SetPicture(v)
@@ -513,6 +560,21 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.AnonymizedAt(); ok {
+		_spec.SetField(user.FieldAnonymizedAt, field.TypeTime, value)
+	}
+	if _u.mutation.AnonymizedAtCleared() {
+		_spec.ClearField(user.FieldAnonymizedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.IntraID(); ok {
+		_spec.SetField(user.FieldIntraID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedIntraID(); ok {
+		_spec.AddField(user.FieldIntraID, field.TypeInt, value)
+	}
+	if _u.mutation.IntraIDCleared() {
+		_spec.ClearField(user.FieldIntraID, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Picture(); ok {
 		_spec.SetField(user.FieldPicture, field.TypeString, value)
@@ -990,6 +1052,53 @@ func (_u *UserUpdateOne) SetUpdatedAt(v time.Time) *UserUpdateOne {
 	return _u
 }
 
+// SetAnonymizedAt sets the "anonymized_at" field.
+func (_u *UserUpdateOne) SetAnonymizedAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetAnonymizedAt(v)
+	return _u
+}
+
+// SetNillableAnonymizedAt sets the "anonymized_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableAnonymizedAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetAnonymizedAt(*v)
+	}
+	return _u
+}
+
+// ClearAnonymizedAt clears the value of the "anonymized_at" field.
+func (_u *UserUpdateOne) ClearAnonymizedAt() *UserUpdateOne {
+	_u.mutation.ClearAnonymizedAt()
+	return _u
+}
+
+// SetIntraID sets the "intra_id" field.
+func (_u *UserUpdateOne) SetIntraID(v int) *UserUpdateOne {
+	_u.mutation.ResetIntraID()
+	_u.mutation.SetIntraID(v)
+	return _u
+}
+
+// SetNillableIntraID sets the "intra_id" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableIntraID(v *int) *UserUpdateOne {
+	if v != nil {
+		_u.SetIntraID(*v)
+	}
+	return _u
+}
+
+// AddIntraID adds value to the "intra_id" field.
+func (_u *UserUpdateOne) AddIntraID(v int) *UserUpdateOne {
+	_u.mutation.AddIntraID(v)
+	return _u
+}
+
+// ClearIntraID clears the value of the "intra_id" field.
+func (_u *UserUpdateOne) ClearIntraID() *UserUpdateOne {
+	_u.mutation.ClearIntraID()
+	return _u
+}
+
 // SetPicture sets the "picture" field.
 func (_u *UserUpdateOne) SetPicture(v string) *UserUpdateOne {
 	_u.mutation.SetPicture(v)
@@ -1461,6 +1570,21 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.AnonymizedAt(); ok {
+		_spec.SetField(user.FieldAnonymizedAt, field.TypeTime, value)
+	}
+	if _u.mutation.AnonymizedAtCleared() {
+		_spec.ClearField(user.FieldAnonymizedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.IntraID(); ok {
+		_spec.SetField(user.FieldIntraID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedIntraID(); ok {
+		_spec.AddField(user.FieldIntraID, field.TypeInt, value)
+	}
+	if _u.mutation.IntraIDCleared() {
+		_spec.ClearField(user.FieldIntraID, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Picture(); ok {
 		_spec.SetField(user.FieldPicture, field.TypeString, value)

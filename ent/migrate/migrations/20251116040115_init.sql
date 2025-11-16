@@ -37,11 +37,15 @@ CREATE TABLE "users" (
   "email" character varying NOT NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
+  "anonymized_at" timestamptz NULL,
+  "intra_id" bigint NULL,
   "picture" character varying NULL,
   "kind" character varying NOT NULL DEFAULT 'user',
   "roles" jsonb NOT NULL,
   PRIMARY KEY ("id")
 );
+-- Create index "users_intra_id_key" to table: "users"
+CREATE UNIQUE INDEX "users_intra_id_key" ON "users" ("intra_id");
 -- Create index "users_username_key" to table: "users"
 CREATE UNIQUE INDEX "users_username_key" ON "users" ("username");
 -- Create "apps" table
@@ -83,7 +87,7 @@ CREATE TABLE "components" (
   "color" character varying NULL,
   "component_vote" bigint NOT NULL,
   PRIMARY KEY ("id"),
-  CONSTRAINT "components_votes_vote" FOREIGN KEY ("component_vote") REFERENCES "votes" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT "components_votes_vote" FOREIGN KEY ("component_vote") REFERENCES "votes" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
 );
 -- Create "consents" table
 CREATE TABLE "consents" (
@@ -162,8 +166,8 @@ CREATE TABLE "invitations" (
   "invitation_team" bigint NOT NULL,
   "invitation_invitee" bigint NOT NULL,
   PRIMARY KEY ("id"),
-  CONSTRAINT "invitations_teams_team" FOREIGN KEY ("invitation_team") REFERENCES "teams" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT "invitations_users_invitee" FOREIGN KEY ("invitation_invitee") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT "invitations_teams_team" FOREIGN KEY ("invitation_team") REFERENCES "teams" ("id") ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT "invitations_users_invitee" FOREIGN KEY ("invitation_invitee") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
 );
 -- Create "team_members" table
 CREATE TABLE "team_members" (

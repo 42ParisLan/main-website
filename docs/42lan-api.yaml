@@ -1893,6 +1893,33 @@ paths:
       summary: Get current user
       tags:
         - Users
+  /me/anonymize:
+    post:
+      description: This endpoint is used to anonymize the current user (remove personal data).
+      operationId: anonymizeCurrentUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: OK
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Anonymize current user
+      tags:
+        - Users
   /me/apps:
     get:
       description: This endpoint is used to get all apps for the current user. **Users only.**
