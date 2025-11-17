@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"base-website/ent"
+	"base-website/ent/tournament"
 )
 
 type TeamStructure struct {
@@ -18,6 +19,7 @@ type LightTournament struct {
 	Name                string                   `json:"name" example:"Spring Cup 2025" description:"The name of the tournament"`
 	Description         string                   `json:"description,omitempty" example:"School-wide League of Legends tournament" description:"Description of the tournament"`
 	IsVisible           bool                     `json:"is_visible" description:"Whether the tournament is visible to users"`
+	State               tournament.State         `json:"state" enum:"DRAFT,REGISTRATION_OPEN,REGISTRATION_CLOSED,ONGOING,FINISHED"`
 	RegistrationStart   time.Time                `json:"registration_start" example:"2025-03-01T00:00:00Z" description:"When registration starts"`
 	RegistrationEnd     time.Time                `json:"registration_end" example:"2025-03-10T23:59:59Z" description:"When registration ends"`
 	TournamentStart     time.Time                `json:"tournament_start" example:"2025-03-15T00:00:00Z" description:"Start date of tournament"`
@@ -48,6 +50,7 @@ func NewLightTournamentFromEnt(entTournament *ent.Tournament) *LightTournament {
 		Name:                entTournament.Name,
 		Description:         entTournament.Description,
 		IsVisible:           entTournament.IsVisible,
+		State:               entTournament.State,
 		RegistrationStart:   entTournament.RegistrationStart,
 		RegistrationEnd:     entTournament.RegistrationEnd,
 		TournamentStart:     entTournament.TournamentStart,
@@ -75,6 +78,7 @@ type Tournament struct {
 	Name                string                   `json:"name" example:"Spring Cup 2025"`
 	Description         string                   `json:"description"`
 	IsVisible           bool                     `json:"is_visible"`
+	State               tournament.State         `json:"state" enum:"DRAFT,REGISTRATION_OPEN,REGISTRATION_CLOSED,ONGOING,FINISHED"`
 	RegistrationStart   time.Time                `json:"registration_start"`
 	RegistrationEnd     time.Time                `json:"registration_end"`
 	TournamentStart     time.Time                `json:"tournament_start"`
@@ -127,6 +131,7 @@ func NewTournamentFromEnt(entTournament *ent.Tournament) *Tournament {
 		Name:                entTournament.Name,
 		Description:         entTournament.Description,
 		IsVisible:           entTournament.IsVisible,
+		State:               entTournament.State,
 		RegistrationStart:   entTournament.RegistrationStart,
 		RegistrationEnd:     entTournament.RegistrationEnd,
 		TournamentStart:     entTournament.TournamentStart,

@@ -1113,6 +1113,8 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
+            /** @enum {string} */
+            state: "DRAFT" | "REGISTRATION_OPEN" | "REGISTRATION_CLOSED" | "ONGOING" | "FINISHED";
             team_structure: {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
@@ -1427,6 +1429,8 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
+            /** @enum {string} */
+            state: "DRAFT" | "REGISTRATION_OPEN" | "REGISTRATION_CLOSED" | "ONGOING" | "FINISHED";
             team_structure: {
                 [key: string]: components["schemas"]["TeamStructure"];
             };

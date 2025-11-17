@@ -521,6 +521,14 @@ components:
         slug:
           example: spring-cup-2025
           type: string
+        state:
+          enum:
+            - DRAFT
+            - REGISTRATION_OPEN
+            - REGISTRATION_CLOSED
+            - ONGOING
+            - FINISHED
+          type: string
         team_structure:
           additionalProperties:
             $ref: "#/components/schemas/TeamStructure"
@@ -538,6 +546,7 @@ components:
         - slug
         - name
         - is_visible
+        - state
         - registration_start
         - registration_end
         - tournament_start
@@ -974,6 +983,14 @@ components:
         slug:
           example: spring-cup-2025
           type: string
+        state:
+          enum:
+            - DRAFT
+            - REGISTRATION_OPEN
+            - REGISTRATION_CLOSED
+            - ONGOING
+            - FINISHED
+          type: string
         team_structure:
           additionalProperties:
             $ref: "#/components/schemas/TeamStructure"
@@ -995,6 +1012,7 @@ components:
         - name
         - description
         - is_visible
+        - state
         - registration_start
         - registration_end
         - tournament_start
