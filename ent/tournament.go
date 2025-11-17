@@ -34,7 +34,7 @@ type Tournament struct {
 	// TournamentStart holds the value of the "tournament_start" field.
 	TournamentStart time.Time `json:"tournament_start,omitempty"`
 	// TournamentEnd holds the value of the "tournament_end" field.
-	TournamentEnd time.Time `json:"tournament_end,omitempty"`
+	TournamentEnd *time.Time `json:"tournament_end,omitempty"`
 	// State holds the value of the "state" field.
 	State tournament.State `json:"state,omitempty"`
 	// MaxTeams holds the value of the "max_teams" field.
@@ -43,8 +43,8 @@ type Tournament struct {
 	TeamStructure map[string]interface{} `json:"team_structure,omitempty"`
 	// CustomPageComponent holds the value of the "custom_page_component" field.
 	CustomPageComponent string `json:"custom_page_component,omitempty"`
-	// ExternalLink holds the value of the "external_link" field.
-	ExternalLink string `json:"external_link,omitempty"`
+	// ExternalLinks holds the value of the "external_links" field.
+	ExternalLinks map[string]string `json:"external_links,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -112,13 +112,13 @@ func (*Tournament) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case tournament.FieldTeamStructure:
+		case tournament.FieldTeamStructure, tournament.FieldExternalLinks:
 			values[i] = new([]byte)
 		case tournament.FieldIsVisible:
 			values[i] = new(sql.NullBool)
 		case tournament.FieldID, tournament.FieldMaxTeams:
 			values[i] = new(sql.NullInt64)
-		case tournament.FieldSlug, tournament.FieldName, tournament.FieldDescription, tournament.FieldState, tournament.FieldCustomPageComponent, tournament.FieldExternalLink:
+		case tournament.FieldSlug, tournament.FieldName, tournament.FieldDescription, tournament.FieldState, tournament.FieldCustomPageComponent:
 			values[i] = new(sql.NullString)
 		case tournament.FieldRegistrationStart, tournament.FieldRegistrationEnd, tournament.FieldTournamentStart, tournament.FieldTournamentEnd, tournament.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -191,7 +191,8 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field tournament_end", values[i])
 			} else if value.Valid {
-				_m.TournamentEnd = value.Time
+				_m.TournamentEnd = new(time.Time)
+				*_m.TournamentEnd = value.Time
 			}
 		case tournament.FieldState:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -219,11 +220,13 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CustomPageComponent = value.String
 			}
-		case tournament.FieldExternalLink:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field external_link", values[i])
-			} else if value.Valid {
-				_m.ExternalLink = value.String
+		case tournament.FieldExternalLinks:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field external_links", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.ExternalLinks); err != nil {
+					return fmt.Errorf("unmarshal field external_links: %w", err)
+				}
 			}
 		case tournament.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -315,8 +318,10 @@ func (_m *Tournament) String() string {
 	builder.WriteString("tournament_start=")
 	builder.WriteString(_m.TournamentStart.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("tournament_end=")
-	builder.WriteString(_m.TournamentEnd.Format(time.ANSIC))
+	if v := _m.TournamentEnd; v != nil {
+		builder.WriteString("tournament_end=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("state=")
 	builder.WriteString(fmt.Sprintf("%v", _m.State))
@@ -330,8 +335,8 @@ func (_m *Tournament) String() string {
 	builder.WriteString("custom_page_component=")
 	builder.WriteString(_m.CustomPageComponent)
 	builder.WriteString(", ")
-	builder.WriteString("external_link=")
-	builder.WriteString(_m.ExternalLink)
+	builder.WriteString("external_links=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ExternalLinks))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

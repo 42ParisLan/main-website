@@ -200,7 +200,7 @@ var (
 	TeamsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Default: "teams/default.png"},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"DRAFT", "LOCKED", "CONFIRMED", "WAITING", "DISQUALIFIED"}, Default: "DRAFT"},
 		{Name: "is_locked", Type: field.TypeBool, Default: false},
 		{Name: "queue_position", Type: field.TypeInt, Nullable: true},
@@ -242,6 +242,7 @@ var (
 		{Name: "role", Type: field.TypeString},
 		{Name: "team_member_user", Type: field.TypeInt},
 		{Name: "team_member_team", Type: field.TypeInt},
+		{Name: "team_member_tournament", Type: field.TypeInt},
 	}
 	// TeamMembersTable holds the schema information for the "team_members" table.
 	TeamMembersTable = &schema.Table{
@@ -261,6 +262,19 @@ var (
 				RefColumns: []*schema.Column{TeamsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
+			{
+				Symbol:     "team_members_tournaments_tournament",
+				Columns:    []*schema.Column{TeamMembersColumns[4]},
+				RefColumns: []*schema.Column{TournamentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "teammember_team_member_tournament",
+				Unique:  true,
+				Columns: []*schema.Column{TeamMembersColumns[4]},
+			},
 		},
 	}
 	// TournamentsColumns holds the columns for the "tournaments" table.
@@ -278,7 +292,7 @@ var (
 		{Name: "max_teams", Type: field.TypeInt},
 		{Name: "team_structure", Type: field.TypeJSON, Nullable: true},
 		{Name: "custom_page_component", Type: field.TypeString, Default: "default"},
-		{Name: "external_link", Type: field.TypeString, Nullable: true},
+		{Name: "external_links", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "tournament_creator", Type: field.TypeInt},
 	}
@@ -428,6 +442,7 @@ func init() {
 	TeamsTable.ForeignKeys[2].RefTable = RankGroupsTable
 	TeamMembersTable.ForeignKeys[0].RefTable = UsersTable
 	TeamMembersTable.ForeignKeys[1].RefTable = TeamsTable
+	TeamMembersTable.ForeignKeys[2].RefTable = TournamentsTable
 	TournamentsTable.ForeignKeys[0].RefTable = UsersTable
 	TournamentAdminsTable.ForeignKeys[0].RefTable = UsersTable
 	TournamentAdminsTable.ForeignKeys[1].RefTable = TournamentsTable

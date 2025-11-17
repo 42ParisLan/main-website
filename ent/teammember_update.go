@@ -6,6 +6,7 @@ import (
 	"base-website/ent/predicate"
 	"base-website/ent/team"
 	"base-website/ent/teammember"
+	"base-website/ent/tournament"
 	"base-website/ent/user"
 	"context"
 	"errors"
@@ -65,6 +66,17 @@ func (_u *TeamMemberUpdate) SetTeam(v *Team) *TeamMemberUpdate {
 	return _u.SetTeamID(v.ID)
 }
 
+// SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
+func (_u *TeamMemberUpdate) SetTournamentID(id int) *TeamMemberUpdate {
+	_u.mutation.SetTournamentID(id)
+	return _u
+}
+
+// SetTournament sets the "tournament" edge to the Tournament entity.
+func (_u *TeamMemberUpdate) SetTournament(v *Tournament) *TeamMemberUpdate {
+	return _u.SetTournamentID(v.ID)
+}
+
 // Mutation returns the TeamMemberMutation object of the builder.
 func (_u *TeamMemberUpdate) Mutation() *TeamMemberMutation {
 	return _u.mutation
@@ -79,6 +91,12 @@ func (_u *TeamMemberUpdate) ClearUser() *TeamMemberUpdate {
 // ClearTeam clears the "team" edge to the Team entity.
 func (_u *TeamMemberUpdate) ClearTeam() *TeamMemberUpdate {
 	_u.mutation.ClearTeam()
+	return _u
+}
+
+// ClearTournament clears the "tournament" edge to the Tournament entity.
+func (_u *TeamMemberUpdate) ClearTournament() *TeamMemberUpdate {
+	_u.mutation.ClearTournament()
 	return _u
 }
 
@@ -116,6 +134,9 @@ func (_u *TeamMemberUpdate) check() error {
 	}
 	if _u.mutation.TeamCleared() && len(_u.mutation.TeamIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "TeamMember.team"`)
+	}
+	if _u.mutation.TournamentCleared() && len(_u.mutation.TournamentIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "TeamMember.tournament"`)
 	}
 	return nil
 }
@@ -193,6 +214,35 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.TournamentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   teammember.TournamentTable,
+			Columns: []string{teammember.TournamentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   teammember.TournamentTable,
+			Columns: []string{teammember.TournamentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammember.Label}
@@ -249,6 +299,17 @@ func (_u *TeamMemberUpdateOne) SetTeam(v *Team) *TeamMemberUpdateOne {
 	return _u.SetTeamID(v.ID)
 }
 
+// SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
+func (_u *TeamMemberUpdateOne) SetTournamentID(id int) *TeamMemberUpdateOne {
+	_u.mutation.SetTournamentID(id)
+	return _u
+}
+
+// SetTournament sets the "tournament" edge to the Tournament entity.
+func (_u *TeamMemberUpdateOne) SetTournament(v *Tournament) *TeamMemberUpdateOne {
+	return _u.SetTournamentID(v.ID)
+}
+
 // Mutation returns the TeamMemberMutation object of the builder.
 func (_u *TeamMemberUpdateOne) Mutation() *TeamMemberMutation {
 	return _u.mutation
@@ -263,6 +324,12 @@ func (_u *TeamMemberUpdateOne) ClearUser() *TeamMemberUpdateOne {
 // ClearTeam clears the "team" edge to the Team entity.
 func (_u *TeamMemberUpdateOne) ClearTeam() *TeamMemberUpdateOne {
 	_u.mutation.ClearTeam()
+	return _u
+}
+
+// ClearTournament clears the "tournament" edge to the Tournament entity.
+func (_u *TeamMemberUpdateOne) ClearTournament() *TeamMemberUpdateOne {
+	_u.mutation.ClearTournament()
 	return _u
 }
 
@@ -313,6 +380,9 @@ func (_u *TeamMemberUpdateOne) check() error {
 	}
 	if _u.mutation.TeamCleared() && len(_u.mutation.TeamIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "TeamMember.team"`)
+	}
+	if _u.mutation.TournamentCleared() && len(_u.mutation.TournamentIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "TeamMember.tournament"`)
 	}
 	return nil
 }
@@ -400,6 +470,35 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TournamentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   teammember.TournamentTable,
+			Columns: []string{teammember.TournamentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   teammember.TournamentTable,
+			Columns: []string{teammember.TournamentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

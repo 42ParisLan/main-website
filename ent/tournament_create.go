@@ -128,17 +128,9 @@ func (_c *TournamentCreate) SetNillableCustomPageComponent(v *string) *Tournamen
 	return _c
 }
 
-// SetExternalLink sets the "external_link" field.
-func (_c *TournamentCreate) SetExternalLink(v string) *TournamentCreate {
-	_c.mutation.SetExternalLink(v)
-	return _c
-}
-
-// SetNillableExternalLink sets the "external_link" field if the given value is not nil.
-func (_c *TournamentCreate) SetNillableExternalLink(v *string) *TournamentCreate {
-	if v != nil {
-		_c.SetExternalLink(*v)
-	}
+// SetExternalLinks sets the "external_links" field.
+func (_c *TournamentCreate) SetExternalLinks(v map[string]string) *TournamentCreate {
+	_c.mutation.SetExternalLinks(v)
 	return _c
 }
 
@@ -364,7 +356,7 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := _c.mutation.TournamentEnd(); ok {
 		_spec.SetField(tournament.FieldTournamentEnd, field.TypeTime, value)
-		_node.TournamentEnd = value
+		_node.TournamentEnd = &value
 	}
 	if value, ok := _c.mutation.State(); ok {
 		_spec.SetField(tournament.FieldState, field.TypeEnum, value)
@@ -382,9 +374,9 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 		_spec.SetField(tournament.FieldCustomPageComponent, field.TypeString, value)
 		_node.CustomPageComponent = value
 	}
-	if value, ok := _c.mutation.ExternalLink(); ok {
-		_spec.SetField(tournament.FieldExternalLink, field.TypeString, value)
-		_node.ExternalLink = value
+	if value, ok := _c.mutation.ExternalLinks(); ok {
+		_spec.SetField(tournament.FieldExternalLinks, field.TypeJSON, value)
+		_node.ExternalLinks = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)

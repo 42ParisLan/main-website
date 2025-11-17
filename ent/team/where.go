@@ -205,16 +205,6 @@ func ImageURLHasSuffix(v string) predicate.Team {
 	return predicate.Team(sql.FieldHasSuffix(FieldImageURL, v))
 }
 
-// ImageURLIsNil applies the IsNil predicate on the "image_url" field.
-func ImageURLIsNil() predicate.Team {
-	return predicate.Team(sql.FieldIsNull(FieldImageURL))
-}
-
-// ImageURLNotNil applies the NotNil predicate on the "image_url" field.
-func ImageURLNotNil() predicate.Team {
-	return predicate.Team(sql.FieldNotNull(FieldImageURL))
-}
-
 // ImageURLEqualFold applies the EqualFold predicate on the "image_url" field.
 func ImageURLEqualFold(v string) predicate.Team {
 	return predicate.Team(sql.FieldEqualFold(FieldImageURL, v))

@@ -6,6 +6,7 @@ import (
 	"base-website/ent/predicate"
 	"base-website/ent/team"
 	"base-website/ent/teammember"
+	"base-website/ent/tournament"
 	"base-website/ent/user"
 	"context"
 	"fmt"
@@ -20,13 +21,14 @@ import (
 // TeamMemberQuery is the builder for querying TeamMember entities.
 type TeamMemberQuery struct {
 	config
-	ctx        *QueryContext
-	order      []teammember.OrderOption
-	inters     []Interceptor
-	predicates []predicate.TeamMember
-	withUser   *UserQuery
-	withTeam   *TeamQuery
-	withFKs    bool
+	ctx            *QueryContext
+	order          []teammember.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.TeamMember
+	withUser       *UserQuery
+	withTeam       *TeamQuery
+	withTournament *TournamentQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -100,6 +102,28 @@ func (_q *TeamMemberQuery) QueryTeam() *TeamQuery {
 			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TeamTable, teammember.TeamColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTournament chains the current query on the "tournament" edge.
+func (_q *TeamMemberQuery) QueryTournament() *TournamentQuery {
+	query := (&TournamentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TournamentTable, teammember.TournamentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +318,14 @@ func (_q *TeamMemberQuery) Clone() *TeamMemberQuery {
 		return nil
 	}
 	return &TeamMemberQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]teammember.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.TeamMember{}, _q.predicates...),
-		withUser:   _q.withUser.Clone(),
-		withTeam:   _q.withTeam.Clone(),
+		config:         _q.config,
+		ctx:            _q.ctx.Clone(),
+		order:          append([]teammember.OrderOption{}, _q.order...),
+		inters:         append([]Interceptor{}, _q.inters...),
+		predicates:     append([]predicate.TeamMember{}, _q.predicates...),
+		withUser:       _q.withUser.Clone(),
+		withTeam:       _q.withTeam.Clone(),
+		withTournament: _q.withTournament.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -326,6 +351,17 @@ func (_q *TeamMemberQuery) WithTeam(opts ...func(*TeamQuery)) *TeamMemberQuery {
 		opt(query)
 	}
 	_q.withTeam = query
+	return _q
+}
+
+// WithTournament tells the query-builder to eager-load the nodes that are connected to
+// the "tournament" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *TeamMemberQuery) WithTournament(opts ...func(*TournamentQuery)) *TeamMemberQuery {
+	query := (&TournamentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTournament = query
 	return _q
 }
 
@@ -408,12 +444,13 @@ func (_q *TeamMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*T
 		nodes       = []*TeamMember{}
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			_q.withUser != nil,
 			_q.withTeam != nil,
+			_q.withTournament != nil,
 		}
 	)
-	if _q.withUser != nil || _q.withTeam != nil {
+	if _q.withUser != nil || _q.withTeam != nil || _q.withTournament != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -446,6 +483,12 @@ func (_q *TeamMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*T
 	if query := _q.withTeam; query != nil {
 		if err := _q.loadTeam(ctx, query, nodes, nil,
 			func(n *TeamMember, e *Team) { n.Edges.Team = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTournament; query != nil {
+		if err := _q.loadTournament(ctx, query, nodes, nil,
+			func(n *TeamMember, e *Tournament) { n.Edges.Tournament = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -509,6 +552,38 @@ func (_q *TeamMemberQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "team_member_team" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (_q *TeamMemberQuery) loadTournament(ctx context.Context, query *TournamentQuery, nodes []*TeamMember, init func(*TeamMember), assign func(*TeamMember, *Tournament)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*TeamMember)
+	for i := range nodes {
+		if nodes[i].team_member_tournament == nil {
+			continue
+		}
+		fk := *nodes[i].team_member_tournament
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(tournament.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "team_member_tournament" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

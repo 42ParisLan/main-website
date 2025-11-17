@@ -130,7 +130,7 @@ func (svc *tournamentsService) GetTournamentByID(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewTournamentFromEnt(entTournament), nil
+	return lightmodels.NewTournamentFromEnt(ctx, entTournament, svc.s3service), nil
 }
 
 func (svc *tournamentsService) GetTournamentBySlug(
@@ -154,5 +154,5 @@ func (svc *tournamentsService) GetTournamentBySlug(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewTournamentFromEnt(entTournament), nil
+	return lightmodels.NewTournamentFromEnt(ctx, entTournament, svc.s3service), nil
 }

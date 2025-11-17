@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/team"
 	"base-website/ent/teammember"
+	"base-website/ent/tournament"
 	"base-website/ent/user"
 	"context"
 	"errors"
@@ -49,6 +50,17 @@ func (_c *TeamMemberCreate) SetTeam(v *Team) *TeamMemberCreate {
 	return _c.SetTeamID(v.ID)
 }
 
+// SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
+func (_c *TeamMemberCreate) SetTournamentID(id int) *TeamMemberCreate {
+	_c.mutation.SetTournamentID(id)
+	return _c
+}
+
+// SetTournament sets the "tournament" edge to the Tournament entity.
+func (_c *TeamMemberCreate) SetTournament(v *Tournament) *TeamMemberCreate {
+	return _c.SetTournamentID(v.ID)
+}
+
 // Mutation returns the TeamMemberMutation object of the builder.
 func (_c *TeamMemberCreate) Mutation() *TeamMemberMutation {
 	return _c.mutation
@@ -91,6 +103,9 @@ func (_c *TeamMemberCreate) check() error {
 	}
 	if len(_c.mutation.TeamIDs()) == 0 {
 		return &ValidationError{Name: "team", err: errors.New(`ent: missing required edge "TeamMember.team"`)}
+	}
+	if len(_c.mutation.TournamentIDs()) == 0 {
+		return &ValidationError{Name: "tournament", err: errors.New(`ent: missing required edge "TeamMember.tournament"`)}
 	}
 	return nil
 }
@@ -154,6 +169,23 @@ func (_c *TeamMemberCreate) createSpec() (*TeamMember, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.team_member_team = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TournamentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   teammember.TournamentTable,
+			Columns: []string{teammember.TournamentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.team_member_tournament = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

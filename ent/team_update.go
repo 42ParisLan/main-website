@@ -61,12 +61,6 @@ func (_u *TeamUpdate) SetNillableImageURL(v *string) *TeamUpdate {
 	return _u
 }
 
-// ClearImageURL clears the value of the "image_url" field.
-func (_u *TeamUpdate) ClearImageURL() *TeamUpdate {
-	_u.mutation.ClearImageURL()
-	return _u
-}
-
 // SetStatus sets the "status" field.
 func (_u *TeamUpdate) SetStatus(v team.Status) *TeamUpdate {
 	_u.mutation.SetStatus(v)
@@ -360,9 +354,6 @@ func (_u *TeamUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.ImageURL(); ok {
 		_spec.SetField(team.FieldImageURL, field.TypeString, value)
 	}
-	if _u.mutation.ImageURLCleared() {
-		_spec.ClearField(team.FieldImageURL, field.TypeString)
-	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(team.FieldStatus, field.TypeEnum, value)
 	}
@@ -612,12 +603,6 @@ func (_u *TeamUpdateOne) SetNillableImageURL(v *string) *TeamUpdateOne {
 	if v != nil {
 		_u.SetImageURL(*v)
 	}
-	return _u
-}
-
-// ClearImageURL clears the value of the "image_url" field.
-func (_u *TeamUpdateOne) ClearImageURL() *TeamUpdateOne {
-	_u.mutation.ClearImageURL()
 	return _u
 }
 
@@ -943,9 +928,6 @@ func (_u *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) {
 	}
 	if value, ok := _u.mutation.ImageURL(); ok {
 		_spec.SetField(team.FieldImageURL, field.TypeString, value)
-	}
-	if _u.mutation.ImageURLCleared() {
-		_spec.ClearField(team.FieldImageURL, field.TypeString)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(team.FieldStatus, field.TypeEnum, value)

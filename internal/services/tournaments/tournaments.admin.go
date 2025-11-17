@@ -12,6 +12,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -56,6 +57,11 @@ func (svc *tournamentsService) CreateTournament(
 		)
 	}
 
+	now := time.Now()
+	if input.RegistrationStart.Before(now) {
+		return nil, huma.Error400BadRequest("registration_start can't be in the past")
+	}
+
 	userID, err := security.GetUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -73,10 +79,17 @@ func (svc *tournamentsService) CreateTournament(
 		SetMaxTeams(input.MaxTeams)
 
 	if input.TeamStructure != nil {
+		if playerRole, ok := input.TeamStructure["player"]; !ok {
+			return nil, huma.Error400BadRequest("team structure must include 'player' role")
+		} else {
+			if playerRole.Min != playerRole.Max {
+				return nil, huma.Error400BadRequest("team structure 'player' min and max must be equal")
+			}
+		}
 		ts := make(map[string]interface{}, len(input.TeamStructure))
 		for k, v := range input.TeamStructure {
 			if v.Max < v.Min {
-				return nil, huma.Error400BadRequest("in team structure min can be higher than max")
+				return nil, huma.Error400BadRequest("in team structure min can't be higher than max")
 			}
 			var any interface{}
 			b, err := json.Marshal(v)
@@ -127,7 +140,7 @@ func (svc *tournamentsService) CreateTournament(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewTournamentFromEnt(reloaded), nil
+	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
 }
 
 func (svc *tournamentsService) DeleteTournament(
@@ -204,7 +217,7 @@ func (svc *tournamentsService) AddAdminToTournament(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewTournamentFromEnt(reloaded), nil
+	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
 }
 
 func (svc *tournamentsService) EditAdminToTournament(
@@ -261,7 +274,7 @@ func (svc *tournamentsService) EditAdminToTournament(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewTournamentFromEnt(reloaded), nil
+	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
 }
 
 func (svc *tournamentsService) DeleteAdminToTournament(
@@ -311,5 +324,5 @@ func (svc *tournamentsService) DeleteAdminToTournament(
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
-	return lightmodels.NewTournamentFromEnt(reloaded), nil
+	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
 }

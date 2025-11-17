@@ -488,6 +488,30 @@ export interface paths {
         patch: operations["editTournamentAdmin"];
         trace?: never;
     };
+    "/tournaments/{id}/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Teams from Tournament
+         * @description This endpoint is used to get all teams from a tournament.
+         */
+        get: operations["getAllTeamsTournament"];
+        put?: never;
+        /**
+         * Create A Team from Tournament
+         * @description This endpoint is used to create a team from a tournament.
+         */
+        post: operations["createTeamTournament"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users": {
         parameters: {
             query?: never;
@@ -1057,6 +1081,12 @@ export interface components {
             rank_min: number;
         };
         LightTeam: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/LightTeam.json
+             */
+            readonly $schema?: string;
             /** Format: date-time */
             created_at: string;
             /**
@@ -1122,7 +1152,7 @@ export interface components {
              * Format: date-time
              * @example 2025-03-20T23:59:59Z
              */
-            tournament_end: string;
+            tournament_end: string | null;
             /**
              * Format: date-time
              * @example 2025-03-15T00:00:00Z
@@ -1252,6 +1282,35 @@ export interface components {
              */
             readonly $schema?: string;
             items: components["schemas"]["Consent"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseLightTeam: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightTeam.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightTeam"][] | null;
             /**
              * Format: int64
              * @example 10
@@ -1436,7 +1495,7 @@ export interface components {
             };
             teams?: components["schemas"]["LightTeam"][] | null;
             /** Format: date-time */
-            tournament_end: string;
+            tournament_end: string | null;
             /** Format: date-time */
             tournament_start: string;
         };
@@ -2529,6 +2588,88 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAllTeamsTournament: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseLightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createTeamTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** @example Player */
+                    creator_status: string;
+                    /** Format: binary */
+                    image?: string;
+                    /** @example Team Phoenix */
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
                 };
             };
             /** @description Error */

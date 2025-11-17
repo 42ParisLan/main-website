@@ -211,23 +211,15 @@ func (_u *TournamentUpdate) SetNillableCustomPageComponent(v *string) *Tournamen
 	return _u
 }
 
-// SetExternalLink sets the "external_link" field.
-func (_u *TournamentUpdate) SetExternalLink(v string) *TournamentUpdate {
-	_u.mutation.SetExternalLink(v)
+// SetExternalLinks sets the "external_links" field.
+func (_u *TournamentUpdate) SetExternalLinks(v map[string]string) *TournamentUpdate {
+	_u.mutation.SetExternalLinks(v)
 	return _u
 }
 
-// SetNillableExternalLink sets the "external_link" field if the given value is not nil.
-func (_u *TournamentUpdate) SetNillableExternalLink(v *string) *TournamentUpdate {
-	if v != nil {
-		_u.SetExternalLink(*v)
-	}
-	return _u
-}
-
-// ClearExternalLink clears the value of the "external_link" field.
-func (_u *TournamentUpdate) ClearExternalLink() *TournamentUpdate {
-	_u.mutation.ClearExternalLink()
+// ClearExternalLinks clears the value of the "external_links" field.
+func (_u *TournamentUpdate) ClearExternalLinks() *TournamentUpdate {
+	_u.mutation.ClearExternalLinks()
 	return _u
 }
 
@@ -472,11 +464,11 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.CustomPageComponent(); ok {
 		_spec.SetField(tournament.FieldCustomPageComponent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.ExternalLink(); ok {
-		_spec.SetField(tournament.FieldExternalLink, field.TypeString, value)
+	if value, ok := _u.mutation.ExternalLinks(); ok {
+		_spec.SetField(tournament.FieldExternalLinks, field.TypeJSON, value)
 	}
-	if _u.mutation.ExternalLinkCleared() {
-		_spec.ClearField(tournament.FieldExternalLink, field.TypeString)
+	if _u.mutation.ExternalLinksCleared() {
+		_spec.ClearField(tournament.FieldExternalLinks, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
@@ -844,23 +836,15 @@ func (_u *TournamentUpdateOne) SetNillableCustomPageComponent(v *string) *Tourna
 	return _u
 }
 
-// SetExternalLink sets the "external_link" field.
-func (_u *TournamentUpdateOne) SetExternalLink(v string) *TournamentUpdateOne {
-	_u.mutation.SetExternalLink(v)
+// SetExternalLinks sets the "external_links" field.
+func (_u *TournamentUpdateOne) SetExternalLinks(v map[string]string) *TournamentUpdateOne {
+	_u.mutation.SetExternalLinks(v)
 	return _u
 }
 
-// SetNillableExternalLink sets the "external_link" field if the given value is not nil.
-func (_u *TournamentUpdateOne) SetNillableExternalLink(v *string) *TournamentUpdateOne {
-	if v != nil {
-		_u.SetExternalLink(*v)
-	}
-	return _u
-}
-
-// ClearExternalLink clears the value of the "external_link" field.
-func (_u *TournamentUpdateOne) ClearExternalLink() *TournamentUpdateOne {
-	_u.mutation.ClearExternalLink()
+// ClearExternalLinks clears the value of the "external_links" field.
+func (_u *TournamentUpdateOne) ClearExternalLinks() *TournamentUpdateOne {
+	_u.mutation.ClearExternalLinks()
 	return _u
 }
 
@@ -1135,11 +1119,11 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	if value, ok := _u.mutation.CustomPageComponent(); ok {
 		_spec.SetField(tournament.FieldCustomPageComponent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.ExternalLink(); ok {
-		_spec.SetField(tournament.FieldExternalLink, field.TypeString, value)
+	if value, ok := _u.mutation.ExternalLinks(); ok {
+		_spec.SetField(tournament.FieldExternalLinks, field.TypeJSON, value)
 	}
-	if _u.mutation.ExternalLinkCleared() {
-		_spec.ClearField(tournament.FieldExternalLink, field.TypeString)
+	if _u.mutation.ExternalLinksCleared() {
+		_spec.ClearField(tournament.FieldExternalLinks, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)

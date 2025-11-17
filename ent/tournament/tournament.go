@@ -39,8 +39,8 @@ const (
 	FieldTeamStructure = "team_structure"
 	// FieldCustomPageComponent holds the string denoting the custom_page_component field in the database.
 	FieldCustomPageComponent = "custom_page_component"
-	// FieldExternalLink holds the string denoting the external_link field in the database.
-	FieldExternalLink = "external_link"
+	// FieldExternalLinks holds the string denoting the external_links field in the database.
+	FieldExternalLinks = "external_links"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeCreator holds the string denoting the creator edge name in mutations.
@@ -98,7 +98,7 @@ var Columns = []string{
 	FieldMaxTeams,
 	FieldTeamStructure,
 	FieldCustomPageComponent,
-	FieldExternalLink,
+	FieldExternalLinks,
 	FieldCreatedAt,
 }
 
@@ -222,11 +222,6 @@ func ByMaxTeams(opts ...sql.OrderTermOption) OrderOption {
 // ByCustomPageComponent orders the results by the custom_page_component field.
 func ByCustomPageComponent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCustomPageComponent, opts...).ToFunc()
-}
-
-// ByExternalLink orders the results by the external_link field.
-func ByExternalLink(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldExternalLink, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

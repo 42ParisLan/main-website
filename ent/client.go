@@ -1899,6 +1899,22 @@ func (c *TeamMemberClient) QueryTeam(_m *TeamMember) *TeamQuery {
 	return query
 }
 
+// QueryTournament queries the tournament edge of a TeamMember.
+func (c *TeamMemberClient) QueryTournament(_m *TeamMember) *TournamentQuery {
+	query := (&TournamentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammember.Table, teammember.FieldID, id),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TournamentTable, teammember.TournamentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeamMemberClient) Hooks() []Hook {
 	return c.hooks.TeamMember

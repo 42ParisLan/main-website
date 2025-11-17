@@ -21,14 +21,14 @@ func (Tournament) Fields() []ent.Field {
 		field.Time("registration_start"),
 		field.Time("registration_end"),
 		field.Time("tournament_start"),
-		field.Time("tournament_end").Optional(),
+		field.Time("tournament_end").Optional().Nillable(),
 		field.Enum("state").
 			Values("DRAFT", "REGISTRATION_OPEN", "REGISTRATION_CLOSED", "ONGOING", "FINISHED").
 			Default("DRAFT"),
 		field.Int("max_teams"),
 		field.JSON("team_structure", map[string]interface{}{}).Optional(),
 		field.String("custom_page_component").Default("default"),
-		field.String("external_link").Optional(),
+		field.JSON("external_links", map[string]string{}).Optional(),
 		field.Time("created_at").Default(time.Now),
 	}
 }

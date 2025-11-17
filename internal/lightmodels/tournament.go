@@ -1,11 +1,13 @@
 package lightmodels
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
 	"base-website/ent"
 	"base-website/ent/tournament"
+	s3service "base-website/internal/services/s3"
 )
 
 type TeamStructure struct {
@@ -23,11 +25,11 @@ type LightTournament struct {
 	RegistrationStart   time.Time                `json:"registration_start" example:"2025-03-01T00:00:00Z" description:"When registration starts"`
 	RegistrationEnd     time.Time                `json:"registration_end" example:"2025-03-10T23:59:59Z" description:"When registration ends"`
 	TournamentStart     time.Time                `json:"tournament_start" example:"2025-03-15T00:00:00Z" description:"Start date of tournament"`
-	TournamentEnd       time.Time                `json:"tournament_end" example:"2025-03-20T23:59:59Z" description:"End date of tournament"`
+	TournamentEnd       *time.Time               `json:"tournament_end" example:"2025-03-20T23:59:59Z" description:"End date of tournament"`
 	MaxTeams            int                      `json:"max_teams" example:"32" description:"Maximum number of teams allowed"`
 	TeamStructure       map[string]TeamStructure `json:"team_structure" description:"JSON describing team roles, min/max players, etc."`
 	CustomPageComponent *string                  `json:"custom_page_component,omitempty" description:"Optional React component for custom tournament page"`
-	ExternalLink        *string                  `json:"external_link,omitempty" description:"Optional external link for the tournament"`
+	ExternalLinks       *map[string]string       `json:"external_links,omitempty" description:"Optional external link for the tournament"`
 	Creator             *LightUser               `json:"creator" description:"The creator of the tournament"`
 	CreatedAt           time.Time                `json:"created_at"`
 }
@@ -58,7 +60,7 @@ func NewLightTournamentFromEnt(entTournament *ent.Tournament) *LightTournament {
 		MaxTeams:            entTournament.MaxTeams,
 		TeamStructure:       ts,
 		CustomPageComponent: &entTournament.CustomPageComponent,
-		ExternalLink:        &entTournament.ExternalLink,
+		ExternalLinks:       &entTournament.ExternalLinks,
 		Creator:             NewLightUserFromEnt(entTournament.Edges.Creator),
 		CreatedAt:           entTournament.CreatedAt,
 	}
@@ -82,11 +84,11 @@ type Tournament struct {
 	RegistrationStart   time.Time                `json:"registration_start"`
 	RegistrationEnd     time.Time                `json:"registration_end"`
 	TournamentStart     time.Time                `json:"tournament_start"`
-	TournamentEnd       time.Time                `json:"tournament_end"`
+	TournamentEnd       *time.Time               `json:"tournament_end"`
 	MaxTeams            int                      `json:"max_teams"`
 	TeamStructure       map[string]TeamStructure `json:"team_structure"`
 	CustomPageComponent string                   `json:"custom_page_component"`
-	ExternalLink        *string                  `json:"external_link,omitempty"`
+	ExternalLinks       *map[string]string       `json:"external_links,omitempty"`
 	Creator             *LightUser               `json:"creator"`
 	Admins              []*LightTournamentAdmin  `json:"admins"`
 	Teams               []*LightTeam             `json:"teams,omitempty"`
@@ -94,7 +96,7 @@ type Tournament struct {
 	CreatedAt           time.Time                `json:"created_at"`
 }
 
-func NewTournamentFromEnt(entTournament *ent.Tournament) *Tournament {
+func NewTournamentFromEnt(ctx context.Context, entTournament *ent.Tournament, S3Service s3service.S3Service) *Tournament {
 	if entTournament == nil {
 		return nil
 	}
@@ -108,7 +110,7 @@ func NewTournamentFromEnt(entTournament *ent.Tournament) *Tournament {
 	// Convert teams if edges are loaded
 	var teams []*LightTeam
 	if entTournament.Edges.Teams != nil {
-		teams = NewLightTeamsFromEnt(entTournament.Edges.Teams)
+		teams = NewLightTeamsFromEnt(ctx, entTournament.Edges.Teams, S3Service)
 	}
 
 	// Convert rank groups if edges are loaded
@@ -139,7 +141,7 @@ func NewTournamentFromEnt(entTournament *ent.Tournament) *Tournament {
 		MaxTeams:            entTournament.MaxTeams,
 		TeamStructure:       ts,
 		CustomPageComponent: entTournament.CustomPageComponent,
-		ExternalLink:        &entTournament.ExternalLink,
+		ExternalLinks:       &entTournament.ExternalLinks,
 		Creator:             NewLightUserFromEnt(entTournament.Edges.Creator),
 		Admins:              admins,
 		Teams:               teams,
@@ -148,10 +150,10 @@ func NewTournamentFromEnt(entTournament *ent.Tournament) *Tournament {
 	}
 }
 
-func NewTournamentsFromEnt(entTournaments []*ent.Tournament) []*Tournament {
+func NewTournamentsFromEnt(ctx context.Context, entTournaments []*ent.Tournament, S3Service s3service.S3Service) []*Tournament {
 	tournaments := make([]*Tournament, len(entTournaments))
 	for i, t := range entTournaments {
-		tournaments[i] = NewTournamentFromEnt(t)
+		tournaments[i] = NewTournamentFromEnt(ctx, t, S3Service)
 	}
 	return tournaments
 }

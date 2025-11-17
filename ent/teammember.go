@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/team"
 	"base-website/ent/teammember"
+	"base-website/ent/tournament"
 	"base-website/ent/user"
 	"fmt"
 	"strings"
@@ -22,10 +23,11 @@ type TeamMember struct {
 	Role string `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TeamMemberQuery when eager-loading is set.
-	Edges            TeamMemberEdges `json:"edges"`
-	team_member_user *int
-	team_member_team *int
-	selectValues     sql.SelectValues
+	Edges                  TeamMemberEdges `json:"edges"`
+	team_member_user       *int
+	team_member_team       *int
+	team_member_tournament *int
+	selectValues           sql.SelectValues
 }
 
 // TeamMemberEdges holds the relations/edges for other nodes in the graph.
@@ -34,9 +36,11 @@ type TeamMemberEdges struct {
 	User *User `json:"user,omitempty"`
 	// Team holds the value of the team edge.
 	Team *Team `json:"team,omitempty"`
+	// Tournament holds the value of the tournament edge.
+	Tournament *Tournament `json:"tournament,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -61,6 +65,17 @@ func (e TeamMemberEdges) TeamOrErr() (*Team, error) {
 	return nil, &NotLoadedError{edge: "team"}
 }
 
+// TournamentOrErr returns the Tournament value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TeamMemberEdges) TournamentOrErr() (*Tournament, error) {
+	if e.Tournament != nil {
+		return e.Tournament, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: tournament.Label}
+	}
+	return nil, &NotLoadedError{edge: "tournament"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*TeamMember) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -73,6 +88,8 @@ func (*TeamMember) scanValues(columns []string) ([]any, error) {
 		case teammember.ForeignKeys[0]: // team_member_user
 			values[i] = new(sql.NullInt64)
 		case teammember.ForeignKeys[1]: // team_member_team
+			values[i] = new(sql.NullInt64)
+		case teammember.ForeignKeys[2]: // team_member_tournament
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -115,6 +132,13 @@ func (_m *TeamMember) assignValues(columns []string, values []any) error {
 				_m.team_member_team = new(int)
 				*_m.team_member_team = int(value.Int64)
 			}
+		case teammember.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field team_member_tournament", value)
+			} else if value.Valid {
+				_m.team_member_tournament = new(int)
+				*_m.team_member_tournament = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -136,6 +160,11 @@ func (_m *TeamMember) QueryUser() *UserQuery {
 // QueryTeam queries the "team" edge of the TeamMember entity.
 func (_m *TeamMember) QueryTeam() *TeamQuery {
 	return NewTeamMemberClient(_m.config).QueryTeam(_m)
+}
+
+// QueryTournament queries the "tournament" edge of the TeamMember entity.
+func (_m *TeamMember) QueryTournament() *TournamentQuery {
+	return NewTeamMemberClient(_m.config).QueryTournament(_m)
 }
 
 // Update returns a builder for updating this TeamMember.

@@ -18,6 +18,8 @@ const (
 	EdgeUser = "user"
 	// EdgeTeam holds the string denoting the team edge name in mutations.
 	EdgeTeam = "team"
+	// EdgeTournament holds the string denoting the tournament edge name in mutations.
+	EdgeTournament = "tournament"
 	// Table holds the table name of the teammember in the database.
 	Table = "team_members"
 	// UserTable is the table that holds the user relation/edge.
@@ -34,6 +36,13 @@ const (
 	TeamInverseTable = "teams"
 	// TeamColumn is the table column denoting the team relation/edge.
 	TeamColumn = "team_member_team"
+	// TournamentTable is the table that holds the tournament relation/edge.
+	TournamentTable = "team_members"
+	// TournamentInverseTable is the table name for the Tournament entity.
+	// It exists in this package in order to avoid circular dependency with the "tournament" package.
+	TournamentInverseTable = "tournaments"
+	// TournamentColumn is the table column denoting the tournament relation/edge.
+	TournamentColumn = "team_member_tournament"
 )
 
 // Columns holds all SQL columns for teammember fields.
@@ -47,6 +56,7 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"team_member_user",
 	"team_member_team",
+	"team_member_tournament",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -90,6 +100,13 @@ func ByTeamField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTeamStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByTournamentField orders the results by tournament field.
+func ByTournamentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTournamentStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -102,5 +119,12 @@ func newTeamStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TeamInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, TeamTable, TeamColumn),
+	)
+}
+func newTournamentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TournamentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
 	)
 }

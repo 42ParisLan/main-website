@@ -1,14 +1,16 @@
 package lightmodels
 
 import (
+	"context"
 	"time"
 
 	"base-website/ent"
+	s3service "base-website/internal/services/s3"
 )
 
 type LightTeamMember struct {
-	User LightUser `json:"user" description:"The user information of the team member"`
-	Role string    `json:"role" example:"player" description:"The role of the user in the team, e.g., player, coach, substitute"`
+	User *LightUser `json:"user" description:"The user information of the team member"`
+	Role string     `json:"role" example:"player" description:"The role of the user in the team, e.g., player, coach, substitute"`
 }
 
 func NewLightTeamMemberFromEnt(entTeamMember *ent.TeamMember) *LightTeamMember {
@@ -22,7 +24,7 @@ func NewLightTeamMemberFromEnt(entTeamMember *ent.TeamMember) *LightTeamMember {
 	}
 
 	return &LightTeamMember{
-		User: *user,
+		User: user,
 		Role: entTeamMember.Role,
 	}
 }
@@ -47,7 +49,7 @@ type LightTeam struct {
 	CreatedAt time.Time          `json:"created_at"`
 }
 
-func NewLightTeamFromEnt(entTeam *ent.Team) *LightTeam {
+func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3service.S3Service) *LightTeam {
 	if entTeam == nil {
 		return nil
 	}
@@ -62,10 +64,18 @@ func NewLightTeamFromEnt(entTeam *ent.Team) *LightTeam {
 		rankGroup = NewLightRankGroupFromEnt(entTeam.Edges.RankGroup)
 	}
 
+	var imageUrl *string
+	if entTeam.ImageURL != "" {
+		u, err := S3Service.PresignedGet(ctx, entTeam.ImageURL, time.Hour)
+		if err == nil {
+			imageUrl = &u
+		}
+	}
+
 	return &LightTeam{
 		ID:        entTeam.ID,
 		Name:      entTeam.Name,
-		ImageURL:  &entTeam.ImageURL,
+		ImageURL:  imageUrl,
 		Status:    string(entTeam.Status),
 		IsLocked:  entTeam.IsLocked,
 		Score:     &entTeam.Score,
@@ -75,10 +85,10 @@ func NewLightTeamFromEnt(entTeam *ent.Team) *LightTeam {
 	}
 }
 
-func NewLightTeamsFromEnt(entTeams []*ent.Team) []*LightTeam {
+func NewLightTeamsFromEnt(ctx context.Context, entTeams []*ent.Team, S3Service s3service.S3Service) []*LightTeam {
 	teams := make([]*LightTeam, len(entTeams))
 	for i, t := range entTeams {
-		teams[i] = NewLightTeamFromEnt(t)
+		teams[i] = NewLightTeamFromEnt(ctx, t, S3Service)
 	}
 	return teams
 }

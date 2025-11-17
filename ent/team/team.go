@@ -114,6 +114,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultImageURL holds the default value on creation for the "image_url" field.
+	DefaultImageURL string
 	// DefaultIsLocked holds the default value on creation for the "is_locked" field.
 	DefaultIsLocked bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

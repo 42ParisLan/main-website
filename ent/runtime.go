@@ -69,6 +69,10 @@ func init() {
 	invitation.DefaultCreatedAt = invitationDescCreatedAt.Default.(func() time.Time)
 	teamFields := schema.Team{}.Fields()
 	_ = teamFields
+	// teamDescImageURL is the schema descriptor for image_url field.
+	teamDescImageURL := teamFields[1].Descriptor()
+	// team.DefaultImageURL holds the default value on creation for the image_url field.
+	team.DefaultImageURL = teamDescImageURL.Default.(string)
 	// teamDescIsLocked is the schema descriptor for is_locked field.
 	teamDescIsLocked := teamFields[3].Descriptor()
 	// team.DefaultIsLocked holds the default value on creation for the is_locked field.

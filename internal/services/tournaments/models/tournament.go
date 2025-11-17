@@ -26,5 +26,5 @@ type UpdateTournament struct {
 	MaxTeams            *int                                 `json:"max_teams" example:"32" description:"Maximum number of teams allowed"`
 	TeamStructure       map[string]lightmodels.TeamStructure `json:"team_structure" description:"JSON describing team roles, min/max players, etc."`
 	CustomPageComponent *string                              `json:"custom_page_component,omitempty" description:"Optional React component for custom tournament page"`
-	ExternalLink        *string                              `json:"external_link,omitempty" description:"Optional external link for the tournament"`
+	ExternalLinks       *map[string]string                   `json:"external_links,omitempty" description:"Optional external links for the tournament"`
 }

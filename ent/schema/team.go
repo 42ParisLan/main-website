@@ -16,7 +16,7 @@ type Team struct {
 func (Team) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
-		field.String("image_url").Optional(),
+		field.String("image_url").Default("teams/default.png"),
 		field.Enum("status").
 			Values("DRAFT", "LOCKED", "CONFIRMED", "WAITING", "DISQUALIFIED").
 			Default("DRAFT"),
