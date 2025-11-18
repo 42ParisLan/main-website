@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import { Link } from '@tanstack/react-router'
-import { IconChalkboardTeacher } from '@tabler/icons-react'
 import { Header } from '@/components/home-page/header'
+import { TournamentCard } from '@/components/tournament/tournament-card'
+
 
 export const Route = createFileRoute('/')({
 	component: WelcomePage,
@@ -11,46 +10,33 @@ export const Route = createFileRoute('/')({
 function WelcomePage() {
 	return (
 		<div className="min-h-screen bg-background">
-			<div className=" py-1">
-				<div className="flex flex-col items-center justify-center space-y-8 text-center">
+			<div className="">
+				<div className="flex flex-col items-center justify-centertext-center">
 					<Header/>
-					{/* Navigation Sections */}
-					<div className="pt-8 space-y-8 w-full max-w-xl">
-						{/* Public Pages Section */}
-						<div className="space-y-4">
-							<h2 className="text-2xl font-semibold tracking-tight">Public Pages</h2>
-							<div className="flex flex-wrap justify-center gap-4">
-								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/tournaments">
-										Tournaments
-									</Link>
-								</Button>
+					{/* Welcome message  */}
+					<div className="pl-3 bg-gradient-to-br from-black via-indigo-900 to-pink-800 w-full h-130 flex flex-col items-start">
+						<div className="p-6 w-full h-70">
+							<h1 style={{ fontFamily: "Orbitron" }} className="font-orbitron py-3 text-7xl text-left font-bold text-white">COMPETE IN THE <br/> ULTIMATE GAMING <br/> ARENA</h1>
+						</div>
+						<div style={{ fontFamily: "Orbitron" }}  className="p-6 text-gray-400">
+							<p>Join thousands of elite gamers in the most prestigious esports tournaments.
+								<br/> Compete for glory, fame and massive prize blablabla.
+							</p>
+						</div>
+						<div className="w-full p-6 flex items-start gap-10">
+							<div className="">
+								<button className="p-3 bg-gradient-to-r from-[#5AD5FA] to-[#8463F2] text-white">JOIN TOURNAMENT</button>
+							</div>
+							<div className="p-2.5 text-white border border-2 border-solid border-white">
+								<button>WATCH LIVE</button>
 							</div>
 						</div>
-
-						{/* Protected Pages Section */}
-						<div className="space-y-4">
-							<h2 className="text-2xl font-semibold tracking-tight">Protected Pages</h2>
-							<div className="flex flex-wrap justify-center gap-4">
-								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/votes">
-										Votes
-									</Link>
-								</Button>
-							</div>
-						</div>
-
-						{/* Admin Section */}
-						<div className="space-y-4">
-							<h2 className="text-2xl font-semibold tracking-tight">Admin Panel</h2>
-							<div className="flex justify-center">
-								<Button asChild size="lg" variant="default" className="min-w-[220px]">
-									<Link to="/admin">
-										<IconChalkboardTeacher className="mr-2 w-5 h-5" />
-										Access Admin Console
-									</Link>
-								</Button>
-							</div>
+					</div>
+					{/* TOURNAMENTS*/}
+					<div style={{ fontFamily: "Orbitron" }} className="w-full h-100 bg-gradient-to-br from-black to-gray-800">
+						<div className="w-full text-center">
+							<h2 className="text-bold text-white p-3 text-3xl">ACTIVE TOURNAMENTS</h2>
+							<p className="text-sm text-gray-400">Battle in the most competitive gmaing environment</p>
 						</div>
 					</div>
 				</div>
