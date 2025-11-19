@@ -33,6 +33,7 @@ import { Route as AdminTournamentsCreateIndexRouteImport } from './routes/admin/
 import { Route as AdminTournamentsTournamentidIndexRouteImport } from './routes/admin/tournaments/$tournamentid/index'
 import { Route as AdminAppsMeIndexRouteImport } from './routes/admin/apps/me/index'
 import { Route as AdminAppsAppidIndexRouteImport } from './routes/admin/apps/$appid/index'
+import { Route as TournamentsTournamentidTeamidEditIndexRouteImport } from './routes/tournaments/$tournamentid/$teamid/edit/index'
 import { Route as AdminTournamentsTournamentidTeamsIndexRouteImport } from './routes/admin/tournaments/$tournamentid/teams/index'
 import { Route as AdminTournamentsTournamentidEditIndexRouteImport } from './routes/admin/tournaments/$tournamentid/edit/index'
 
@@ -162,6 +163,12 @@ const AdminAppsAppidIndexRoute = AdminAppsAppidIndexRouteImport.update({
   path: '/apps/$appid/',
   getParentRoute: () => AdminRoute,
 } as any)
+const TournamentsTournamentidTeamidEditIndexRoute =
+  TournamentsTournamentidTeamidEditIndexRouteImport.update({
+    id: '/tournaments/$tournamentid/$teamid/edit/',
+    path: '/tournaments/$tournamentid/$teamid/edit/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminTournamentsTournamentidTeamsIndexRoute =
   AdminTournamentsTournamentidTeamsIndexRouteImport.update({
     id: '/tournaments/$tournamentid/teams/',
@@ -202,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
   '/admin/tournaments/$tournamentid/edit': typeof AdminTournamentsTournamentidEditIndexRoute
   '/admin/tournaments/$tournamentid/teams': typeof AdminTournamentsTournamentidTeamsIndexRoute
+  '/tournaments/$tournamentid/$teamid/edit': typeof TournamentsTournamentidTeamidEditIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
   '/admin/tournaments/$tournamentid/edit': typeof AdminTournamentsTournamentidEditIndexRoute
   '/admin/tournaments/$tournamentid/teams': typeof AdminTournamentsTournamentidTeamsIndexRoute
+  '/tournaments/$tournamentid/$teamid/edit': typeof TournamentsTournamentidTeamidEditIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -258,6 +267,7 @@ export interface FileRoutesById {
   '/votes/$voteid/results/': typeof VotesVoteidResultsIndexRoute
   '/admin/tournaments/$tournamentid/edit/': typeof AdminTournamentsTournamentidEditIndexRoute
   '/admin/tournaments/$tournamentid/teams/': typeof AdminTournamentsTournamentidTeamsIndexRoute
+  '/tournaments/$tournamentid/$teamid/edit/': typeof TournamentsTournamentidTeamidEditIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/votes/$voteid/results'
     | '/admin/tournaments/$tournamentid/edit'
     | '/admin/tournaments/$tournamentid/teams'
+    | '/tournaments/$tournamentid/$teamid/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -315,6 +326,7 @@ export interface FileRouteTypes {
     | '/votes/$voteid/results'
     | '/admin/tournaments/$tournamentid/edit'
     | '/admin/tournaments/$tournamentid/teams'
+    | '/tournaments/$tournamentid/$teamid/edit'
   id:
     | '__root__'
     | '/'
@@ -343,6 +355,7 @@ export interface FileRouteTypes {
     | '/votes/$voteid/results/'
     | '/admin/tournaments/$tournamentid/edit/'
     | '/admin/tournaments/$tournamentid/teams/'
+    | '/tournaments/$tournamentid/$teamid/edit/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -359,6 +372,7 @@ export interface RootRouteChildren {
   TournamentsTournamentidTeamsIndexRoute: typeof TournamentsTournamentidTeamsIndexRoute
   VotesVoteidLiveIndexRoute: typeof VotesVoteidLiveIndexRoute
   VotesVoteidResultsIndexRoute: typeof VotesVoteidResultsIndexRoute
+  TournamentsTournamentidTeamidEditIndexRoute: typeof TournamentsTournamentidTeamidEditIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -531,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppsAppidIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/tournaments/$tournamentid/$teamid/edit/': {
+      id: '/tournaments/$tournamentid/$teamid/edit/'
+      path: '/tournaments/$tournamentid/$teamid/edit'
+      fullPath: '/tournaments/$tournamentid/$teamid/edit'
+      preLoaderRoute: typeof TournamentsTournamentidTeamidEditIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/tournaments/$tournamentid/teams/': {
       id: '/admin/tournaments/$tournamentid/teams/'
       path: '/tournaments/$tournamentid/teams'
@@ -602,6 +623,8 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsTournamentidTeamsIndexRoute,
   VotesVoteidLiveIndexRoute: VotesVoteidLiveIndexRoute,
   VotesVoteidResultsIndexRoute: VotesVoteidResultsIndexRoute,
+  TournamentsTournamentidTeamidEditIndexRoute:
+    TournamentsTournamentidTeamidEditIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

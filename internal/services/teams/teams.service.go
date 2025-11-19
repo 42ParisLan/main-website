@@ -28,6 +28,7 @@ type TeamsService interface {
 	ListTeamsByTournament(ctx context.Context, params *teamsmodels.ListTeamsParams) (*paging.Response[*lightmodels.LightTeam], error)
 	CreateTeam(ctx context.Context, input *teamsmodels.CreateTeam, tournamentID int) (*lightmodels.LightTeam, error)
 	GetMyTeam(ctx context.Context, tournamentID int) (*lightmodels.LightTeam, error)
+	GetTeam(ctx context.Context, teamID int) (*lightmodels.LightTeam, error)
 }
 
 type teamsService struct {
@@ -213,6 +214,26 @@ func (svc *teamsService) GetMyTeam(
 			teamMemberQuery.WithUser()
 		}).
 		WithRankGroup().
+		WithCreator().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return lightmodels.NewLightTeamFromEnt(ctx, entTeam, svc.s3service), nil
+}
+
+func (svc *teamsService) GetTeam(
+	ctx context.Context,
+	teamID int,
+) (*lightmodels.LightTeam, error) {
+	entTeam, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
+			teamMemberQuery.WithUser()
+		}).
+		WithRankGroup().
+		WithCreator().
 		Only(ctx)
 	if err != nil {
 		return nil, err

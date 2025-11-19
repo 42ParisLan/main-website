@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import useQueryClient from '@/hooks/use-query-client'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import useQueryClient from '@/hooks/use-query-client';
 import { useAuth } from '@/providers/auth.provider';
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { useMemo } from 'react';
- 
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useEffect } from 'react';
 
-export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
-  component: RouteComponent,
+export const Route = createFileRoute(
+	'/tournaments/$tournamentid/$teamid/edit/',
+)({
+	component: RouteComponent,
 })
 
 function RouteComponent() {
@@ -32,13 +33,11 @@ function RouteComponent() {
 		}
 	})
 
-	const role = useMemo(() => {
-		if (team?.creator?.id === me.id) return 'creator'
-
-		if (Array.isArray(team?.members) && team!.members.some((m: any) => m?.user?.id === me.id)) return 'member'
-
-		return undefined
-	}, [team?.members, team?.creator, me.id])
+	useEffect(() => {
+		if (team?.creator?.id !== me.id) {
+			router.navigate({to: "/tournaments/$tournamentid/$teamid", params: {tournamentid, teamid}})
+		}
+	}, [team?.creator, me.id])
 
 	if (errorTeam && !errorTournament) {
 		router.navigate({to: `/tournaments/$tournamentid`, params: {tournamentid}})
@@ -50,14 +49,14 @@ function RouteComponent() {
 		return null
 	}
 
-	if (team && tournament)
+		if (team && tournament)
 	{
 		return (
 			<>
 				<Card>
 					<CardHeader className='flex justify-between'>
 						<CardTitle>
-							{team.name}
+							Edit {team.name}
 						</CardTitle>
 						team for tournament: "{tournament.name}"
 					</CardHeader>
@@ -83,36 +82,12 @@ function RouteComponent() {
 								)
 							}
 						})}
+						<Button>
+							Invite User
+						</Button>
 					</CardContent>
-					<CardFooter>
-						{role == "creator" ? (
-							<>
-								<Button
-									variant="default"
-									asChild
-								>
-									<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-										Edit Team
-									</Link>
-								</Button>
-								<Button
-									variant="destructive"
-								>
-									Delete Team
-								</Button>
-							</>
-						) : role == "member" && (
-							<Button
-								variant="destructive"
-							>
-								Leave Team
-							</Button>
-						)}
-					</CardFooter>
 				</Card>
 			</>
 		)
 	}
-
-	return null
 }

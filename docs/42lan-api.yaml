@@ -445,6 +445,8 @@ components:
         created_at:
           format: date-time
           type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
         id:
           example: 42
           format: int64
@@ -2089,6 +2091,38 @@ paths:
       tags:
         - RBAC
         - Roles
+  /teams/{id}:
+    get:
+      description: This endpoint is used to get a team.
+      operationId: getTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Team
+      tags:
+        - Teams
   /tournaments:
     get:
       description: This endpoint is used to get all tournaments.

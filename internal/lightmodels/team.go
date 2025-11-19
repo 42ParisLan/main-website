@@ -46,6 +46,7 @@ type LightTeam struct {
 	Score     *int               `json:"score,omitempty"`
 	RankGroup *LightRankGroup    `json:"rank_group,omitempty"`
 	Members   []*LightTeamMember `json:"members,omitempty"`
+	Creator   *LightUser         `json:"creator,omitempty"`
 	CreatedAt time.Time          `json:"created_at"`
 }
 
@@ -57,6 +58,11 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 	var members []*LightTeamMember
 	if entTeam.Edges.Members != nil {
 		members = NewLightTeamMembersFromEnt(entTeam.Edges.Members)
+	}
+
+	var creator *LightUser
+	if entTeam.Edges.Creator != nil {
+		creator = NewLightUserFromEnt(entTeam.Edges.Creator)
 	}
 
 	var rankGroup *LightRankGroup
@@ -81,6 +87,7 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 		Score:     &entTeam.Score,
 		RankGroup: rankGroup,
 		Members:   members,
+		Creator:   creator,
 		CreatedAt: entTeam.CreatedAt,
 	}
 }
