@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui/button'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Header } from '@/components/home-page/header'
 import { useState } from 'react';
 import type { components } from '@/lib/api/types';
+import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
+import { OldTournaments } from '@/components/tournaments/old-tournaments'
 
 
 export const Route = createFileRoute('/tournaments/')({
@@ -23,17 +24,9 @@ function RouteComponent() {
 	return (
 		<div>
 			<Header/>
-			<div className="flex justify-center min-h-screen bg-background pt-20">
-				<div className="flex justify-center">
-					<Button 
-						type='button'
-						variant='outline'
-						className="min-w-[140px]"
-						onClick={() => (window.location.href = "/tournaments/1")}
-						>
-						Rocket League
-					</Button>
-				</div>
+			<div className="py-2 bg-black min-h-screen bg-background">
+				<ActiveTournaments/>
+				<OldTournaments/>
 			</div>
 		</div>
 	)

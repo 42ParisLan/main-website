@@ -6,7 +6,8 @@ import { PaginatedListControlled } from '@/components/ui/paginated-list';
 import type { components } from '@/lib/api/types';
 import { Input } from '@/components/ui/input';
 import { Header } from '@/components/home-page/header';
-import TeamCard from '@/components/tournament/teams/team-card';
+import { Footer } from '@/components/home-page/footer';
+import TeamCard from '@/components/tournaments/teams/team-card';
 
 
 export const Route = createFileRoute('/tournaments/$tournamentid/teams/')({
@@ -38,12 +39,12 @@ function RouteComponent() {
 		<>
       <div>
         <Header/>
-        <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6">
-          <Card className="@container/card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 gap-4">
-              <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+        <div className="h-full bg-gradient-to-br from-black via-foreground to-gray-700">
+          <div className=" ">
+            <div className="p-4 flex flex-row items-center justify-between space-y-0 gap-4">
+              <div className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 Teams
-              </CardTitle>
+              </div>
               <div className="w-full max-w-sm ml-auto">
                 <Input
                   placeholder="Search teams..."
@@ -54,8 +55,8 @@ function RouteComponent() {
                   }}
                   />
               </div>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="p-4">
               <PaginatedListControlled<components['schemas']['User']>
                 data={data}
                 isLoading={isLoading}
@@ -67,10 +68,11 @@ function RouteComponent() {
                 itemLabel="user"
                 emptyMessage="No team found"
                 />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
+      <Footer/>
 		</>
 	)
 }

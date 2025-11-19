@@ -4,6 +4,7 @@ import { Header } from '@/components/home-page/header'
 import { useState } from 'react';
 import UserSearch from '@/components/users/user-search';
 import type { components } from '@/lib/api/types';
+import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
 
 export const Route = createFileRoute('/tournaments/$tournamentid/')({
   component: RouteComponent,
