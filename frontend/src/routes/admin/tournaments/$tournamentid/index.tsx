@@ -86,9 +86,13 @@ function RouteComponent() {
 								<div>
 									<strong>External link</strong>
 									<div className="text-sm">
-										{data.external_link ? (
-											<a href={data.external_link} target="_blank" rel="noopener noreferrer" className="underline text-primary">{data.external_link}</a>
-										) : <span className="text-muted-foreground">—</span>}
+										{data.external_links ? (
+											Object.entries(data.external_links).map(([label, url]) => (
+												<a key={label} href={url as string} target="_blank" rel="noopener noreferrer" className="underline text-primary">{label}</a>
+											))
+										) : (
+											<span className="text-muted-foreground">—</span>
+										)}
 									</div>
 								</div>
 

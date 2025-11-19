@@ -2386,6 +2386,38 @@ paths:
       summary: edit admin of tournament
       tags:
         - Tournament
+  /tournaments/{id}/me/team:
+    get:
+      description: This endpoint is used to get user team from a tournament.
+      operationId: getUserTeamFromTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get User Team from Tournament
+      tags:
+        - Teams
   /tournaments/{id}/teams:
     get:
       description: This endpoint is used to get all teams from a tournament.

@@ -44,6 +44,16 @@ func (ctrl *teamController) Register(api huma.API) {
 		OperationID: "createTeamTournament",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.createTeamTournament)
+
+	huma.Register(api, huma.Operation{
+		Method:      "GET",
+		Path:        "/tournaments/{id}/me/team",
+		Summary:     "Get User Team from Tournament",
+		Description: `This endpoint is used to get user team from a tournament.`,
+		Tags:        []string{"Teams"},
+		OperationID: "getUserTeamFromTournament",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.getUserTeamFromTournament)
 }
 
 func (ctrl *teamController) getAllTeamsTournament(
@@ -64,6 +74,19 @@ func (ctrl *teamController) createTeamTournament(
 	input *createTeamInput,
 ) (*oneTeamOutput, error) {
 	result, err := ctrl.teamsService.CreateTeam(ctx, input.RawBody.Data(), input.TournamentID)
+	if err != nil {
+		return nil, err
+	}
+	return &oneTeamOutput{
+		Body: result,
+	}, nil
+}
+
+func (ctrl *teamController) getUserTeamFromTournament(
+	ctx context.Context,
+	input *tournamentIDInput,
+) (*oneTeamOutput, error) {
+	result, err := ctrl.teamsService.GetMyTeam(ctx, input.TournamentID)
 	if err != nil {
 		return nil, err
 	}

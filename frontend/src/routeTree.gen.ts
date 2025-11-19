@@ -25,6 +25,9 @@ import { Route as AdminAppsIndexRouteImport } from './routes/admin/apps/index'
 import { Route as AdminAdminsIndexRouteImport } from './routes/admin/admins/index'
 import { Route as VotesVoteidResultsIndexRouteImport } from './routes/votes/$voteid/results/index'
 import { Route as VotesVoteidLiveIndexRouteImport } from './routes/votes/$voteid/live/index'
+import { Route as TournamentsTournamentidTeamsIndexRouteImport } from './routes/tournaments/$tournamentid/teams/index'
+import { Route as TournamentsTournamentidRegisterIndexRouteImport } from './routes/tournaments/$tournamentid/register/index'
+import { Route as TournamentsTournamentidTeamidIndexRouteImport } from './routes/tournaments/$tournamentid/$teamid/index'
 import { Route as AdminVotesVoteidIndexRouteImport } from './routes/admin/votes/$voteid/index'
 import { Route as AdminTournamentsCreateIndexRouteImport } from './routes/admin/tournaments/create/index'
 import { Route as AdminTournamentsTournamentidIndexRouteImport } from './routes/admin/tournaments/$tournamentid/index'
@@ -114,6 +117,24 @@ const VotesVoteidLiveIndexRoute = VotesVoteidLiveIndexRouteImport.update({
   path: '/votes/$voteid/live/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TournamentsTournamentidTeamsIndexRoute =
+  TournamentsTournamentidTeamsIndexRouteImport.update({
+    id: '/tournaments/$tournamentid/teams/',
+    path: '/tournaments/$tournamentid/teams/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TournamentsTournamentidRegisterIndexRoute =
+  TournamentsTournamentidRegisterIndexRouteImport.update({
+    id: '/tournaments/$tournamentid/register/',
+    path: '/tournaments/$tournamentid/register/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TournamentsTournamentidTeamidIndexRoute =
+  TournamentsTournamentidTeamidIndexRouteImport.update({
+    id: '/tournaments/$tournamentid/$teamid/',
+    path: '/tournaments/$tournamentid/$teamid/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminVotesVoteidIndexRoute = AdminVotesVoteidIndexRouteImport.update({
   id: '/votes/$voteid/',
   path: '/votes/$voteid/',
@@ -174,6 +195,9 @@ export interface FileRoutesByFullPath {
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidIndexRoute
   '/admin/tournaments/create': typeof AdminTournamentsCreateIndexRoute
   '/admin/votes/$voteid': typeof AdminVotesVoteidIndexRoute
+  '/tournaments/$tournamentid/$teamid': typeof TournamentsTournamentidTeamidIndexRoute
+  '/tournaments/$tournamentid/register': typeof TournamentsTournamentidRegisterIndexRoute
+  '/tournaments/$tournamentid/teams': typeof TournamentsTournamentidTeamsIndexRoute
   '/votes/$voteid/live': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
   '/admin/tournaments/$tournamentid/edit': typeof AdminTournamentsTournamentidEditIndexRoute
@@ -198,6 +222,9 @@ export interface FileRoutesByTo {
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidIndexRoute
   '/admin/tournaments/create': typeof AdminTournamentsCreateIndexRoute
   '/admin/votes/$voteid': typeof AdminVotesVoteidIndexRoute
+  '/tournaments/$tournamentid/$teamid': typeof TournamentsTournamentidTeamidIndexRoute
+  '/tournaments/$tournamentid/register': typeof TournamentsTournamentidRegisterIndexRoute
+  '/tournaments/$tournamentid/teams': typeof TournamentsTournamentidTeamsIndexRoute
   '/votes/$voteid/live': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
   '/admin/tournaments/$tournamentid/edit': typeof AdminTournamentsTournamentidEditIndexRoute
@@ -224,6 +251,9 @@ export interface FileRoutesById {
   '/admin/tournaments/$tournamentid/': typeof AdminTournamentsTournamentidIndexRoute
   '/admin/tournaments/create/': typeof AdminTournamentsCreateIndexRoute
   '/admin/votes/$voteid/': typeof AdminVotesVoteidIndexRoute
+  '/tournaments/$tournamentid/$teamid/': typeof TournamentsTournamentidTeamidIndexRoute
+  '/tournaments/$tournamentid/register/': typeof TournamentsTournamentidRegisterIndexRoute
+  '/tournaments/$tournamentid/teams/': typeof TournamentsTournamentidTeamsIndexRoute
   '/votes/$voteid/live/': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results/': typeof VotesVoteidResultsIndexRoute
   '/admin/tournaments/$tournamentid/edit/': typeof AdminTournamentsTournamentidEditIndexRoute
@@ -251,6 +281,9 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid'
     | '/admin/tournaments/create'
     | '/admin/votes/$voteid'
+    | '/tournaments/$tournamentid/$teamid'
+    | '/tournaments/$tournamentid/register'
+    | '/tournaments/$tournamentid/teams'
     | '/votes/$voteid/live'
     | '/votes/$voteid/results'
     | '/admin/tournaments/$tournamentid/edit'
@@ -275,6 +308,9 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid'
     | '/admin/tournaments/create'
     | '/admin/votes/$voteid'
+    | '/tournaments/$tournamentid/$teamid'
+    | '/tournaments/$tournamentid/register'
+    | '/tournaments/$tournamentid/teams'
     | '/votes/$voteid/live'
     | '/votes/$voteid/results'
     | '/admin/tournaments/$tournamentid/edit'
@@ -300,6 +336,9 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid/'
     | '/admin/tournaments/create/'
     | '/admin/votes/$voteid/'
+    | '/tournaments/$tournamentid/$teamid/'
+    | '/tournaments/$tournamentid/register/'
+    | '/tournaments/$tournamentid/teams/'
     | '/votes/$voteid/live/'
     | '/votes/$voteid/results/'
     | '/admin/tournaments/$tournamentid/edit/'
@@ -315,6 +354,9 @@ export interface RootRouteChildren {
   AuthCallbackIndexRoute: typeof AuthCallbackIndexRoute
   TournamentsTournamentidIndexRoute: typeof TournamentsTournamentidIndexRoute
   VotesVoteidIndexRoute: typeof VotesVoteidIndexRoute
+  TournamentsTournamentidTeamidIndexRoute: typeof TournamentsTournamentidTeamidIndexRoute
+  TournamentsTournamentidRegisterIndexRoute: typeof TournamentsTournamentidRegisterIndexRoute
+  TournamentsTournamentidTeamsIndexRoute: typeof TournamentsTournamentidTeamsIndexRoute
   VotesVoteidLiveIndexRoute: typeof VotesVoteidLiveIndexRoute
   VotesVoteidResultsIndexRoute: typeof VotesVoteidResultsIndexRoute
 }
@@ -433,6 +475,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VotesVoteidLiveIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tournaments/$tournamentid/teams/': {
+      id: '/tournaments/$tournamentid/teams/'
+      path: '/tournaments/$tournamentid/teams'
+      fullPath: '/tournaments/$tournamentid/teams'
+      preLoaderRoute: typeof TournamentsTournamentidTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentid/register/': {
+      id: '/tournaments/$tournamentid/register/'
+      path: '/tournaments/$tournamentid/register'
+      fullPath: '/tournaments/$tournamentid/register'
+      preLoaderRoute: typeof TournamentsTournamentidRegisterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentid/$teamid/': {
+      id: '/tournaments/$tournamentid/$teamid/'
+      path: '/tournaments/$tournamentid/$teamid'
+      fullPath: '/tournaments/$tournamentid/$teamid'
+      preLoaderRoute: typeof TournamentsTournamentidTeamidIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/votes/$voteid/': {
       id: '/admin/votes/$voteid/'
       path: '/votes/$voteid'
@@ -531,6 +594,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackIndexRoute: AuthCallbackIndexRoute,
   TournamentsTournamentidIndexRoute: TournamentsTournamentidIndexRoute,
   VotesVoteidIndexRoute: VotesVoteidIndexRoute,
+  TournamentsTournamentidTeamidIndexRoute:
+    TournamentsTournamentidTeamidIndexRoute,
+  TournamentsTournamentidRegisterIndexRoute:
+    TournamentsTournamentidRegisterIndexRoute,
+  TournamentsTournamentidTeamsIndexRoute:
+    TournamentsTournamentidTeamsIndexRoute,
   VotesVoteidLiveIndexRoute: VotesVoteidLiveIndexRoute,
   VotesVoteidResultsIndexRoute: VotesVoteidResultsIndexRoute,
 }

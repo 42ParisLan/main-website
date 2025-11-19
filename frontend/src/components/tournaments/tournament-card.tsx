@@ -1,8 +1,8 @@
 import type { components } from "@/lib/api/types";
-import { Card, CardContent } from "../../ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "../../ui/avatar";
-import { Badge } from "../../ui/badge";
-import { Button } from "../../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
 
 function formatDate(iso?: string) {
@@ -17,7 +17,7 @@ function formatDate(iso?: string) {
 	}
 }
 
-export default function TournamentCard({
+export default function PublicTournamentCard({
 	tournament,
 }: {
 	tournament: components["schemas"]["LightTournament"];
@@ -71,22 +71,11 @@ export default function TournamentCard({
 									{formatDate(tournament.registration_start)} — {formatDate(tournament.registration_end)}
 								</span>
 							</div>
-							<div>
-								<strong>Creator:</strong> <span className="ml-1">{creatorUsername}</span>
-							</div>
 						</div>
 
 						<div className="mt-3 flex items-center gap-3">
-							{tournament.external_links ? (
-								Object.entries(tournament.external_links).map(([label, url]) => (
-									<a key={label} href={url as string} target="_blank" rel="noopener noreferrer" className="underline text-primary">{label}</a>
-								))
-							) : (
-								<span className="text-muted-foreground">—</span>
-							)}
-
 							<Button variant="secondary" size="sm" asChild>
-								<Link to={`/admin/tournaments/$tournamentid`} params={{tournamentid: tournament.slug}}>View</Link>
+								<Link to={`/tournaments/$tournamentid`} params={{tournamentid: tournament.slug}}>View</Link>
 							</Button>
 						</div>
 					</div>

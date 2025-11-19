@@ -488,6 +488,26 @@ export interface paths {
         patch: operations["editTournamentAdmin"];
         trace?: never;
     };
+    "/tournaments/{id}/me/team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User Team from Tournament
+         * @description This endpoint is used to get user team from a tournament.
+         */
+        get: operations["getUserTeamFromTournament"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tournaments/{id}/teams": {
         parameters: {
             query?: never;
@@ -1117,7 +1137,9 @@ export interface components {
             custom_page_component?: string;
             /** @example School-wide League of Legends tournament */
             description?: string;
-            external_link?: string;
+            external_links?: {
+                [key: string]: string;
+            };
             /**
              * Format: int64
              * @example 42
@@ -1470,7 +1492,9 @@ export interface components {
             creator: components["schemas"]["LightUser"];
             custom_page_component: string;
             description: string;
-            external_link?: string;
+            external_links?: {
+                [key: string]: string;
+            };
             /**
              * Format: int64
              * @example 42
@@ -2588,6 +2612,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getUserTeamFromTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
                 };
             };
             /** @description Error */
