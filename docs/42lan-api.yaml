@@ -235,57 +235,6 @@ components:
         - scopes
         - expiration_date
       type: object
-    CreateTournament:
-      additionalProperties: false
-      properties:
-        $schema:
-          description: A URL to the JSON Schema for this object.
-          example: /api/schemas/CreateTournament.json
-          format: uri
-          readOnly: true
-          type: string
-        custom_page_component:
-          type: string
-        description:
-          example: School-wide League of Legends tournament
-          type: string
-        max_teams:
-          example: 32
-          format: int64
-          minimum: 3
-          type: integer
-        name:
-          example: Spring Cup 2025
-          type: string
-        registration_end:
-          example: "2025-03-10T23:59:59Z"
-          format: date-time
-          type: string
-        registration_start:
-          example: "2025-03-01T00:00:00Z"
-          format: date-time
-          type: string
-        slug:
-          example: spring-cup-2025
-          type: string
-        team_structure:
-          additionalProperties:
-            $ref: "#/components/schemas/TeamStructure"
-          type: object
-        tournament_start:
-          example: "2025-03-15T00:00:00Z"
-          format: date-time
-          type: string
-      required:
-        - slug
-        - name
-        - description
-        - registration_start
-        - registration_end
-        - tournament_start
-        - max_teams
-        - team_structure
-      type: object
     CreateVote:
       additionalProperties: false
       properties:
@@ -469,6 +418,9 @@ components:
           format: int64
           type: integer
         status:
+          enum:
+            - DRAFT
+            - LOCKED
           example: DRAFT
           type: string
       required:
@@ -507,6 +459,8 @@ components:
           additionalProperties:
             type: string
           type: object
+        iamge_url:
+          type: string
         id:
           example: 42
           format: int64
@@ -531,14 +485,6 @@ components:
         slug:
           example: spring-cup-2025
           type: string
-        state:
-          enum:
-            - DRAFT
-            - REGISTRATION_OPEN
-            - REGISTRATION_CLOSED
-            - ONGOING
-            - FINISHED
-          type: string
         team_structure:
           additionalProperties:
             $ref: "#/components/schemas/TeamStructure"
@@ -556,8 +502,8 @@ components:
         - id
         - slug
         - name
+        - iamge_url
         - is_visible
-        - state
         - registration_start
         - registration_end
         - tournament_start
@@ -1007,6 +953,9 @@ components:
           additionalProperties:
             type: string
           type: object
+        iamge_url:
+          nullable: true
+          type: string
         id:
           example: 42
           format: int64
@@ -1033,14 +982,6 @@ components:
         slug:
           example: spring-cup-2025
           type: string
-        state:
-          enum:
-            - DRAFT
-            - REGISTRATION_OPEN
-            - REGISTRATION_CLOSED
-            - ONGOING
-            - FINISHED
-          type: string
         team_structure:
           additionalProperties:
             $ref: "#/components/schemas/TeamStructure"
@@ -1062,8 +1003,8 @@ components:
         - slug
         - name
         - description
+        - iamge_url
         - is_visible
-        - state
         - registration_start
         - registration_end
         - tournament_start
@@ -2092,6 +2033,37 @@ paths:
         - RBAC
         - Roles
   /teams/{id}:
+    delete:
+      description: This endpoint is used to delete a team.
+      operationId: deleteTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Team
+      tags:
+        - Teams
     get:
       description: This endpoint is used to get a team.
       operationId: getTeam
@@ -2121,6 +2093,56 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: Get Team
+      tags:
+        - Teams
+    patch:
+      description: This endpoint is used to update a team.
+      operationId: updateTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              image:
+                contentType: image/*
+              name:
+                contentType: text/plain
+            schema:
+              properties:
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                name:
+                  example: Team Phoenix
+                  type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Team
       tags:
         - Teams
   /tournaments:
@@ -2207,10 +2229,73 @@ paths:
       operationId: createTournament
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
+            encoding:
+              custom_page_component,omitempty:
+                contentType: text/plain
+              description:
+                contentType: text/plain
+              image:
+                contentType: image/*
+              max_teams:
+                contentType: text/plain
+              name:
+                contentType: text/plain
+              registration_end:
+                contentType: text/plain
+              registration_start:
+                contentType: text/plain
+              slug:
+                contentType: text/plain
+              team_structure:
+                contentType: text/plain
+              tournament_start:
+                contentType: text/plain
             schema:
-              $ref: "#/components/schemas/CreateTournament"
-        required: true
+              properties:
+                custom_page_component,omitempty:
+                  type: string
+                description:
+                  example: School-wide League of Legends tournament
+                  type: string
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                max_teams:
+                  example: 32
+                  format: int64
+                  minimum: 3
+                  type: integer
+                name:
+                  example: Spring Cup 2025
+                  type: string
+                registration_end:
+                  example: "2025-03-10T23:59:59Z"
+                  format: date-time
+                  type: string
+                registration_start:
+                  example: "2025-03-01T00:00:00Z"
+                  format: date-time
+                  type: string
+                slug:
+                  example: spring-cup-2025
+                  type: string
+                team_structure:
+                  type: string
+                tournament_start:
+                  example: "2025-03-15T00:00:00Z"
+                  format: date-time
+                  type: string
+              required:
+                - slug
+                - name
+                - registration_start
+                - registration_end
+                - tournament_start
+                - max_teams
+              type: object
       responses:
         "200":
           content:
@@ -2496,6 +2581,16 @@ paths:
               - asc
               - desc
             example: asc
+            type: string
+        - example: DRAFT
+          explode: false
+          in: query
+          name: status
+          schema:
+            enum:
+              - DRAFT
+              - LOCKED
+            example: DRAFT
             type: string
       responses:
         "200":

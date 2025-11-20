@@ -7,7 +7,7 @@ import type { components } from "@/lib/api/types";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../ui/select";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../ui/button";
 import { toDatetimeLocal, toIsoString } from "@/lib/date.utils";
 import { z } from "zod";
@@ -15,6 +15,21 @@ import { z } from "zod";
 export default function TournamentCreate() {
 	const router = useRouter();
 	const client = useQueryClient();
+
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string>("");
+
+	useEffect(() => {
+		if (!selectedFile) {
+			setPreviewUrl("");
+			return;
+		}
+		const url = URL.createObjectURL(selectedFile);
+		setPreviewUrl(url);
+		return () => URL.revokeObjectURL(url);
+	}, [selectedFile]);
+
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	const {mutate, isPending} = client.useMutation("post", "/tournaments", {
 		onSuccess(data) {
@@ -37,9 +52,10 @@ export default function TournamentCreate() {
 			registration_end: "",
 			registration_start: "",
 			tournament_start: "",
+			image: null as File | null,
 		},
 		onSubmit: async ({ value }) => {
-			let team_structure: components["schemas"]["CreateTournament"]["team_structure"] = {}
+			let team_structure: components["schemas"]["Tournament"]["team_structure"] = {}
 			if (teamRoles.length > 0) {
 				for (const r of teamRoles) {
 					if (!r.name || r.min === "" || r.max === "") {
@@ -56,18 +72,20 @@ export default function TournamentCreate() {
 				}
 			}
 
-			const body: components["schemas"]["CreateTournament"] = {
-				custom_page_component: value.custom_page_component,
-				description: value.description,
-				max_teams: value.max_teams,
-				name: value.name,
-				registration_end: value.registration_end,
-				registration_start: value.registration_start,
-				slug: value.name.toLocaleLowerCase().replaceAll(" ", "-"),
-				team_structure,
-				tournament_start: value.tournament_start,
-			};
-			mutate({ body });
+			const formData = new FormData();
+
+			if (value.custom_page_component) formData.append('custom_page_component', String(value.custom_page_component));
+			if (value.image) formData.append("image", value.image);
+			formData.append('description', String(value.description ?? ''));
+			formData.append('max_teams', String(value.max_teams ?? 0));
+			formData.append('name', String(value.name ?? ''));
+			formData.append('registration_end', String(value.registration_end ?? ''));
+			formData.append('registration_start', String(value.registration_start ?? ''));
+			formData.append('slug', String((value.name ?? '').toLocaleLowerCase().replaceAll(' ', '-')));
+			formData.append('tournament_start', String(value.tournament_start ?? ''));
+			formData.append('team_structure', JSON.stringify(team_structure));
+
+			mutate({ body: formData as any });
 		},
 	});
 
@@ -137,6 +155,59 @@ export default function TournamentCreate() {
 						{field.state.meta.errors?.[0] && (
 							<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
 						)}
+					</div>
+				)}
+			</form.Field>
+
+			<form.Field name="image">
+				{(field) => (
+					<div className="grid gap-2">
+						<Label htmlFor="component-image">Image</Label>
+
+						<div className="flex items-center gap-3">
+							{/* hidden native input (triggered programmatically) */}
+							<input
+								id="component-image"
+								ref={fileInputRef}
+								type="file"
+								accept="image/*"
+								className="hidden"
+								onChange={(e) => {
+									const file = e.target.files?.[0] ?? null;
+									field.handleChange(file);
+									setSelectedFile(file);
+								}}
+							/>
+
+							<Button
+								type="button"
+								className="inline-flex"
+								onClick={() => fileInputRef.current?.click()}
+							>
+								Upload image
+							</Button>
+
+							{field.state.value && (
+								<Button
+									type="button"
+									variant="ghost"
+									onClick={() => {
+										field.handleChange(null);
+										setSelectedFile(null);
+									}}
+								>
+									Remove
+								</Button>
+							)}
+						</div>
+
+						<div className="w-full max-w-xs aspect-square rounded-xl overflow-hidden shadow-lg bg-muted/10 flex items-center justify-center">
+							{previewUrl ? (
+								<img className="w-full h-full object-cover" src={previewUrl} alt="component preview" />
+							) : (
+								<div className="text-center p-4 text-sm text-muted-foreground">No image selected</div>
+							)}
+						</div>
 					</div>
 				)}
 			</form.Field>

@@ -42,6 +42,20 @@ func (_c *TournamentCreate) SetDescription(v string) *TournamentCreate {
 	return _c
 }
 
+// SetImageURL sets the "image_url" field.
+func (_c *TournamentCreate) SetImageURL(v string) *TournamentCreate {
+	_c.mutation.SetImageURL(v)
+	return _c
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (_c *TournamentCreate) SetNillableImageURL(v *string) *TournamentCreate {
+	if v != nil {
+		_c.SetImageURL(*v)
+	}
+	return _c
+}
+
 // SetIsVisible sets the "is_visible" field.
 func (_c *TournamentCreate) SetIsVisible(v bool) *TournamentCreate {
 	_c.mutation.SetIsVisible(v)
@@ -88,20 +102,6 @@ func (_c *TournamentCreate) SetNillableTournamentEnd(v *time.Time) *TournamentCr
 	return _c
 }
 
-// SetState sets the "state" field.
-func (_c *TournamentCreate) SetState(v tournament.State) *TournamentCreate {
-	_c.mutation.SetState(v)
-	return _c
-}
-
-// SetNillableState sets the "state" field if the given value is not nil.
-func (_c *TournamentCreate) SetNillableState(v *tournament.State) *TournamentCreate {
-	if v != nil {
-		_c.SetState(*v)
-	}
-	return _c
-}
-
 // SetMaxTeams sets the "max_teams" field.
 func (_c *TournamentCreate) SetMaxTeams(v int) *TournamentCreate {
 	_c.mutation.SetMaxTeams(v)
@@ -144,6 +144,20 @@ func (_c *TournamentCreate) SetCreatedAt(v time.Time) *TournamentCreate {
 func (_c *TournamentCreate) SetNillableCreatedAt(v *time.Time) *TournamentCreate {
 	if v != nil {
 		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *TournamentCreate) SetUpdatedAt(v time.Time) *TournamentCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *TournamentCreate) SetNillableUpdatedAt(v *time.Time) *TournamentCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
 	return _c
 }
@@ -239,13 +253,13 @@ func (_c *TournamentCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *TournamentCreate) defaults() {
+	if _, ok := _c.mutation.ImageURL(); !ok {
+		v := tournament.DefaultImageURL
+		_c.mutation.SetImageURL(v)
+	}
 	if _, ok := _c.mutation.IsVisible(); !ok {
 		v := tournament.DefaultIsVisible
 		_c.mutation.SetIsVisible(v)
-	}
-	if _, ok := _c.mutation.State(); !ok {
-		v := tournament.DefaultState
-		_c.mutation.SetState(v)
 	}
 	if _, ok := _c.mutation.CustomPageComponent(); !ok {
 		v := tournament.DefaultCustomPageComponent
@@ -254,6 +268,10 @@ func (_c *TournamentCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := tournament.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := tournament.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -268,6 +286,9 @@ func (_c *TournamentCreate) check() error {
 	if _, ok := _c.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Tournament.description"`)}
 	}
+	if _, ok := _c.mutation.ImageURL(); !ok {
+		return &ValidationError{Name: "image_url", err: errors.New(`ent: missing required field "Tournament.image_url"`)}
+	}
 	if _, ok := _c.mutation.IsVisible(); !ok {
 		return &ValidationError{Name: "is_visible", err: errors.New(`ent: missing required field "Tournament.is_visible"`)}
 	}
@@ -280,14 +301,6 @@ func (_c *TournamentCreate) check() error {
 	if _, ok := _c.mutation.TournamentStart(); !ok {
 		return &ValidationError{Name: "tournament_start", err: errors.New(`ent: missing required field "Tournament.tournament_start"`)}
 	}
-	if _, ok := _c.mutation.State(); !ok {
-		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Tournament.state"`)}
-	}
-	if v, ok := _c.mutation.State(); ok {
-		if err := tournament.StateValidator(v); err != nil {
-			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "Tournament.state": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.MaxTeams(); !ok {
 		return &ValidationError{Name: "max_teams", err: errors.New(`ent: missing required field "Tournament.max_teams"`)}
 	}
@@ -296,6 +309,9 @@ func (_c *TournamentCreate) check() error {
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Tournament.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Tournament.updated_at"`)}
 	}
 	if len(_c.mutation.CreatorIDs()) == 0 {
 		return &ValidationError{Name: "creator", err: errors.New(`ent: missing required edge "Tournament.creator"`)}
@@ -338,6 +354,10 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 		_spec.SetField(tournament.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
+	if value, ok := _c.mutation.ImageURL(); ok {
+		_spec.SetField(tournament.FieldImageURL, field.TypeString, value)
+		_node.ImageURL = value
+	}
 	if value, ok := _c.mutation.IsVisible(); ok {
 		_spec.SetField(tournament.FieldIsVisible, field.TypeBool, value)
 		_node.IsVisible = value
@@ -358,10 +378,6 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 		_spec.SetField(tournament.FieldTournamentEnd, field.TypeTime, value)
 		_node.TournamentEnd = &value
 	}
-	if value, ok := _c.mutation.State(); ok {
-		_spec.SetField(tournament.FieldState, field.TypeEnum, value)
-		_node.State = value
-	}
 	if value, ok := _c.mutation.MaxTeams(); ok {
 		_spec.SetField(tournament.FieldMaxTeams, field.TypeInt, value)
 		_node.MaxTeams = value
@@ -381,6 +397,10 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(tournament.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.CreatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

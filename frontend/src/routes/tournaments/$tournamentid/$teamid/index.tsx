@@ -16,18 +16,18 @@ function RouteComponent() {
 	const router = useRouter();
 	const {me} = useAuth();
 
-	const {data: team, error: errorTeam} = client.useQuery("get", "/teams/{id}", {
-		params: {
-			path: {
-				id: Number(teamid)
-			}
-		}
-	})
-
 	const {data: tournament, error: errorTournament} = client.useQuery("get", "/tournaments/{id_or_slug}", {
 		params: {
 			path: {
 				id_or_slug: tournamentid
+			}
+		}
+	})
+
+	const {data: team, error: errorTeam} = client.useQuery("get", "/teams/{id}", {
+		params: {
+			path: {
+				id: Number(teamid)
 			}
 		}
 	})

@@ -7,6 +7,7 @@ import useQueryClient from '@/hooks/use-query-client'
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/register/')({
   component: RouteComponent,
@@ -41,6 +42,7 @@ function RouteComponent() {
 
 	const { mutate: mutateCreateTeam, isPending: isCreating } = client.useMutation("post", "/tournaments/{id}/teams", {
 		onSuccess(data) {
+			toast.success("Team Successfuly created")
 			if (data && tournament) {
 				router.navigate({
 					to: "/tournaments/$tournamentid/$teamid",
@@ -53,6 +55,7 @@ function RouteComponent() {
 		},
 		onError(error) {
 			console.error('Error creating team', error)
+			toast.error("Failed to Create Team")
 		}
 	})  
 
@@ -67,8 +70,8 @@ function RouteComponent() {
 			router.navigate({
 				to: "/tournaments/$tournamentid/$teamid",
 				params: {
-					tournamentid: String(tournament.id),
-					teamid: String((team as any).id),
+					tournamentid: tournament.slug,
+					teamid: String(team.id),
 				},
 			})
 		}

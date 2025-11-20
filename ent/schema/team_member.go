@@ -30,7 +30,8 @@ func (TeamMember) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 		edge.To("tournament", Tournament.Type).
 			Unique().
-			Required(),
+			Required().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }
 

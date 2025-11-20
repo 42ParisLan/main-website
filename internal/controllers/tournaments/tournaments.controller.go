@@ -147,7 +147,7 @@ func (ctrl *tournamentController) createTournament(
 	ctx context.Context,
 	input *createTournamentInput,
 ) (*oneTournamentOutput, error) {
-	tournament, err := ctrl.tournamentsService.CreateTournament(ctx, *input.Body)
+	tournament, err := ctrl.tournamentsService.CreateTournament(ctx, *input.RawBody.Data())
 	if err != nil {
 		return nil, err
 	}

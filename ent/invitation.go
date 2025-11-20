@@ -19,14 +19,12 @@ type Invitation struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Status holds the value of the "status" field.
-	Status invitation.Status `json:"status,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// ExpiresAt holds the value of the "expires_at" field.
-	ExpiresAt time.Time `json:"expires_at,omitempty"`
 	// Message holds the value of the "message" field.
 	Message string `json:"message,omitempty"`
+	// Role holds the value of the "role" field.
+	Role string `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InvitationQuery when eager-loading is set.
 	Edges              InvitationEdges `json:"edges"`
@@ -75,9 +73,9 @@ func (*Invitation) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case invitation.FieldID:
 			values[i] = new(sql.NullInt64)
-		case invitation.FieldStatus, invitation.FieldMessage:
+		case invitation.FieldMessage, invitation.FieldRole:
 			values[i] = new(sql.NullString)
-		case invitation.FieldCreatedAt, invitation.FieldExpiresAt:
+		case invitation.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		case invitation.ForeignKeys[0]: // invitation_team
 			values[i] = new(sql.NullInt64)
@@ -104,29 +102,23 @@ func (_m *Invitation) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int(value.Int64)
-		case invitation.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				_m.Status = invitation.Status(value.String)
-			}
 		case invitation.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
-		case invitation.FieldExpiresAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
-			} else if value.Valid {
-				_m.ExpiresAt = value.Time
-			}
 		case invitation.FieldMessage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field message", values[i])
 			} else if value.Valid {
 				_m.Message = value.String
+			}
+		case invitation.FieldRole:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field role", values[i])
+			} else if value.Valid {
+				_m.Role = value.String
 			}
 		case invitation.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -188,17 +180,14 @@ func (_m *Invitation) String() string {
 	var builder strings.Builder
 	builder.WriteString("Invitation(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Status))
-	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("expires_at=")
-	builder.WriteString(_m.ExpiresAt.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("message=")
 	builder.WriteString(_m.Message)
+	builder.WriteString(", ")
+	builder.WriteString("role=")
+	builder.WriteString(_m.Role)
 	builder.WriteByte(')')
 	return builder.String()
 }

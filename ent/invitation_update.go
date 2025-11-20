@@ -30,20 +30,6 @@ func (_u *InvitationUpdate) Where(ps ...predicate.Invitation) *InvitationUpdate 
 	return _u
 }
 
-// SetStatus sets the "status" field.
-func (_u *InvitationUpdate) SetStatus(v invitation.Status) *InvitationUpdate {
-	_u.mutation.SetStatus(v)
-	return _u
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *InvitationUpdate) SetNillableStatus(v *invitation.Status) *InvitationUpdate {
-	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (_u *InvitationUpdate) SetCreatedAt(v time.Time) *InvitationUpdate {
 	_u.mutation.SetCreatedAt(v)
@@ -55,26 +41,6 @@ func (_u *InvitationUpdate) SetNillableCreatedAt(v *time.Time) *InvitationUpdate
 	if v != nil {
 		_u.SetCreatedAt(*v)
 	}
-	return _u
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (_u *InvitationUpdate) SetExpiresAt(v time.Time) *InvitationUpdate {
-	_u.mutation.SetExpiresAt(v)
-	return _u
-}
-
-// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (_u *InvitationUpdate) SetNillableExpiresAt(v *time.Time) *InvitationUpdate {
-	if v != nil {
-		_u.SetExpiresAt(*v)
-	}
-	return _u
-}
-
-// ClearExpiresAt clears the value of the "expires_at" field.
-func (_u *InvitationUpdate) ClearExpiresAt() *InvitationUpdate {
-	_u.mutation.ClearExpiresAt()
 	return _u
 }
 
@@ -95,6 +61,20 @@ func (_u *InvitationUpdate) SetNillableMessage(v *string) *InvitationUpdate {
 // ClearMessage clears the value of the "message" field.
 func (_u *InvitationUpdate) ClearMessage() *InvitationUpdate {
 	_u.mutation.ClearMessage()
+	return _u
+}
+
+// SetRole sets the "role" field.
+func (_u *InvitationUpdate) SetRole(v string) *InvitationUpdate {
+	_u.mutation.SetRole(v)
+	return _u
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (_u *InvitationUpdate) SetNillableRole(v *string) *InvitationUpdate {
+	if v != nil {
+		_u.SetRole(*v)
+	}
 	return _u
 }
 
@@ -166,11 +146,6 @@ func (_u *InvitationUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *InvitationUpdate) check() error {
-	if v, ok := _u.mutation.Status(); ok {
-		if err := invitation.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Invitation.status": %w`, err)}
-		}
-	}
 	if _u.mutation.TeamCleared() && len(_u.mutation.TeamIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Invitation.team"`)
 	}
@@ -192,23 +167,17 @@ func (_u *InvitationUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 			}
 		}
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(invitation.FieldStatus, field.TypeEnum, value)
-	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(invitation.FieldCreatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.ExpiresAt(); ok {
-		_spec.SetField(invitation.FieldExpiresAt, field.TypeTime, value)
-	}
-	if _u.mutation.ExpiresAtCleared() {
-		_spec.ClearField(invitation.FieldExpiresAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Message(); ok {
 		_spec.SetField(invitation.FieldMessage, field.TypeString, value)
 	}
 	if _u.mutation.MessageCleared() {
 		_spec.ClearField(invitation.FieldMessage, field.TypeString)
+	}
+	if value, ok := _u.mutation.Role(); ok {
+		_spec.SetField(invitation.FieldRole, field.TypeString, value)
 	}
 	if _u.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -288,20 +257,6 @@ type InvitationUpdateOne struct {
 	mutation *InvitationMutation
 }
 
-// SetStatus sets the "status" field.
-func (_u *InvitationUpdateOne) SetStatus(v invitation.Status) *InvitationUpdateOne {
-	_u.mutation.SetStatus(v)
-	return _u
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *InvitationUpdateOne) SetNillableStatus(v *invitation.Status) *InvitationUpdateOne {
-	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (_u *InvitationUpdateOne) SetCreatedAt(v time.Time) *InvitationUpdateOne {
 	_u.mutation.SetCreatedAt(v)
@@ -313,26 +268,6 @@ func (_u *InvitationUpdateOne) SetNillableCreatedAt(v *time.Time) *InvitationUpd
 	if v != nil {
 		_u.SetCreatedAt(*v)
 	}
-	return _u
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (_u *InvitationUpdateOne) SetExpiresAt(v time.Time) *InvitationUpdateOne {
-	_u.mutation.SetExpiresAt(v)
-	return _u
-}
-
-// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (_u *InvitationUpdateOne) SetNillableExpiresAt(v *time.Time) *InvitationUpdateOne {
-	if v != nil {
-		_u.SetExpiresAt(*v)
-	}
-	return _u
-}
-
-// ClearExpiresAt clears the value of the "expires_at" field.
-func (_u *InvitationUpdateOne) ClearExpiresAt() *InvitationUpdateOne {
-	_u.mutation.ClearExpiresAt()
 	return _u
 }
 
@@ -353,6 +288,20 @@ func (_u *InvitationUpdateOne) SetNillableMessage(v *string) *InvitationUpdateOn
 // ClearMessage clears the value of the "message" field.
 func (_u *InvitationUpdateOne) ClearMessage() *InvitationUpdateOne {
 	_u.mutation.ClearMessage()
+	return _u
+}
+
+// SetRole sets the "role" field.
+func (_u *InvitationUpdateOne) SetRole(v string) *InvitationUpdateOne {
+	_u.mutation.SetRole(v)
+	return _u
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (_u *InvitationUpdateOne) SetNillableRole(v *string) *InvitationUpdateOne {
+	if v != nil {
+		_u.SetRole(*v)
+	}
 	return _u
 }
 
@@ -437,11 +386,6 @@ func (_u *InvitationUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *InvitationUpdateOne) check() error {
-	if v, ok := _u.mutation.Status(); ok {
-		if err := invitation.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Invitation.status": %w`, err)}
-		}
-	}
 	if _u.mutation.TeamCleared() && len(_u.mutation.TeamIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Invitation.team"`)
 	}
@@ -480,23 +424,17 @@ func (_u *InvitationUpdateOne) sqlSave(ctx context.Context) (_node *Invitation, 
 			}
 		}
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(invitation.FieldStatus, field.TypeEnum, value)
-	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(invitation.FieldCreatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.ExpiresAt(); ok {
-		_spec.SetField(invitation.FieldExpiresAt, field.TypeTime, value)
-	}
-	if _u.mutation.ExpiresAtCleared() {
-		_spec.ClearField(invitation.FieldExpiresAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Message(); ok {
 		_spec.SetField(invitation.FieldMessage, field.TypeString, value)
 	}
 	if _u.mutation.MessageCleared() {
 		_spec.ClearField(invitation.FieldMessage, field.TypeString)
+	}
+	if value, ok := _u.mutation.Role(); ok {
+		_spec.SetField(invitation.FieldRole, field.TypeString, value)
 	}
 	if _u.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{

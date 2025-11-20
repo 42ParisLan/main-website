@@ -18,12 +18,13 @@ func (Team) Fields() []ent.Field {
 		field.String("name"),
 		field.String("image_url").Default("teams/default.png"),
 		field.Enum("status").
-			Values("DRAFT", "LOCKED", "CONFIRMED", "WAITING", "DISQUALIFIED").
+			Values("DRAFT", "LOCKED").
 			Default("DRAFT"),
 		field.Bool("is_locked").Default(false),
 		field.Int("queue_position").Optional(),
 		field.Int("score").Optional(),
 		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

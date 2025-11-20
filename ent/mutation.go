@@ -4309,10 +4309,9 @@ type InvitationMutation struct {
 	op             Op
 	typ            string
 	id             *int
-	status         *invitation.Status
 	created_at     *time.Time
-	expires_at     *time.Time
 	message        *string
+	role           *string
 	clearedFields  map[string]struct{}
 	team           *int
 	clearedteam    bool
@@ -4421,42 +4420,6 @@ func (m *InvitationMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetStatus sets the "status" field.
-func (m *InvitationMutation) SetStatus(i invitation.Status) {
-	m.status = &i
-}
-
-// Status returns the value of the "status" field in the mutation.
-func (m *InvitationMutation) Status() (r invitation.Status, exists bool) {
-	v := m.status
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatus returns the old "status" field's value of the Invitation entity.
-// If the Invitation object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InvitationMutation) OldStatus(ctx context.Context) (v invitation.Status, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
-	}
-	return oldValue.Status, nil
-}
-
-// ResetStatus resets all changes to the "status" field.
-func (m *InvitationMutation) ResetStatus() {
-	m.status = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *InvitationMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -4491,55 +4454,6 @@ func (m *InvitationMutation) OldCreatedAt(ctx context.Context) (v time.Time, err
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *InvitationMutation) ResetCreatedAt() {
 	m.created_at = nil
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (m *InvitationMutation) SetExpiresAt(t time.Time) {
-	m.expires_at = &t
-}
-
-// ExpiresAt returns the value of the "expires_at" field in the mutation.
-func (m *InvitationMutation) ExpiresAt() (r time.Time, exists bool) {
-	v := m.expires_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldExpiresAt returns the old "expires_at" field's value of the Invitation entity.
-// If the Invitation object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InvitationMutation) OldExpiresAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
-	}
-	return oldValue.ExpiresAt, nil
-}
-
-// ClearExpiresAt clears the value of the "expires_at" field.
-func (m *InvitationMutation) ClearExpiresAt() {
-	m.expires_at = nil
-	m.clearedFields[invitation.FieldExpiresAt] = struct{}{}
-}
-
-// ExpiresAtCleared returns if the "expires_at" field was cleared in this mutation.
-func (m *InvitationMutation) ExpiresAtCleared() bool {
-	_, ok := m.clearedFields[invitation.FieldExpiresAt]
-	return ok
-}
-
-// ResetExpiresAt resets all changes to the "expires_at" field.
-func (m *InvitationMutation) ResetExpiresAt() {
-	m.expires_at = nil
-	delete(m.clearedFields, invitation.FieldExpiresAt)
 }
 
 // SetMessage sets the "message" field.
@@ -4589,6 +4503,42 @@ func (m *InvitationMutation) MessageCleared() bool {
 func (m *InvitationMutation) ResetMessage() {
 	m.message = nil
 	delete(m.clearedFields, invitation.FieldMessage)
+}
+
+// SetRole sets the "role" field.
+func (m *InvitationMutation) SetRole(s string) {
+	m.role = &s
+}
+
+// Role returns the value of the "role" field in the mutation.
+func (m *InvitationMutation) Role() (r string, exists bool) {
+	v := m.role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRole returns the old "role" field's value of the Invitation entity.
+// If the Invitation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InvitationMutation) OldRole(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRole is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRole requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRole: %w", err)
+	}
+	return oldValue.Role, nil
+}
+
+// ResetRole resets all changes to the "role" field.
+func (m *InvitationMutation) ResetRole() {
+	m.role = nil
 }
 
 // SetTeamID sets the "team" edge to the Team entity by id.
@@ -4703,18 +4653,15 @@ func (m *InvitationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InvitationMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.status != nil {
-		fields = append(fields, invitation.FieldStatus)
-	}
+	fields := make([]string, 0, 3)
 	if m.created_at != nil {
 		fields = append(fields, invitation.FieldCreatedAt)
 	}
-	if m.expires_at != nil {
-		fields = append(fields, invitation.FieldExpiresAt)
-	}
 	if m.message != nil {
 		fields = append(fields, invitation.FieldMessage)
+	}
+	if m.role != nil {
+		fields = append(fields, invitation.FieldRole)
 	}
 	return fields
 }
@@ -4724,14 +4671,12 @@ func (m *InvitationMutation) Fields() []string {
 // schema.
 func (m *InvitationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case invitation.FieldStatus:
-		return m.Status()
 	case invitation.FieldCreatedAt:
 		return m.CreatedAt()
-	case invitation.FieldExpiresAt:
-		return m.ExpiresAt()
 	case invitation.FieldMessage:
 		return m.Message()
+	case invitation.FieldRole:
+		return m.Role()
 	}
 	return nil, false
 }
@@ -4741,14 +4686,12 @@ func (m *InvitationMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *InvitationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case invitation.FieldStatus:
-		return m.OldStatus(ctx)
 	case invitation.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case invitation.FieldExpiresAt:
-		return m.OldExpiresAt(ctx)
 	case invitation.FieldMessage:
 		return m.OldMessage(ctx)
+	case invitation.FieldRole:
+		return m.OldRole(ctx)
 	}
 	return nil, fmt.Errorf("unknown Invitation field %s", name)
 }
@@ -4758,13 +4701,6 @@ func (m *InvitationMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *InvitationMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case invitation.FieldStatus:
-		v, ok := value.(invitation.Status)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStatus(v)
-		return nil
 	case invitation.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -4772,19 +4708,19 @@ func (m *InvitationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case invitation.FieldExpiresAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetExpiresAt(v)
-		return nil
 	case invitation.FieldMessage:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMessage(v)
+		return nil
+	case invitation.FieldRole:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRole(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Invitation field %s", name)
@@ -4816,9 +4752,6 @@ func (m *InvitationMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *InvitationMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(invitation.FieldExpiresAt) {
-		fields = append(fields, invitation.FieldExpiresAt)
-	}
 	if m.FieldCleared(invitation.FieldMessage) {
 		fields = append(fields, invitation.FieldMessage)
 	}
@@ -4836,9 +4769,6 @@ func (m *InvitationMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *InvitationMutation) ClearField(name string) error {
 	switch name {
-	case invitation.FieldExpiresAt:
-		m.ClearExpiresAt()
-		return nil
 	case invitation.FieldMessage:
 		m.ClearMessage()
 		return nil
@@ -4850,17 +4780,14 @@ func (m *InvitationMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *InvitationMutation) ResetField(name string) error {
 	switch name {
-	case invitation.FieldStatus:
-		m.ResetStatus()
-		return nil
 	case invitation.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case invitation.FieldExpiresAt:
-		m.ResetExpiresAt()
-		return nil
 	case invitation.FieldMessage:
 		m.ResetMessage()
+		return nil
+	case invitation.FieldRole:
+		m.ResetRole()
 		return nil
 	}
 	return fmt.Errorf("unknown Invitation field %s", name)
@@ -5715,6 +5642,7 @@ type TeamMutation struct {
 	score              *int
 	addscore           *int
 	created_at         *time.Time
+	updated_at         *time.Time
 	clearedFields      map[string]struct{}
 	tournament         *int
 	clearedtournament  bool
@@ -6151,6 +6079,42 @@ func (m *TeamMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TeamMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TeamMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Team entity.
+// If the Team object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeamMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TeamMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by id.
 func (m *TeamMutation) SetTournamentID(id int) {
 	m.tournament = &id
@@ -6410,7 +6374,7 @@ func (m *TeamMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TeamMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.name != nil {
 		fields = append(fields, team.FieldName)
 	}
@@ -6431,6 +6395,9 @@ func (m *TeamMutation) Fields() []string {
 	}
 	if m.created_at != nil {
 		fields = append(fields, team.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, team.FieldUpdatedAt)
 	}
 	return fields
 }
@@ -6454,6 +6421,8 @@ func (m *TeamMutation) Field(name string) (ent.Value, bool) {
 		return m.Score()
 	case team.FieldCreatedAt:
 		return m.CreatedAt()
+	case team.FieldUpdatedAt:
+		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -6477,6 +6446,8 @@ func (m *TeamMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldScore(ctx)
 	case team.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case team.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Team field %s", name)
 }
@@ -6534,6 +6505,13 @@ func (m *TeamMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case team.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Team field %s", name)
@@ -6646,6 +6624,9 @@ func (m *TeamMutation) ResetField(name string) error {
 		return nil
 	case team.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case team.FieldUpdatedAt:
+		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Team field %s", name)
@@ -7335,18 +7316,19 @@ type TournamentMutation struct {
 	slug                  *string
 	name                  *string
 	description           *string
+	image_url             *string
 	is_visible            *bool
 	registration_start    *time.Time
 	registration_end      *time.Time
 	tournament_start      *time.Time
 	tournament_end        *time.Time
-	state                 *tournament.State
 	max_teams             *int
 	addmax_teams          *int
 	team_structure        *map[string]interface{}
 	custom_page_component *string
 	external_links        *map[string]string
 	created_at            *time.Time
+	updated_at            *time.Time
 	clearedFields         map[string]struct{}
 	creator               *int
 	clearedcreator        bool
@@ -7570,6 +7552,42 @@ func (m *TournamentMutation) ResetDescription() {
 	m.description = nil
 }
 
+// SetImageURL sets the "image_url" field.
+func (m *TournamentMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *TournamentMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the Tournament entity.
+// If the Tournament object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TournamentMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *TournamentMutation) ResetImageURL() {
+	m.image_url = nil
+}
+
 // SetIsVisible sets the "is_visible" field.
 func (m *TournamentMutation) SetIsVisible(b bool) {
 	m.is_visible = &b
@@ -7761,42 +7779,6 @@ func (m *TournamentMutation) TournamentEndCleared() bool {
 func (m *TournamentMutation) ResetTournamentEnd() {
 	m.tournament_end = nil
 	delete(m.clearedFields, tournament.FieldTournamentEnd)
-}
-
-// SetState sets the "state" field.
-func (m *TournamentMutation) SetState(t tournament.State) {
-	m.state = &t
-}
-
-// State returns the value of the "state" field in the mutation.
-func (m *TournamentMutation) State() (r tournament.State, exists bool) {
-	v := m.state
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldState returns the old "state" field's value of the Tournament entity.
-// If the Tournament object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TournamentMutation) OldState(ctx context.Context) (v tournament.State, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldState is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldState requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldState: %w", err)
-	}
-	return oldValue.State, nil
-}
-
-// ResetState resets all changes to the "state" field.
-func (m *TournamentMutation) ResetState() {
-	m.state = nil
 }
 
 // SetMaxTeams sets the "max_teams" field.
@@ -8023,6 +8005,42 @@ func (m *TournamentMutation) OldCreatedAt(ctx context.Context) (v time.Time, err
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *TournamentMutation) ResetCreatedAt() {
 	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TournamentMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TournamentMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Tournament entity.
+// If the Tournament object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TournamentMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TournamentMutation) ResetUpdatedAt() {
+	m.updated_at = nil
 }
 
 // SetCreatorID sets the "creator" edge to the User entity by id.
@@ -8260,7 +8278,7 @@ func (m *TournamentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TournamentMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.slug != nil {
 		fields = append(fields, tournament.FieldSlug)
 	}
@@ -8269,6 +8287,9 @@ func (m *TournamentMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, tournament.FieldDescription)
+	}
+	if m.image_url != nil {
+		fields = append(fields, tournament.FieldImageURL)
 	}
 	if m.is_visible != nil {
 		fields = append(fields, tournament.FieldIsVisible)
@@ -8285,9 +8306,6 @@ func (m *TournamentMutation) Fields() []string {
 	if m.tournament_end != nil {
 		fields = append(fields, tournament.FieldTournamentEnd)
 	}
-	if m.state != nil {
-		fields = append(fields, tournament.FieldState)
-	}
 	if m.max_teams != nil {
 		fields = append(fields, tournament.FieldMaxTeams)
 	}
@@ -8303,6 +8321,9 @@ func (m *TournamentMutation) Fields() []string {
 	if m.created_at != nil {
 		fields = append(fields, tournament.FieldCreatedAt)
 	}
+	if m.updated_at != nil {
+		fields = append(fields, tournament.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -8317,6 +8338,8 @@ func (m *TournamentMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case tournament.FieldDescription:
 		return m.Description()
+	case tournament.FieldImageURL:
+		return m.ImageURL()
 	case tournament.FieldIsVisible:
 		return m.IsVisible()
 	case tournament.FieldRegistrationStart:
@@ -8327,8 +8350,6 @@ func (m *TournamentMutation) Field(name string) (ent.Value, bool) {
 		return m.TournamentStart()
 	case tournament.FieldTournamentEnd:
 		return m.TournamentEnd()
-	case tournament.FieldState:
-		return m.State()
 	case tournament.FieldMaxTeams:
 		return m.MaxTeams()
 	case tournament.FieldTeamStructure:
@@ -8339,6 +8360,8 @@ func (m *TournamentMutation) Field(name string) (ent.Value, bool) {
 		return m.ExternalLinks()
 	case tournament.FieldCreatedAt:
 		return m.CreatedAt()
+	case tournament.FieldUpdatedAt:
+		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -8354,6 +8377,8 @@ func (m *TournamentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldName(ctx)
 	case tournament.FieldDescription:
 		return m.OldDescription(ctx)
+	case tournament.FieldImageURL:
+		return m.OldImageURL(ctx)
 	case tournament.FieldIsVisible:
 		return m.OldIsVisible(ctx)
 	case tournament.FieldRegistrationStart:
@@ -8364,8 +8389,6 @@ func (m *TournamentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldTournamentStart(ctx)
 	case tournament.FieldTournamentEnd:
 		return m.OldTournamentEnd(ctx)
-	case tournament.FieldState:
-		return m.OldState(ctx)
 	case tournament.FieldMaxTeams:
 		return m.OldMaxTeams(ctx)
 	case tournament.FieldTeamStructure:
@@ -8376,6 +8399,8 @@ func (m *TournamentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldExternalLinks(ctx)
 	case tournament.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case tournament.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Tournament field %s", name)
 }
@@ -8405,6 +8430,13 @@ func (m *TournamentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case tournament.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
 		return nil
 	case tournament.FieldIsVisible:
 		v, ok := value.(bool)
@@ -8441,13 +8473,6 @@ func (m *TournamentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTournamentEnd(v)
 		return nil
-	case tournament.FieldState:
-		v, ok := value.(tournament.State)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetState(v)
-		return nil
 	case tournament.FieldMaxTeams:
 		v, ok := value.(int)
 		if !ok {
@@ -8482,6 +8507,13 @@ func (m *TournamentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case tournament.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Tournament field %s", name)
@@ -8577,6 +8609,9 @@ func (m *TournamentMutation) ResetField(name string) error {
 	case tournament.FieldDescription:
 		m.ResetDescription()
 		return nil
+	case tournament.FieldImageURL:
+		m.ResetImageURL()
+		return nil
 	case tournament.FieldIsVisible:
 		m.ResetIsVisible()
 		return nil
@@ -8592,9 +8627,6 @@ func (m *TournamentMutation) ResetField(name string) error {
 	case tournament.FieldTournamentEnd:
 		m.ResetTournamentEnd()
 		return nil
-	case tournament.FieldState:
-		m.ResetState()
-		return nil
 	case tournament.FieldMaxTeams:
 		m.ResetMaxTeams()
 		return nil
@@ -8609,6 +8641,9 @@ func (m *TournamentMutation) ResetField(name string) error {
 		return nil
 	case tournament.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case tournament.FieldUpdatedAt:
+		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Tournament field %s", name)

@@ -41,7 +41,7 @@ type LightTeam struct {
 	ID        int                `json:"id" example:"42"`
 	Name      string             `json:"name" example:"Team Phoenix"`
 	ImageURL  *string            `json:"image_url,omitempty"`
-	Status    string             `json:"status" example:"DRAFT"`
+	Status    string             `json:"status" example:"DRAFT" enum:"DRAFT,LOCKED"`
 	IsLocked  bool               `json:"is_locked"`
 	Score     *int               `json:"score,omitempty"`
 	RankGroup *LightRankGroup    `json:"rank_group,omitempty"`

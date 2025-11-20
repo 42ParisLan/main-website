@@ -25,6 +25,8 @@ type Tournament struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// ImageURL holds the value of the "image_url" field.
+	ImageURL string `json:"image_url,omitempty"`
 	// IsVisible holds the value of the "is_visible" field.
 	IsVisible bool `json:"is_visible,omitempty"`
 	// RegistrationStart holds the value of the "registration_start" field.
@@ -35,8 +37,6 @@ type Tournament struct {
 	TournamentStart time.Time `json:"tournament_start,omitempty"`
 	// TournamentEnd holds the value of the "tournament_end" field.
 	TournamentEnd *time.Time `json:"tournament_end,omitempty"`
-	// State holds the value of the "state" field.
-	State tournament.State `json:"state,omitempty"`
 	// MaxTeams holds the value of the "max_teams" field.
 	MaxTeams int `json:"max_teams,omitempty"`
 	// TeamStructure holds the value of the "team_structure" field.
@@ -47,6 +47,8 @@ type Tournament struct {
 	ExternalLinks map[string]string `json:"external_links,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TournamentQuery when eager-loading is set.
 	Edges              TournamentEdges `json:"edges"`
@@ -118,9 +120,9 @@ func (*Tournament) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case tournament.FieldID, tournament.FieldMaxTeams:
 			values[i] = new(sql.NullInt64)
-		case tournament.FieldSlug, tournament.FieldName, tournament.FieldDescription, tournament.FieldState, tournament.FieldCustomPageComponent:
+		case tournament.FieldSlug, tournament.FieldName, tournament.FieldDescription, tournament.FieldImageURL, tournament.FieldCustomPageComponent:
 			values[i] = new(sql.NullString)
-		case tournament.FieldRegistrationStart, tournament.FieldRegistrationEnd, tournament.FieldTournamentStart, tournament.FieldTournamentEnd, tournament.FieldCreatedAt:
+		case tournament.FieldRegistrationStart, tournament.FieldRegistrationEnd, tournament.FieldTournamentStart, tournament.FieldTournamentEnd, tournament.FieldCreatedAt, tournament.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case tournament.ForeignKeys[0]: // tournament_creator
 			values[i] = new(sql.NullInt64)
@@ -163,6 +165,12 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Description = value.String
 			}
+		case tournament.FieldImageURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field image_url", values[i])
+			} else if value.Valid {
+				_m.ImageURL = value.String
+			}
 		case tournament.FieldIsVisible:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_visible", values[i])
@@ -193,12 +201,6 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.TournamentEnd = new(time.Time)
 				*_m.TournamentEnd = value.Time
-			}
-		case tournament.FieldState:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field state", values[i])
-			} else if value.Valid {
-				_m.State = tournament.State(value.String)
 			}
 		case tournament.FieldMaxTeams:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -233,6 +235,12 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
+			}
+		case tournament.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				_m.UpdatedAt = value.Time
 			}
 		case tournament.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -306,6 +314,9 @@ func (_m *Tournament) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
+	builder.WriteString("image_url=")
+	builder.WriteString(_m.ImageURL)
+	builder.WriteString(", ")
 	builder.WriteString("is_visible=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsVisible))
 	builder.WriteString(", ")
@@ -323,9 +334,6 @@ func (_m *Tournament) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("state=")
-	builder.WriteString(fmt.Sprintf("%v", _m.State))
-	builder.WriteString(", ")
 	builder.WriteString("max_teams=")
 	builder.WriteString(fmt.Sprintf("%v", _m.MaxTeams))
 	builder.WriteString(", ")
@@ -340,6 +348,9 @@ func (_m *Tournament) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -3,7 +3,6 @@
 package tournament
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -21,6 +20,8 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldImageURL holds the string denoting the image_url field in the database.
+	FieldImageURL = "image_url"
 	// FieldIsVisible holds the string denoting the is_visible field in the database.
 	FieldIsVisible = "is_visible"
 	// FieldRegistrationStart holds the string denoting the registration_start field in the database.
@@ -31,8 +32,6 @@ const (
 	FieldTournamentStart = "tournament_start"
 	// FieldTournamentEnd holds the string denoting the tournament_end field in the database.
 	FieldTournamentEnd = "tournament_end"
-	// FieldState holds the string denoting the state field in the database.
-	FieldState = "state"
 	// FieldMaxTeams holds the string denoting the max_teams field in the database.
 	FieldMaxTeams = "max_teams"
 	// FieldTeamStructure holds the string denoting the team_structure field in the database.
@@ -43,6 +42,8 @@ const (
 	FieldExternalLinks = "external_links"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgeCreator holds the string denoting the creator edge name in mutations.
 	EdgeCreator = "creator"
 	// EdgeAdmins holds the string denoting the admins edge name in mutations.
@@ -89,17 +90,18 @@ var Columns = []string{
 	FieldSlug,
 	FieldName,
 	FieldDescription,
+	FieldImageURL,
 	FieldIsVisible,
 	FieldRegistrationStart,
 	FieldRegistrationEnd,
 	FieldTournamentStart,
 	FieldTournamentEnd,
-	FieldState,
 	FieldMaxTeams,
 	FieldTeamStructure,
 	FieldCustomPageComponent,
 	FieldExternalLinks,
 	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "tournaments"
@@ -124,42 +126,19 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultImageURL holds the default value on creation for the "image_url" field.
+	DefaultImageURL string
 	// DefaultIsVisible holds the default value on creation for the "is_visible" field.
 	DefaultIsVisible bool
 	// DefaultCustomPageComponent holds the default value on creation for the "custom_page_component" field.
 	DefaultCustomPageComponent string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 )
-
-// State defines the type for the "state" enum field.
-type State string
-
-// StateDRAFT is the default value of the State enum.
-const DefaultState = StateDRAFT
-
-// State values.
-const (
-	StateDRAFT               State = "DRAFT"
-	StateREGISTRATION_OPEN   State = "REGISTRATION_OPEN"
-	StateREGISTRATION_CLOSED State = "REGISTRATION_CLOSED"
-	StateONGOING             State = "ONGOING"
-	StateFINISHED            State = "FINISHED"
-)
-
-func (s State) String() string {
-	return string(s)
-}
-
-// StateValidator is a validator for the "state" field enum values. It is called by the builders before save.
-func StateValidator(s State) error {
-	switch s {
-	case StateDRAFT, StateREGISTRATION_OPEN, StateREGISTRATION_CLOSED, StateONGOING, StateFINISHED:
-		return nil
-	default:
-		return fmt.Errorf("tournament: invalid enum value for state field: %q", s)
-	}
-}
 
 // OrderOption defines the ordering options for the Tournament queries.
 type OrderOption func(*sql.Selector)
@@ -182,6 +161,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByImageURL orders the results by the image_url field.
+func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
 }
 
 // ByIsVisible orders the results by the is_visible field.
@@ -209,11 +193,6 @@ func ByTournamentEnd(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTournamentEnd, opts...).ToFunc()
 }
 
-// ByState orders the results by the state field.
-func ByState(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldState, opts...).ToFunc()
-}
-
 // ByMaxTeams orders the results by the max_teams field.
 func ByMaxTeams(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMaxTeams, opts...).ToFunc()
@@ -227,6 +206,11 @@ func ByCustomPageComponent(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByCreatorField orders the results by creator field.

@@ -12,4 +12,5 @@ type ListTeamsParams struct {
 	paging.Input
 
 	//// FILTERS ////
+	Status string `query:"status" example:"DRAFT" enum:"DRAFT,LOCKED" descriptiom:"Filter by status of team"`
 }

@@ -12,6 +12,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -32,13 +34,15 @@ func (svc *tournamentsService) GetTournamentUserRole(ctx context.Context, tourna
 			).
 			Only(ctx)
 		if err != nil {
+			if ent.IsNotFound(err) {
+				return nil, nil
+			}
 			return nil, svc.errorFilter.Filter(err, "create")
 		}
 		if meAdmin != nil {
 			return &meAdmin.Role, nil
-		} else {
-			return nil, nil
 		}
+		return nil, nil
 	}
 
 	r := tournamentadmin.RoleCREATOR
@@ -78,34 +82,40 @@ func (svc *tournamentsService) CreateTournament(
 		SetTournamentStart(input.TournamentStart).
 		SetMaxTeams(input.MaxTeams)
 
-	if input.TeamStructure != nil {
-		if playerRole, ok := input.TeamStructure["player"]; !ok {
-			return nil, huma.Error400BadRequest("team structure must include 'player' role")
-		} else {
-			if playerRole.Min != playerRole.Max {
-				return nil, huma.Error400BadRequest("team structure 'player' min and max must be equal")
-			}
-		}
-		ts := make(map[string]interface{}, len(input.TeamStructure))
-		for k, v := range input.TeamStructure {
-			if v.Max < v.Min {
-				return nil, huma.Error400BadRequest("in team structure min can't be higher than max")
-			}
-			var any interface{}
-			b, err := json.Marshal(v)
-			if err != nil {
-				return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure: %w", err), "create")
-			}
-			if err := json.Unmarshal(b, &any); err != nil {
-				return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure: %w", err), "create")
-			}
-			ts[k] = any
-		}
-		entBuilder = entBuilder.SetTeamStructure(ts)
+	// Team Structure parse
+	var parsed map[string]lightmodels.TeamStructure
+	if err := json.Unmarshal([]byte(input.TeamStructure), &parsed); err != nil {
+		return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure JSON: %w", err), "create")
 	}
 
-	if input.CustomPageComponent != nil {
-		entBuilder = entBuilder.SetCustomPageComponent(*input.CustomPageComponent)
+	if playerRole, ok := parsed["player"]; !ok {
+		return nil, huma.Error400BadRequest("team structure must include 'player' role")
+	} else {
+		if playerRole.Min != playerRole.Max {
+			return nil, huma.Error400BadRequest("team structure 'player' min and max must be equal")
+		}
+	}
+
+	ts := make(map[string]interface{}, len(parsed))
+	for k, v := range parsed {
+		if v.Max < v.Min {
+			return nil, huma.Error400BadRequest("in team structure min can't be higher than max")
+		}
+		var any interface{}
+		b, err := json.Marshal(v)
+		if err != nil {
+			return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure: %w", err), "create")
+		}
+		if err := json.Unmarshal(b, &any); err != nil {
+			return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure: %w", err), "create")
+		}
+		ts[k] = any
+	}
+	entBuilder = entBuilder.SetTeamStructure(ts)
+	// Team Structure end parse
+
+	if input.CustomPageComponent != "" {
+		entBuilder = entBuilder.SetCustomPageComponent(input.CustomPageComponent)
 	}
 
 	entTournament, err := entBuilder.Save(ctx)
@@ -113,7 +123,7 @@ func (svc *tournamentsService) CreateTournament(
 		return nil, err
 	}
 
-	_, err = svc.databaseService.TournamentAdmin.
+	entTournamentAdmin, err := svc.databaseService.TournamentAdmin.
 		Create().
 		SetRole(tournamentadmin.RoleCREATOR).
 		SetTournamentID(entTournament.ID).
@@ -121,6 +131,32 @@ func (svc *tournamentsService) CreateTournament(
 		Save(ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	if input.Image.Filename != "" {
+		sanitized := strings.ReplaceAll(input.Image.Filename, " ", "_")
+		ext := filepath.Ext(sanitized)
+		base := strings.TrimSuffix(sanitized, ext)
+		if base == "" {
+			base = "file"
+		}
+
+		objectName := fmt.Sprintf("tournaments/%d/%d_%s%s", entTournament.ID, time.Now().UnixNano(), base, ext)
+
+		if err := svc.s3service.UploadObject(ctx, objectName, input.Image.File, input.Image.Size, input.Image.ContentType); err != nil {
+			return nil, svc.errorFilter.Filter(err, "upload image")
+		}
+
+		entTournament, err = svc.databaseService.Tournament.
+			UpdateOneID(entTournament.ID).
+			SetImageURL(objectName).
+			Save(ctx)
+		if err != nil {
+			svc.s3service.RemoveObject(ctx, objectName)
+			svc.databaseService.Tournament.Delete().Where(tournament.ID(entTournament.ID)).Exec(ctx)
+			svc.databaseService.TournamentAdmin.Delete().Where(tournamentadmin.ID(entTournamentAdmin.ID)).Exec(ctx)
+			return nil, svc.errorFilter.Filter(err, "update tournament image")
+		}
 	}
 
 	reloaded, err := svc.databaseService.Tournament.

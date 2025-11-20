@@ -22,20 +22,6 @@ type InvitationCreate struct {
 	hooks    []Hook
 }
 
-// SetStatus sets the "status" field.
-func (_c *InvitationCreate) SetStatus(v invitation.Status) *InvitationCreate {
-	_c.mutation.SetStatus(v)
-	return _c
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *InvitationCreate) SetNillableStatus(v *invitation.Status) *InvitationCreate {
-	if v != nil {
-		_c.SetStatus(*v)
-	}
-	return _c
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (_c *InvitationCreate) SetCreatedAt(v time.Time) *InvitationCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -46,20 +32,6 @@ func (_c *InvitationCreate) SetCreatedAt(v time.Time) *InvitationCreate {
 func (_c *InvitationCreate) SetNillableCreatedAt(v *time.Time) *InvitationCreate {
 	if v != nil {
 		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (_c *InvitationCreate) SetExpiresAt(v time.Time) *InvitationCreate {
-	_c.mutation.SetExpiresAt(v)
-	return _c
-}
-
-// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (_c *InvitationCreate) SetNillableExpiresAt(v *time.Time) *InvitationCreate {
-	if v != nil {
-		_c.SetExpiresAt(*v)
 	}
 	return _c
 }
@@ -75,6 +47,12 @@ func (_c *InvitationCreate) SetNillableMessage(v *string) *InvitationCreate {
 	if v != nil {
 		_c.SetMessage(*v)
 	}
+	return _c
+}
+
+// SetRole sets the "role" field.
+func (_c *InvitationCreate) SetRole(v string) *InvitationCreate {
+	_c.mutation.SetRole(v)
 	return _c
 }
 
@@ -135,10 +113,6 @@ func (_c *InvitationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *InvitationCreate) defaults() {
-	if _, ok := _c.mutation.Status(); !ok {
-		v := invitation.DefaultStatus
-		_c.mutation.SetStatus(v)
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := invitation.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -147,16 +121,11 @@ func (_c *InvitationCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *InvitationCreate) check() error {
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Invitation.status"`)}
-	}
-	if v, ok := _c.mutation.Status(); ok {
-		if err := invitation.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Invitation.status": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Invitation.created_at"`)}
+	}
+	if _, ok := _c.mutation.Role(); !ok {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "Invitation.role"`)}
 	}
 	if len(_c.mutation.TeamIDs()) == 0 {
 		return &ValidationError{Name: "team", err: errors.New(`ent: missing required edge "Invitation.team"`)}
@@ -190,21 +159,17 @@ func (_c *InvitationCreate) createSpec() (*Invitation, *sqlgraph.CreateSpec) {
 		_node = &Invitation{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(invitation.Table, sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt))
 	)
-	if value, ok := _c.mutation.Status(); ok {
-		_spec.SetField(invitation.FieldStatus, field.TypeEnum, value)
-		_node.Status = value
-	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(invitation.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.ExpiresAt(); ok {
-		_spec.SetField(invitation.FieldExpiresAt, field.TypeTime, value)
-		_node.ExpiresAt = value
-	}
 	if value, ok := _c.mutation.Message(); ok {
 		_spec.SetField(invitation.FieldMessage, field.TypeString, value)
 		_node.Message = value
+	}
+	if value, ok := _c.mutation.Role(); ok {
+		_spec.SetField(invitation.FieldRole, field.TypeString, value)
+		_node.Role = value
 	}
 	if nodes := _c.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

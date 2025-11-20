@@ -12,6 +12,7 @@ import (
 	rbacservice "base-website/internal/services/rbac"
 	s3service "base-website/internal/services/s3"
 	teamsmodels "base-website/internal/services/teams/models"
+	tournamentsservice "base-website/internal/services/tournaments"
 	"base-website/pkg/errorfilters"
 	"base-website/pkg/paging"
 	"context"
@@ -29,13 +30,16 @@ type TeamsService interface {
 	CreateTeam(ctx context.Context, input *teamsmodels.CreateTeam, tournamentID int) (*lightmodels.LightTeam, error)
 	GetMyTeam(ctx context.Context, tournamentID int) (*lightmodels.LightTeam, error)
 	GetTeam(ctx context.Context, teamID int) (*lightmodels.LightTeam, error)
+	UpdateTeam(ctx context.Context, teamID int, input *teamsmodels.UpdateTeam) (*lightmodels.LightTeam, error)
+	DeleteTeam(ctx context.Context, teamID int) error
 }
 
 type teamsService struct {
-	databaseService databaseservice.DatabaseService
-	errorFilter     errorfilters.ErrorFilter
-	rbacService     rbacservice.RBACService
-	s3service       s3service.S3Service
+	databaseService    databaseservice.DatabaseService
+	errorFilter        errorfilters.ErrorFilter
+	rbacService        rbacservice.RBACService
+	s3service          s3service.S3Service
+	tournamentsService tournamentsservice.TournamentsService
 }
 
 func NewProvider() func(i *do.Injector) (TeamsService, error) {
@@ -44,6 +48,7 @@ func NewProvider() func(i *do.Injector) (TeamsService, error) {
 			do.MustInvoke[databaseservice.DatabaseService](i),
 			do.MustInvoke[rbacservice.RBACService](i),
 			do.MustInvoke[s3service.S3Service](i),
+			do.MustInvoke[tournamentsservice.TournamentsService](i),
 		)
 	}
 }
@@ -52,12 +57,14 @@ func New(
 	databaseService databaseservice.DatabaseService,
 	rbacService rbacservice.RBACService,
 	s3service s3service.S3Service,
+	tournamentsService tournamentsservice.TournamentsService,
 ) (TeamsService, error) {
 	return &teamsService{
-		databaseService: databaseService,
-		errorFilter:     errorfilters.NewEntErrorFilter().WithEntityTypeName("team"),
-		rbacService:     rbacService,
-		s3service:       s3service,
+		databaseService:    databaseService,
+		errorFilter:        errorfilters.NewEntErrorFilter().WithEntityTypeName("team"),
+		rbacService:        rbacService,
+		s3service:          s3service,
+		tournamentsService: tournamentsService,
 	}, nil
 }
 
@@ -240,4 +247,106 @@ func (svc *teamsService) GetTeam(
 	}
 
 	return lightmodels.NewLightTeamFromEnt(ctx, entTeam, svc.s3service), nil
+}
+
+func (svc *teamsService) UpdateTeam(
+	ctx context.Context,
+	teamID int,
+	input *teamsmodels.UpdateTeam,
+) (*lightmodels.LightTeam, error) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	entTeam, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
+			teamMemberQuery.WithUser()
+		}).
+		WithRankGroup().
+		WithCreator().
+		WithTournament().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	myRole, err := svc.tournamentsService.GetTournamentUserRole(ctx, entTeam.Edges.Tournament.ID)
+	if err != nil {
+		return nil, err
+	}
+	if myRole == nil || entTeam.Edges.Creator.ID != userID {
+		return nil, huma.Error401Unauthorized("don't have required role")
+	}
+
+	update := svc.databaseService.Team.UpdateOneID(entTeam.ID)
+
+	if input.Name != "" {
+		update.SetName(input.Name)
+	}
+	if input.Image.Filename != "" {
+		sanitized := strings.ReplaceAll(input.Image.Filename, " ", "_")
+		ext := filepath.Ext(sanitized)
+		base := strings.TrimSuffix(sanitized, ext)
+		if base == "" {
+			base = "file"
+		}
+
+		objectName := fmt.Sprintf("teams/%d/%d_%s%s", teamID, time.Now().UnixNano(), base, ext)
+
+		if err := svc.s3service.UploadObject(ctx, objectName, input.Image.File, input.Image.Size, input.Image.ContentType); err != nil {
+			return nil, svc.errorFilter.Filter(err, "upload image")
+		}
+
+		svc.s3service.RemoveObject(ctx, entTeam.ImageURL)
+
+		update.SetImageURL(objectName)
+	}
+
+	savedTeam, err := update.Save(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "update")
+	}
+
+	return lightmodels.NewLightTeamFromEnt(ctx, savedTeam, svc.s3service), nil
+}
+
+func (svc *teamsService) DeleteTeam(
+	ctx context.Context,
+	teamID int,
+) error {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	entTeam, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
+			teamMemberQuery.WithUser()
+		}).
+		WithRankGroup().
+		WithCreator().
+		WithTournament().
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	myRole, err := svc.tournamentsService.GetTournamentUserRole(ctx, entTeam.Edges.Tournament.ID)
+	if err != nil {
+		return err
+	}
+	if myRole == nil || entTeam.Edges.Creator.ID != userID {
+		return huma.Error401Unauthorized("don't have required role")
+	}
+
+	if err := svc.databaseService.Team.DeleteOneID(entTeam.ID).Exec(ctx); err != nil {
+		return svc.errorFilter.Filter(err, "delete_component")
+	}
+
+	svc.s3service.RemoveObject(ctx, entTeam.ImageURL)
+
+	return nil
 }

@@ -34,6 +34,8 @@ type Team struct {
 	Score int `json:"score,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TeamQuery when eager-loading is set.
 	Edges           TeamEdges `json:"edges"`
@@ -122,7 +124,7 @@ func (*Team) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case team.FieldName, team.FieldImageURL, team.FieldStatus:
 			values[i] = new(sql.NullString)
-		case team.FieldCreatedAt:
+		case team.FieldCreatedAt, team.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case team.ForeignKeys[0]: // team_tournament
 			values[i] = new(sql.NullInt64)
@@ -192,6 +194,12 @@ func (_m *Team) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
+			}
+		case team.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				_m.UpdatedAt = value.Time
 			}
 		case team.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -295,6 +303,9 @@ func (_m *Team) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

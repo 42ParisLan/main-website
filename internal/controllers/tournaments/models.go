@@ -4,6 +4,8 @@ import (
 	"base-website/internal/lightmodels"
 	tournamentsmodels "base-website/internal/services/tournaments/models"
 	"base-website/pkg/paging"
+
+	"github.com/danielgtaylor/huma/v2"
 )
 
 type BodyMessage struct {
@@ -27,13 +29,13 @@ type multipleTournamentsOutput struct {
 }
 
 type createTournamentInput struct {
-	Body *tournamentsmodels.CreateTournament `required:"true"`
+	RawBody huma.MultipartFormFiles[tournamentsmodels.CreateTournament] `required:"true"`
 }
 
 type updateTournamentInput struct {
 	TournamentID int `path:"id" required:"true" example:"42" description:"The tournament ID"`
 
-	Body *tournamentsmodels.UpdateTournament `required:"true"`
+	RawBody huma.MultipartFormFiles[tournamentsmodels.UpdateTournament] `required:"true"`
 }
 
 type addTournamentAdminBody struct {

@@ -115,6 +115,20 @@ func (_c *TeamCreate) SetNillableCreatedAt(v *time.Time) *TeamCreate {
 	return _c
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *TeamCreate) SetUpdatedAt(v time.Time) *TeamCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *TeamCreate) SetNillableUpdatedAt(v *time.Time) *TeamCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
 func (_c *TeamCreate) SetTournamentID(id int) *TeamCreate {
 	_c.mutation.SetTournamentID(id)
@@ -237,6 +251,10 @@ func (_c *TeamCreate) defaults() {
 		v := team.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := team.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -260,6 +278,9 @@ func (_c *TeamCreate) check() error {
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Team.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Team.updated_at"`)}
 	}
 	if len(_c.mutation.TournamentIDs()) == 0 {
 		return &ValidationError{Name: "tournament", err: errors.New(`ent: missing required edge "Team.tournament"`)}
@@ -320,6 +341,10 @@ func (_c *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -64,7 +64,7 @@ func init() {
 	invitationFields := schema.Invitation{}.Fields()
 	_ = invitationFields
 	// invitationDescCreatedAt is the schema descriptor for created_at field.
-	invitationDescCreatedAt := invitationFields[1].Descriptor()
+	invitationDescCreatedAt := invitationFields[0].Descriptor()
 	// invitation.DefaultCreatedAt holds the default value on creation for the created_at field.
 	invitation.DefaultCreatedAt = invitationDescCreatedAt.Default.(func() time.Time)
 	teamFields := schema.Team{}.Fields()
@@ -81,10 +81,20 @@ func init() {
 	teamDescCreatedAt := teamFields[6].Descriptor()
 	// team.DefaultCreatedAt holds the default value on creation for the created_at field.
 	team.DefaultCreatedAt = teamDescCreatedAt.Default.(func() time.Time)
+	// teamDescUpdatedAt is the schema descriptor for updated_at field.
+	teamDescUpdatedAt := teamFields[7].Descriptor()
+	// team.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	team.DefaultUpdatedAt = teamDescUpdatedAt.Default.(func() time.Time)
+	// team.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	team.UpdateDefaultUpdatedAt = teamDescUpdatedAt.UpdateDefault.(func() time.Time)
 	tournamentFields := schema.Tournament{}.Fields()
 	_ = tournamentFields
+	// tournamentDescImageURL is the schema descriptor for image_url field.
+	tournamentDescImageURL := tournamentFields[3].Descriptor()
+	// tournament.DefaultImageURL holds the default value on creation for the image_url field.
+	tournament.DefaultImageURL = tournamentDescImageURL.Default.(string)
 	// tournamentDescIsVisible is the schema descriptor for is_visible field.
-	tournamentDescIsVisible := tournamentFields[3].Descriptor()
+	tournamentDescIsVisible := tournamentFields[4].Descriptor()
 	// tournament.DefaultIsVisible holds the default value on creation for the is_visible field.
 	tournament.DefaultIsVisible = tournamentDescIsVisible.Default.(bool)
 	// tournamentDescCustomPageComponent is the schema descriptor for custom_page_component field.
@@ -95,6 +105,12 @@ func init() {
 	tournamentDescCreatedAt := tournamentFields[13].Descriptor()
 	// tournament.DefaultCreatedAt holds the default value on creation for the created_at field.
 	tournament.DefaultCreatedAt = tournamentDescCreatedAt.Default.(func() time.Time)
+	// tournamentDescUpdatedAt is the schema descriptor for updated_at field.
+	tournamentDescUpdatedAt := tournamentFields[14].Descriptor()
+	// tournament.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tournament.DefaultUpdatedAt = tournamentDescUpdatedAt.Default.(func() time.Time)
+	// tournament.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	tournament.UpdateDefaultUpdatedAt = tournamentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	tournamentadminFields := schema.TournamentAdmin{}.Fields()
 	_ = tournamentadminFields
 	userFields := schema.User{}.Fields()

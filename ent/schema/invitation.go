@@ -15,15 +15,11 @@ type Invitation struct {
 
 func (Invitation) Fields() []ent.Field {
 	return []ent.Field{
-		field.Enum("status").
-			Values("PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED").
-			Default("PENDING"),
 		field.Time("created_at").
 			Default(time.Now),
-		field.Time("expires_at").
-			Optional(),
 		field.String("message").
 			Optional(),
+		field.String("role"),
 	}
 }
 

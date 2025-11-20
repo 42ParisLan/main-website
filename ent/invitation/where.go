@@ -60,34 +60,14 @@ func CreatedAt(v time.Time) predicate.Invitation {
 	return predicate.Invitation(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
-func ExpiresAt(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldEQ(FieldExpiresAt, v))
-}
-
 // Message applies equality check predicate on the "message" field. It's identical to MessageEQ.
 func Message(v string) predicate.Invitation {
 	return predicate.Invitation(sql.FieldEQ(FieldMessage, v))
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.Invitation {
-	return predicate.Invitation(sql.FieldEQ(FieldStatus, v))
-}
-
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.Invitation {
-	return predicate.Invitation(sql.FieldNEQ(FieldStatus, v))
-}
-
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.Invitation {
-	return predicate.Invitation(sql.FieldIn(FieldStatus, vs...))
-}
-
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.Invitation {
-	return predicate.Invitation(sql.FieldNotIn(FieldStatus, vs...))
+// Role applies equality check predicate on the "role" field. It's identical to RoleEQ.
+func Role(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldEQ(FieldRole, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -128,56 +108,6 @@ func CreatedAtLT(v time.Time) predicate.Invitation {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Invitation {
 	return predicate.Invitation(sql.FieldLTE(FieldCreatedAt, v))
-}
-
-// ExpiresAtEQ applies the EQ predicate on the "expires_at" field.
-func ExpiresAtEQ(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldEQ(FieldExpiresAt, v))
-}
-
-// ExpiresAtNEQ applies the NEQ predicate on the "expires_at" field.
-func ExpiresAtNEQ(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldNEQ(FieldExpiresAt, v))
-}
-
-// ExpiresAtIn applies the In predicate on the "expires_at" field.
-func ExpiresAtIn(vs ...time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldIn(FieldExpiresAt, vs...))
-}
-
-// ExpiresAtNotIn applies the NotIn predicate on the "expires_at" field.
-func ExpiresAtNotIn(vs ...time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldNotIn(FieldExpiresAt, vs...))
-}
-
-// ExpiresAtGT applies the GT predicate on the "expires_at" field.
-func ExpiresAtGT(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldGT(FieldExpiresAt, v))
-}
-
-// ExpiresAtGTE applies the GTE predicate on the "expires_at" field.
-func ExpiresAtGTE(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldGTE(FieldExpiresAt, v))
-}
-
-// ExpiresAtLT applies the LT predicate on the "expires_at" field.
-func ExpiresAtLT(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldLT(FieldExpiresAt, v))
-}
-
-// ExpiresAtLTE applies the LTE predicate on the "expires_at" field.
-func ExpiresAtLTE(v time.Time) predicate.Invitation {
-	return predicate.Invitation(sql.FieldLTE(FieldExpiresAt, v))
-}
-
-// ExpiresAtIsNil applies the IsNil predicate on the "expires_at" field.
-func ExpiresAtIsNil() predicate.Invitation {
-	return predicate.Invitation(sql.FieldIsNull(FieldExpiresAt))
-}
-
-// ExpiresAtNotNil applies the NotNil predicate on the "expires_at" field.
-func ExpiresAtNotNil() predicate.Invitation {
-	return predicate.Invitation(sql.FieldNotNull(FieldExpiresAt))
 }
 
 // MessageEQ applies the EQ predicate on the "message" field.
@@ -253,6 +183,71 @@ func MessageEqualFold(v string) predicate.Invitation {
 // MessageContainsFold applies the ContainsFold predicate on the "message" field.
 func MessageContainsFold(v string) predicate.Invitation {
 	return predicate.Invitation(sql.FieldContainsFold(FieldMessage, v))
+}
+
+// RoleEQ applies the EQ predicate on the "role" field.
+func RoleEQ(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldEQ(FieldRole, v))
+}
+
+// RoleNEQ applies the NEQ predicate on the "role" field.
+func RoleNEQ(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldNEQ(FieldRole, v))
+}
+
+// RoleIn applies the In predicate on the "role" field.
+func RoleIn(vs ...string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldIn(FieldRole, vs...))
+}
+
+// RoleNotIn applies the NotIn predicate on the "role" field.
+func RoleNotIn(vs ...string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldNotIn(FieldRole, vs...))
+}
+
+// RoleGT applies the GT predicate on the "role" field.
+func RoleGT(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldGT(FieldRole, v))
+}
+
+// RoleGTE applies the GTE predicate on the "role" field.
+func RoleGTE(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldGTE(FieldRole, v))
+}
+
+// RoleLT applies the LT predicate on the "role" field.
+func RoleLT(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldLT(FieldRole, v))
+}
+
+// RoleLTE applies the LTE predicate on the "role" field.
+func RoleLTE(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldLTE(FieldRole, v))
+}
+
+// RoleContains applies the Contains predicate on the "role" field.
+func RoleContains(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldContains(FieldRole, v))
+}
+
+// RoleHasPrefix applies the HasPrefix predicate on the "role" field.
+func RoleHasPrefix(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldHasPrefix(FieldRole, v))
+}
+
+// RoleHasSuffix applies the HasSuffix predicate on the "role" field.
+func RoleHasSuffix(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldHasSuffix(FieldRole, v))
+}
+
+// RoleEqualFold applies the EqualFold predicate on the "role" field.
+func RoleEqualFold(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldEqualFold(FieldRole, v))
+}
+
+// RoleContainsFold applies the ContainsFold predicate on the "role" field.
+func RoleContainsFold(v string) predicate.Invitation {
+	return predicate.Invitation(sql.FieldContainsFold(FieldRole, v))
 }
 
 // HasTeam applies the HasEdge predicate on the "team" edge.

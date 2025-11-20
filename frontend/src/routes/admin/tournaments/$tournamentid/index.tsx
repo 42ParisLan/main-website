@@ -7,6 +7,18 @@ import TournamentAdminList from '@/components/tournaments/admin/tournament-admin
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
+import { useCallback, useState } from 'react';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+	DialogFooter,
+	DialogClose,
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import errorModelToDescription from '@/lib/utils';
 
 export const Route = createFileRoute('/admin/tournaments/$tournamentid/')({
   component: RouteComponent,
@@ -27,6 +39,42 @@ function RouteComponent() {
 			}
 		}
 	})
+
+	const {mutate: mutateDelete} = client.useMutation("delete", "/tournaments/{id}", {
+		onError: (error) => {
+			const erorrDescription = errorModelToDescription(error)
+			console.error(erorrDescription);
+			toast.error("Failed to delete Tournament")
+		},
+		onSuccess: () => {
+			toast.success("Tournament Successfuly Deleted")
+			router.navigate({to: "/admin/tournaments"})
+		}
+	})
+
+	const [confirmOpen, setConfirmOpen] = useState(false);
+
+	const performDelete = useCallback(() => {
+		if (!data) return;
+		mutateDelete({
+			params: {
+				path: {
+					id: data.id,
+				},
+			},
+		});
+	}, [mutateDelete, data]);
+
+	const handleDeleteTournament = useCallback(() => {
+		if (!data) return;
+
+		if (data.is_visible) {
+			setConfirmOpen(true);
+			return;
+		}
+
+		performDelete();
+	}, [data, performDelete]);
 
 	if (isLoading) {
 		return <div className="text-sm text-muted-foreground">Loading tournament…</div>
@@ -52,10 +100,25 @@ function RouteComponent() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
+							{/* tournament image if available */}
+							{data.iamge_url ? (
+								<div className="mb-4">
+									<img src={data.iamge_url} alt={`${data.name} cover`} className="w-48 h-32 rounded-md object-cover" />
+								</div>
+							) : null}
 							<div className="flex gap-2 mb-4">
 								{(role == "SUPER_ADMIN" || role == "CREATOR") && (
 									<Button asChild size="sm">
 										<Link to={"/admin/tournaments/$tournamentid/edit"} params={{tournamentid: String(data.slug)}}>Edit</Link>
+									</Button>
+								)}
+								{(role == "CREATOR") && (
+									<Button
+										size="sm" 
+										variant="destructive"
+										onClick={handleDeleteTournament}
+									>
+										Delete
 									</Button>
 								)}
 							</div>
@@ -73,10 +136,6 @@ function RouteComponent() {
 								<div>
 									<strong>Visible</strong>
 									<div className="text-sm">{data.is_visible ? 'Yes' : 'No'}</div>
-								</div>
-								<div>
-									<strong>State</strong>
-									<div className="text-sm">{data.state}</div>
 								</div>
 
 								<div>
@@ -137,6 +196,23 @@ function RouteComponent() {
 						</CardContent>
 					</Card>
 					<TournamentAdminList tournament={data} refetchTournament={refetch}/>
+
+					{/* Confirmation dialog for deleting visible tournaments */}
+					<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Delete tournament</DialogTitle>
+								<DialogDescription>
+									This tournament is currently visible to users. Deleting it will remove it and all related data — this action cannot be undone. Are you sure you want to continue?
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter>
+								<Button type="button" variant="ghost" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+								<Button type="button" variant="destructive" onClick={() => { performDelete(); setConfirmOpen(false); }}>Delete</Button>
+							</DialogFooter>
+							<DialogClose />
+						</DialogContent>
+					</Dialog>
 				</div>
 			</>
 		)

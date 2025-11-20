@@ -29,6 +29,8 @@ const (
 	FieldScore = "score"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgeTournament holds the string denoting the tournament edge name in mutations.
 	EdgeTournament = "tournament"
 	// EdgeCreator holds the string denoting the creator edge name in mutations.
@@ -88,6 +90,7 @@ var Columns = []string{
 	FieldQueuePosition,
 	FieldScore,
 	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "teams"
@@ -120,6 +123,10 @@ var (
 	DefaultIsLocked bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 )
 
 // Status defines the type for the "status" enum field.
@@ -130,11 +137,8 @@ const DefaultStatus = StatusDRAFT
 
 // Status values.
 const (
-	StatusDRAFT        Status = "DRAFT"
-	StatusLOCKED       Status = "LOCKED"
-	StatusCONFIRMED    Status = "CONFIRMED"
-	StatusWAITING      Status = "WAITING"
-	StatusDISQUALIFIED Status = "DISQUALIFIED"
+	StatusDRAFT  Status = "DRAFT"
+	StatusLOCKED Status = "LOCKED"
 )
 
 func (s Status) String() string {
@@ -144,7 +148,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusDRAFT, StatusLOCKED, StatusCONFIRMED, StatusWAITING, StatusDISQUALIFIED:
+	case StatusDRAFT, StatusLOCKED:
 		return nil
 	default:
 		return fmt.Errorf("team: invalid enum value for status field: %q", s)
@@ -192,6 +196,11 @@ func ByScore(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByTournamentField orders the results by tournament field.

@@ -70,6 +70,11 @@ func Description(v string) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldDescription, v))
 }
 
+// ImageURL applies equality check predicate on the "image_url" field. It's identical to ImageURLEQ.
+func ImageURL(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldEQ(FieldImageURL, v))
+}
+
 // IsVisible applies equality check predicate on the "is_visible" field. It's identical to IsVisibleEQ.
 func IsVisible(v bool) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldIsVisible, v))
@@ -108,6 +113,11 @@ func CustomPageComponent(v string) predicate.Tournament {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // SlugEQ applies the EQ predicate on the "slug" field.
@@ -305,6 +315,71 @@ func DescriptionContainsFold(v string) predicate.Tournament {
 	return predicate.Tournament(sql.FieldContainsFold(FieldDescription, v))
 }
 
+// ImageURLEQ applies the EQ predicate on the "image_url" field.
+func ImageURLEQ(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldEQ(FieldImageURL, v))
+}
+
+// ImageURLNEQ applies the NEQ predicate on the "image_url" field.
+func ImageURLNEQ(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldNEQ(FieldImageURL, v))
+}
+
+// ImageURLIn applies the In predicate on the "image_url" field.
+func ImageURLIn(vs ...string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldIn(FieldImageURL, vs...))
+}
+
+// ImageURLNotIn applies the NotIn predicate on the "image_url" field.
+func ImageURLNotIn(vs ...string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldNotIn(FieldImageURL, vs...))
+}
+
+// ImageURLGT applies the GT predicate on the "image_url" field.
+func ImageURLGT(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldGT(FieldImageURL, v))
+}
+
+// ImageURLGTE applies the GTE predicate on the "image_url" field.
+func ImageURLGTE(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldGTE(FieldImageURL, v))
+}
+
+// ImageURLLT applies the LT predicate on the "image_url" field.
+func ImageURLLT(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldLT(FieldImageURL, v))
+}
+
+// ImageURLLTE applies the LTE predicate on the "image_url" field.
+func ImageURLLTE(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldLTE(FieldImageURL, v))
+}
+
+// ImageURLContains applies the Contains predicate on the "image_url" field.
+func ImageURLContains(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldContains(FieldImageURL, v))
+}
+
+// ImageURLHasPrefix applies the HasPrefix predicate on the "image_url" field.
+func ImageURLHasPrefix(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldHasPrefix(FieldImageURL, v))
+}
+
+// ImageURLHasSuffix applies the HasSuffix predicate on the "image_url" field.
+func ImageURLHasSuffix(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldHasSuffix(FieldImageURL, v))
+}
+
+// ImageURLEqualFold applies the EqualFold predicate on the "image_url" field.
+func ImageURLEqualFold(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldEqualFold(FieldImageURL, v))
+}
+
+// ImageURLContainsFold applies the ContainsFold predicate on the "image_url" field.
+func ImageURLContainsFold(v string) predicate.Tournament {
+	return predicate.Tournament(sql.FieldContainsFold(FieldImageURL, v))
+}
+
 // IsVisibleEQ applies the EQ predicate on the "is_visible" field.
 func IsVisibleEQ(v bool) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldIsVisible, v))
@@ -485,26 +560,6 @@ func TournamentEndNotNil() predicate.Tournament {
 	return predicate.Tournament(sql.FieldNotNull(FieldTournamentEnd))
 }
 
-// StateEQ applies the EQ predicate on the "state" field.
-func StateEQ(v State) predicate.Tournament {
-	return predicate.Tournament(sql.FieldEQ(FieldState, v))
-}
-
-// StateNEQ applies the NEQ predicate on the "state" field.
-func StateNEQ(v State) predicate.Tournament {
-	return predicate.Tournament(sql.FieldNEQ(FieldState, v))
-}
-
-// StateIn applies the In predicate on the "state" field.
-func StateIn(vs ...State) predicate.Tournament {
-	return predicate.Tournament(sql.FieldIn(FieldState, vs...))
-}
-
-// StateNotIn applies the NotIn predicate on the "state" field.
-func StateNotIn(vs ...State) predicate.Tournament {
-	return predicate.Tournament(sql.FieldNotIn(FieldState, vs...))
-}
-
 // MaxTeamsEQ applies the EQ predicate on the "max_teams" field.
 func MaxTeamsEQ(v int) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldMaxTeams, v))
@@ -668,6 +723,46 @@ func CreatedAtLT(v time.Time) predicate.Tournament {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Tournament {
 	return predicate.Tournament(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.Tournament {
+	return predicate.Tournament(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // HasCreator applies the HasEdge predicate on the "creator" edge.

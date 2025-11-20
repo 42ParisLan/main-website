@@ -394,10 +394,18 @@ export interface paths {
         get: operations["getTeam"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Team
+         * @description This endpoint is used to delete a team.
+         */
+        delete: operations["deleteTeam"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Team
+         * @description This endpoint is used to update a team.
+         */
+        patch: operations["updateTeam"];
         trace?: never;
     };
     "/tournaments": {
@@ -971,44 +979,6 @@ export interface components {
              */
             user_id: number;
         };
-        CreateTournament: {
-            /**
-             * Format: uri
-             * @description A URL to the JSON Schema for this object.
-             * @example /api/schemas/CreateTournament.json
-             */
-            readonly $schema?: string;
-            custom_page_component?: string;
-            /** @example School-wide League of Legends tournament */
-            description: string;
-            /**
-             * Format: int64
-             * @example 32
-             */
-            max_teams: number;
-            /** @example Spring Cup 2025 */
-            name: string;
-            /**
-             * Format: date-time
-             * @example 2025-03-10T23:59:59Z
-             */
-            registration_end: string;
-            /**
-             * Format: date-time
-             * @example 2025-03-01T00:00:00Z
-             */
-            registration_start: string;
-            /** @example spring-cup-2025 */
-            slug: string;
-            team_structure: {
-                [key: string]: components["schemas"]["TeamStructure"];
-            };
-            /**
-             * Format: date-time
-             * @example 2025-03-15T00:00:00Z
-             */
-            tournament_start: string;
-        };
         CreateVote: {
             /**
              * Format: uri
@@ -1143,8 +1113,11 @@ export interface components {
             rank_group?: components["schemas"]["LightRankGroup"];
             /** Format: int64 */
             score?: number;
-            /** @example DRAFT */
-            status: string;
+            /**
+             * @example DRAFT
+             * @enum {string}
+             */
+            status: "DRAFT" | "LOCKED";
         };
         LightTeamMember: {
             /** @example player */
@@ -1161,6 +1134,7 @@ export interface components {
             external_links?: {
                 [key: string]: string;
             };
+            iamge_url: string;
             /**
              * Format: int64
              * @example 42
@@ -1186,8 +1160,6 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
-            /** @enum {string} */
-            state: "DRAFT" | "REGISTRATION_OPEN" | "REGISTRATION_CLOSED" | "ONGOING" | "FINISHED";
             team_structure: {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
@@ -1516,6 +1488,7 @@ export interface components {
             external_links?: {
                 [key: string]: string;
             };
+            iamge_url: string | null;
             /**
              * Format: int64
              * @example 42
@@ -1533,8 +1506,6 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
-            /** @enum {string} */
-            state: "DRAFT" | "REGISTRATION_OPEN" | "REGISTRATION_CLOSED" | "ONGOING" | "FINISHED";
             team_structure: {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
@@ -2433,6 +2404,79 @@ export interface operations {
             };
         };
     };
+    deleteTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    image?: string;
+                    /** @example Team Phoenix */
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getAllTournaments: {
         parameters: {
             query?: {
@@ -2480,9 +2524,42 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
-                "application/json": components["schemas"]["CreateTournament"];
+                "multipart/form-data": {
+                    "custom_page_component,omitempty"?: string;
+                    /** @example School-wide League of Legends tournament */
+                    description?: string;
+                    /** Format: binary */
+                    image?: string;
+                    /**
+                     * Format: int64
+                     * @example 32
+                     */
+                    max_teams: number;
+                    /** @example Spring Cup 2025 */
+                    name: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-10T23:59:59Z
+                     */
+                    registration_end: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-01T00:00:00Z
+                     */
+                    registration_start: string;
+                    /** @example spring-cup-2025 */
+                    slug: string;
+                    team_structure?: {
+                        [key: string]: components["schemas"]["TeamStructure"];
+                    };
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-15T00:00:00Z
+                     */
+                    tournament_start: string;
+                };
             };
         };
         responses: {
@@ -2719,6 +2796,8 @@ export interface operations {
                 limit?: number;
                 /** @example asc */
                 order?: "asc" | "desc";
+                /** @example DRAFT */
+                status?: "DRAFT" | "LOCKED";
             };
             header?: never;
             path: {

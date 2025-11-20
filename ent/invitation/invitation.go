@@ -3,7 +3,6 @@
 package invitation
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -15,14 +14,12 @@ const (
 	Label = "invitation"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldExpiresAt holds the string denoting the expires_at field in the database.
-	FieldExpiresAt = "expires_at"
 	// FieldMessage holds the string denoting the message field in the database.
 	FieldMessage = "message"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
 	// EdgeTeam holds the string denoting the team edge name in mutations.
 	EdgeTeam = "team"
 	// EdgeInvitee holds the string denoting the invitee edge name in mutations.
@@ -48,10 +45,9 @@ const (
 // Columns holds all SQL columns for invitation fields.
 var Columns = []string{
 	FieldID,
-	FieldStatus,
 	FieldCreatedAt,
-	FieldExpiresAt,
 	FieldMessage,
+	FieldRole,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "invitations"
@@ -81,35 +77,6 @@ var (
 	DefaultCreatedAt func() time.Time
 )
 
-// Status defines the type for the "status" enum field.
-type Status string
-
-// StatusPENDING is the default value of the Status enum.
-const DefaultStatus = StatusPENDING
-
-// Status values.
-const (
-	StatusPENDING  Status = "PENDING"
-	StatusACCEPTED Status = "ACCEPTED"
-	StatusDECLINED Status = "DECLINED"
-	StatusEXPIRED  Status = "EXPIRED"
-	StatusREVOKED  Status = "REVOKED"
-)
-
-func (s Status) String() string {
-	return string(s)
-}
-
-// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusPENDING, StatusACCEPTED, StatusDECLINED, StatusEXPIRED, StatusREVOKED:
-		return nil
-	default:
-		return fmt.Errorf("invitation: invalid enum value for status field: %q", s)
-	}
-}
-
 // OrderOption defines the ordering options for the Invitation queries.
 type OrderOption func(*sql.Selector)
 
@@ -118,24 +85,19 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
-}
-
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByExpiresAt orders the results by the expires_at field.
-func ByExpiresAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldExpiresAt, opts...).ToFunc()
-}
-
 // ByMessage orders the results by the message field.
 func ByMessage(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMessage, opts...).ToFunc()
+}
+
+// ByRole orders the results by the role field.
+func ByRole(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRole, opts...).ToFunc()
 }
 
 // ByTeamField orders the results by team field.

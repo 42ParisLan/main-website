@@ -157,6 +157,12 @@ func (_u *TeamUpdate) SetNillableCreatedAt(v *time.Time) *TeamUpdate {
 	return _u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *TeamUpdate) SetUpdatedAt(v time.Time) *TeamUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
 func (_u *TeamUpdate) SetTournamentID(id int) *TeamUpdate {
 	_u.mutation.SetTournamentID(id)
@@ -295,6 +301,7 @@ func (_u *TeamUpdate) RemoveInvitations(v ...*Invitation) *TeamUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *TeamUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -317,6 +324,14 @@ func (_u *TeamUpdate) Exec(ctx context.Context) error {
 func (_u *TeamUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_u *TeamUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		v := team.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -380,6 +395,9 @@ func (_u *TeamUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -702,6 +720,12 @@ func (_u *TeamUpdateOne) SetNillableCreatedAt(v *time.Time) *TeamUpdateOne {
 	return _u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *TeamUpdateOne) SetUpdatedAt(v time.Time) *TeamUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetTournamentID sets the "tournament" edge to the Tournament entity by ID.
 func (_u *TeamUpdateOne) SetTournamentID(id int) *TeamUpdateOne {
 	_u.mutation.SetTournamentID(id)
@@ -853,6 +877,7 @@ func (_u *TeamUpdateOne) Select(field string, fields ...string) *TeamUpdateOne {
 
 // Save executes the query and returns the updated Team entity.
 func (_u *TeamUpdateOne) Save(ctx context.Context) (*Team, error) {
+	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -875,6 +900,14 @@ func (_u *TeamUpdateOne) Exec(ctx context.Context) error {
 func (_u *TeamUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_u *TeamUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		v := team.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -955,6 +988,9 @@ func (_u *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) {
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{

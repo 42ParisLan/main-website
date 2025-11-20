@@ -3,6 +3,7 @@ package tournamentsservice
 import (
 	"base-website/ent"
 	"base-website/ent/tournament"
+	"base-website/ent/tournamentadmin"
 	"base-website/internal/lightmodels"
 	"base-website/internal/security"
 	databaseservice "base-website/internal/services/database"
@@ -28,6 +29,8 @@ type TournamentsService interface {
 	AddAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
 	EditAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
 	DeleteAdminToTournament(ctx context.Context, tournamentID int, userID int) (*lightmodels.Tournament, error)
+	// Utils
+	GetTournamentUserRole(ctx context.Context, tournamentID int) (*tournamentadmin.Role, error)
 }
 
 type tournamentsService struct {
@@ -80,9 +83,9 @@ func (svc *tournamentsService) ListTournaments(
 
 	if params.Status != "all" {
 		if params.Status == "finish" {
-			query = query.Where(tournament.StateEQ("FINISHED"))
+			query = query.Where(tournament.TournamentEndNotNil())
 		} else {
-			query = query.Where(tournament.StateNEQ("FINISHED"))
+			query = query.Where(tournament.TournamentEndIsNil())
 		}
 	}
 

@@ -139,10 +139,9 @@ var (
 	// InvitationsColumns holds the columns for the "invitations" table.
 	InvitationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"PENDING", "ACCEPTED", "DECLINED", "EXPIRED", "REVOKED"}, Default: "PENDING"},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
 		{Name: "message", Type: field.TypeString, Nullable: true},
+		{Name: "role", Type: field.TypeString},
 		{Name: "invitation_team", Type: field.TypeInt},
 		{Name: "invitation_invitee", Type: field.TypeInt},
 	}
@@ -154,13 +153,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "invitations_teams_team",
-				Columns:    []*schema.Column{InvitationsColumns[5]},
+				Columns:    []*schema.Column{InvitationsColumns[4]},
 				RefColumns: []*schema.Column{TeamsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "invitations_users_invitee",
-				Columns:    []*schema.Column{InvitationsColumns[6]},
+				Columns:    []*schema.Column{InvitationsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -201,11 +200,12 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "image_url", Type: field.TypeString, Default: "teams/default.png"},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"DRAFT", "LOCKED", "CONFIRMED", "WAITING", "DISQUALIFIED"}, Default: "DRAFT"},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"DRAFT", "LOCKED"}, Default: "DRAFT"},
 		{Name: "is_locked", Type: field.TypeBool, Default: false},
 		{Name: "queue_position", Type: field.TypeInt, Nullable: true},
 		{Name: "score", Type: field.TypeInt, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "team_tournament", Type: field.TypeInt},
 		{Name: "team_creator", Type: field.TypeInt},
 		{Name: "team_rank_group", Type: field.TypeInt, Nullable: true},
@@ -218,19 +218,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "teams_tournaments_tournament",
-				Columns:    []*schema.Column{TeamsColumns[8]},
+				Columns:    []*schema.Column{TeamsColumns[9]},
 				RefColumns: []*schema.Column{TournamentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "teams_users_creator",
-				Columns:    []*schema.Column{TeamsColumns[9]},
+				Columns:    []*schema.Column{TeamsColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teams_rank_groups_rank_group",
-				Columns:    []*schema.Column{TeamsColumns[10]},
+				Columns:    []*schema.Column{TeamsColumns[11]},
 				RefColumns: []*schema.Column{RankGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -266,7 +266,7 @@ var (
 				Symbol:     "team_members_tournaments_tournament",
 				Columns:    []*schema.Column{TeamMembersColumns[4]},
 				RefColumns: []*schema.Column{TournamentsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -283,17 +283,18 @@ var (
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
+		{Name: "image_url", Type: field.TypeString, Default: "tournaments/default.png"},
 		{Name: "is_visible", Type: field.TypeBool, Default: false},
 		{Name: "registration_start", Type: field.TypeTime},
 		{Name: "registration_end", Type: field.TypeTime},
 		{Name: "tournament_start", Type: field.TypeTime},
 		{Name: "tournament_end", Type: field.TypeTime, Nullable: true},
-		{Name: "state", Type: field.TypeEnum, Enums: []string{"DRAFT", "REGISTRATION_OPEN", "REGISTRATION_CLOSED", "ONGOING", "FINISHED"}, Default: "DRAFT"},
 		{Name: "max_teams", Type: field.TypeInt},
 		{Name: "team_structure", Type: field.TypeJSON, Nullable: true},
 		{Name: "custom_page_component", Type: field.TypeString, Default: "default"},
 		{Name: "external_links", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tournament_creator", Type: field.TypeInt},
 	}
 	// TournamentsTable holds the schema information for the "tournaments" table.
@@ -304,7 +305,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "tournaments_users_creator",
-				Columns:    []*schema.Column{TournamentsColumns[15]},
+				Columns:    []*schema.Column{TournamentsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

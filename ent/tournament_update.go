@@ -74,6 +74,20 @@ func (_u *TournamentUpdate) SetNillableDescription(v *string) *TournamentUpdate 
 	return _u
 }
 
+// SetImageURL sets the "image_url" field.
+func (_u *TournamentUpdate) SetImageURL(v string) *TournamentUpdate {
+	_u.mutation.SetImageURL(v)
+	return _u
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (_u *TournamentUpdate) SetNillableImageURL(v *string) *TournamentUpdate {
+	if v != nil {
+		_u.SetImageURL(*v)
+	}
+	return _u
+}
+
 // SetIsVisible sets the "is_visible" field.
 func (_u *TournamentUpdate) SetIsVisible(v bool) *TournamentUpdate {
 	_u.mutation.SetIsVisible(v)
@@ -150,20 +164,6 @@ func (_u *TournamentUpdate) ClearTournamentEnd() *TournamentUpdate {
 	return _u
 }
 
-// SetState sets the "state" field.
-func (_u *TournamentUpdate) SetState(v tournament.State) *TournamentUpdate {
-	_u.mutation.SetState(v)
-	return _u
-}
-
-// SetNillableState sets the "state" field if the given value is not nil.
-func (_u *TournamentUpdate) SetNillableState(v *tournament.State) *TournamentUpdate {
-	if v != nil {
-		_u.SetState(*v)
-	}
-	return _u
-}
-
 // SetMaxTeams sets the "max_teams" field.
 func (_u *TournamentUpdate) SetMaxTeams(v int) *TournamentUpdate {
 	_u.mutation.ResetMaxTeams()
@@ -234,6 +234,12 @@ func (_u *TournamentUpdate) SetNillableCreatedAt(v *time.Time) *TournamentUpdate
 	if v != nil {
 		_u.SetCreatedAt(*v)
 	}
+	return _u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *TournamentUpdate) SetUpdatedAt(v time.Time) *TournamentUpdate {
+	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -369,6 +375,7 @@ func (_u *TournamentUpdate) RemoveRankGroups(v ...*RankGroup) *TournamentUpdate 
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *TournamentUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -394,13 +401,16 @@ func (_u *TournamentUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_u *TournamentUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		v := tournament.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_u *TournamentUpdate) check() error {
-	if v, ok := _u.mutation.State(); ok {
-		if err := tournament.StateValidator(v); err != nil {
-			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "Tournament.state": %w`, err)}
-		}
-	}
 	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Tournament.creator"`)
 	}
@@ -428,6 +438,9 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(tournament.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.ImageURL(); ok {
+		_spec.SetField(tournament.FieldImageURL, field.TypeString, value)
+	}
 	if value, ok := _u.mutation.IsVisible(); ok {
 		_spec.SetField(tournament.FieldIsVisible, field.TypeBool, value)
 	}
@@ -445,9 +458,6 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if _u.mutation.TournamentEndCleared() {
 		_spec.ClearField(tournament.FieldTournamentEnd, field.TypeTime)
-	}
-	if value, ok := _u.mutation.State(); ok {
-		_spec.SetField(tournament.FieldState, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.MaxTeams(); ok {
 		_spec.SetField(tournament.FieldMaxTeams, field.TypeInt, value)
@@ -472,6 +482,9 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(tournament.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.CreatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -699,6 +712,20 @@ func (_u *TournamentUpdateOne) SetNillableDescription(v *string) *TournamentUpda
 	return _u
 }
 
+// SetImageURL sets the "image_url" field.
+func (_u *TournamentUpdateOne) SetImageURL(v string) *TournamentUpdateOne {
+	_u.mutation.SetImageURL(v)
+	return _u
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (_u *TournamentUpdateOne) SetNillableImageURL(v *string) *TournamentUpdateOne {
+	if v != nil {
+		_u.SetImageURL(*v)
+	}
+	return _u
+}
+
 // SetIsVisible sets the "is_visible" field.
 func (_u *TournamentUpdateOne) SetIsVisible(v bool) *TournamentUpdateOne {
 	_u.mutation.SetIsVisible(v)
@@ -775,20 +802,6 @@ func (_u *TournamentUpdateOne) ClearTournamentEnd() *TournamentUpdateOne {
 	return _u
 }
 
-// SetState sets the "state" field.
-func (_u *TournamentUpdateOne) SetState(v tournament.State) *TournamentUpdateOne {
-	_u.mutation.SetState(v)
-	return _u
-}
-
-// SetNillableState sets the "state" field if the given value is not nil.
-func (_u *TournamentUpdateOne) SetNillableState(v *tournament.State) *TournamentUpdateOne {
-	if v != nil {
-		_u.SetState(*v)
-	}
-	return _u
-}
-
 // SetMaxTeams sets the "max_teams" field.
 func (_u *TournamentUpdateOne) SetMaxTeams(v int) *TournamentUpdateOne {
 	_u.mutation.ResetMaxTeams()
@@ -859,6 +872,12 @@ func (_u *TournamentUpdateOne) SetNillableCreatedAt(v *time.Time) *TournamentUpd
 	if v != nil {
 		_u.SetCreatedAt(*v)
 	}
+	return _u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *TournamentUpdateOne) SetUpdatedAt(v time.Time) *TournamentUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -1007,6 +1026,7 @@ func (_u *TournamentUpdateOne) Select(field string, fields ...string) *Tournamen
 
 // Save executes the query and returns the updated Tournament entity.
 func (_u *TournamentUpdateOne) Save(ctx context.Context) (*Tournament, error) {
+	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1032,13 +1052,16 @@ func (_u *TournamentUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_u *TournamentUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		v := tournament.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_u *TournamentUpdateOne) check() error {
-	if v, ok := _u.mutation.State(); ok {
-		if err := tournament.StateValidator(v); err != nil {
-			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "Tournament.state": %w`, err)}
-		}
-	}
 	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Tournament.creator"`)
 	}
@@ -1083,6 +1106,9 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(tournament.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.ImageURL(); ok {
+		_spec.SetField(tournament.FieldImageURL, field.TypeString, value)
+	}
 	if value, ok := _u.mutation.IsVisible(); ok {
 		_spec.SetField(tournament.FieldIsVisible, field.TypeBool, value)
 	}
@@ -1100,9 +1126,6 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	}
 	if _u.mutation.TournamentEndCleared() {
 		_spec.ClearField(tournament.FieldTournamentEnd, field.TypeTime)
-	}
-	if value, ok := _u.mutation.State(); ok {
-		_spec.SetField(tournament.FieldState, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.MaxTeams(); ok {
 		_spec.SetField(tournament.FieldMaxTeams, field.TypeInt, value)
@@ -1127,6 +1150,9 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(tournament.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.CreatorCleared() {
 		edge := &sqlgraph.EdgeSpec{

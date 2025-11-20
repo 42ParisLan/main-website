@@ -64,6 +64,26 @@ func (ctrl *teamController) Register(api huma.API) {
 		OperationID: "getTeam",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.getTeam)
+
+	huma.Register(api, huma.Operation{
+		Method:      "PATCH",
+		Path:        "/teams/{id}",
+		Summary:     "Update Team",
+		Description: `This endpoint is used to update a team.`,
+		Tags:        []string{"Teams"},
+		OperationID: "updateTeam",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.updateTeam)
+
+	huma.Register(api, huma.Operation{
+		Method:      "DELETE",
+		Path:        "/teams/{id}",
+		Summary:     "Delete Team",
+		Description: `This endpoint is used to delete a team.`,
+		Tags:        []string{"Teams"},
+		OperationID: "deleteTeam",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.deleteTeam)
 }
 
 func (ctrl *teamController) getAllTeamsTournament(
@@ -115,5 +135,31 @@ func (ctrl *teamController) getTeam(
 	}
 	return &oneTeamOutput{
 		Body: result,
+	}, nil
+}
+
+func (ctrl *teamController) updateTeam(
+	ctx context.Context,
+	input *updateTeamInput,
+) (*oneTeamOutput, error) {
+	result, err := ctrl.teamsService.UpdateTeam(ctx, input.TeamID, input.RawBody.Data())
+	if err != nil {
+		return nil, err
+	}
+	return &oneTeamOutput{
+		Body: result,
+	}, nil
+}
+
+func (ctrl *teamController) deleteTeam(
+	ctx context.Context,
+	input *teamIDInput,
+) (*BodyMessage, error) {
+	err := ctrl.teamsService.DeleteTeam(ctx, input.TeamID)
+	if err != nil {
+		return nil, err
+	}
+	return &BodyMessage{
+		Body: "Tournament Successfully deleted",
 	}, nil
 }
