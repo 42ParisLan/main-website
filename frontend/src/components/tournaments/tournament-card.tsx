@@ -9,9 +9,9 @@ export function TournamentCard() {
                     <div className="flex items-center justify-center text-xs w-13 h-8 bg-red-700 text-white"> {/*if live red */}
                             <span>LIVE</span>
                     </div>
-                    <div className="text-primary">
+                    {/* <div className="text-primary">
                         <span>$50,000</span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="py-8">
                     <h3 className="text-start text-white text-bold">ROCKET LEAGUE</h3>

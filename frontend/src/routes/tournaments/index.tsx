@@ -3,7 +3,7 @@ import { Header } from '@/components/home-page/header'
 import { useState } from 'react';
 import type { components } from '@/lib/api/types';
 import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
-import { OldTournaments } from '@/components/tournaments/old-tournaments'
+import { OldTournaments } from '@/components/tournaments/past-tournaments'
 
 
 export const Route = createFileRoute('/tournaments/')({

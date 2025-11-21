@@ -45,7 +45,7 @@ function RouteComponent() {
               <div className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 Teams
               </div>
-              <div className="w-full max-w-sm ml-auto">
+              <div className="text-gray-400 w-full max-w-sm ml-auto">
                 <Input
                   placeholder="Search teams..."
                   value={query ?? ""}
@@ -53,6 +53,8 @@ function RouteComponent() {
                     setQuery(e.target.value || undefined);
                     setPage(0);
                   }}
+                  
+                  className="!ring-0 !outline-none"
                   />
               </div>
             </div>

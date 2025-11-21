@@ -7,6 +7,8 @@ import type { components } from '@/lib/api/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
+
 
 export const Route = createFileRoute('/votes/')({
 	component: RouteComponent,
@@ -38,8 +40,8 @@ function RouteComponent() {
 	return (
 		<div>
 			<Header/>
-			<div className='container mx-auto px-4 py-8'>
-				<div className="mb-6">
+			<div className='min-h-screen bg-gradient-to-br from-black to-gray-700 flex flex-col mx-auto px-4 py-8'>
+				<div className="mb-6 flex-1">
 					<Label htmlFor="status-filter" className="mb-2 block">
 						Filter by Status
 					</Label>
@@ -69,6 +71,7 @@ function RouteComponent() {
 					loadingComponent={<div className="text-center py-12">Loading votes...</div>}
 					/>
 			</div>
+			<Footer/>
 		</div>
 	)
 }

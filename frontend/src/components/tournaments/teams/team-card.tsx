@@ -25,21 +25,25 @@ export default function TeamCard({user}: {user: components['schemas']['User']}) 
                             <div className="rounded-full aspect-square size-full overflow-hidden" onClick={() => (window.location.href = `/users/${user.id}`)}>
                                 <img 
                                     src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
-                                    className="object-cover size-full"
+                                    className="hover:cursor-pointer object-cover size-full"
                                     alt={user.username}
+                                    title={user.username}
                                     />
                             </div>
                             <div className="rounded-full aspect-square size-full overflow-hidden"  onClick={() => (window.location.href = `/users/${user.id}`)}>
                                 <img 
                                     src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
-                                    className="object-cover size-full"
+                                    className="hover:cursor-pointer object-cover size-full"
                                     alt={user.username}
+                                    title={user.username}
+
                                     />
                             </div>
                             <div className="rounded-full aspect-square size-full overflow-hidden"  onClick={() => (window.location.href = `/users/${user.id}`)}>
                                 <img 
                                     src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
-                                    className="object-cover size-full"
+                                    className="hover:cursor-pointer object-cover size-full"
+                                    title={user.username}
                                     alt={user.username}
                                     />
                             </div>
