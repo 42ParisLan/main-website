@@ -5,6 +5,8 @@ import MyProfileCard from '@/components/public-users/my-profile/my-profile-card'
 import MyStatsCard from '@/components/public-users/my-profile/my-stats-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
+
 
 
 
@@ -24,14 +26,15 @@ export default function MyProfileContent() {
   }
   
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-black to-secondary">
       <Header/>
-      <Card>
-        <CardContent>
+      <div className="flex-1 border-0 bg-gradient-to-br from-secondary via-black to-primary">
+        <div className="p-6">
           <MyProfileCard user={user}/>
           <MyStatsCard user={user}/>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      <Footer/>
     </div>
   );
 }

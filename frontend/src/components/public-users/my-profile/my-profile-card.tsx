@@ -7,7 +7,7 @@ import { Button } from "../../ui/button";
 export default function MyProfileCard({user}: {user: components['schemas']['User']}) {
 
     return (
-        <Card>
+        <Card className="border-0 bg-gradient-to-t from-black to-gray-800">
             <CardContent>
                 <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
                     <div className="relative">

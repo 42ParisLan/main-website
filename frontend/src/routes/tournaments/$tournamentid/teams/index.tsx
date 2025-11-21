@@ -37,10 +37,10 @@ function RouteComponent() {
 
 	return (
 		<>
-      <div>
+      <div className="min-h-screen flex flex-col">
         <Header/>
-        <div className="h-full bg-gradient-to-br from-black via-foreground to-gray-700">
-          <div className=" ">
+        <div className="flex-1 bg-gradient-to-br from-black via-foreground to-gray-700">
+          <div className="">
             <div className="p-4 flex flex-row items-center justify-between space-y-0 gap-4">
               <div className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 Teams
@@ -64,15 +64,15 @@ function RouteComponent() {
                 onPageChange={handlePageChange}
                 renderItem={(user) => <TeamCard user={user} />}
                 getItemKey={(user) => user.id}
-                itemsContainerClassName="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5"
+                itemsContainerClassName="grid grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-5"
                 itemLabel="user"
                 emptyMessage="No team found"
                 />
             </div>
           </div>
         </div>
+        <Footer/>
       </div>
-      <Footer/>
 		</>
 	)
 }

@@ -25,7 +25,7 @@ export default function UserCard({user}: {user: components['schemas']['User']}) 
 					<Button
 						size="lg"
 						className="gap-2"
-						onClick={() => (window.location.href = "/users//users/{id_or_login}")}
+						onClick={() => (window.location.href = `/users/${user.id}`)}
 					>
 					<IconUserCircle />
 						See Profile
