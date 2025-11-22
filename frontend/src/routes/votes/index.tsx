@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Header } from '@/components/home-page/header'
 import { Footer } from '@/components/home-page/footer'
 
-
 export const Route = createFileRoute('/votes/')({
 	component: RouteComponent,
 })
@@ -40,8 +39,8 @@ function RouteComponent() {
 	return (
 		<div>
 			<Header/>
-			<div className='min-h-screen bg-gradient-to-br from-black to-gray-700 flex flex-col mx-auto px-4 py-8'>
-				<div className="mb-6 flex-1">
+			<div className='min-h-screen bg-gradient-to-br from-black to-gray-700 flex flex-col justify-start  mx-auto px-4 py-8'>
+				<div className="mb-6 text-white">
 					<Label htmlFor="status-filter" className="mb-2 block">
 						Filter by Status
 					</Label>
@@ -57,19 +56,20 @@ function RouteComponent() {
 						</SelectContent>
 					</Select>
 				</div>
-
-				<PaginatedListControlled<components['schemas']['LightVote']>
-					data={data}
-					isLoading={isLoading}
-					page={page}
-					onPageChange={handlePageChange}
-					renderItem={(vote) => <VoteCard vote={vote} />}
-					getItemKey={(vote) => vote.id}
-					itemsContainerClassName="flex flex-col gap-4"
-					itemLabel="vote"
-					emptyMessage="No votes available at the moment"
-					loadingComponent={<div className="text-center py-12">Loading votes...</div>}
-					/>
+				<div className="py-4 flex-1">
+					<PaginatedListControlled<components['schemas']['LightVote']>
+						data={data}
+						isLoading={isLoading}
+						page={page}
+						onPageChange={handlePageChange}
+						renderItem={(vote) => <VoteCard vote={vote} />}
+						getItemKey={(vote) => vote.id}
+						itemsContainerClassName="flex flex-col gap-4"
+						itemLabel="vote"
+						emptyMessage="No votes available at the moment"
+						loadingComponent={<div className="text-center py-12">Loading votes...</div>}
+						/>
+				</div>
 			</div>
 			<Footer/>
 		</div>

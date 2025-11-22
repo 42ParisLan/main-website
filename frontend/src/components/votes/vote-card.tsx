@@ -48,39 +48,41 @@ function VoteCard({ vote }: VoteCardProps) {
 	}, [vote.start_at, vote.end_at]);
 
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>{vote.title}</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<p className="mb-4">{vote.description}</p>
-				{status === 'pending' && (
-					<p className="font-mono text-lg">Starts in: {timeLeft}</p>
-				)}
-				{status === 'active' && (
-					<>
-						<p className="font-mono text-lg">Ends in: {timeLeft}</p>
-						<a 
-							href={`/votes/${vote.id}`}
-							className="text-primary hover:underline"
-						>
-							Go vote
-						</a>
-					</>
-				)}
-				{status === 'finished' && (
-					<>
-						<p className="text-muted-foreground">Vote is finished</p>
-						<a 
-							href={`/votes/${vote.id}/results`}
-							className="text-primary hover:underline"
-						>
-							See Results
-						</a>
-					</>
-				)}
-			</CardContent>
-		</Card>
+        <div className="p-[4px] rounded-xl bg-gradient-to-r from-primary to-secondary transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl">
+			<Card className="text-white border-0 overflow-hidden rounded-xl bg-gradient-to-l from-black to-gray-800">
+				<CardHeader>
+					<CardTitle>{vote.title}</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<p className="mb-4">{vote.description}</p>
+					{status === 'pending' && (
+						<p className="font-mono text-lg">Starts in: {timeLeft}</p>
+					)}
+					{status === 'active' && (
+						<>
+							<p className="font-mono text-lg">Ends in: {timeLeft}</p>
+							<a 
+								href={`/votes/${vote.id}`}
+								className="text-primary hover:underline"
+							>
+								Go vote
+							</a>
+						</>
+					)}
+					{status === 'finished' && (
+						<>
+							<p className="text-muted-foreground">Vote is finished</p>
+							<a 
+								href={`/votes/${vote.id}/results`}
+								className="text-primary hover:underline"
+							>
+								See Results
+							</a>
+						</>
+					)}
+				</CardContent>
+			</Card>
+		</div>
 	);
 }
 

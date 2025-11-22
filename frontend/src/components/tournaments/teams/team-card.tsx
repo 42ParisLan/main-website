@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 export default function TeamCard({user}: {user: components['schemas']['User']}) {
     return (
         <div className="p-[4px] rounded-xl bg-gradient-to-r from-primary to-secondary transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl">
-            <Card className="border-0 overflow-hidden rounded-xl bg-gradient-to-b from-black to-gray-700 ">
+            <Card className="border-0 overflow-hidden rounded-xl bg-gradient-to-b from-black via-gray-800 to-gray-600 ">
                 <CardContent>
                     <div className="aspect-square flex flex-col items-center justify-center">
                         <div className="flex flex-col items-center">
@@ -22,6 +22,7 @@ export default function TeamCard({user}: {user: components['schemas']['User']}) 
                             </div>
                         </div>
                         <div className="gap-4 flex justify-between rounded-lg overflow-hidden" >
+                            {/* composant ProfilePicture */}
                             <div className="rounded-full aspect-square size-full overflow-hidden" onClick={() => (window.location.href = `/users/${user.id}`)}>
                                 <img 
                                     src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
