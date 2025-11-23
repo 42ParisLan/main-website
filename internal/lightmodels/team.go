@@ -71,8 +71,8 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 	}
 
 	var imageUrl *string
-	if entTeam.ImageURL != "" {
-		u, err := S3Service.PresignedGet(ctx, entTeam.ImageURL, time.Hour)
+	if entTeam.ImageURL != nil {
+		u, err := S3Service.PresignedGet(ctx, *entTeam.ImageURL, time.Hour)
 		if err == nil {
 			imageUrl = &u
 		}

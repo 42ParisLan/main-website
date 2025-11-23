@@ -77,6 +77,12 @@ func (_u *ComponentUpdate) SetNillableImageURL(v *string) *ComponentUpdate {
 	return _u
 }
 
+// ClearImageURL clears the value of the "image_url" field.
+func (_u *ComponentUpdate) ClearImageURL() *ComponentUpdate {
+	_u.mutation.ClearImageURL()
+	return _u
+}
+
 // SetColor sets the "color" field.
 func (_u *ComponentUpdate) SetColor(v string) *ComponentUpdate {
 	_u.mutation.SetColor(v)
@@ -213,6 +219,9 @@ func (_u *ComponentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.ImageURL(); ok {
 		_spec.SetField(component.FieldImageURL, field.TypeString, value)
+	}
+	if _u.mutation.ImageURLCleared() {
+		_spec.ClearField(component.FieldImageURL, field.TypeString)
 	}
 	if value, ok := _u.mutation.Color(); ok {
 		_spec.SetField(component.FieldColor, field.TypeString, value)
@@ -359,6 +368,12 @@ func (_u *ComponentUpdateOne) SetNillableImageURL(v *string) *ComponentUpdateOne
 	if v != nil {
 		_u.SetImageURL(*v)
 	}
+	return _u
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (_u *ComponentUpdateOne) ClearImageURL() *ComponentUpdateOne {
+	_u.mutation.ClearImageURL()
 	return _u
 }
 
@@ -528,6 +543,9 @@ func (_u *ComponentUpdateOne) sqlSave(ctx context.Context) (_node *Component, er
 	}
 	if value, ok := _u.mutation.ImageURL(); ok {
 		_spec.SetField(component.FieldImageURL, field.TypeString, value)
+	}
+	if _u.mutation.ImageURLCleared() {
+		_spec.ClearField(component.FieldImageURL, field.TypeString)
 	}
 	if value, ok := _u.mutation.Color(); ok {
 		_spec.SetField(component.FieldColor, field.TypeString, value)

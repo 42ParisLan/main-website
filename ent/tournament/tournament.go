@@ -126,8 +126,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultImageURL holds the default value on creation for the "image_url" field.
-	DefaultImageURL string
 	// DefaultIsVisible holds the default value on creation for the "is_visible" field.
 	DefaultIsVisible bool
 	// DefaultCustomPageComponent holds the default value on creation for the "custom_page_component" field.

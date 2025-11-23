@@ -33,6 +33,16 @@ roles:
               methods: [GET]
             - path: /tournaments/*
               methods: [GET]
+            - path: /tournaments/*/teams
+              methods: [GET, POST]
+            - path: /tournaments/*/me/team
+              methods: [GET]
+            - path: /teams/*
+              methods: [GET, PATCH, DELETE]
+            - path: /teams/*/invitations
+              methods: [GET, POST]
+            - path: /invitations/*
+              methods: [DELETE]
 
     basic_admin:
         name: 'basic_admin'
@@ -42,13 +52,11 @@ roles:
             - path: /votes/*/live
               methods: [GET]
             - path: /tournaments/*
-              methods: [POST]
+              methods: [PATCH, DELETE]
             - path: /tournaments/*/admin
               methods: [POST]
             - path: /tournaments/*/admin/*
-              methods: [PATCH]
-            - path: /tournaments/*/admin/*
-              methods: [DELETE]
+              methods: [PATCH, DELETE]
 
     vote_admin:
         name: 'vote_admin'
@@ -58,15 +66,11 @@ roles:
             - path: /votes
               methods: [POST]
             - path: /votes/*
-              methods: [PATCH]
-            - path: /votes/*
-              methods: [DELETE]
+              methods: [PATCH, DELETE]
             - path: /votes/*/components
               methods: [POST]
             - path: /components/*
-              methods: [PATCH]
-            - path: /components/*
-              methods: [DELETE]
+              methods: [PATCH, DELETE]
 
     tournament_admin:
         name: 'tournament_admin'

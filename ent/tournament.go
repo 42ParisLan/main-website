@@ -26,7 +26,7 @@ type Tournament struct {
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// ImageURL holds the value of the "image_url" field.
-	ImageURL string `json:"image_url,omitempty"`
+	ImageURL *string `json:"image_url,omitempty"`
 	// IsVisible holds the value of the "is_visible" field.
 	IsVisible bool `json:"is_visible,omitempty"`
 	// RegistrationStart holds the value of the "registration_start" field.
@@ -169,7 +169,8 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field image_url", values[i])
 			} else if value.Valid {
-				_m.ImageURL = value.String
+				_m.ImageURL = new(string)
+				*_m.ImageURL = value.String
 			}
 		case tournament.FieldIsVisible:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -314,8 +315,10 @@ func (_m *Tournament) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
-	builder.WriteString("image_url=")
-	builder.WriteString(_m.ImageURL)
+	if v := _m.ImageURL; v != nil {
+		builder.WriteString("image_url=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("is_visible=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsVisible))

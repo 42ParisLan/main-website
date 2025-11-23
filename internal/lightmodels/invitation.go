@@ -11,7 +11,7 @@ type Invitation struct {
 	Message   string     `json:"message" description:"Message of the invitation"`
 	Role      string     `json:"role" description:"Role in the team"`
 	CreatedAt time.Time  `json:"created_at" description:"invitation created_at"`
-	Team      LightTeam  `json:"team" description:"The team of the invitation"`
+	Team      *LightTeam `json:"team" description:"The team of the invitation"`
 	User      *LightUser `json:"user" description:"The user invited in the team"`
 }
 
@@ -35,7 +35,7 @@ func NewInvitationFromEnt(ctx context.Context, entInvitation *ent.Invitation, S3
 		Role:      entInvitation.Role,
 		CreatedAt: entInvitation.CreatedAt,
 		User:      user,
-		Team:      *team,
+		Team:      team,
 	}
 }
 

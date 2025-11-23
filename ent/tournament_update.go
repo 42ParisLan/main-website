@@ -88,6 +88,12 @@ func (_u *TournamentUpdate) SetNillableImageURL(v *string) *TournamentUpdate {
 	return _u
 }
 
+// ClearImageURL clears the value of the "image_url" field.
+func (_u *TournamentUpdate) ClearImageURL() *TournamentUpdate {
+	_u.mutation.ClearImageURL()
+	return _u
+}
+
 // SetIsVisible sets the "is_visible" field.
 func (_u *TournamentUpdate) SetIsVisible(v bool) *TournamentUpdate {
 	_u.mutation.SetIsVisible(v)
@@ -441,6 +447,9 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.ImageURL(); ok {
 		_spec.SetField(tournament.FieldImageURL, field.TypeString, value)
 	}
+	if _u.mutation.ImageURLCleared() {
+		_spec.ClearField(tournament.FieldImageURL, field.TypeString)
+	}
 	if value, ok := _u.mutation.IsVisible(); ok {
 		_spec.SetField(tournament.FieldIsVisible, field.TypeBool, value)
 	}
@@ -723,6 +732,12 @@ func (_u *TournamentUpdateOne) SetNillableImageURL(v *string) *TournamentUpdateO
 	if v != nil {
 		_u.SetImageURL(*v)
 	}
+	return _u
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (_u *TournamentUpdateOne) ClearImageURL() *TournamentUpdateOne {
+	_u.mutation.ClearImageURL()
 	return _u
 }
 
@@ -1108,6 +1123,9 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	}
 	if value, ok := _u.mutation.ImageURL(); ok {
 		_spec.SetField(tournament.FieldImageURL, field.TypeString, value)
+	}
+	if _u.mutation.ImageURLCleared() {
+		_spec.ClearField(tournament.FieldImageURL, field.TypeString)
 	}
 	if value, ok := _u.mutation.IsVisible(); ok {
 		_spec.SetField(tournament.FieldIsVisible, field.TypeBool, value)

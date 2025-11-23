@@ -107,6 +107,10 @@ export default function TournamentEdit({ tournament }: Props) {
 			if (value.image) {
 				formData.append('image', value.image);
 			}
+			
+			if (old.is_visible != value.is_visible) {
+				formData.append("is_visible", String(value.is_visible));
+			}
 
 			const linksObj: { [k: string]: string } = {};
 			for (const l of externalLinks) {

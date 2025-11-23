@@ -95,11 +95,6 @@ function RouteComponent() {
 										Edit Team
 									</Link>
 								</Button>
-								<Button
-									variant="destructive"
-								>
-									Delete Team
-								</Button>
 							</>
 						) : role == "member" && (
 							<Button

@@ -126,8 +126,8 @@ func NewTournamentFromEnt(ctx context.Context, entTournament *ent.Tournament, S3
 	}
 
 	var imageUrl *string
-	if entTournament.ImageURL != "" {
-		u, err := S3Service.PresignedGet(ctx, entTournament.ImageURL, time.Hour)
+	if entTournament.ImageURL != nil {
+		u, err := S3Service.PresignedGet(ctx, *entTournament.ImageURL, time.Hour)
 		if err == nil {
 			imageUrl = &u
 		}

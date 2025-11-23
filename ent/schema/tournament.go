@@ -17,7 +17,7 @@ func (Tournament) Fields() []ent.Field {
 		field.String("slug").Unique(),
 		field.String("name"),
 		field.String("description"),
-		field.String("image_url").Default("tournaments/default.png"),
+		field.String("image_url").Optional().Nillable(),
 		field.Bool("is_visible").Default(false),
 		field.Time("registration_start"),
 		field.Time("registration_end"),

@@ -4,6 +4,9 @@ import (
 	"base-website/ent"
 	"base-website/ent/invitation"
 	"base-website/ent/team"
+	"base-website/ent/teammember"
+	"base-website/ent/tournament"
+	"base-website/ent/user"
 	"base-website/internal/lightmodels"
 	"base-website/internal/security"
 	databaseservice "base-website/internal/services/database"
@@ -111,7 +114,7 @@ func (svc *invitationsService) CreateInvitationForTeam(
 		return nil, err
 	}
 
-	if entTeam.Edges.Creator.ID != userID {
+	if entTeam.Edges.Creator == nil || entTeam.Edges.Creator.ID != userID {
 		return nil, huma.Error401Unauthorized("Only creator of team can invite someone")
 	}
 
@@ -120,6 +123,30 @@ func (svc *invitationsService) CreateInvitationForTeam(
 	}
 	if _, ok := entTeam.Edges.Tournament.TeamStructure[input.Role]; !ok {
 		return nil, huma.Error400BadRequest(fmt.Sprintf("role '%s' doesn't exist for this tournament", input.Role))
+	}
+
+	if entTeam.Edges.Tournament != nil {
+		tmExists, err := svc.databaseService.TeamMember.Query().Where(
+			teammember.HasUserWith(user.IDEQ(input.UserID)),
+			teammember.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)),
+		).Exist(ctx)
+		if err != nil {
+			return nil, svc.errorFilter.Filter(err, "check_team_member")
+		}
+		if tmExists {
+			return nil, huma.Error400BadRequest("user already has a team in this tournament")
+		}
+	}
+
+	invExists, err := svc.databaseService.Invitation.Query().Where(
+		invitation.HasTeamWith(team.IDEQ(entTeam.ID)),
+		invitation.HasInviteeWith(user.IDEQ(input.UserID)),
+	).Exist(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "check_invitation")
+	}
+	if invExists {
+		return nil, huma.Error400BadRequest("invitation already exists for this user and team")
 	}
 
 	entInvitation, err := svc.databaseService.Invitation.Create().
@@ -132,7 +159,13 @@ func (svc *invitationsService) CreateInvitationForTeam(
 		return nil, svc.errorFilter.Filter(err, "create")
 	}
 
-	return lightmodels.NewInvitationFromEnt(ctx, entInvitation, svc.s3service), nil
+	reloaded, err := svc.databaseService.Invitation.Query().
+		Where(invitation.IDEQ(entInvitation.ID)).
+		WithInvitee().
+		WithTeam().
+		Only(ctx)
+
+	return lightmodels.NewInvitationFromEnt(ctx, reloaded, svc.s3service), nil
 }
 
 func (svc *invitationsService) DeleteInvitation(ctx context.Context, invitationID int) error {

@@ -15,7 +15,7 @@ func (Component) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
 		field.String("description").Optional(),
-		field.String("image_url").Default("components/default.png"),
+		field.String("image_url").Optional().Nillable(),
 		field.String("color").Optional(),
 	}
 }

@@ -30,10 +30,6 @@ function RouteComponent() {
 		}
 	})
 
-	if (isLoading) {
-		return <div className="text-sm text-muted-foreground">Loading tournament…</div>
-	}
-
 	const {mutate: mutateDelete} = client.useMutation("delete", "/tournaments/{id}", {
 		onError: (error) => {
 			const erorrDescription = errorModelToDescription(error)
@@ -66,6 +62,10 @@ function RouteComponent() {
 		setConfirmOpen(true);
 		performDelete();
 	}, [data, performDelete]);
+
+	if (isLoading) {
+		return <div className="text-sm text-muted-foreground">Loading tournament…</div>
+	}
 
 	if (isError) {
 		router.navigate({to: '/admin/tournaments'})

@@ -280,7 +280,7 @@ func (svc *teamsService) UpdateTeam(
 	if err != nil {
 		return nil, err
 	}
-	if myRole == nil || entTeam.Edges.Creator.ID != userID {
+	if myRole == nil || entTeam.Edges.Creator == nil || entTeam.Edges.Creator.ID != userID {
 		return nil, huma.Error401Unauthorized("don't have required role")
 	}
 
@@ -303,7 +303,9 @@ func (svc *teamsService) UpdateTeam(
 			return nil, svc.errorFilter.Filter(err, "upload image")
 		}
 
-		svc.s3service.RemoveObject(ctx, entTeam.ImageURL)
+		if entTeam.ImageURL != nil {
+			svc.s3service.RemoveObject(ctx, *entTeam.ImageURL)
+		}
 
 		update.SetImageURL(objectName)
 	}
@@ -342,7 +344,7 @@ func (svc *teamsService) DeleteTeam(
 	if err != nil {
 		return err
 	}
-	if myRole == nil || entTeam.Edges.Creator.ID != userID {
+	if myRole == nil || entTeam.Edges.Creator == nil || entTeam.Edges.Creator.ID != userID {
 		return huma.Error401Unauthorized("don't have required role")
 	}
 
@@ -350,7 +352,9 @@ func (svc *teamsService) DeleteTeam(
 		return svc.errorFilter.Filter(err, "delete_component")
 	}
 
-	svc.s3service.RemoveObject(ctx, entTeam.ImageURL)
+	if entTeam.ImageURL != nil {
+		svc.s3service.RemoveObject(ctx, *entTeam.ImageURL)
+	}
 
 	return nil
 }

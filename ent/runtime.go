@@ -5,7 +5,6 @@ package ent
 import (
 	"base-website/ent/app"
 	"base-website/ent/authcode"
-	"base-website/ent/component"
 	"base-website/ent/consent"
 	"base-website/ent/invitation"
 	"base-website/ent/schema"
@@ -43,12 +42,6 @@ func init() {
 	authcodeDescExpiration := authcodeFields[2].Descriptor()
 	// authcode.DefaultExpiration holds the default value on creation for the expiration field.
 	authcode.DefaultExpiration = authcodeDescExpiration.Default.(func() time.Time)
-	componentFields := schema.Component{}.Fields()
-	_ = componentFields
-	// componentDescImageURL is the schema descriptor for image_url field.
-	componentDescImageURL := componentFields[2].Descriptor()
-	// component.DefaultImageURL holds the default value on creation for the image_url field.
-	component.DefaultImageURL = componentDescImageURL.Default.(string)
 	consentFields := schema.Consent{}.Fields()
 	_ = consentFields
 	// consentDescCreatedAt is the schema descriptor for created_at field.
@@ -69,10 +62,6 @@ func init() {
 	invitation.DefaultCreatedAt = invitationDescCreatedAt.Default.(func() time.Time)
 	teamFields := schema.Team{}.Fields()
 	_ = teamFields
-	// teamDescImageURL is the schema descriptor for image_url field.
-	teamDescImageURL := teamFields[1].Descriptor()
-	// team.DefaultImageURL holds the default value on creation for the image_url field.
-	team.DefaultImageURL = teamDescImageURL.Default.(string)
 	// teamDescIsLocked is the schema descriptor for is_locked field.
 	teamDescIsLocked := teamFields[3].Descriptor()
 	// team.DefaultIsLocked holds the default value on creation for the is_locked field.
@@ -89,10 +78,6 @@ func init() {
 	team.UpdateDefaultUpdatedAt = teamDescUpdatedAt.UpdateDefault.(func() time.Time)
 	tournamentFields := schema.Tournament{}.Fields()
 	_ = tournamentFields
-	// tournamentDescImageURL is the schema descriptor for image_url field.
-	tournamentDescImageURL := tournamentFields[3].Descriptor()
-	// tournament.DefaultImageURL holds the default value on creation for the image_url field.
-	tournament.DefaultImageURL = tournamentDescImageURL.Default.(string)
 	// tournamentDescIsVisible is the schema descriptor for is_visible field.
 	tournamentDescIsVisible := tournamentFields[4].Descriptor()
 	// tournament.DefaultIsVisible holds the default value on creation for the is_visible field.

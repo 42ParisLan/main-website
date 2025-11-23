@@ -231,7 +231,8 @@ func (svc *tournamentsService) UpdateTournament(ctx context.Context, tournamentI
 		UpdateOneID(entTournament.ID).
 		SetRegistrationStart(registrationStart).
 		SetRegistrationEnd(registrationEnd).
-		SetTournamentStart(tournamentStart)
+		SetTournamentStart(tournamentStart).
+		SetIsVisible(input.IsVisible)
 
 	if input.Description != "" {
 		update.SetDescription(input.Description)

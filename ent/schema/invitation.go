@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 type Invitation struct {
@@ -33,5 +34,13 @@ func (Invitation) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+	}
+}
+
+func (Invitation) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges("team").
+			Edges("invitee").
+			Unique(),
 	}
 }

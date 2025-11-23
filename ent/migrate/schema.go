@@ -88,7 +88,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "image_url", Type: field.TypeString, Default: "components/default.png"},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString, Nullable: true},
 		{Name: "component_vote", Type: field.TypeInt},
 	}
@@ -164,6 +164,13 @@ var (
 				OnDelete:   schema.Cascade,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "invitation_invitation_invitee",
+				Unique:  true,
+				Columns: []*schema.Column{InvitationsColumns[5]},
+			},
+		},
 	}
 	// RankGroupsColumns holds the columns for the "rank_groups" table.
 	RankGroupsColumns = []*schema.Column{
@@ -199,7 +206,7 @@ var (
 	TeamsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "image_url", Type: field.TypeString, Default: "teams/default.png"},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"DRAFT", "LOCKED"}, Default: "DRAFT"},
 		{Name: "is_locked", Type: field.TypeBool, Default: false},
 		{Name: "queue_position", Type: field.TypeInt, Nullable: true},
@@ -283,7 +290,7 @@ var (
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
-		{Name: "image_url", Type: field.TypeString, Default: "tournaments/default.png"},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
 		{Name: "is_visible", Type: field.TypeBool, Default: false},
 		{Name: "registration_start", Type: field.TypeTime},
 		{Name: "registration_end", Type: field.TypeTime},
@@ -337,6 +344,13 @@ var (
 				OnDelete:   schema.Cascade,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tournamentadmin_tournament_admin_tournament",
+				Unique:  true,
+				Columns: []*schema.Column{TournamentAdminsColumns[3]},
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -374,13 +388,20 @@ var (
 				Symbol:     "user_votes_users_user",
 				Columns:    []*schema.Column{UserVotesColumns[2]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.Cascade,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "user_votes_components_component",
 				Columns:    []*schema.Column{UserVotesColumns[3]},
 				RefColumns: []*schema.Column{ComponentsColumns[0]},
 				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uservote_user_vote_component",
+				Unique:  true,
+				Columns: []*schema.Column{UserVotesColumns[3]},
 			},
 		},
 	}

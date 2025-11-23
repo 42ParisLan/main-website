@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 type TournamentAdmin struct {
@@ -30,5 +31,13 @@ func (TournamentAdmin) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+	}
+}
+
+func (TournamentAdmin) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges("user").
+			Edges("tournament").
+			Unique(),
 	}
 }

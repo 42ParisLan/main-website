@@ -23,7 +23,7 @@ type Team struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// ImageURL holds the value of the "image_url" field.
-	ImageURL string `json:"image_url,omitempty"`
+	ImageURL *string `json:"image_url,omitempty"`
 	// Status holds the value of the "status" field.
 	Status team.Status `json:"status,omitempty"`
 	// IsLocked holds the value of the "is_locked" field.
@@ -163,7 +163,8 @@ func (_m *Team) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field image_url", values[i])
 			} else if value.Valid {
-				_m.ImageURL = value.String
+				_m.ImageURL = new(string)
+				*_m.ImageURL = value.String
 			}
 		case team.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -286,8 +287,10 @@ func (_m *Team) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
-	builder.WriteString("image_url=")
-	builder.WriteString(_m.ImageURL)
+	if v := _m.ImageURL; v != nil {
+		builder.WriteString("image_url=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))

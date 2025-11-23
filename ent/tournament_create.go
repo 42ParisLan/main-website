@@ -253,10 +253,6 @@ func (_c *TournamentCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *TournamentCreate) defaults() {
-	if _, ok := _c.mutation.ImageURL(); !ok {
-		v := tournament.DefaultImageURL
-		_c.mutation.SetImageURL(v)
-	}
 	if _, ok := _c.mutation.IsVisible(); !ok {
 		v := tournament.DefaultIsVisible
 		_c.mutation.SetIsVisible(v)
@@ -285,9 +281,6 @@ func (_c *TournamentCreate) check() error {
 	}
 	if _, ok := _c.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Tournament.description"`)}
-	}
-	if _, ok := _c.mutation.ImageURL(); !ok {
-		return &ValidationError{Name: "image_url", err: errors.New(`ent: missing required field "Tournament.image_url"`)}
 	}
 	if _, ok := _c.mutation.IsVisible(); !ok {
 		return &ValidationError{Name: "is_visible", err: errors.New(`ent: missing required field "Tournament.is_visible"`)}
@@ -356,7 +349,7 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := _c.mutation.ImageURL(); ok {
 		_spec.SetField(tournament.FieldImageURL, field.TypeString, value)
-		_node.ImageURL = value
+		_node.ImageURL = &value
 	}
 	if value, ok := _c.mutation.IsVisible(); ok {
 		_spec.SetField(tournament.FieldIsVisible, field.TypeBool, value)

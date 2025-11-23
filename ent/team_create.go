@@ -235,10 +235,6 @@ func (_c *TeamCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *TeamCreate) defaults() {
-	if _, ok := _c.mutation.ImageURL(); !ok {
-		v := team.DefaultImageURL
-		_c.mutation.SetImageURL(v)
-	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := team.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -261,9 +257,6 @@ func (_c *TeamCreate) defaults() {
 func (_c *TeamCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Team.name"`)}
-	}
-	if _, ok := _c.mutation.ImageURL(); !ok {
-		return &ValidationError{Name: "image_url", err: errors.New(`ent: missing required field "Team.image_url"`)}
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Team.status"`)}
@@ -320,7 +313,7 @@ func (_c *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := _c.mutation.ImageURL(); ok {
 		_spec.SetField(team.FieldImageURL, field.TypeString, value)
-		_node.ImageURL = value
+		_node.ImageURL = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(team.FieldStatus, field.TypeEnum, value)

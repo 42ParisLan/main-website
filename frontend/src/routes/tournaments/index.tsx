@@ -21,7 +21,6 @@ function RouteComponent() {
 			query: {
 				page: newPage,
 				status: "ongoing",
-				visible: "all", // only for dev
 			}
 		}
 	})
@@ -31,7 +30,6 @@ function RouteComponent() {
 			query: {
 				page: oldPage,
 				status: "finish",
-				visible: "all",  // only for dev
 			}
 		}
 	})

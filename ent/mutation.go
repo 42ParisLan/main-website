@@ -3122,7 +3122,7 @@ func (m *ComponentMutation) ImageURL() (r string, exists bool) {
 // OldImageURL returns the old "image_url" field's value of the Component entity.
 // If the Component object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ComponentMutation) OldImageURL(ctx context.Context) (v string, err error) {
+func (m *ComponentMutation) OldImageURL(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
 	}
@@ -3136,9 +3136,22 @@ func (m *ComponentMutation) OldImageURL(ctx context.Context) (v string, err erro
 	return oldValue.ImageURL, nil
 }
 
+// ClearImageURL clears the value of the "image_url" field.
+func (m *ComponentMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[component.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *ComponentMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[component.FieldImageURL]
+	return ok
+}
+
 // ResetImageURL resets all changes to the "image_url" field.
 func (m *ComponentMutation) ResetImageURL() {
 	m.image_url = nil
+	delete(m.clearedFields, component.FieldImageURL)
 }
 
 // SetColor sets the "color" field.
@@ -3433,6 +3446,9 @@ func (m *ComponentMutation) ClearedFields() []string {
 	if m.FieldCleared(component.FieldDescription) {
 		fields = append(fields, component.FieldDescription)
 	}
+	if m.FieldCleared(component.FieldImageURL) {
+		fields = append(fields, component.FieldImageURL)
+	}
 	if m.FieldCleared(component.FieldColor) {
 		fields = append(fields, component.FieldColor)
 	}
@@ -3452,6 +3468,9 @@ func (m *ComponentMutation) ClearField(name string) error {
 	switch name {
 	case component.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case component.FieldImageURL:
+		m.ClearImageURL()
 		return nil
 	case component.FieldColor:
 		m.ClearColor()
@@ -5812,7 +5831,7 @@ func (m *TeamMutation) ImageURL() (r string, exists bool) {
 // OldImageURL returns the old "image_url" field's value of the Team entity.
 // If the Team object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TeamMutation) OldImageURL(ctx context.Context) (v string, err error) {
+func (m *TeamMutation) OldImageURL(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
 	}
@@ -5826,9 +5845,22 @@ func (m *TeamMutation) OldImageURL(ctx context.Context) (v string, err error) {
 	return oldValue.ImageURL, nil
 }
 
+// ClearImageURL clears the value of the "image_url" field.
+func (m *TeamMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[team.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *TeamMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[team.FieldImageURL]
+	return ok
+}
+
 // ResetImageURL resets all changes to the "image_url" field.
 func (m *TeamMutation) ResetImageURL() {
 	m.image_url = nil
+	delete(m.clearedFields, team.FieldImageURL)
 }
 
 // SetStatus sets the "status" field.
@@ -6570,6 +6602,9 @@ func (m *TeamMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *TeamMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(team.FieldImageURL) {
+		fields = append(fields, team.FieldImageURL)
+	}
 	if m.FieldCleared(team.FieldQueuePosition) {
 		fields = append(fields, team.FieldQueuePosition)
 	}
@@ -6590,6 +6625,9 @@ func (m *TeamMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *TeamMutation) ClearField(name string) error {
 	switch name {
+	case team.FieldImageURL:
+		m.ClearImageURL()
+		return nil
 	case team.FieldQueuePosition:
 		m.ClearQueuePosition()
 		return nil
@@ -7569,7 +7607,7 @@ func (m *TournamentMutation) ImageURL() (r string, exists bool) {
 // OldImageURL returns the old "image_url" field's value of the Tournament entity.
 // If the Tournament object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TournamentMutation) OldImageURL(ctx context.Context) (v string, err error) {
+func (m *TournamentMutation) OldImageURL(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
 	}
@@ -7583,9 +7621,22 @@ func (m *TournamentMutation) OldImageURL(ctx context.Context) (v string, err err
 	return oldValue.ImageURL, nil
 }
 
+// ClearImageURL clears the value of the "image_url" field.
+func (m *TournamentMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[tournament.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *TournamentMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[tournament.FieldImageURL]
+	return ok
+}
+
 // ResetImageURL resets all changes to the "image_url" field.
 func (m *TournamentMutation) ResetImageURL() {
 	m.image_url = nil
+	delete(m.clearedFields, tournament.FieldImageURL)
 }
 
 // SetIsVisible sets the "is_visible" field.
@@ -8560,6 +8611,9 @@ func (m *TournamentMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *TournamentMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(tournament.FieldImageURL) {
+		fields = append(fields, tournament.FieldImageURL)
+	}
 	if m.FieldCleared(tournament.FieldTournamentEnd) {
 		fields = append(fields, tournament.FieldTournamentEnd)
 	}
@@ -8583,6 +8637,9 @@ func (m *TournamentMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *TournamentMutation) ClearField(name string) error {
 	switch name {
+	case tournament.FieldImageURL:
+		m.ClearImageURL()
+		return nil
 	case tournament.FieldTournamentEnd:
 		m.ClearTournamentEnd()
 		return nil
