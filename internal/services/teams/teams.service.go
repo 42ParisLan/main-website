@@ -125,6 +125,10 @@ func (svc *teamsService) CreateTeam(
 		return nil, svc.errorFilter.Filter(err, "retrieve tournament")
 	}
 
+	if entTournament.IsVisible == false {
+		return nil, huma.Error401Unauthorized("tournament isn't visible")
+	}
+
 	now := time.Now()
 	if now.Before(entTournament.RegistrationStart) || now.After(entTournament.RegistrationEnd) {
 		return nil, huma.Error401Unauthorized("tournament isn't in registration phase")

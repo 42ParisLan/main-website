@@ -260,6 +260,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/invitations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Invitation
+         * @description This endpoint is used to delete an invitation.
+         */
+        delete: operations["deleteInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -408,6 +428,30 @@ export interface paths {
         patch: operations["updateTeam"];
         trace?: never;
     };
+    "/teams/{id}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Invitations For Team
+         * @description This endpoint is used to get invitations that belong to a team.
+         */
+        get: operations["getInvitationsForTeam"];
+        put?: never;
+        /**
+         * Create Invitation For Team
+         * @description This endpoint is used to create invitation that belong to a team.
+         */
+        post: operations["createInvitationForTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tournaments": {
         parameters: {
             query?: never;
@@ -469,7 +513,11 @@ export interface paths {
         delete: operations["deleteTournament"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Tournament
+         * @description This endpoint is used to update a tournament.
+         */
+        patch: operations["updateTournament"];
         trace?: never;
     };
     "/tournaments/{id}/admin": {
@@ -979,6 +1027,18 @@ export interface components {
              */
             user_id: number;
         };
+        CreateInvitation: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateInvitation.json
+             */
+            readonly $schema?: string;
+            message: string;
+            role: string;
+            /** Format: int64 */
+            user_id: number;
+        };
         CreateVote: {
             /**
              * Format: uri
@@ -1057,6 +1117,20 @@ export interface components {
              * @example https://example.com/errors/example
              */
             type: string;
+        };
+        Invitation: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Invitation.json
+             */
+            readonly $schema?: string;
+            /** Format: date-time */
+            created_at: string;
+            message: string;
+            role: string;
+            team: components["schemas"]["LightTeam"];
+            user: components["schemas"]["LightUser"];
         };
         JsonPatchOp: {
             /** @description JSON Pointer for the source of a move or copy */
@@ -1297,6 +1371,35 @@ export interface components {
              */
             readonly $schema?: string;
             items: components["schemas"]["Consent"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseInvitation: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseInvitation.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["Invitation"][] | null;
             /**
              * Format: int64
              * @example 10
@@ -2197,6 +2300,38 @@ export interface operations {
             };
         };
     };
+    deleteInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getCurrentUser: {
         parameters: {
             query?: never;
@@ -2477,6 +2612,81 @@ export interface operations {
             };
         };
     };
+    getInvitationsForTeam: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseInvitation"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createInvitationForTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvitation"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getAllTournaments: {
         parameters: {
             query?: {
@@ -2527,7 +2737,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "multipart/form-data": {
-                    "custom_page_component,omitempty"?: string;
+                    custom_page_component?: string;
                     /** @example School-wide League of Legends tournament */
                     description?: string;
                     /** Format: binary */
@@ -2551,9 +2761,7 @@ export interface operations {
                     registration_start: string;
                     /** @example spring-cup-2025 */
                     slug: string;
-                    team_structure?: {
-                        [key: string]: components["schemas"]["TeamStructure"];
-                    };
+                    team_structure?: string;
                     /**
                      * Format: date-time
                      * @example 2025-03-15T00:00:00Z
@@ -2634,6 +2842,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    custom_page_component?: string;
+                    /** @example School-wide League of Legends tournament */
+                    description?: string;
+                    external_links?: string;
+                    /** Format: binary */
+                    image?: string;
+                    /**
+                     * Format: int64
+                     * @default -1
+                     * @example 32
+                     */
+                    max_teams?: number;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-10T23:59:59Z
+                     */
+                    registration_end?: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-01T00:00:00Z
+                     */
+                    registration_start?: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-15T00:00:00Z
+                     */
+                    tournament_start?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
                 };
             };
             /** @description Error */

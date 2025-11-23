@@ -59,6 +59,16 @@ func (ctrl *tournamentController) Register(api huma.API) {
 	}, ctrl.createTournament)
 
 	huma.Register(api, huma.Operation{
+		Method:      "PATCH",
+		Path:        "/tournaments/{id}",
+		Summary:     "Update Tournament",
+		Description: `This endpoint is used to update a tournament.`,
+		Tags:        []string{"Tournament"},
+		OperationID: "updateTournament",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.updateTournament)
+
+	huma.Register(api, huma.Operation{
 		Method:      "DELETE",
 		Path:        "/tournaments/{id}",
 		Summary:     "Delete Tournament",
@@ -97,16 +107,6 @@ func (ctrl *tournamentController) Register(api huma.API) {
 		OperationID: "deleteTournamentAdmin",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.deleteTournamentAdmin)
-
-	// huma.Register(api, huma.Operation{
-	// 	Method:      "PATCH",
-	// 	Path:        "/tournaments/{id}",
-	// 	Summary:     "Update Tournament",
-	// 	Description: `This endpoint is used to update a tournament.`,
-	// 	Tags:        []string{"Tournament"},
-	// 	OperationID: "updateTournament",
-	// 	Security:    security.WithAuth("profile"),
-	// }, ctrl.updateTournament)
 }
 
 func (ctrl *tournamentController) getAllTournaments(
@@ -141,6 +141,20 @@ func (ctrl *tournamentController) getTournamentByID(
 		return nil, err
 	}
 	return &oneTournamentOutput{Body: tournament}, nil
+}
+
+func (ctrl *tournamentController) updateTournament(
+	ctx context.Context,
+	input *updateTournamentInput,
+) (*oneTournamentOutput, error) {
+	tournament, err := ctrl.tournamentsService.UpdateTournament(ctx, input.TournamentID, *input.RawBody.Data())
+	if err != nil {
+		return nil, err
+	}
+
+	return &oneTournamentOutput{
+		Body: tournament,
+	}, nil
 }
 
 func (ctrl *tournamentController) createTournament(

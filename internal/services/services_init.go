@@ -7,6 +7,7 @@ import (
 	consentsservice "base-website/internal/services/consents"
 	databaseservice "base-website/internal/services/database"
 	intraservice "base-website/internal/services/intra"
+	invitationsservice "base-website/internal/services/invitations"
 	openidservice "base-website/internal/services/openid"
 	pubsubservice "base-website/internal/services/pubsub"
 	rbacservice "base-website/internal/services/rbac"
@@ -34,5 +35,6 @@ func InitServices(i *do.Injector) error {
 	do.Provide(i, teamsservice.NewProvider())
 	do.Provide(i, appsservice.NewProvider())
 	do.Provide(i, consentsservice.NewProvider())
+	do.Provide(i, invitationsservice.NewProvider())
 	return nil
 }

@@ -31,7 +31,7 @@ roles:
               methods: [GET]
             - path: /tournaments
               methods: [GET]
-            - path: /tournaments/{id_or_slug}
+            - path: /tournaments/*
               methods: [GET]
 
     basic_admin:
@@ -70,7 +70,7 @@ roles:
 
     tournament_admin:
         name: 'tournament_admin'
-        description: 'User who can manage and create Tournaments'
+        description: 'User who can create Tournaments'
         inherits: [basic_admin]
         permissions:
             - path: /tournaments

@@ -61,6 +61,10 @@ func (svc *tournamentsService) CreateTournament(
 		)
 	}
 
+	if input.RegistrationEnd.Sub(input.RegistrationStart) < 24*time.Hour {
+		return nil, huma.Error400BadRequest("registration period must be at least 1 day")
+	}
+
 	now := time.Now()
 	if input.RegistrationStart.Before(now) {
 		return nil, huma.Error400BadRequest("registration_start can't be in the past")
@@ -179,6 +183,119 @@ func (svc *tournamentsService) CreateTournament(
 	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
 }
 
+func (svc *tournamentsService) UpdateTournament(ctx context.Context, tournamentID int, input tournamentsmodels.UpdateTournament) (*lightmodels.Tournament, error) {
+	myRole, err := svc.GetTournamentUserRole(ctx, tournamentID)
+	if err != nil {
+		return nil, err
+	}
+	if myRole == nil || *myRole == tournamentadmin.RoleADMIN {
+		return nil, huma.Error401Unauthorized("don't have required role")
+	}
+
+	entTournament, err := svc.databaseService.Tournament.Get(ctx, tournamentID)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "retrieve")
+	}
+
+	now := time.Now()
+	if entTournament.TournamentEnd != nil || entTournament.TournamentStart.Before(now) {
+		return nil, huma.Error401Unauthorized("tournament has already started you can't modify it")
+	}
+
+	registrationStart := entTournament.RegistrationStart
+	registrationEnd := entTournament.RegistrationEnd
+	tournamentStart := entTournament.TournamentStart
+	if !input.RegistrationStart.IsZero() {
+		registrationStart = input.RegistrationStart
+	}
+	if !input.RegistrationEnd.IsZero() {
+		registrationEnd = input.RegistrationEnd
+	}
+	if !input.TournamentStart.IsZero() {
+		tournamentStart = input.TournamentStart
+	}
+	if !(registrationStart.Before(registrationEnd) &&
+		registrationEnd.Before(tournamentStart)) {
+		return nil, svc.errorFilter.Filter(
+			fmt.Errorf("invalid tournament dates: expected registrationStart < registrationEnd < tournamentStart"),
+			"create",
+		)
+	}
+
+	// Ensure registration window is at least 1 day
+	if registrationEnd.Sub(registrationStart) < 24*time.Hour {
+		return nil, svc.errorFilter.Filter(fmt.Errorf("registration period must be at least 1 day"), "update")
+	}
+
+	update := svc.databaseService.Tournament.
+		UpdateOneID(entTournament.ID).
+		SetRegistrationStart(registrationStart).
+		SetRegistrationEnd(registrationEnd).
+		SetTournamentStart(tournamentStart)
+
+	if input.Description != "" {
+		update.SetDescription(input.Description)
+	}
+	if input.MaxTeams > 3 {
+		update.SetMaxTeams(input.MaxTeams)
+		// Need to reacalculate position of teams
+	}
+	if input.CustomPageComponent != "" {
+		update.SetCustomPageComponent(input.CustomPageComponent)
+	}
+	if input.ExternalLinks != "" {
+		var external map[string]string
+		if err := json.Unmarshal([]byte(input.ExternalLinks), &external); err != nil {
+			return nil, svc.errorFilter.Filter(fmt.Errorf("invalid externalLinks JSON: %w", err), "update")
+		}
+		if len(external) > 0 {
+			update.SetExternalLinks(external)
+		}
+	}
+
+	if input.Image.Filename != "" {
+		sanitized := strings.ReplaceAll(input.Image.Filename, " ", "_")
+		ext := filepath.Ext(sanitized)
+		base := strings.TrimSuffix(sanitized, ext)
+		if base == "" {
+			base = "file"
+		}
+
+		objectName := fmt.Sprintf("tournaments/%d/%d_%s%s", entTournament.ID, time.Now().UnixNano(), base, ext)
+
+		if err := svc.s3service.UploadObject(ctx, objectName, input.Image.File, input.Image.Size, input.Image.ContentType); err != nil {
+			return nil, svc.errorFilter.Filter(err, "upload image")
+		}
+
+		update.SetImageURL(objectName)
+	}
+
+	_, err = update.Save(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "update")
+	}
+
+	reloaded, err := svc.databaseService.Tournament.
+		Query().
+		Where(tournament.IDEQ(entTournament.ID)).
+		WithAdmins(func(adminQuery *ent.TournamentAdminQuery) {
+			adminQuery.WithUser()
+		}).
+		WithTeams(func(teamQuery *ent.TeamQuery) {
+			teamQuery.
+				WithMembers().
+				WithRankGroup()
+		}).
+		WithCreator().
+		WithRankGroups().
+		Only(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+
+	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
+}
+
 func (svc *tournamentsService) DeleteTournament(
 	ctx context.Context,
 	tournamentID int,
@@ -189,6 +306,15 @@ func (svc *tournamentsService) DeleteTournament(
 	}
 	if myRole == nil || *myRole != tournamentadmin.RoleCREATOR {
 		return huma.Error401Unauthorized("don't have required role")
+	}
+
+	entTournament, err := svc.databaseService.Tournament.Get(ctx, tournamentID)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "retrieve")
+	}
+
+	if entTournament.IsVisible && entTournament.TournamentEnd != nil {
+		return huma.Error401Unauthorized("Can't delete tournament that is finished and visible")
 	}
 
 	if err := svc.databaseService.Tournament.DeleteOneID(tournamentID).Exec(ctx); err != nil {

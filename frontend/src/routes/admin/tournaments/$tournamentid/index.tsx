@@ -7,18 +7,6 @@ import TournamentAdminList from '@/components/tournaments/admin/tournament-admin
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
-import { useCallback, useState } from 'react';
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogDescription,
-	DialogFooter,
-	DialogClose,
-} from '@/components/ui/dialog';
-import { toast } from 'sonner';
-import errorModelToDescription from '@/lib/utils';
 
 export const Route = createFileRoute('/admin/tournaments/$tournamentid/')({
   component: RouteComponent,
@@ -39,42 +27,6 @@ function RouteComponent() {
 			}
 		}
 	})
-
-	const {mutate: mutateDelete} = client.useMutation("delete", "/tournaments/{id}", {
-		onError: (error) => {
-			const erorrDescription = errorModelToDescription(error)
-			console.error(erorrDescription);
-			toast.error("Failed to delete Tournament")
-		},
-		onSuccess: () => {
-			toast.success("Tournament Successfuly Deleted")
-			router.navigate({to: "/admin/tournaments"})
-		}
-	})
-
-	const [confirmOpen, setConfirmOpen] = useState(false);
-
-	const performDelete = useCallback(() => {
-		if (!data) return;
-		mutateDelete({
-			params: {
-				path: {
-					id: data.id,
-				},
-			},
-		});
-	}, [mutateDelete, data]);
-
-	const handleDeleteTournament = useCallback(() => {
-		if (!data) return;
-
-		if (data.is_visible) {
-			setConfirmOpen(true);
-			return;
-		}
-
-		performDelete();
-	}, [data, performDelete]);
 
 	if (isLoading) {
 		return <div className="text-sm text-muted-foreground">Loading tournament…</div>
@@ -112,15 +64,6 @@ function RouteComponent() {
 										<Link to={"/admin/tournaments/$tournamentid/edit"} params={{tournamentid: String(data.slug)}}>Edit</Link>
 									</Button>
 								)}
-								{(role == "CREATOR") && (
-									<Button
-										size="sm" 
-										variant="destructive"
-										onClick={handleDeleteTournament}
-									>
-										Delete
-									</Button>
-								)}
 							</div>
 
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -144,10 +87,14 @@ function RouteComponent() {
 								</div>
 								<div>
 									<strong>External link</strong>
-									<div className="text-sm">
+									<div className='flex gap-2'>
 										{data.external_links ? (
-											Object.entries(data.external_links).map(([label, url]) => (
-												<a key={label} href={url as string} target="_blank" rel="noopener noreferrer" className="underline text-primary">{label}</a>
+											Object.entries(data.external_links).map(([key, value]) => (
+												<Button asChild key={key}>
+													<a href={String(value)} target='_blank' rel='noopener noreferrer' className='underline text-primary'>
+														{key}
+													</a>
+												</Button>
 											))
 										) : (
 											<span className="text-muted-foreground">—</span>
@@ -191,28 +138,10 @@ function RouteComponent() {
 									<strong>Custom page</strong>
 									<div className="text-sm">{data.custom_page_component ?? 'default'}</div>
 								</div>
-
 							</div>
 						</CardContent>
 					</Card>
 					<TournamentAdminList tournament={data} refetchTournament={refetch}/>
-
-					{/* Confirmation dialog for deleting visible tournaments */}
-					<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Delete tournament</DialogTitle>
-								<DialogDescription>
-									This tournament is currently visible to users. Deleting it will remove it and all related data — this action cannot be undone. Are you sure you want to continue?
-								</DialogDescription>
-							</DialogHeader>
-							<DialogFooter>
-								<Button type="button" variant="ghost" onClick={() => setConfirmOpen(false)}>Cancel</Button>
-								<Button type="button" variant="destructive" onClick={() => { performDelete(); setConfirmOpen(false); }}>Delete</Button>
-							</DialogFooter>
-							<DialogClose />
-						</DialogContent>
-					</Dialog>
 				</div>
 			</>
 		)

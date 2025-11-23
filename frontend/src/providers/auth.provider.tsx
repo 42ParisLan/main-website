@@ -13,6 +13,7 @@ import { useClient } from "./client.provider";
 import { errorModelToDescription } from "@/lib/utils";
 import LoadingPage from "@/components/loading-page";
 import ErrorPage from "@/components/error-page";
+import { Button } from "@/components/ui/button";
 
 type User = components["schemas"]["User"];
 type Permission = components["schemas"]["Permission"];
@@ -66,12 +67,13 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 	const client = useClient();
 
 	const [error, setError] = useState<string | null>(null);
+	const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
 	const shouldAuth = useMemo(() => isMatchedPathname(location.pathname), [location.pathname]);
 
 	const authorize = useCallback(() => {
 		window.location.href = getRedirectUrl(VITE_OAUTH_AUTHORIZE_URL, VITE_OAUTH_CLIENT_ID);
-	}, []);
+	}, [VITE_OAUTH_AUTHORIZE_URL, VITE_OAUTH_CLIENT_ID]);
 
 	const logout = useCallback(async () => {
 		try {
@@ -91,7 +93,8 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 		async function fetchAuth() {
 			const { data: me, error: meError } = await client.GET("/me");
 			if (meError) {
-				authorize();
+				// Don't automatically redirect. Show a login prompt so the user can click to authorize.
+				setShowLoginPrompt(true);
 				return;
 			}
 			const { data: permissions, error: permissionsError } = await client.GET("/me/permissions");
@@ -103,6 +106,7 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 				me,
 				permissions,
 			});
+			setShowLoginPrompt(false);
 		}
 
 		fetchAuth();
@@ -110,6 +114,14 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 
 	if (error) {
 		return <ErrorPage error={error} />;
+	}
+
+	if (shouldAuth && showLoginPrompt) {
+		return (
+			<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+				<Button onClick={authorize}>Login With 42</Button>
+			</div>
+		);
 	}
 
 	if (shouldAuth && auth == null) {
