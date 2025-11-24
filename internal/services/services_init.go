@@ -7,10 +7,13 @@ import (
 	consentsservice "base-website/internal/services/consents"
 	databaseservice "base-website/internal/services/database"
 	intraservice "base-website/internal/services/intra"
+	invitationsservice "base-website/internal/services/invitations"
 	openidservice "base-website/internal/services/openid"
 	pubsubservice "base-website/internal/services/pubsub"
 	rbacservice "base-website/internal/services/rbac"
 	s3service "base-website/internal/services/s3"
+	teamsservice "base-website/internal/services/teams"
+	tournamentsservice "base-website/internal/services/tournaments"
 	usersservice "base-website/internal/services/users"
 	votesservice "base-website/internal/services/votes"
 
@@ -28,7 +31,10 @@ func InitServices(i *do.Injector) error {
 	do.Provide(i, usersservice.NewProvider())
 	do.Provide(i, pubsubservice.NewProvider())
 	do.Provide(i, votesservice.NewProvider())
+	do.Provide(i, tournamentsservice.NewProvider())
+	do.Provide(i, teamsservice.NewProvider())
 	do.Provide(i, appsservice.NewProvider())
 	do.Provide(i, consentsservice.NewProvider())
+	do.Provide(i, invitationsservice.NewProvider())
 	return nil
 }

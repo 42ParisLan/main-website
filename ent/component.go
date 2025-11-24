@@ -22,7 +22,7 @@ type Component struct {
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// ImageURL holds the value of the "image_url" field.
-	ImageURL string `json:"image_url,omitempty"`
+	ImageURL *string `json:"image_url,omitempty"`
 	// Color holds the value of the "color" field.
 	Color string `json:"color,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -111,7 +111,8 @@ func (_m *Component) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field image_url", values[i])
 			} else if value.Valid {
-				_m.ImageURL = value.String
+				_m.ImageURL = new(string)
+				*_m.ImageURL = value.String
 			}
 		case component.FieldColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -178,8 +179,10 @@ func (_m *Component) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
-	builder.WriteString("image_url=")
-	builder.WriteString(_m.ImageURL)
+	if v := _m.ImageURL; v != nil {
+		builder.WriteString("image_url=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("color=")
 	builder.WriteString(_m.Color)

@@ -260,6 +260,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/invitations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Invitation
+         * @description This endpoint is used to delete an invitation.
+         */
+        delete: operations["deleteInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/invitations/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept An Invitation
+         * @description This endpoint is used to accept an invitation.
+         */
+        post: operations["acceptInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -274,6 +314,26 @@ export interface paths {
         get: operations["getCurrentUser"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/anonymize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Anonymize current user
+         * @description This endpoint is used to anonymize the current user (remove personal data).
+         */
+        post: operations["anonymizeCurrentUser"];
         delete?: never;
         options?: never;
         head?: never;
@@ -320,6 +380,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/me/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Invitations For Me
+         * @description This endpoint is used to get invitations that belong to a user.
+         */
+        get: operations["getInvitationsForMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me/permissions": {
         parameters: {
             query?: never;
@@ -354,6 +434,214 @@ export interface paths {
         get: operations["getRoles"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/teams/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Team
+         * @description This endpoint is used to get a team.
+         */
+        get: operations["getTeam"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Team
+         * @description This endpoint is used to delete a team.
+         */
+        delete: operations["deleteTeam"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Team
+         * @description This endpoint is used to update a team.
+         */
+        patch: operations["updateTeam"];
+        trace?: never;
+    };
+    "/teams/{id}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Invitations For Team
+         * @description This endpoint is used to get invitations that belong to a team.
+         */
+        get: operations["getInvitationsForTeam"];
+        put?: never;
+        /**
+         * Create Invitation For Team
+         * @description This endpoint is used to create invitation that belong to a team.
+         */
+        post: operations["createInvitationForTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Tournaments
+         * @description This endpoint is used to get all tournaments.
+         */
+        get: operations["getAllTournaments"];
+        put?: never;
+        /**
+         * Create Tournament
+         * @description This endpoint is used to create a tournament.
+         */
+        post: operations["createTournament"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id_or_slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tournament by ID
+         * @description This endpoint is used to get a tournament.
+         */
+        get: operations["getTournamentByID"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Tournament
+         * @description This endpoint is used to delete a tournament.
+         */
+        delete: operations["deleteTournament"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Tournament
+         * @description This endpoint is used to update a tournament.
+         */
+        patch: operations["updateTournament"];
+        trace?: never;
+    };
+    "/tournaments/{id}/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add admin to tournament
+         * @description Add a user as an admin to a tournament.
+         */
+        post: operations["addTournamentAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}/admin/{admin_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * delete admin of tournament
+         * @description Delete an admin of a tournament.
+         */
+        delete: operations["deleteTournamentAdmin"];
+        options?: never;
+        head?: never;
+        /**
+         * edit admin of tournament
+         * @description Edit an admin of a tournament.
+         */
+        patch: operations["editTournamentAdmin"];
+        trace?: never;
+    };
+    "/tournaments/{id}/me/team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User Team from Tournament
+         * @description This endpoint is used to get user team from a tournament.
+         */
+        get: operations["getUserTeamFromTournament"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Teams from Tournament
+         * @description This endpoint is used to get all teams from a tournament.
+         */
+        get: operations["getAllTeamsTournament"];
+        put?: never;
+        /**
+         * Create A Team from Tournament
+         * @description This endpoint is used to create a team from a tournament.
+         */
+        post: operations["createTeamTournament"];
         delete?: never;
         options?: never;
         head?: never;
@@ -596,6 +884,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddTournamentAdminBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/AddTournamentAdminBody.json
+             */
+            readonly $schema?: string;
+            /**
+             * @example ADMIN
+             * @enum {string}
+             */
+            role: "ADMIN" | "SUPER_ADMIN";
+            /**
+             * Format: int64
+             * @example 42
+             */
+            user_id: number;
+        };
         App: {
             /**
              * Format: uri
@@ -699,7 +1005,7 @@ export interface components {
              */
             id: number;
             /** @example https://example.com/network.png */
-            image_url: string;
+            image_url: string | null;
             /** @example Network */
             name: string;
         };
@@ -759,6 +1065,18 @@ export interface components {
              * Format: int64
              * @example 1
              */
+            user_id: number;
+        };
+        CreateInvitation: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/CreateInvitation.json
+             */
+            readonly $schema?: string;
+            message: string;
+            role: string;
+            /** Format: int64 */
             user_id: number;
         };
         CreateVote: {
@@ -840,6 +1158,22 @@ export interface components {
              */
             type: string;
         };
+        Invitation: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Invitation.json
+             */
+            readonly $schema?: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: int64 */
+            id: number;
+            message: string;
+            role: string;
+            team: components["schemas"]["LightTeam"];
+            user: components["schemas"]["LightUser"];
+        };
         JsonPatchOp: {
             /** @description JSON Pointer for the source of a move or copy */
             from?: string;
@@ -853,6 +1187,122 @@ export interface components {
             /** @description The value to set */
             value?: unknown;
         };
+        LightRankGroup: {
+            /**
+             * Format: int64
+             * @example 1
+             */
+            id: number;
+            /** @example Top 8 */
+            name: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            position: number;
+            /**
+             * Format: int64
+             * @example 8
+             */
+            rank_max: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            rank_min: number;
+        };
+        LightTeam: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/LightTeam.json
+             */
+            readonly $schema?: string;
+            /** Format: date-time */
+            created_at: string;
+            creator?: components["schemas"]["LightUser"];
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
+            image_url?: string;
+            is_locked: boolean;
+            members?: components["schemas"]["LightTeamMember"][] | null;
+            /** @example Team Phoenix */
+            name: string;
+            rank_group?: components["schemas"]["LightRankGroup"];
+            /** Format: int64 */
+            score?: number;
+            /**
+             * @example DRAFT
+             * @enum {string}
+             */
+            status: "DRAFT" | "LOCKED";
+        };
+        LightTeamMember: {
+            /** @example player */
+            role: string;
+            user: components["schemas"]["LightUser"];
+        };
+        LightTournament: {
+            /** Format: date-time */
+            created_at: string;
+            creator: components["schemas"]["LightUser"];
+            custom_page_component?: string;
+            /** @example School-wide League of Legends tournament */
+            description?: string;
+            external_links?: {
+                [key: string]: string;
+            };
+            iamge_url: string;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
+            is_visible: boolean;
+            /**
+             * Format: int64
+             * @example 32
+             */
+            max_teams: number;
+            /** @example Spring Cup 2025 */
+            name: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-10T23:59:59Z
+             */
+            registration_end: string;
+            /**
+             * Format: date-time
+             * @example 2025-03-01T00:00:00Z
+             */
+            registration_start: string;
+            /** @example spring-cup-2025 */
+            slug: string;
+            team_structure: {
+                [key: string]: components["schemas"]["TeamStructure"];
+            };
+            /**
+             * Format: date-time
+             * @example 2025-03-20T23:59:59Z
+             */
+            tournament_end: string | null;
+            /**
+             * Format: date-time
+             * @example 2025-03-15T00:00:00Z
+             */
+            tournament_start: string;
+        };
+        LightTournamentAdmin: {
+            /**
+             * @example ADMIN
+             * @enum {string}
+             */
+            role: "ADMIN" | "SUPER_ADMIN" | "CREATOR";
+            user: components["schemas"]["LightUser"];
+        };
         LightUser: {
             /**
              * Format: date-time
@@ -861,8 +1311,6 @@ export interface components {
             created_at: string;
             /** @example froz@42paris.fr */
             email: string;
-            /** @example Theo */
-            first_name: string;
             /**
              * Format: int64
              * @example 42
@@ -873,8 +1321,6 @@ export interface components {
              * @enum {string}
              */
             kind: "user" | "admin";
-            /** @example Matis */
-            last_name: string;
             /** @example https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg */
             picture: string | null;
             /**
@@ -890,10 +1336,6 @@ export interface components {
             updated_at: string;
             /** @example froz */
             username: string;
-            /** @example Theo */
-            usual_first_name: string | null;
-            /** @example Theo Matis */
-            usual_full_name: string;
         };
         LightVote: {
             /**
@@ -976,6 +1418,93 @@ export interface components {
              */
             readonly $schema?: string;
             items: components["schemas"]["Consent"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseInvitation: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseInvitation.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["Invitation"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseLightTeam: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightTeam.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightTeam"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
+        ResponseLightTournament: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseLightTournament.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["LightTournament"][] | null;
             /**
              * Format: int64
              * @example 10
@@ -1087,6 +1616,55 @@ export interface components {
             name: string;
             permissions: components["schemas"]["Permission"][];
         };
+        TeamStructure: {
+            /** Format: int64 */
+            max: number;
+            /** Format: int64 */
+            min: number;
+        };
+        Tournament: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/Tournament.json
+             */
+            readonly $schema?: string;
+            admins: components["schemas"]["LightTournamentAdmin"][] | null;
+            /** Format: date-time */
+            created_at: string;
+            creator: components["schemas"]["LightUser"];
+            custom_page_component: string;
+            description: string;
+            external_links?: {
+                [key: string]: string;
+            };
+            iamge_url: string | null;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
+            is_visible: boolean;
+            /** Format: int64 */
+            max_teams: number;
+            /** @example Spring Cup 2025 */
+            name: string;
+            rank_groups?: components["schemas"]["LightRankGroup"][] | null;
+            /** Format: date-time */
+            registration_end: string;
+            /** Format: date-time */
+            registration_start: string;
+            /** @example spring-cup-2025 */
+            slug: string;
+            team_structure: {
+                [key: string]: components["schemas"]["TeamStructure"];
+            };
+            teams?: components["schemas"]["LightTeam"][] | null;
+            /** Format: date-time */
+            tournament_end: string | null;
+            /** Format: date-time */
+            tournament_start: string;
+        };
         UpdateVote: {
             /**
              * Format: uri
@@ -1125,8 +1703,6 @@ export interface components {
             created_at: string;
             /** @example froz@42paris.fr */
             email: string;
-            /** @example Theo */
-            first_name: string;
             /**
              * Format: int64
              * @example 42
@@ -1137,8 +1713,6 @@ export interface components {
              * @enum {string}
              */
             kind: "user" | "admin";
-            /** @example Matis */
-            last_name: string;
             /** @example https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg */
             picture: string | null;
             /**
@@ -1154,10 +1728,6 @@ export interface components {
             updated_at: string;
             /** @example froz */
             username: string;
-            /** @example Theo */
-            usual_first_name: string | null;
-            /** @example Theo Matis */
-            usual_full_name: string;
         };
         Vote: {
             /**
@@ -1777,6 +2347,70 @@ export interface operations {
             };
         };
     };
+    deleteInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    acceptInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getCurrentUser: {
         parameters: {
             query?: never;
@@ -1789,6 +2423,36 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    anonymizeCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1864,6 +2528,42 @@ export interface operations {
             };
         };
     };
+    getInvitationsForMe: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseInvitation"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getCurrentUserRBACPermissions: {
         parameters: {
             query?: never;
@@ -1909,6 +2609,643 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Role"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    image?: string;
+                    /** @example Team Phoenix */
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getInvitationsForTeam: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseInvitation"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createInvitationForTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvitation"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAllTournaments: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+                /** @example visible */
+                visible?: "all" | "visible";
+                /** @example ongoing */
+                status?: "all" | "ongoing" | "finish";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseLightTournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    custom_page_component?: string;
+                    /** @example School-wide League of Legends tournament */
+                    description?: string;
+                    /** Format: binary */
+                    image?: string;
+                    /**
+                     * Format: int64
+                     * @example 32
+                     */
+                    max_teams: number;
+                    /** @example Spring Cup 2025 */
+                    name: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-10T23:59:59Z
+                     */
+                    registration_end: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-01T00:00:00Z
+                     */
+                    registration_start: string;
+                    /** @example spring-cup-2025 */
+                    slug: string;
+                    team_structure?: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-15T00:00:00Z
+                     */
+                    tournament_start: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getTournamentByID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id_or_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    custom_page_component?: string;
+                    /** @example School-wide League of Legends tournament */
+                    description?: string;
+                    external_links?: string;
+                    /** Format: binary */
+                    image?: string;
+                    is_visible?: boolean;
+                    /**
+                     * Format: int64
+                     * @default -1
+                     * @example 32
+                     */
+                    max_teams?: number;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-10T23:59:59Z
+                     */
+                    registration_end?: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-01T00:00:00Z
+                     */
+                    registration_start?: string;
+                    /**
+                     * Format: date-time
+                     * @example 2025-03-15T00:00:00Z
+                     */
+                    tournament_start?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    addTournamentAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddTournamentAdminBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    deleteTournamentAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+                /** @example 42 */
+                admin_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    editTournamentAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+                /** @example 42 */
+                admin_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": "ADMIN" | "SUPER_ADMIN";
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getUserTeamFromTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getAllTeamsTournament: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+                /** @example DRAFT */
+                status?: "DRAFT" | "LOCKED";
+            };
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseLightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    createTeamTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** @example Player */
+                    creator_status: string;
+                    /** Format: binary */
+                    image?: string;
+                    /** @example Team Phoenix */
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
                 };
             };
             /** @description Error */

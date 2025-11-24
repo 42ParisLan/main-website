@@ -5,6 +5,11 @@ package ent
 import (
 	"base-website/ent/app"
 	"base-website/ent/consent"
+	"base-website/ent/invitation"
+	"base-website/ent/team"
+	"base-website/ent/teammember"
+	"base-website/ent/tournament"
+	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -27,18 +32,6 @@ type UserCreate struct {
 // SetUsername sets the "username" field.
 func (_c *UserCreate) SetUsername(v string) *UserCreate {
 	_c.mutation.SetUsername(v)
-	return _c
-}
-
-// SetFirstName sets the "first_name" field.
-func (_c *UserCreate) SetFirstName(v string) *UserCreate {
-	_c.mutation.SetFirstName(v)
-	return _c
-}
-
-// SetLastName sets the "last_name" field.
-func (_c *UserCreate) SetLastName(v string) *UserCreate {
-	_c.mutation.SetLastName(v)
 	return _c
 }
 
@@ -76,6 +69,34 @@ func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
 	return _c
 }
 
+// SetAnonymizedAt sets the "anonymized_at" field.
+func (_c *UserCreate) SetAnonymizedAt(v time.Time) *UserCreate {
+	_c.mutation.SetAnonymizedAt(v)
+	return _c
+}
+
+// SetNillableAnonymizedAt sets the "anonymized_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableAnonymizedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetAnonymizedAt(*v)
+	}
+	return _c
+}
+
+// SetIntraID sets the "intra_id" field.
+func (_c *UserCreate) SetIntraID(v int) *UserCreate {
+	_c.mutation.SetIntraID(v)
+	return _c
+}
+
+// SetNillableIntraID sets the "intra_id" field if the given value is not nil.
+func (_c *UserCreate) SetNillableIntraID(v *int) *UserCreate {
+	if v != nil {
+		_c.SetIntraID(*v)
+	}
+	return _c
+}
+
 // SetPicture sets the "picture" field.
 func (_c *UserCreate) SetPicture(v string) *UserCreate {
 	_c.mutation.SetPicture(v)
@@ -100,26 +121,6 @@ func (_c *UserCreate) SetKind(v user.Kind) *UserCreate {
 func (_c *UserCreate) SetNillableKind(v *user.Kind) *UserCreate {
 	if v != nil {
 		_c.SetKind(*v)
-	}
-	return _c
-}
-
-// SetUsualFullName sets the "usual_full_name" field.
-func (_c *UserCreate) SetUsualFullName(v string) *UserCreate {
-	_c.mutation.SetUsualFullName(v)
-	return _c
-}
-
-// SetUsualFirstName sets the "usual_first_name" field.
-func (_c *UserCreate) SetUsualFirstName(v string) *UserCreate {
-	_c.mutation.SetUsualFirstName(v)
-	return _c
-}
-
-// SetNillableUsualFirstName sets the "usual_first_name" field if the given value is not nil.
-func (_c *UserCreate) SetNillableUsualFirstName(v *string) *UserCreate {
-	if v != nil {
-		_c.SetUsualFirstName(*v)
 	}
 	return _c
 }
@@ -196,6 +197,81 @@ func (_c *UserCreate) AddConsents(v ...*Consent) *UserCreate {
 	return _c.AddConsentIDs(ids...)
 }
 
+// AddTeamMembershipIDs adds the "team_memberships" edge to the TeamMember entity by IDs.
+func (_c *UserCreate) AddTeamMembershipIDs(ids ...int) *UserCreate {
+	_c.mutation.AddTeamMembershipIDs(ids...)
+	return _c
+}
+
+// AddTeamMemberships adds the "team_memberships" edges to the TeamMember entity.
+func (_c *UserCreate) AddTeamMemberships(v ...*TeamMember) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTeamMembershipIDs(ids...)
+}
+
+// AddReceivedInvitationIDs adds the "received_invitations" edge to the Invitation entity by IDs.
+func (_c *UserCreate) AddReceivedInvitationIDs(ids ...int) *UserCreate {
+	_c.mutation.AddReceivedInvitationIDs(ids...)
+	return _c
+}
+
+// AddReceivedInvitations adds the "received_invitations" edges to the Invitation entity.
+func (_c *UserCreate) AddReceivedInvitations(v ...*Invitation) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddReceivedInvitationIDs(ids...)
+}
+
+// AddCreatedTeamIDs adds the "created_teams" edge to the Team entity by IDs.
+func (_c *UserCreate) AddCreatedTeamIDs(ids ...int) *UserCreate {
+	_c.mutation.AddCreatedTeamIDs(ids...)
+	return _c
+}
+
+// AddCreatedTeams adds the "created_teams" edges to the Team entity.
+func (_c *UserCreate) AddCreatedTeams(v ...*Team) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCreatedTeamIDs(ids...)
+}
+
+// AddCreatedTournamentIDs adds the "created_tournaments" edge to the Tournament entity by IDs.
+func (_c *UserCreate) AddCreatedTournamentIDs(ids ...int) *UserCreate {
+	_c.mutation.AddCreatedTournamentIDs(ids...)
+	return _c
+}
+
+// AddCreatedTournaments adds the "created_tournaments" edges to the Tournament entity.
+func (_c *UserCreate) AddCreatedTournaments(v ...*Tournament) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCreatedTournamentIDs(ids...)
+}
+
+// AddTournamentAdminIDs adds the "tournament_admins" edge to the TournamentAdmin entity by IDs.
+func (_c *UserCreate) AddTournamentAdminIDs(ids ...int) *UserCreate {
+	_c.mutation.AddTournamentAdminIDs(ids...)
+	return _c
+}
+
+// AddTournamentAdmins adds the "tournament_admins" edges to the TournamentAdmin entity.
+func (_c *UserCreate) AddTournamentAdmins(v ...*TournamentAdmin) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTournamentAdminIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_c *UserCreate) Mutation() *UserMutation {
 	return _c.mutation
@@ -254,12 +330,6 @@ func (_c *UserCreate) check() error {
 	if _, ok := _c.mutation.Username(); !ok {
 		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
 	}
-	if _, ok := _c.mutation.FirstName(); !ok {
-		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "User.first_name"`)}
-	}
-	if _, ok := _c.mutation.LastName(); !ok {
-		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "User.last_name"`)}
-	}
 	if _, ok := _c.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
 	}
@@ -276,9 +346,6 @@ func (_c *UserCreate) check() error {
 		if err := user.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "User.kind": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.UsualFullName(); !ok {
-		return &ValidationError{Name: "usual_full_name", err: errors.New(`ent: missing required field "User.usual_full_name"`)}
 	}
 	if _, ok := _c.mutation.Roles(); !ok {
 		return &ValidationError{Name: "roles", err: errors.New(`ent: missing required field "User.roles"`)}
@@ -319,14 +386,6 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
 		_node.Username = value
 	}
-	if value, ok := _c.mutation.FirstName(); ok {
-		_spec.SetField(user.FieldFirstName, field.TypeString, value)
-		_node.FirstName = value
-	}
-	if value, ok := _c.mutation.LastName(); ok {
-		_spec.SetField(user.FieldLastName, field.TypeString, value)
-		_node.LastName = value
-	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
@@ -339,6 +398,14 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := _c.mutation.AnonymizedAt(); ok {
+		_spec.SetField(user.FieldAnonymizedAt, field.TypeTime, value)
+		_node.AnonymizedAt = &value
+	}
+	if value, ok := _c.mutation.IntraID(); ok {
+		_spec.SetField(user.FieldIntraID, field.TypeInt, value)
+		_node.IntraID = &value
+	}
 	if value, ok := _c.mutation.Picture(); ok {
 		_spec.SetField(user.FieldPicture, field.TypeString, value)
 		_node.Picture = &value
@@ -346,14 +413,6 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(user.FieldKind, field.TypeEnum, value)
 		_node.Kind = value
-	}
-	if value, ok := _c.mutation.UsualFullName(); ok {
-		_spec.SetField(user.FieldUsualFullName, field.TypeString, value)
-		_node.UsualFullName = value
-	}
-	if value, ok := _c.mutation.UsualFirstName(); ok {
-		_spec.SetField(user.FieldUsualFirstName, field.TypeString, value)
-		_node.UsualFirstName = &value
 	}
 	if value, ok := _c.mutation.Roles(); ok {
 		_spec.SetField(user.FieldRoles, field.TypeJSON, value)
@@ -416,6 +475,86 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TeamMembershipsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TeamMembershipsTable,
+			Columns: []string{user.TeamMembershipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ReceivedInvitationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReceivedInvitationsTable,
+			Columns: []string{user.ReceivedInvitationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatedTeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTeamsTable,
+			Columns: []string{user.CreatedTeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatedTournamentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedTournamentsTable,
+			Columns: []string{user.CreatedTournamentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournament.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TournamentAdminsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TournamentAdminsTable,
+			Columns: []string{user.TournamentAdminsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

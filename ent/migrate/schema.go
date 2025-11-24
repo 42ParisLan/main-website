@@ -32,7 +32,7 @@ var (
 				Symbol:     "apps_users_apps",
 				Columns:    []*schema.Column{AppsColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -88,7 +88,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "image_url", Type: field.TypeString, Default: "components/default.png"},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString, Nullable: true},
 		{Name: "vote_components", Type: field.TypeInt},
 	}
@@ -102,7 +102,7 @@ var (
 				Symbol:     "components_votes_components",
 				Columns:    []*schema.Column{ComponentsColumns[5]},
 				RefColumns: []*schema.Column{VotesColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -126,13 +126,241 @@ var (
 				Symbol:     "consents_apps_consents",
 				Columns:    []*schema.Column{ConsentsColumns[5]},
 				RefColumns: []*schema.Column{AppsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "consents_users_consents",
 				Columns:    []*schema.Column{ConsentsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// InvitationsColumns holds the columns for the "invitations" table.
+	InvitationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "message", Type: field.TypeString, Nullable: true},
+		{Name: "role", Type: field.TypeString},
+		{Name: "team_invitations", Type: field.TypeInt},
+		{Name: "user_received_invitations", Type: field.TypeInt},
+	}
+	// InvitationsTable holds the schema information for the "invitations" table.
+	InvitationsTable = &schema.Table{
+		Name:       "invitations",
+		Columns:    InvitationsColumns,
+		PrimaryKey: []*schema.Column{InvitationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "invitations_teams_invitations",
+				Columns:    []*schema.Column{InvitationsColumns[4]},
+				RefColumns: []*schema.Column{TeamsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "invitations_users_received_invitations",
+				Columns:    []*schema.Column{InvitationsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "invitation_team_invitations_user_received_invitations",
+				Unique:  true,
+				Columns: []*schema.Column{InvitationsColumns[4], InvitationsColumns[5]},
+			},
+		},
+	}
+	// RankGroupsColumns holds the columns for the "rank_groups" table.
+	RankGroupsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "rank_min", Type: field.TypeInt},
+		{Name: "rank_max", Type: field.TypeInt},
+		{Name: "position", Type: field.TypeInt},
+		{Name: "tournament_rank_groups", Type: field.TypeInt},
+	}
+	// RankGroupsTable holds the schema information for the "rank_groups" table.
+	RankGroupsTable = &schema.Table{
+		Name:       "rank_groups",
+		Columns:    RankGroupsColumns,
+		PrimaryKey: []*schema.Column{RankGroupsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "rank_groups_tournaments_rank_groups",
+				Columns:    []*schema.Column{RankGroupsColumns[5]},
+				RefColumns: []*schema.Column{TournamentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "rankgroup_position_tournament_rank_groups",
+				Unique:  true,
+				Columns: []*schema.Column{RankGroupsColumns[4], RankGroupsColumns[5]},
+			},
+		},
+	}
+	// TeamsColumns holds the columns for the "teams" table.
+	TeamsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"DRAFT", "LOCKED"}, Default: "DRAFT"},
+		{Name: "is_locked", Type: field.TypeBool, Default: false},
+		{Name: "queue_position", Type: field.TypeInt, Nullable: true},
+		{Name: "score", Type: field.TypeInt, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "rank_group_teams", Type: field.TypeInt, Nullable: true},
+		{Name: "tournament_teams", Type: field.TypeInt},
+		{Name: "user_created_teams", Type: field.TypeInt},
+	}
+	// TeamsTable holds the schema information for the "teams" table.
+	TeamsTable = &schema.Table{
+		Name:       "teams",
+		Columns:    TeamsColumns,
+		PrimaryKey: []*schema.Column{TeamsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teams_rank_groups_teams",
+				Columns:    []*schema.Column{TeamsColumns[9]},
+				RefColumns: []*schema.Column{RankGroupsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teams_tournaments_teams",
+				Columns:    []*schema.Column{TeamsColumns[10]},
+				RefColumns: []*schema.Column{TournamentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "teams_users_created_teams",
+				Columns:    []*schema.Column{TeamsColumns[11]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "team_user_created_teams_tournament_teams",
+				Unique:  true,
+				Columns: []*schema.Column{TeamsColumns[11], TeamsColumns[10]},
+			},
+		},
+	}
+	// TeamMembersColumns holds the columns for the "team_members" table.
+	TeamMembersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "role", Type: field.TypeString},
+		{Name: "team_members", Type: field.TypeInt},
+		{Name: "tournament_team_members", Type: field.TypeInt},
+		{Name: "user_team_memberships", Type: field.TypeInt},
+	}
+	// TeamMembersTable holds the schema information for the "team_members" table.
+	TeamMembersTable = &schema.Table{
+		Name:       "team_members",
+		Columns:    TeamMembersColumns,
+		PrimaryKey: []*schema.Column{TeamMembersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "team_members_teams_members",
+				Columns:    []*schema.Column{TeamMembersColumns[2]},
+				RefColumns: []*schema.Column{TeamsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "team_members_tournaments_team_members",
+				Columns:    []*schema.Column{TeamMembersColumns[3]},
+				RefColumns: []*schema.Column{TournamentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "team_members_users_team_memberships",
+				Columns:    []*schema.Column{TeamMembersColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "teammember_user_team_memberships_tournament_team_members",
+				Unique:  true,
+				Columns: []*schema.Column{TeamMembersColumns[4], TeamMembersColumns[3]},
+			},
+			{
+				Name:    "teammember_user_team_memberships_team_members",
+				Unique:  true,
+				Columns: []*schema.Column{TeamMembersColumns[4], TeamMembersColumns[2]},
+			},
+		},
+	}
+	// TournamentsColumns holds the columns for the "tournaments" table.
+	TournamentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "is_visible", Type: field.TypeBool, Default: false},
+		{Name: "registration_start", Type: field.TypeTime},
+		{Name: "registration_end", Type: field.TypeTime},
+		{Name: "tournament_start", Type: field.TypeTime},
+		{Name: "tournament_end", Type: field.TypeTime, Nullable: true},
+		{Name: "max_teams", Type: field.TypeInt},
+		{Name: "team_structure", Type: field.TypeJSON, Nullable: true},
+		{Name: "custom_page_component", Type: field.TypeString, Default: "default"},
+		{Name: "external_links", Type: field.TypeJSON, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_created_tournaments", Type: field.TypeInt},
+	}
+	// TournamentsTable holds the schema information for the "tournaments" table.
+	TournamentsTable = &schema.Table{
+		Name:       "tournaments",
+		Columns:    TournamentsColumns,
+		PrimaryKey: []*schema.Column{TournamentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tournaments_users_created_tournaments",
+				Columns:    []*schema.Column{TournamentsColumns[16]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// TournamentAdminsColumns holds the columns for the "tournament_admins" table.
+	TournamentAdminsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"CREATOR", "SUPER_ADMIN", "ADMIN"}, Default: "ADMIN"},
+		{Name: "tournament_admins", Type: field.TypeInt},
+		{Name: "user_tournament_admins", Type: field.TypeInt},
+	}
+	// TournamentAdminsTable holds the schema information for the "tournament_admins" table.
+	TournamentAdminsTable = &schema.Table{
+		Name:       "tournament_admins",
+		Columns:    TournamentAdminsColumns,
+		PrimaryKey: []*schema.Column{TournamentAdminsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tournament_admins_tournaments_admins",
+				Columns:    []*schema.Column{TournamentAdminsColumns[2]},
+				RefColumns: []*schema.Column{TournamentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "tournament_admins_users_tournament_admins",
+				Columns:    []*schema.Column{TournamentAdminsColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tournamentadmin_user_tournament_admins_tournament_admins",
+				Unique:  true,
+				Columns: []*schema.Column{TournamentAdminsColumns[3], TournamentAdminsColumns[2]},
 			},
 		},
 	}
@@ -140,15 +368,13 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "username", Type: field.TypeString, Unique: true},
-		{Name: "first_name", Type: field.TypeString},
-		{Name: "last_name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "anonymized_at", Type: field.TypeTime, Nullable: true},
+		{Name: "intra_id", Type: field.TypeInt, Unique: true, Nullable: true},
 		{Name: "picture", Type: field.TypeString, Nullable: true},
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"user", "admin"}, Default: "user"},
-		{Name: "usual_full_name", Type: field.TypeString},
-		{Name: "usual_first_name", Type: field.TypeString, Nullable: true},
 		{Name: "roles", Type: field.TypeJSON},
 	}
 	// UsersTable holds the schema information for the "users" table.
@@ -174,13 +400,20 @@ var (
 				Symbol:     "user_votes_components_user_votes",
 				Columns:    []*schema.Column{UserVotesColumns[2]},
 				RefColumns: []*schema.Column{ComponentsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "user_votes_users_user_votes",
 				Columns:    []*schema.Column{UserVotesColumns[3]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uservote_user_user_votes_component_user_votes",
+				Unique:  true,
+				Columns: []*schema.Column{UserVotesColumns[3], UserVotesColumns[2]},
 			},
 		},
 	}
@@ -218,6 +451,12 @@ var (
 		AuthTokensTable,
 		ComponentsTable,
 		ConsentsTable,
+		InvitationsTable,
+		RankGroupsTable,
+		TeamsTable,
+		TeamMembersTable,
+		TournamentsTable,
+		TournamentAdminsTable,
 		UsersTable,
 		UserVotesTable,
 		VotesTable,
@@ -229,6 +468,18 @@ func init() {
 	ComponentsTable.ForeignKeys[0].RefTable = VotesTable
 	ConsentsTable.ForeignKeys[0].RefTable = AppsTable
 	ConsentsTable.ForeignKeys[1].RefTable = UsersTable
+	InvitationsTable.ForeignKeys[0].RefTable = TeamsTable
+	InvitationsTable.ForeignKeys[1].RefTable = UsersTable
+	RankGroupsTable.ForeignKeys[0].RefTable = TournamentsTable
+	TeamsTable.ForeignKeys[0].RefTable = RankGroupsTable
+	TeamsTable.ForeignKeys[1].RefTable = TournamentsTable
+	TeamsTable.ForeignKeys[2].RefTable = UsersTable
+	TeamMembersTable.ForeignKeys[0].RefTable = TeamsTable
+	TeamMembersTable.ForeignKeys[1].RefTable = TournamentsTable
+	TeamMembersTable.ForeignKeys[2].RefTable = UsersTable
+	TournamentsTable.ForeignKeys[0].RefTable = UsersTable
+	TournamentAdminsTable.ForeignKeys[0].RefTable = TournamentsTable
+	TournamentAdminsTable.ForeignKeys[1].RefTable = UsersTable
 	UserVotesTable.ForeignKeys[0].RefTable = ComponentsTable
 	UserVotesTable.ForeignKeys[1].RefTable = UsersTable
 	VotesTable.ForeignKeys[0].RefTable = UsersTable

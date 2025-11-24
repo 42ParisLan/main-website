@@ -269,6 +269,16 @@ func ImageURLHasSuffix(v string) predicate.Component {
 	return predicate.Component(sql.FieldHasSuffix(FieldImageURL, v))
 }
 
+// ImageURLIsNil applies the IsNil predicate on the "image_url" field.
+func ImageURLIsNil() predicate.Component {
+	return predicate.Component(sql.FieldIsNull(FieldImageURL))
+}
+
+// ImageURLNotNil applies the NotNil predicate on the "image_url" field.
+func ImageURLNotNil() predicate.Component {
+	return predicate.Component(sql.FieldNotNull(FieldImageURL))
+}
+
 // ImageURLEqualFold applies the EqualFold predicate on the "image_url" field.
 func ImageURLEqualFold(v string) predicate.Component {
 	return predicate.Component(sql.FieldEqualFold(FieldImageURL, v))

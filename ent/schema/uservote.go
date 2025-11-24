@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 type UserVote struct {
@@ -20,10 +21,20 @@ func (UserVote) Fields() []ent.Field {
 
 func (UserVote) Edges() []ent.Edge {
 	return []ent.Edge{
-		// Each vote belongs to exactly one user
-		edge.From("user", User.Type).Ref("user_votes").Unique().Required(),
+		edge.From("user", User.Type).
+			Ref("user_votes").
+			Unique().
+			Required(),
 
-		// Each vote targets exactly one component
-		edge.From("component", Component.Type).Ref("user_votes").Unique().Required(),
+		edge.From("component", Component.Type).
+			Ref("user_votes").
+			Unique().
+			Required(),
+	}
+}
+
+func (UserVote) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges("user", "component").Unique(),
 	}
 }

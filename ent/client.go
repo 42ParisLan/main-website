@@ -17,6 +17,12 @@ import (
 	"base-website/ent/authtoken"
 	"base-website/ent/component"
 	"base-website/ent/consent"
+	"base-website/ent/invitation"
+	"base-website/ent/rankgroup"
+	"base-website/ent/team"
+	"base-website/ent/teammember"
+	"base-website/ent/tournament"
+	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -44,6 +50,18 @@ type Client struct {
 	Component *ComponentClient
 	// Consent is the client for interacting with the Consent builders.
 	Consent *ConsentClient
+	// Invitation is the client for interacting with the Invitation builders.
+	Invitation *InvitationClient
+	// RankGroup is the client for interacting with the RankGroup builders.
+	RankGroup *RankGroupClient
+	// Team is the client for interacting with the Team builders.
+	Team *TeamClient
+	// TeamMember is the client for interacting with the TeamMember builders.
+	TeamMember *TeamMemberClient
+	// Tournament is the client for interacting with the Tournament builders.
+	Tournament *TournamentClient
+	// TournamentAdmin is the client for interacting with the TournamentAdmin builders.
+	TournamentAdmin *TournamentAdminClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserVote is the client for interacting with the UserVote builders.
@@ -67,6 +85,12 @@ func (c *Client) init() {
 	c.AuthToken = NewAuthTokenClient(c.config)
 	c.Component = NewComponentClient(c.config)
 	c.Consent = NewConsentClient(c.config)
+	c.Invitation = NewInvitationClient(c.config)
+	c.RankGroup = NewRankGroupClient(c.config)
+	c.Team = NewTeamClient(c.config)
+	c.TeamMember = NewTeamMemberClient(c.config)
+	c.Tournament = NewTournamentClient(c.config)
+	c.TournamentAdmin = NewTournamentAdminClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserVote = NewUserVoteClient(c.config)
 	c.Vote = NewVoteClient(c.config)
@@ -168,6 +192,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthToken:        NewAuthTokenClient(cfg),
 		Component:        NewComponentClient(cfg),
 		Consent:          NewConsentClient(cfg),
+		Invitation:       NewInvitationClient(cfg),
+		RankGroup:        NewRankGroupClient(cfg),
+		Team:             NewTeamClient(cfg),
+		TeamMember:       NewTeamMemberClient(cfg),
+		Tournament:       NewTournamentClient(cfg),
+		TournamentAdmin:  NewTournamentAdminClient(cfg),
 		User:             NewUserClient(cfg),
 		UserVote:         NewUserVoteClient(cfg),
 		Vote:             NewVoteClient(cfg),
@@ -196,6 +226,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthToken:        NewAuthTokenClient(cfg),
 		Component:        NewComponentClient(cfg),
 		Consent:          NewConsentClient(cfg),
+		Invitation:       NewInvitationClient(cfg),
+		RankGroup:        NewRankGroupClient(cfg),
+		Team:             NewTeamClient(cfg),
+		TeamMember:       NewTeamMemberClient(cfg),
+		Tournament:       NewTournamentClient(cfg),
+		TournamentAdmin:  NewTournamentAdminClient(cfg),
 		User:             NewUserClient(cfg),
 		UserVote:         NewUserVoteClient(cfg),
 		Vote:             NewVoteClient(cfg),
@@ -229,7 +265,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.App, c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.Consent,
-		c.User, c.UserVote, c.Vote,
+		c.Invitation, c.RankGroup, c.Team, c.TeamMember, c.Tournament,
+		c.TournamentAdmin, c.User, c.UserVote, c.Vote,
 	} {
 		n.Use(hooks...)
 	}
@@ -240,7 +277,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.App, c.AuthCode, c.AuthRefreshToken, c.AuthToken, c.Component, c.Consent,
-		c.User, c.UserVote, c.Vote,
+		c.Invitation, c.RankGroup, c.Team, c.TeamMember, c.Tournament,
+		c.TournamentAdmin, c.User, c.UserVote, c.Vote,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -261,6 +299,18 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Component.mutate(ctx, m)
 	case *ConsentMutation:
 		return c.Consent.mutate(ctx, m)
+	case *InvitationMutation:
+		return c.Invitation.mutate(ctx, m)
+	case *RankGroupMutation:
+		return c.RankGroup.mutate(ctx, m)
+	case *TeamMutation:
+		return c.Team.mutate(ctx, m)
+	case *TeamMemberMutation:
+		return c.TeamMember.mutate(ctx, m)
+	case *TournamentMutation:
+		return c.Tournament.mutate(ctx, m)
+	case *TournamentAdminMutation:
+		return c.TournamentAdmin.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	case *UserVoteMutation:
@@ -1166,6 +1216,1108 @@ func (c *ConsentClient) mutate(ctx context.Context, m *ConsentMutation) (Value, 
 	}
 }
 
+// InvitationClient is a client for the Invitation schema.
+type InvitationClient struct {
+	config
+}
+
+// NewInvitationClient returns a client for the Invitation from the given config.
+func NewInvitationClient(c config) *InvitationClient {
+	return &InvitationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `invitation.Hooks(f(g(h())))`.
+func (c *InvitationClient) Use(hooks ...Hook) {
+	c.hooks.Invitation = append(c.hooks.Invitation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `invitation.Intercept(f(g(h())))`.
+func (c *InvitationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Invitation = append(c.inters.Invitation, interceptors...)
+}
+
+// Create returns a builder for creating a Invitation entity.
+func (c *InvitationClient) Create() *InvitationCreate {
+	mutation := newInvitationMutation(c.config, OpCreate)
+	return &InvitationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Invitation entities.
+func (c *InvitationClient) CreateBulk(builders ...*InvitationCreate) *InvitationCreateBulk {
+	return &InvitationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *InvitationClient) MapCreateBulk(slice any, setFunc func(*InvitationCreate, int)) *InvitationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &InvitationCreateBulk{err: fmt.Errorf("calling to InvitationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*InvitationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &InvitationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Invitation.
+func (c *InvitationClient) Update() *InvitationUpdate {
+	mutation := newInvitationMutation(c.config, OpUpdate)
+	return &InvitationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InvitationClient) UpdateOne(_m *Invitation) *InvitationUpdateOne {
+	mutation := newInvitationMutation(c.config, OpUpdateOne, withInvitation(_m))
+	return &InvitationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InvitationClient) UpdateOneID(id int) *InvitationUpdateOne {
+	mutation := newInvitationMutation(c.config, OpUpdateOne, withInvitationID(id))
+	return &InvitationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Invitation.
+func (c *InvitationClient) Delete() *InvitationDelete {
+	mutation := newInvitationMutation(c.config, OpDelete)
+	return &InvitationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *InvitationClient) DeleteOne(_m *Invitation) *InvitationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *InvitationClient) DeleteOneID(id int) *InvitationDeleteOne {
+	builder := c.Delete().Where(invitation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InvitationDeleteOne{builder}
+}
+
+// Query returns a query builder for Invitation.
+func (c *InvitationClient) Query() *InvitationQuery {
+	return &InvitationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeInvitation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Invitation entity by its id.
+func (c *InvitationClient) Get(ctx context.Context, id int) (*Invitation, error) {
+	return c.Query().Where(invitation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InvitationClient) GetX(ctx context.Context, id int) *Invitation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTeam queries the team edge of a Invitation.
+func (c *InvitationClient) QueryTeam(_m *Invitation) *TeamQuery {
+	query := (&TeamClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(invitation.Table, invitation.FieldID, id),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, invitation.TeamTable, invitation.TeamColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInvitee queries the invitee edge of a Invitation.
+func (c *InvitationClient) QueryInvitee(_m *Invitation) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(invitation.Table, invitation.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, invitation.InviteeTable, invitation.InviteeColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *InvitationClient) Hooks() []Hook {
+	return c.hooks.Invitation
+}
+
+// Interceptors returns the client interceptors.
+func (c *InvitationClient) Interceptors() []Interceptor {
+	return c.inters.Invitation
+}
+
+func (c *InvitationClient) mutate(ctx context.Context, m *InvitationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&InvitationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&InvitationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&InvitationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&InvitationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Invitation mutation op: %q", m.Op())
+	}
+}
+
+// RankGroupClient is a client for the RankGroup schema.
+type RankGroupClient struct {
+	config
+}
+
+// NewRankGroupClient returns a client for the RankGroup from the given config.
+func NewRankGroupClient(c config) *RankGroupClient {
+	return &RankGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `rankgroup.Hooks(f(g(h())))`.
+func (c *RankGroupClient) Use(hooks ...Hook) {
+	c.hooks.RankGroup = append(c.hooks.RankGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `rankgroup.Intercept(f(g(h())))`.
+func (c *RankGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RankGroup = append(c.inters.RankGroup, interceptors...)
+}
+
+// Create returns a builder for creating a RankGroup entity.
+func (c *RankGroupClient) Create() *RankGroupCreate {
+	mutation := newRankGroupMutation(c.config, OpCreate)
+	return &RankGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of RankGroup entities.
+func (c *RankGroupClient) CreateBulk(builders ...*RankGroupCreate) *RankGroupCreateBulk {
+	return &RankGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RankGroupClient) MapCreateBulk(slice any, setFunc func(*RankGroupCreate, int)) *RankGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RankGroupCreateBulk{err: fmt.Errorf("calling to RankGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RankGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RankGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for RankGroup.
+func (c *RankGroupClient) Update() *RankGroupUpdate {
+	mutation := newRankGroupMutation(c.config, OpUpdate)
+	return &RankGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RankGroupClient) UpdateOne(_m *RankGroup) *RankGroupUpdateOne {
+	mutation := newRankGroupMutation(c.config, OpUpdateOne, withRankGroup(_m))
+	return &RankGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RankGroupClient) UpdateOneID(id int) *RankGroupUpdateOne {
+	mutation := newRankGroupMutation(c.config, OpUpdateOne, withRankGroupID(id))
+	return &RankGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for RankGroup.
+func (c *RankGroupClient) Delete() *RankGroupDelete {
+	mutation := newRankGroupMutation(c.config, OpDelete)
+	return &RankGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RankGroupClient) DeleteOne(_m *RankGroup) *RankGroupDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RankGroupClient) DeleteOneID(id int) *RankGroupDeleteOne {
+	builder := c.Delete().Where(rankgroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RankGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for RankGroup.
+func (c *RankGroupClient) Query() *RankGroupQuery {
+	return &RankGroupQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRankGroup},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a RankGroup entity by its id.
+func (c *RankGroupClient) Get(ctx context.Context, id int) (*RankGroup, error) {
+	return c.Query().Where(rankgroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RankGroupClient) GetX(ctx context.Context, id int) *RankGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTournament queries the tournament edge of a RankGroup.
+func (c *RankGroupClient) QueryTournament(_m *RankGroup) *TournamentQuery {
+	query := (&TournamentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rankgroup.Table, rankgroup.FieldID, id),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, rankgroup.TournamentTable, rankgroup.TournamentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeams queries the teams edge of a RankGroup.
+func (c *RankGroupClient) QueryTeams(_m *RankGroup) *TeamQuery {
+	query := (&TeamClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rankgroup.Table, rankgroup.FieldID, id),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rankgroup.TeamsTable, rankgroup.TeamsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *RankGroupClient) Hooks() []Hook {
+	return c.hooks.RankGroup
+}
+
+// Interceptors returns the client interceptors.
+func (c *RankGroupClient) Interceptors() []Interceptor {
+	return c.inters.RankGroup
+}
+
+func (c *RankGroupClient) mutate(ctx context.Context, m *RankGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RankGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RankGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RankGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RankGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown RankGroup mutation op: %q", m.Op())
+	}
+}
+
+// TeamClient is a client for the Team schema.
+type TeamClient struct {
+	config
+}
+
+// NewTeamClient returns a client for the Team from the given config.
+func NewTeamClient(c config) *TeamClient {
+	return &TeamClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `team.Hooks(f(g(h())))`.
+func (c *TeamClient) Use(hooks ...Hook) {
+	c.hooks.Team = append(c.hooks.Team, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `team.Intercept(f(g(h())))`.
+func (c *TeamClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Team = append(c.inters.Team, interceptors...)
+}
+
+// Create returns a builder for creating a Team entity.
+func (c *TeamClient) Create() *TeamCreate {
+	mutation := newTeamMutation(c.config, OpCreate)
+	return &TeamCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Team entities.
+func (c *TeamClient) CreateBulk(builders ...*TeamCreate) *TeamCreateBulk {
+	return &TeamCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TeamClient) MapCreateBulk(slice any, setFunc func(*TeamCreate, int)) *TeamCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TeamCreateBulk{err: fmt.Errorf("calling to TeamClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TeamCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TeamCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Team.
+func (c *TeamClient) Update() *TeamUpdate {
+	mutation := newTeamMutation(c.config, OpUpdate)
+	return &TeamUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TeamClient) UpdateOne(_m *Team) *TeamUpdateOne {
+	mutation := newTeamMutation(c.config, OpUpdateOne, withTeam(_m))
+	return &TeamUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TeamClient) UpdateOneID(id int) *TeamUpdateOne {
+	mutation := newTeamMutation(c.config, OpUpdateOne, withTeamID(id))
+	return &TeamUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Team.
+func (c *TeamClient) Delete() *TeamDelete {
+	mutation := newTeamMutation(c.config, OpDelete)
+	return &TeamDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TeamClient) DeleteOne(_m *Team) *TeamDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TeamClient) DeleteOneID(id int) *TeamDeleteOne {
+	builder := c.Delete().Where(team.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TeamDeleteOne{builder}
+}
+
+// Query returns a query builder for Team.
+func (c *TeamClient) Query() *TeamQuery {
+	return &TeamQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTeam},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Team entity by its id.
+func (c *TeamClient) Get(ctx context.Context, id int) (*Team, error) {
+	return c.Query().Where(team.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TeamClient) GetX(ctx context.Context, id int) *Team {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTournament queries the tournament edge of a Team.
+func (c *TeamClient) QueryTournament(_m *Team) *TournamentQuery {
+	query := (&TournamentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, id),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, team.TournamentTable, team.TournamentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCreator queries the creator edge of a Team.
+func (c *TeamClient) QueryCreator(_m *Team) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, team.CreatorTable, team.CreatorColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMembers queries the members edge of a Team.
+func (c *TeamClient) QueryMembers(_m *Team) *TeamMemberQuery {
+	query := (&TeamMemberClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, id),
+			sqlgraph.To(teammember.Table, teammember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, team.MembersTable, team.MembersColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRankGroup queries the rank_group edge of a Team.
+func (c *TeamClient) QueryRankGroup(_m *Team) *RankGroupQuery {
+	query := (&RankGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, id),
+			sqlgraph.To(rankgroup.Table, rankgroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, team.RankGroupTable, team.RankGroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInvitations queries the invitations edge of a Team.
+func (c *TeamClient) QueryInvitations(_m *Team) *InvitationQuery {
+	query := (&InvitationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, id),
+			sqlgraph.To(invitation.Table, invitation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, team.InvitationsTable, team.InvitationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TeamClient) Hooks() []Hook {
+	return c.hooks.Team
+}
+
+// Interceptors returns the client interceptors.
+func (c *TeamClient) Interceptors() []Interceptor {
+	return c.inters.Team
+}
+
+func (c *TeamClient) mutate(ctx context.Context, m *TeamMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TeamCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TeamUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TeamUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TeamDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Team mutation op: %q", m.Op())
+	}
+}
+
+// TeamMemberClient is a client for the TeamMember schema.
+type TeamMemberClient struct {
+	config
+}
+
+// NewTeamMemberClient returns a client for the TeamMember from the given config.
+func NewTeamMemberClient(c config) *TeamMemberClient {
+	return &TeamMemberClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `teammember.Hooks(f(g(h())))`.
+func (c *TeamMemberClient) Use(hooks ...Hook) {
+	c.hooks.TeamMember = append(c.hooks.TeamMember, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `teammember.Intercept(f(g(h())))`.
+func (c *TeamMemberClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TeamMember = append(c.inters.TeamMember, interceptors...)
+}
+
+// Create returns a builder for creating a TeamMember entity.
+func (c *TeamMemberClient) Create() *TeamMemberCreate {
+	mutation := newTeamMemberMutation(c.config, OpCreate)
+	return &TeamMemberCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TeamMember entities.
+func (c *TeamMemberClient) CreateBulk(builders ...*TeamMemberCreate) *TeamMemberCreateBulk {
+	return &TeamMemberCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TeamMemberClient) MapCreateBulk(slice any, setFunc func(*TeamMemberCreate, int)) *TeamMemberCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TeamMemberCreateBulk{err: fmt.Errorf("calling to TeamMemberClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TeamMemberCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TeamMemberCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TeamMember.
+func (c *TeamMemberClient) Update() *TeamMemberUpdate {
+	mutation := newTeamMemberMutation(c.config, OpUpdate)
+	return &TeamMemberUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TeamMemberClient) UpdateOne(_m *TeamMember) *TeamMemberUpdateOne {
+	mutation := newTeamMemberMutation(c.config, OpUpdateOne, withTeamMember(_m))
+	return &TeamMemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TeamMemberClient) UpdateOneID(id int) *TeamMemberUpdateOne {
+	mutation := newTeamMemberMutation(c.config, OpUpdateOne, withTeamMemberID(id))
+	return &TeamMemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TeamMember.
+func (c *TeamMemberClient) Delete() *TeamMemberDelete {
+	mutation := newTeamMemberMutation(c.config, OpDelete)
+	return &TeamMemberDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TeamMemberClient) DeleteOne(_m *TeamMember) *TeamMemberDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TeamMemberClient) DeleteOneID(id int) *TeamMemberDeleteOne {
+	builder := c.Delete().Where(teammember.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TeamMemberDeleteOne{builder}
+}
+
+// Query returns a query builder for TeamMember.
+func (c *TeamMemberClient) Query() *TeamMemberQuery {
+	return &TeamMemberQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTeamMember},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TeamMember entity by its id.
+func (c *TeamMemberClient) Get(ctx context.Context, id int) (*TeamMember, error) {
+	return c.Query().Where(teammember.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TeamMemberClient) GetX(ctx context.Context, id int) *TeamMember {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a TeamMember.
+func (c *TeamMemberClient) QueryUser(_m *TeamMember) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammember.Table, teammember.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammember.UserTable, teammember.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeam queries the team edge of a TeamMember.
+func (c *TeamMemberClient) QueryTeam(_m *TeamMember) *TeamQuery {
+	query := (&TeamClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammember.Table, teammember.FieldID, id),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammember.TeamTable, teammember.TeamColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTournament queries the tournament edge of a TeamMember.
+func (c *TeamMemberClient) QueryTournament(_m *TeamMember) *TournamentQuery {
+	query := (&TournamentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammember.Table, teammember.FieldID, id),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammember.TournamentTable, teammember.TournamentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TeamMemberClient) Hooks() []Hook {
+	return c.hooks.TeamMember
+}
+
+// Interceptors returns the client interceptors.
+func (c *TeamMemberClient) Interceptors() []Interceptor {
+	return c.inters.TeamMember
+}
+
+func (c *TeamMemberClient) mutate(ctx context.Context, m *TeamMemberMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TeamMemberCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TeamMemberUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TeamMemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TeamMemberDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TeamMember mutation op: %q", m.Op())
+	}
+}
+
+// TournamentClient is a client for the Tournament schema.
+type TournamentClient struct {
+	config
+}
+
+// NewTournamentClient returns a client for the Tournament from the given config.
+func NewTournamentClient(c config) *TournamentClient {
+	return &TournamentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tournament.Hooks(f(g(h())))`.
+func (c *TournamentClient) Use(hooks ...Hook) {
+	c.hooks.Tournament = append(c.hooks.Tournament, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tournament.Intercept(f(g(h())))`.
+func (c *TournamentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Tournament = append(c.inters.Tournament, interceptors...)
+}
+
+// Create returns a builder for creating a Tournament entity.
+func (c *TournamentClient) Create() *TournamentCreate {
+	mutation := newTournamentMutation(c.config, OpCreate)
+	return &TournamentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Tournament entities.
+func (c *TournamentClient) CreateBulk(builders ...*TournamentCreate) *TournamentCreateBulk {
+	return &TournamentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TournamentClient) MapCreateBulk(slice any, setFunc func(*TournamentCreate, int)) *TournamentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TournamentCreateBulk{err: fmt.Errorf("calling to TournamentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TournamentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TournamentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Tournament.
+func (c *TournamentClient) Update() *TournamentUpdate {
+	mutation := newTournamentMutation(c.config, OpUpdate)
+	return &TournamentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TournamentClient) UpdateOne(_m *Tournament) *TournamentUpdateOne {
+	mutation := newTournamentMutation(c.config, OpUpdateOne, withTournament(_m))
+	return &TournamentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TournamentClient) UpdateOneID(id int) *TournamentUpdateOne {
+	mutation := newTournamentMutation(c.config, OpUpdateOne, withTournamentID(id))
+	return &TournamentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Tournament.
+func (c *TournamentClient) Delete() *TournamentDelete {
+	mutation := newTournamentMutation(c.config, OpDelete)
+	return &TournamentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TournamentClient) DeleteOne(_m *Tournament) *TournamentDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TournamentClient) DeleteOneID(id int) *TournamentDeleteOne {
+	builder := c.Delete().Where(tournament.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TournamentDeleteOne{builder}
+}
+
+// Query returns a query builder for Tournament.
+func (c *TournamentClient) Query() *TournamentQuery {
+	return &TournamentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTournament},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Tournament entity by its id.
+func (c *TournamentClient) Get(ctx context.Context, id int) (*Tournament, error) {
+	return c.Query().Where(tournament.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TournamentClient) GetX(ctx context.Context, id int) *Tournament {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCreator queries the creator edge of a Tournament.
+func (c *TournamentClient) QueryCreator(_m *Tournament) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournament.Table, tournament.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tournament.CreatorTable, tournament.CreatorColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAdmins queries the admins edge of a Tournament.
+func (c *TournamentClient) QueryAdmins(_m *Tournament) *TournamentAdminQuery {
+	query := (&TournamentAdminClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournament.Table, tournament.FieldID, id),
+			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.AdminsTable, tournament.AdminsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeams queries the teams edge of a Tournament.
+func (c *TournamentClient) QueryTeams(_m *Tournament) *TeamQuery {
+	query := (&TeamClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournament.Table, tournament.FieldID, id),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.TeamsTable, tournament.TeamsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRankGroups queries the rank_groups edge of a Tournament.
+func (c *TournamentClient) QueryRankGroups(_m *Tournament) *RankGroupQuery {
+	query := (&RankGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournament.Table, tournament.FieldID, id),
+			sqlgraph.To(rankgroup.Table, rankgroup.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.RankGroupsTable, tournament.RankGroupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeamMembers queries the team_members edge of a Tournament.
+func (c *TournamentClient) QueryTeamMembers(_m *Tournament) *TeamMemberQuery {
+	query := (&TeamMemberClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournament.Table, tournament.FieldID, id),
+			sqlgraph.To(teammember.Table, teammember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.TeamMembersTable, tournament.TeamMembersColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TournamentClient) Hooks() []Hook {
+	return c.hooks.Tournament
+}
+
+// Interceptors returns the client interceptors.
+func (c *TournamentClient) Interceptors() []Interceptor {
+	return c.inters.Tournament
+}
+
+func (c *TournamentClient) mutate(ctx context.Context, m *TournamentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TournamentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TournamentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TournamentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TournamentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Tournament mutation op: %q", m.Op())
+	}
+}
+
+// TournamentAdminClient is a client for the TournamentAdmin schema.
+type TournamentAdminClient struct {
+	config
+}
+
+// NewTournamentAdminClient returns a client for the TournamentAdmin from the given config.
+func NewTournamentAdminClient(c config) *TournamentAdminClient {
+	return &TournamentAdminClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tournamentadmin.Hooks(f(g(h())))`.
+func (c *TournamentAdminClient) Use(hooks ...Hook) {
+	c.hooks.TournamentAdmin = append(c.hooks.TournamentAdmin, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tournamentadmin.Intercept(f(g(h())))`.
+func (c *TournamentAdminClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TournamentAdmin = append(c.inters.TournamentAdmin, interceptors...)
+}
+
+// Create returns a builder for creating a TournamentAdmin entity.
+func (c *TournamentAdminClient) Create() *TournamentAdminCreate {
+	mutation := newTournamentAdminMutation(c.config, OpCreate)
+	return &TournamentAdminCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TournamentAdmin entities.
+func (c *TournamentAdminClient) CreateBulk(builders ...*TournamentAdminCreate) *TournamentAdminCreateBulk {
+	return &TournamentAdminCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TournamentAdminClient) MapCreateBulk(slice any, setFunc func(*TournamentAdminCreate, int)) *TournamentAdminCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TournamentAdminCreateBulk{err: fmt.Errorf("calling to TournamentAdminClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TournamentAdminCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TournamentAdminCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TournamentAdmin.
+func (c *TournamentAdminClient) Update() *TournamentAdminUpdate {
+	mutation := newTournamentAdminMutation(c.config, OpUpdate)
+	return &TournamentAdminUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TournamentAdminClient) UpdateOne(_m *TournamentAdmin) *TournamentAdminUpdateOne {
+	mutation := newTournamentAdminMutation(c.config, OpUpdateOne, withTournamentAdmin(_m))
+	return &TournamentAdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TournamentAdminClient) UpdateOneID(id int) *TournamentAdminUpdateOne {
+	mutation := newTournamentAdminMutation(c.config, OpUpdateOne, withTournamentAdminID(id))
+	return &TournamentAdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TournamentAdmin.
+func (c *TournamentAdminClient) Delete() *TournamentAdminDelete {
+	mutation := newTournamentAdminMutation(c.config, OpDelete)
+	return &TournamentAdminDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TournamentAdminClient) DeleteOne(_m *TournamentAdmin) *TournamentAdminDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TournamentAdminClient) DeleteOneID(id int) *TournamentAdminDeleteOne {
+	builder := c.Delete().Where(tournamentadmin.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TournamentAdminDeleteOne{builder}
+}
+
+// Query returns a query builder for TournamentAdmin.
+func (c *TournamentAdminClient) Query() *TournamentAdminQuery {
+	return &TournamentAdminQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTournamentAdmin},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TournamentAdmin entity by its id.
+func (c *TournamentAdminClient) Get(ctx context.Context, id int) (*TournamentAdmin, error) {
+	return c.Query().Where(tournamentadmin.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TournamentAdminClient) GetX(ctx context.Context, id int) *TournamentAdmin {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a TournamentAdmin.
+func (c *TournamentAdminClient) QueryUser(_m *TournamentAdmin) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournamentadmin.Table, tournamentadmin.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tournamentadmin.UserTable, tournamentadmin.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTournament queries the tournament edge of a TournamentAdmin.
+func (c *TournamentAdminClient) QueryTournament(_m *TournamentAdmin) *TournamentQuery {
+	query := (&TournamentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournamentadmin.Table, tournamentadmin.FieldID, id),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tournamentadmin.TournamentTable, tournamentadmin.TournamentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TournamentAdminClient) Hooks() []Hook {
+	return c.hooks.TournamentAdmin
+}
+
+// Interceptors returns the client interceptors.
+func (c *TournamentAdminClient) Interceptors() []Interceptor {
+	return c.inters.TournamentAdmin
+}
+
+func (c *TournamentAdminClient) mutate(ctx context.Context, m *TournamentAdminMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TournamentAdminCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TournamentAdminUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TournamentAdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TournamentAdminDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TournamentAdmin mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -1331,6 +2483,86 @@ func (c *UserClient) QueryConsents(_m *User) *ConsentQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(consent.Table, consent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeamMemberships queries the team_memberships edge of a User.
+func (c *UserClient) QueryTeamMemberships(_m *User) *TeamMemberQuery {
+	query := (&TeamMemberClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(teammember.Table, teammember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TeamMembershipsTable, user.TeamMembershipsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReceivedInvitations queries the received_invitations edge of a User.
+func (c *UserClient) QueryReceivedInvitations(_m *User) *InvitationQuery {
+	query := (&InvitationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(invitation.Table, invitation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReceivedInvitationsTable, user.ReceivedInvitationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCreatedTeams queries the created_teams edge of a User.
+func (c *UserClient) QueryCreatedTeams(_m *User) *TeamQuery {
+	query := (&TeamClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTeamsTable, user.CreatedTeamsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCreatedTournaments queries the created_tournaments edge of a User.
+func (c *UserClient) QueryCreatedTournaments(_m *User) *TournamentQuery {
+	query := (&TournamentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTournamentsTable, user.CreatedTournamentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTournamentAdmins queries the tournament_admins edge of a User.
+func (c *UserClient) QueryTournamentAdmins(_m *User) *TournamentAdminQuery {
+	query := (&TournamentAdminClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TournamentAdminsTable, user.TournamentAdminsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1696,11 +2928,13 @@ func (c *VoteClient) mutate(ctx context.Context, m *VoteMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		App, AuthCode, AuthRefreshToken, AuthToken, Component, Consent, User, UserVote,
+		App, AuthCode, AuthRefreshToken, AuthToken, Component, Consent, Invitation,
+		RankGroup, Team, TeamMember, Tournament, TournamentAdmin, User, UserVote,
 		Vote []ent.Hook
 	}
 	inters struct {
-		App, AuthCode, AuthRefreshToken, AuthToken, Component, Consent, User, UserVote,
+		App, AuthCode, AuthRefreshToken, AuthToken, Component, Consent, Invitation,
+		RankGroup, Team, TeamMember, Tournament, TournamentAdmin, User, UserVote,
 		Vote []ent.Interceptor
 	}
 )

@@ -9,6 +9,12 @@ import (
 	"base-website/ent/authtoken"
 	"base-website/ent/component"
 	"base-website/ent/consent"
+	"base-website/ent/invitation"
+	"base-website/ent/rankgroup"
+	"base-website/ent/team"
+	"base-website/ent/teammember"
+	"base-website/ent/tournament"
+	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -87,6 +93,12 @@ func checkColumn(t, c string) error {
 			authtoken.Table:        authtoken.ValidColumn,
 			component.Table:        component.ValidColumn,
 			consent.Table:          consent.ValidColumn,
+			invitation.Table:       invitation.ValidColumn,
+			rankgroup.Table:        rankgroup.ValidColumn,
+			team.Table:             team.ValidColumn,
+			teammember.Table:       teammember.ValidColumn,
+			tournament.Table:       tournament.ValidColumn,
+			tournamentadmin.Table:  tournamentadmin.ValidColumn,
 			user.Table:             user.ValidColumn,
 			uservote.Table:         uservote.ValidColumn,
 			vote.Table:             vote.ValidColumn,

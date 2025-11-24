@@ -37,8 +37,9 @@ func (App) Edges() []ent.Edge {
 		edge.From("owner", User.Type).
 			Ref("apps").
 			Field("owner_id").
-			Annotations(entsql.OnDelete(entsql.Cascade)).
-			Unique().Required(),
-		edge.To("consents", Consent.Type),
+			Unique().
+			Required(),
+		edge.To("consents", Consent.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

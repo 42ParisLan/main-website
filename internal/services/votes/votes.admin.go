@@ -278,7 +278,9 @@ func (svc *votesService) UpdateComponent(
 			return nil, svc.errorFilter.Filter(err, "upload image")
 		}
 
-		svc.s3service.RemoveObject(ctx, compWithOwner.ImageURL)
+		if compWithOwner.ImageURL != nil {
+			svc.s3service.RemoveObject(ctx, *compWithOwner.ImageURL)
+		}
 
 		update.SetImageURL(objectName)
 	}
@@ -324,7 +326,9 @@ func (svc *votesService) DeleteComponent(
 		return svc.errorFilter.Filter(err, "delete_component")
 	}
 
-	svc.s3service.RemoveObject(ctx, compWithOwner.ImageURL)
+	if compWithOwner.ImageURL != nil {
+		svc.s3service.RemoveObject(ctx, *compWithOwner.ImageURL)
+	}
 
 	return nil
 }

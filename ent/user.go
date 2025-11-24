@@ -20,24 +20,20 @@ type User struct {
 	ID int `json:"id,omitempty"`
 	// Username holds the value of the "username" field.
 	Username string `json:"username,omitempty"`
-	// FirstName holds the value of the "first_name" field.
-	FirstName string `json:"first_name,omitempty"`
-	// LastName holds the value of the "last_name" field.
-	LastName string `json:"last_name,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// AnonymizedAt holds the value of the "anonymized_at" field.
+	AnonymizedAt *time.Time `json:"anonymized_at,omitempty"`
+	// IntraID holds the value of the "intra_id" field.
+	IntraID *int `json:"intra_id,omitempty"`
 	// Picture holds the value of the "picture" field.
 	Picture *string `json:"picture,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind user.Kind `json:"kind,omitempty"`
-	// UsualFullName holds the value of the "usual_full_name" field.
-	UsualFullName string `json:"usual_full_name,omitempty"`
-	// UsualFirstName holds the value of the "usual_first_name" field.
-	UsualFirstName *string `json:"usual_first_name,omitempty"`
 	// Roles holds the value of the "roles" field.
 	Roles []string `json:"roles,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -56,9 +52,19 @@ type UserEdges struct {
 	Apps []*App `json:"apps,omitempty"`
 	// Consents holds the value of the consents edge.
 	Consents []*Consent `json:"consents,omitempty"`
+	// TeamMemberships holds the value of the team_memberships edge.
+	TeamMemberships []*TeamMember `json:"team_memberships,omitempty"`
+	// ReceivedInvitations holds the value of the received_invitations edge.
+	ReceivedInvitations []*Invitation `json:"received_invitations,omitempty"`
+	// CreatedTeams holds the value of the created_teams edge.
+	CreatedTeams []*Team `json:"created_teams,omitempty"`
+	// CreatedTournaments holds the value of the created_tournaments edge.
+	CreatedTournaments []*Tournament `json:"created_tournaments,omitempty"`
+	// TournamentAdmins holds the value of the tournament_admins edge.
+	TournamentAdmins []*TournamentAdmin `json:"tournament_admins,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [9]bool
 }
 
 // UserVotesOrErr returns the UserVotes value or an error if the edge
@@ -97,6 +103,51 @@ func (e UserEdges) ConsentsOrErr() ([]*Consent, error) {
 	return nil, &NotLoadedError{edge: "consents"}
 }
 
+// TeamMembershipsOrErr returns the TeamMemberships value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TeamMembershipsOrErr() ([]*TeamMember, error) {
+	if e.loadedTypes[4] {
+		return e.TeamMemberships, nil
+	}
+	return nil, &NotLoadedError{edge: "team_memberships"}
+}
+
+// ReceivedInvitationsOrErr returns the ReceivedInvitations value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReceivedInvitationsOrErr() ([]*Invitation, error) {
+	if e.loadedTypes[5] {
+		return e.ReceivedInvitations, nil
+	}
+	return nil, &NotLoadedError{edge: "received_invitations"}
+}
+
+// CreatedTeamsOrErr returns the CreatedTeams value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CreatedTeamsOrErr() ([]*Team, error) {
+	if e.loadedTypes[6] {
+		return e.CreatedTeams, nil
+	}
+	return nil, &NotLoadedError{edge: "created_teams"}
+}
+
+// CreatedTournamentsOrErr returns the CreatedTournaments value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CreatedTournamentsOrErr() ([]*Tournament, error) {
+	if e.loadedTypes[7] {
+		return e.CreatedTournaments, nil
+	}
+	return nil, &NotLoadedError{edge: "created_tournaments"}
+}
+
+// TournamentAdminsOrErr returns the TournamentAdmins value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TournamentAdminsOrErr() ([]*TournamentAdmin, error) {
+	if e.loadedTypes[8] {
+		return e.TournamentAdmins, nil
+	}
+	return nil, &NotLoadedError{edge: "tournament_admins"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -104,11 +155,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldRoles:
 			values[i] = new([]byte)
-		case user.FieldID:
+		case user.FieldID, user.FieldIntraID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUsername, user.FieldFirstName, user.FieldLastName, user.FieldEmail, user.FieldPicture, user.FieldKind, user.FieldUsualFullName, user.FieldUsualFirstName:
+		case user.FieldUsername, user.FieldEmail, user.FieldPicture, user.FieldKind:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldAnonymizedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -137,18 +188,6 @@ func (_m *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Username = value.String
 			}
-		case user.FieldFirstName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field first_name", values[i])
-			} else if value.Valid {
-				_m.FirstName = value.String
-			}
-		case user.FieldLastName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field last_name", values[i])
-			} else if value.Valid {
-				_m.LastName = value.String
-			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
@@ -167,6 +206,20 @@ func (_m *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
 			}
+		case user.FieldAnonymizedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field anonymized_at", values[i])
+			} else if value.Valid {
+				_m.AnonymizedAt = new(time.Time)
+				*_m.AnonymizedAt = value.Time
+			}
+		case user.FieldIntraID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field intra_id", values[i])
+			} else if value.Valid {
+				_m.IntraID = new(int)
+				*_m.IntraID = int(value.Int64)
+			}
 		case user.FieldPicture:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field picture", values[i])
@@ -179,19 +232,6 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field kind", values[i])
 			} else if value.Valid {
 				_m.Kind = user.Kind(value.String)
-			}
-		case user.FieldUsualFullName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field usual_full_name", values[i])
-			} else if value.Valid {
-				_m.UsualFullName = value.String
-			}
-		case user.FieldUsualFirstName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field usual_first_name", values[i])
-			} else if value.Valid {
-				_m.UsualFirstName = new(string)
-				*_m.UsualFirstName = value.String
 			}
 		case user.FieldRoles:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -234,6 +274,31 @@ func (_m *User) QueryConsents() *ConsentQuery {
 	return NewUserClient(_m.config).QueryConsents(_m)
 }
 
+// QueryTeamMemberships queries the "team_memberships" edge of the User entity.
+func (_m *User) QueryTeamMemberships() *TeamMemberQuery {
+	return NewUserClient(_m.config).QueryTeamMemberships(_m)
+}
+
+// QueryReceivedInvitations queries the "received_invitations" edge of the User entity.
+func (_m *User) QueryReceivedInvitations() *InvitationQuery {
+	return NewUserClient(_m.config).QueryReceivedInvitations(_m)
+}
+
+// QueryCreatedTeams queries the "created_teams" edge of the User entity.
+func (_m *User) QueryCreatedTeams() *TeamQuery {
+	return NewUserClient(_m.config).QueryCreatedTeams(_m)
+}
+
+// QueryCreatedTournaments queries the "created_tournaments" edge of the User entity.
+func (_m *User) QueryCreatedTournaments() *TournamentQuery {
+	return NewUserClient(_m.config).QueryCreatedTournaments(_m)
+}
+
+// QueryTournamentAdmins queries the "tournament_admins" edge of the User entity.
+func (_m *User) QueryTournamentAdmins() *TournamentAdminQuery {
+	return NewUserClient(_m.config).QueryTournamentAdmins(_m)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -260,12 +325,6 @@ func (_m *User) String() string {
 	builder.WriteString("username=")
 	builder.WriteString(_m.Username)
 	builder.WriteString(", ")
-	builder.WriteString("first_name=")
-	builder.WriteString(_m.FirstName)
-	builder.WriteString(", ")
-	builder.WriteString("last_name=")
-	builder.WriteString(_m.LastName)
-	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(_m.Email)
 	builder.WriteString(", ")
@@ -275,6 +334,16 @@ func (_m *User) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	if v := _m.AnonymizedAt; v != nil {
+		builder.WriteString("anonymized_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.IntraID; v != nil {
+		builder.WriteString("intra_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	if v := _m.Picture; v != nil {
 		builder.WriteString("picture=")
 		builder.WriteString(*v)
@@ -282,14 +351,6 @@ func (_m *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Kind))
-	builder.WriteString(", ")
-	builder.WriteString("usual_full_name=")
-	builder.WriteString(_m.UsualFullName)
-	builder.WriteString(", ")
-	if v := _m.UsualFirstName; v != nil {
-		builder.WriteString("usual_first_name=")
-		builder.WriteString(*v)
-	}
 	builder.WriteString(", ")
 	builder.WriteString("roles=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Roles))

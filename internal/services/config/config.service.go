@@ -30,16 +30,18 @@ type Config struct {
 
 	ValkeyAddress string `mapstructure:"VALKEY_ADDRESS" validate:"required"`
 
-	MinioEndpoint  string `mapstructure:"MINIO_ENDPOINT"  validate:"required"`
-	MinioAccessKey string `mapstructure:"MINIO_ACCESS_KEY" validate:"required"`
-	MinioSecretKey string `mapstructure:"MINIO_SECRET_KEY" validate:"required"`
-	MinioBucket    string `mapstructure:"MINIO_BUCKET" validate:"required"`
-	MinioUseSSL    bool   `mapstructure:"MINIO_USE_SSL" default:"false"`
+	MinioEndpoint       string `mapstructure:"MINIO_ENDPOINT"  validate:"required"`
+	MinioAccessKey      string `mapstructure:"MINIO_ACCESS_KEY" validate:"required"`
+	MinioSecretKey      string `mapstructure:"MINIO_SECRET_KEY" validate:"required"`
+	MinioBucket         string `mapstructure:"MINIO_BUCKET" validate:"required"`
+	MinioUseSSL         bool   `mapstructure:"MINIO_USE_SSL" default:"false"`
 	MinioPublicEndpoint string `mapstructure:"MINIO_PUBLIC_ENDPOINT" default:""`
 
 	OpenIDIssuer         string `mapstructure:"OPENID_ISSUER" validate:"required"`
 	ConsentDayExpiration int    `mapstructure:"CONSENT_DAY_EXPIRATION" default:"30" validate:"required"`
 	LoginURL             string `mapstructure:"LOGIN_URL" validate:"required"`
+
+	AccountAnonymizeMinAgeDays int `mapstructure:"ACCOUNT_ANONYMIZE_MIN_AGE_DAYS" default:"7" validate:"gte=0"`
 
 	IntraTokenURL     string `mapstructure:"INTRA_TOKEN_URL" validate:"required"`
 	IntraAPIURL       string `mapstructure:"INTRA_API_URL" validate:"required"`
@@ -92,12 +94,12 @@ func New() (ConfigService, error) {
 	automaticBindEnv()
 
 	config := &Config{}
+
+	defaults.SetDefaults(config)
 	err := viper.Unmarshal(config)
 	if err != nil {
 		return nil, err
 	}
-
-	defaults.SetDefaults(config)
 
 	err = validator.New().Struct(config)
 	if err != nil {

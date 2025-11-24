@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { components } from '@/lib/api/types';
 import { useAuth } from '@/providers/auth.provider';
 import { useHasRole } from '@/hooks/use-can';
+import { Link } from '@tanstack/react-router';
 
 interface VoteCardProps {
 	vote: components['schemas']['LightVote'];
@@ -50,19 +51,21 @@ export default function VoteAdmin({ vote }: VoteCardProps) {
 				<p>{vote.end_at}</p>
 				<p>{status}</p>
 				<p className="text-muted-foreground">Vote is finished</p>
-				<a 
-					href={`/votes/${vote.id}/live`}
+				<Link
+					to={"/votes/$voteid/live"}
+					params={{voteid: String(vote.id)}}
 					className="text-primary hover:underline"
 				>
 					See Live
-				</a>
+				</Link>
 				{(vote.creator.id == me.id || hasRole(['super_admin'])) && (
-					<a 
-						href={`/admin/votes/${vote.id}`}
+					<Link 
+						to={"/admin/votes/$voteid"}
+						params={{voteid: String(vote.id)}}
 						className="text-primary hover:underline"
 					>
 						Edit Vote
-					</a>
+					</Link>
 				)}
 			</CardContent>
 		</Card>

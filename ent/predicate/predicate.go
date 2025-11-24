@@ -24,6 +24,24 @@ type Component func(*sql.Selector)
 // Consent is the predicate function for consent builders.
 type Consent func(*sql.Selector)
 
+// Invitation is the predicate function for invitation builders.
+type Invitation func(*sql.Selector)
+
+// RankGroup is the predicate function for rankgroup builders.
+type RankGroup func(*sql.Selector)
+
+// Team is the predicate function for team builders.
+type Team func(*sql.Selector)
+
+// TeamMember is the predicate function for teammember builders.
+type TeamMember func(*sql.Selector)
+
+// Tournament is the predicate function for tournament builders.
+type Tournament func(*sql.Selector)
+
+// TournamentAdmin is the predicate function for tournamentadmin builders.
+type TournamentAdmin func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"strconv"
+	"time"
 
 	"base-website/ent"
 	"base-website/ent/predicate"
@@ -33,6 +34,8 @@ type UserService interface {
 	GetUserByIDOrLogin(ctx context.Context, idOrLogin string) (*usersmodels.User, error)
 	// This method is user to change user roles by its ID
 	ChangeUserRolesByID(ctx context.Context, id int, roles []string) (*usersmodels.User, error)
+	// This method is used to anonymize a user by its ID (remove personal data)
+	AnonymizeUserByID(ctx context.Context, id int) (*usersmodels.User, error)
 	// This method is used to search users
 	SearchUsers(ctx context.Context, params *usersmodels.SearchUsersParams) (*paging.Response[*lightmodels.LightUser], error)
 }
@@ -80,17 +83,12 @@ func (svc *usersService) UpsertUserFromIntra(
 		return nil, err
 	}
 
-	_, err = svc.databaseService.User.Get(ctx, intraUser.ID)
+	entUser, err := svc.databaseService.User.Query().Where(user.IntraIDEQ(intraUser.ID)).Only(ctx)
 	if err == nil {
-		// The user already exists, we update it
-		updateQuery := svc.databaseService.User.UpdateOneID(intraUser.ID).
+		updateQuery := svc.databaseService.User.UpdateOneID(entUser.ID).
 			SetUsername(intraUser.Login).
 			SetEmail(intraUser.Email).
-			SetFirstName(intraUser.FirstName).
-			SetLastName(intraUser.LastName).
-			SetEmail(intraUser.Email).
-			SetUsualFullName(intraUser.UsualFullName).
-			SetNillableUsualFirstName(intraUser.UsualFirstName)
+			SetNillableIntraID(&intraUser.ID)
 		if intraUser.Image != nil {
 			updateQuery.SetPicture(intraUser.Image.Versions.Medium)
 		}
@@ -98,28 +96,23 @@ func (svc *usersService) UpsertUserFromIntra(
 		if err != nil {
 			return nil, svc.errorFilter.Filter(err, "update")
 		}
-		return svc.GetUserByID(ctx, intraUser.ID)
+		return svc.GetUserByID(ctx, entUser.ID)
 	}
 
 	userCreateQuery := svc.databaseService.User.Create().
-		SetID(intraUser.ID).
 		SetUsername(intraUser.Login).
 		SetEmail(intraUser.Email).
-		SetFirstName(intraUser.FirstName).
-		SetLastName(intraUser.LastName).
-		SetEmail(intraUser.Email).
-		SetUsualFullName(intraUser.UsualFullName).
-		SetNillableUsualFirstName(intraUser.UsualFirstName)
+		SetNillableIntraID(&intraUser.ID)
 
 	if intraUser.ID == svc.configService.GetConfig().SuperAdminUser {
 		userCreateQuery.SetKind(user.KindAdmin)
-		userCreateQuery.SetRoles([]string{"super_admin"})
+		userCreateQuery.SetRoles([]string{"basic_admin", "super_admin"})
 	}
 
 	if intraUser.Image != nil {
 		userCreateQuery.SetPicture(
 			intraUser.Image.Versions.Medium,
-		) // it can happen that the image is nil
+		)
 	}
 
 	user, err := userCreateQuery.Save(ctx)
@@ -179,13 +172,12 @@ func (svc *usersService) SearchUsers(
 ) (*paging.Response[*lightmodels.LightUser], error) {
 	query := svc.databaseService.User.Query()
 
+	query = query.Where(user.AnonymizedAtIsNil())
+
 	if params.Query != "" {
 		query.Where(
 			user.Or(
 				user.UsernameContains(params.Query),
-				user.FirstNameContains(params.Query),
-				user.LastNameContains(params.Query),
-				user.UsualFullNameContains(params.Query),
 			),
 		)
 	}
@@ -220,8 +212,12 @@ func (svc *usersService) newQuery() *ent.UserQuery {
 }
 
 func (svc *usersService) ChangeUserRolesByID(ctx context.Context, id int, roles []string) (*usersmodels.User, error) {
-	if id == svc.configService.GetConfig().SuperAdminUser {
-		return nil, huma.Error403Forbidden("can't change roles of super admin user")
+	minimalUser, err := svc.databaseService.User.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if *minimalUser.IntraID == svc.configService.GetConfig().SuperAdminUser {
+		return nil, huma.Error403Forbidden("can't anonymize super admin user")
 	}
 
 	kind := user.KindAdmin
@@ -231,7 +227,7 @@ func (svc *usersService) ChangeUserRolesByID(ctx context.Context, id int, roles 
 	}
 
 	rbacRoles := svc.rbacService.ListRoles()
-	err := checkRoles(rbacRoles, roles)
+	err = checkRoles(rbacRoles, roles)
 	if err != nil {
 		return nil, err
 	}
@@ -243,6 +239,48 @@ func (svc *usersService) ChangeUserRolesByID(ctx context.Context, id int, roles 
 	if err != nil {
 		return nil, svc.errorFilter.Filter(err, "update")
 	}
+	return usersmodels.NewUserFromEnt(updatedUser), nil
+}
+
+func (svc *usersService) AnonymizeUserByID(ctx context.Context, id int) (*usersmodels.User, error) {
+	minimalUser, err := svc.databaseService.User.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if *minimalUser.IntraID == svc.configService.GetConfig().SuperAdminUser {
+		return nil, huma.Error403Forbidden("can't anonymize super admin user")
+	}
+
+	cfg := svc.configService.GetConfig()
+	if cfg.AccountAnonymizeMinAgeDays > 0 {
+		entUser, err := svc.databaseService.User.Get(ctx, id)
+		if err != nil {
+			return nil, svc.errorFilter.Filter(err, "get")
+		}
+		minAge := time.Duration(cfg.AccountAnonymizeMinAgeDays) * 24 * time.Hour
+		if time.Since(entUser.CreatedAt) < minAge {
+			return nil, huma.Error403Forbidden(
+				fmt.Sprintf("account must be at least %d days old to anonymize", cfg.AccountAnonymizeMinAgeDays),
+			)
+		}
+	}
+
+	anonUsername := fmt.Sprintf("anonymous-%d-%d", id, time.Now().Unix())
+
+	now := time.Now()
+	updatedUser, err := svc.databaseService.User.UpdateOneID(id).
+		SetKind(user.KindUser).
+		SetRoles([]string{}).
+		SetUsername(anonUsername).
+		SetEmail("").
+		SetPicture("").
+		SetNillableAnonymizedAt(&now).
+		ClearIntraID().
+		Save(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "update")
+	}
+
 	return usersmodels.NewUserFromEnt(updatedUser), nil
 }
 

@@ -1,5 +1,28 @@
 components:
   schemas:
+    AddTournamentAdminBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/AddTournamentAdminBody.json
+          format: uri
+          readOnly: true
+          type: string
+        role:
+          enum:
+            - ADMIN
+            - SUPER_ADMIN
+          example: ADMIN
+          type: string
+        user_id:
+          example: 42
+          format: int64
+          type: integer
+      required:
+        - user_id
+        - role
+      type: object
     App:
       additionalProperties: true
       properties:
@@ -128,6 +151,7 @@ components:
           type: integer
         image_url:
           example: https://example.com/network.png
+          nullable: true
           type: string
         name:
           example: Network
@@ -211,6 +235,27 @@ components:
         - user
         - scopes
         - expiration_date
+      type: object
+    CreateInvitation:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/CreateInvitation.json
+          format: uri
+          readOnly: true
+          type: string
+        message:
+          type: string
+        role:
+          type: string
+        user_id:
+          format: int64
+          type: integer
+      required:
+        - message
+        - role
+        - user_id
       type: object
     CreateVote:
       additionalProperties: false
@@ -310,6 +355,37 @@ components:
           format: uri
           type: string
       type: object
+    Invitation:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Invitation.json
+          format: uri
+          readOnly: true
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        id:
+          format: int64
+          type: integer
+        message:
+          type: string
+        role:
+          type: string
+        team:
+          $ref: "#/components/schemas/LightTeam"
+        user:
+          $ref: "#/components/schemas/LightUser"
+      required:
+        - id
+        - message
+        - role
+        - created_at
+        - team
+        - user
+      type: object
     JsonPatchOp:
       additionalProperties: false
       properties:
@@ -335,6 +411,182 @@ components:
         - op
         - path
       type: object
+    LightRankGroup:
+      additionalProperties: false
+      properties:
+        id:
+          example: 1
+          format: int64
+          type: integer
+        name:
+          example: Top 8
+          type: string
+        position:
+          example: 1
+          format: int64
+          type: integer
+        rank_max:
+          example: 8
+          format: int64
+          type: integer
+        rank_min:
+          example: 1
+          format: int64
+          type: integer
+      required:
+        - id
+        - name
+        - rank_min
+        - rank_max
+        - position
+      type: object
+    LightTeam:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/LightTeam.json
+          format: uri
+          readOnly: true
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        id:
+          example: 42
+          format: int64
+          type: integer
+        image_url:
+          type: string
+        is_locked:
+          type: boolean
+        members:
+          items:
+            $ref: "#/components/schemas/LightTeamMember"
+          nullable: true
+          type: array
+        name:
+          example: Team Phoenix
+          type: string
+        rank_group:
+          $ref: "#/components/schemas/LightRankGroup"
+        score:
+          format: int64
+          type: integer
+        status:
+          enum:
+            - DRAFT
+            - LOCKED
+          example: DRAFT
+          type: string
+      required:
+        - id
+        - name
+        - status
+        - is_locked
+        - created_at
+      type: object
+    LightTeamMember:
+      additionalProperties: false
+      properties:
+        role:
+          example: player
+          type: string
+        user:
+          $ref: "#/components/schemas/LightUser"
+      required:
+        - user
+        - role
+      type: object
+    LightTournament:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        custom_page_component:
+          type: string
+        description:
+          example: School-wide League of Legends tournament
+          type: string
+        external_links:
+          additionalProperties:
+            type: string
+          type: object
+        iamge_url:
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        is_visible:
+          type: boolean
+        max_teams:
+          example: 32
+          format: int64
+          type: integer
+        name:
+          example: Spring Cup 2025
+          type: string
+        registration_end:
+          example: "2025-03-10T23:59:59Z"
+          format: date-time
+          type: string
+        registration_start:
+          example: "2025-03-01T00:00:00Z"
+          format: date-time
+          type: string
+        slug:
+          example: spring-cup-2025
+          type: string
+        team_structure:
+          additionalProperties:
+            $ref: "#/components/schemas/TeamStructure"
+          type: object
+        tournament_end:
+          example: "2025-03-20T23:59:59Z"
+          format: date-time
+          nullable: true
+          type: string
+        tournament_start:
+          example: "2025-03-15T00:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - id
+        - slug
+        - name
+        - iamge_url
+        - is_visible
+        - registration_start
+        - registration_end
+        - tournament_start
+        - tournament_end
+        - max_teams
+        - team_structure
+        - creator
+        - created_at
+      type: object
+    LightTournamentAdmin:
+      additionalProperties: false
+      properties:
+        role:
+          enum:
+            - ADMIN
+            - SUPER_ADMIN
+            - CREATOR
+          example: ADMIN
+          type: string
+        user:
+          $ref: "#/components/schemas/LightUser"
+      required:
+        - user
+        - role
+      type: object
     LightUser:
       additionalProperties: false
       properties:
@@ -345,9 +597,6 @@ components:
         email:
           example: froz@42paris.fr
           type: string
-        first_name:
-          example: Theo
-          type: string
         id:
           example: 42
           format: int64
@@ -357,9 +606,6 @@ components:
             - user
             - admin
           example: user
-          type: string
-        last_name:
-          example: Matis
           type: string
         picture:
           example: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg
@@ -378,25 +624,14 @@ components:
         username:
           example: froz
           type: string
-        usual_first_name:
-          example: Theo
-          nullable: true
-          type: string
-        usual_full_name:
-          example: Theo Matis
-          type: string
       required:
         - id
         - username
-        - first_name
-        - last_name
         - email
         - created_at
         - updated_at
         - picture
         - kind
-        - usual_full_name
-        - usual_first_name
         - roles
       type: object
     LightVote:
@@ -509,6 +744,117 @@ components:
         items:
           items:
             $ref: "#/components/schemas/Consent"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseInvitation:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseInvitation.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/Invitation"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseLightTeam:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightTeam.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightTeam"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseLightTournament:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseLightTournament.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/LightTournament"
           nullable: true
           type: array
         limit:
@@ -660,6 +1006,111 @@ components:
         - permissions
         - inherits
       type: object
+    TeamStructure:
+      additionalProperties: false
+      properties:
+        max:
+          format: int64
+          minimum: 1
+          type: integer
+        min:
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+        - min
+        - max
+      type: object
+    Tournament:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/Tournament.json
+          format: uri
+          readOnly: true
+          type: string
+        admins:
+          items:
+            $ref: "#/components/schemas/LightTournamentAdmin"
+          nullable: true
+          type: array
+        created_at:
+          format: date-time
+          type: string
+        creator:
+          $ref: "#/components/schemas/LightUser"
+        custom_page_component:
+          type: string
+        description:
+          type: string
+        external_links:
+          additionalProperties:
+            type: string
+          type: object
+        iamge_url:
+          nullable: true
+          type: string
+        id:
+          example: 42
+          format: int64
+          type: integer
+        is_visible:
+          type: boolean
+        max_teams:
+          format: int64
+          type: integer
+        name:
+          example: Spring Cup 2025
+          type: string
+        rank_groups:
+          items:
+            $ref: "#/components/schemas/LightRankGroup"
+          nullable: true
+          type: array
+        registration_end:
+          format: date-time
+          type: string
+        registration_start:
+          format: date-time
+          type: string
+        slug:
+          example: spring-cup-2025
+          type: string
+        team_structure:
+          additionalProperties:
+            $ref: "#/components/schemas/TeamStructure"
+          type: object
+        teams:
+          items:
+            $ref: "#/components/schemas/LightTeam"
+          nullable: true
+          type: array
+        tournament_end:
+          format: date-time
+          nullable: true
+          type: string
+        tournament_start:
+          format: date-time
+          type: string
+      required:
+        - id
+        - slug
+        - name
+        - description
+        - iamge_url
+        - is_visible
+        - registration_start
+        - registration_end
+        - tournament_start
+        - tournament_end
+        - max_teams
+        - team_structure
+        - custom_page_component
+        - creator
+        - admins
+        - created_at
+      type: object
     UpdateVote:
       additionalProperties: false
       properties:
@@ -708,9 +1159,6 @@ components:
         email:
           example: froz@42paris.fr
           type: string
-        first_name:
-          example: Theo
-          type: string
         id:
           example: 42
           format: int64
@@ -720,9 +1168,6 @@ components:
             - user
             - admin
           example: user
-          type: string
-        last_name:
-          example: Matis
           type: string
         picture:
           example: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg
@@ -741,25 +1186,14 @@ components:
         username:
           example: froz
           type: string
-        usual_first_name:
-          example: Theo
-          nullable: true
-          type: string
-        usual_full_name:
-          example: Theo Matis
-          type: string
       required:
         - id
         - username
-        - first_name
-        - last_name
         - email
         - created_at
         - updated_at
         - picture
         - kind
-        - usual_full_name
-        - usual_first_name
         - roles
       type: object
     Vote:
@@ -1544,6 +1978,70 @@ paths:
       summary: Frontend Env Vars
       tags:
         - Env
+  /invitations/{id}:
+    delete:
+      description: This endpoint is used to delete an invitation.
+      operationId: deleteInvitation
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Invitation
+      tags:
+        - Invitations
+  /invitations/{id}/accept:
+    post:
+      description: This endpoint is used to accept an invitation.
+      operationId: acceptInvitation
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Accept An Invitation
+      tags:
+        - Invitations
   /me:
     get:
       description: This endpoint is used to get the current user.
@@ -1565,6 +2063,33 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: Get current user
+      tags:
+        - Users
+  /me/anonymize:
+    post:
+      description: This endpoint is used to anonymize the current user (remove personal data).
+      operationId: anonymizeCurrentUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: OK
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Anonymize current user
       tags:
         - Users
   /me/apps:
@@ -1614,6 +2139,62 @@ paths:
       summary: Get my consents
       tags:
         - Consents
+  /me/invitations:
+    get:
+      description: This endpoint is used to get invitations that belong to a user.
+      operationId: getInvitationsForMe
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseInvitation"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Invitations For Me
+      tags:
+        - Invitations
   /me/permissions:
     get:
       description: This endpoint is used to get the current user RBAC permissions.
@@ -1666,6 +2247,831 @@ paths:
       tags:
         - RBAC
         - Roles
+  /teams/{id}:
+    delete:
+      description: This endpoint is used to delete a team.
+      operationId: deleteTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Team
+      tags:
+        - Teams
+    get:
+      description: This endpoint is used to get a team.
+      operationId: getTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Team
+      tags:
+        - Teams
+    patch:
+      description: This endpoint is used to update a team.
+      operationId: updateTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              image:
+                contentType: image/*
+              name:
+                contentType: text/plain
+            schema:
+              properties:
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                name:
+                  example: Team Phoenix
+                  type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Team
+      tags:
+        - Teams
+  /teams/{id}/invitations:
+    get:
+      description: This endpoint is used to get invitations that belong to a team.
+      operationId: getInvitationsForTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseInvitation"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Invitations For Team
+      tags:
+        - Invitations
+    post:
+      description: This endpoint is used to create invitation that belong to a team.
+      operationId: createInvitationForTeam
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvitation"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Invitation For Team
+      tags:
+        - Invitations
+  /tournaments:
+    get:
+      description: This endpoint is used to get all tournaments.
+      operationId: getAllTournaments
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: visible
+          explode: false
+          in: query
+          name: visible
+          schema:
+            default: visible
+            enum:
+              - all
+              - visible
+            example: visible
+            type: string
+        - example: ongoing
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: all
+            enum:
+              - all
+              - ongoing
+              - finish
+            example: ongoing
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseLightTournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get All Tournaments
+      tags:
+        - Tournament
+    post:
+      description: This endpoint is used to create a tournament.
+      operationId: createTournament
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              custom_page_component:
+                contentType: text/plain
+              description:
+                contentType: text/plain
+              image:
+                contentType: image/*
+              max_teams:
+                contentType: text/plain
+              name:
+                contentType: text/plain
+              registration_end:
+                contentType: text/plain
+              registration_start:
+                contentType: text/plain
+              slug:
+                contentType: text/plain
+              team_structure:
+                contentType: text/plain
+              tournament_start:
+                contentType: text/plain
+            schema:
+              properties:
+                custom_page_component:
+                  type: string
+                description:
+                  example: School-wide League of Legends tournament
+                  type: string
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                max_teams:
+                  example: 32
+                  format: int64
+                  minimum: 3
+                  type: integer
+                name:
+                  example: Spring Cup 2025
+                  type: string
+                registration_end:
+                  example: "2025-03-10T23:59:59Z"
+                  format: date-time
+                  type: string
+                registration_start:
+                  example: "2025-03-01T00:00:00Z"
+                  format: date-time
+                  type: string
+                slug:
+                  example: spring-cup-2025
+                  type: string
+                team_structure:
+                  type: string
+                tournament_start:
+                  example: "2025-03-15T00:00:00Z"
+                  format: date-time
+                  type: string
+              required:
+                - slug
+                - name
+                - registration_start
+                - registration_end
+                - tournament_start
+                - max_teams
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create Tournament
+      tags:
+        - Tournament
+  /tournaments/{id_or_slug}:
+    get:
+      description: This endpoint is used to get a tournament.
+      operationId: getTournamentByID
+      parameters:
+        - example: "42"
+          in: path
+          name: id_or_slug
+          required: true
+          schema:
+            example: "42"
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Tournament by ID
+      tags:
+        - Tournament
+  /tournaments/{id}:
+    delete:
+      description: This endpoint is used to delete a tournament.
+      operationId: deleteTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Delete Tournament
+      tags:
+        - Tournament
+    patch:
+      description: This endpoint is used to update a tournament.
+      operationId: updateTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              custom_page_component:
+                contentType: text/plain
+              description:
+                contentType: text/plain
+              external_links:
+                contentType: text/plain
+              image:
+                contentType: image/*
+              is_visible:
+                contentType: text/plain
+              max_teams:
+                contentType: text/plain
+              registration_end:
+                contentType: text/plain
+              registration_start:
+                contentType: text/plain
+              tournament_start:
+                contentType: text/plain
+            schema:
+              properties:
+                custom_page_component:
+                  type: string
+                description:
+                  example: School-wide League of Legends tournament
+                  type: string
+                external_links:
+                  type: string
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                is_visible:
+                  type: boolean
+                max_teams:
+                  default: -1
+                  example: 32
+                  format: int64
+                  type: integer
+                registration_end:
+                  example: "2025-03-10T23:59:59Z"
+                  format: date-time
+                  type: string
+                registration_start:
+                  example: "2025-03-01T00:00:00Z"
+                  format: date-time
+                  type: string
+                tournament_start:
+                  example: "2025-03-15T00:00:00Z"
+                  format: date-time
+                  type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Update Tournament
+      tags:
+        - Tournament
+  /tournaments/{id}/admin:
+    post:
+      description: Add a user as an admin to a tournament.
+      operationId: addTournamentAdmin
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTournamentAdminBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Add admin to tournament
+      tags:
+        - Tournament
+  /tournaments/{id}/admin/{admin_id}:
+    delete:
+      description: Delete an admin of a tournament.
+      operationId: deleteTournamentAdmin
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 42
+          in: path
+          name: admin_id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: delete admin of tournament
+      tags:
+        - Tournament
+    patch:
+      description: Edit an admin of a tournament.
+      operationId: editTournamentAdmin
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 42
+          in: path
+          name: admin_id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              enum:
+                - ADMIN
+                - SUPER_ADMIN
+              example: ADMIN
+              type: string
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: edit admin of tournament
+      tags:
+        - Tournament
+  /tournaments/{id}/me/team:
+    get:
+      description: This endpoint is used to get user team from a tournament.
+      operationId: getUserTeamFromTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get User Team from Tournament
+      tags:
+        - Teams
+  /tournaments/{id}/teams:
+    get:
+      description: This endpoint is used to get all teams from a tournament.
+      operationId: getAllTeamsTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: DRAFT
+          explode: false
+          in: query
+          name: status
+          schema:
+            enum:
+              - DRAFT
+              - LOCKED
+            example: DRAFT
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseLightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get All Teams from Tournament
+      tags:
+        - Teams
+    post:
+      description: This endpoint is used to create a team from a tournament.
+      operationId: createTeamTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              creator_status:
+                contentType: text/plain
+              image:
+                contentType: image/*
+              name:
+                contentType: text/plain
+            schema:
+              properties:
+                creator_status:
+                  example: Player
+                  type: string
+                image:
+                  contentEncoding: binary
+                  contentMediaType: application/octet-stream
+                  format: binary
+                  type: string
+                name:
+                  example: Team Phoenix
+                  type: string
+              required:
+                - name
+                - creator_status
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Create A Team from Tournament
+      tags:
+        - Teams
   /users:
     get:
       description: This endpoint is used to search users.

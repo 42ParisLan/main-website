@@ -72,11 +72,6 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-var (
-	// DefaultImageURL holds the default value on creation for the "image_url" field.
-	DefaultImageURL string
-)
-
 // OrderOption defines the ordering options for the Component queries.
 type OrderOption func(*sql.Selector)
 

@@ -5,7 +5,12 @@ package ent
 import (
 	"base-website/ent/app"
 	"base-website/ent/consent"
+	"base-website/ent/invitation"
 	"base-website/ent/predicate"
+	"base-website/ent/team"
+	"base-website/ent/teammember"
+	"base-website/ent/tournament"
+	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
 	"base-website/ent/vote"
@@ -23,14 +28,19 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx              *QueryContext
-	order            []user.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.User
-	withUserVotes    *UserVoteQuery
-	withCreatedVotes *VoteQuery
-	withApps         *AppQuery
-	withConsents     *ConsentQuery
+	ctx                     *QueryContext
+	order                   []user.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.User
+	withUserVotes           *UserVoteQuery
+	withCreatedVotes        *VoteQuery
+	withApps                *AppQuery
+	withConsents            *ConsentQuery
+	withTeamMemberships     *TeamMemberQuery
+	withReceivedInvitations *InvitationQuery
+	withCreatedTeams        *TeamQuery
+	withCreatedTournaments  *TournamentQuery
+	withTournamentAdmins    *TournamentAdminQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -148,6 +158,116 @@ func (_q *UserQuery) QueryConsents() *ConsentQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(consent.Table, consent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeamMemberships chains the current query on the "team_memberships" edge.
+func (_q *UserQuery) QueryTeamMemberships() *TeamMemberQuery {
+	query := (&TeamMemberClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(teammember.Table, teammember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TeamMembershipsTable, user.TeamMembershipsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReceivedInvitations chains the current query on the "received_invitations" edge.
+func (_q *UserQuery) QueryReceivedInvitations() *InvitationQuery {
+	query := (&InvitationClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(invitation.Table, invitation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReceivedInvitationsTable, user.ReceivedInvitationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCreatedTeams chains the current query on the "created_teams" edge.
+func (_q *UserQuery) QueryCreatedTeams() *TeamQuery {
+	query := (&TeamClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTeamsTable, user.CreatedTeamsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCreatedTournaments chains the current query on the "created_tournaments" edge.
+func (_q *UserQuery) QueryCreatedTournaments() *TournamentQuery {
+	query := (&TournamentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(tournament.Table, tournament.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTournamentsTable, user.CreatedTournamentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTournamentAdmins chains the current query on the "tournament_admins" edge.
+func (_q *UserQuery) QueryTournamentAdmins() *TournamentAdminQuery {
+	query := (&TournamentAdminClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TournamentAdminsTable, user.TournamentAdminsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -342,15 +462,20 @@ func (_q *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:           _q.config,
-		ctx:              _q.ctx.Clone(),
-		order:            append([]user.OrderOption{}, _q.order...),
-		inters:           append([]Interceptor{}, _q.inters...),
-		predicates:       append([]predicate.User{}, _q.predicates...),
-		withUserVotes:    _q.withUserVotes.Clone(),
-		withCreatedVotes: _q.withCreatedVotes.Clone(),
-		withApps:         _q.withApps.Clone(),
-		withConsents:     _q.withConsents.Clone(),
+		config:                  _q.config,
+		ctx:                     _q.ctx.Clone(),
+		order:                   append([]user.OrderOption{}, _q.order...),
+		inters:                  append([]Interceptor{}, _q.inters...),
+		predicates:              append([]predicate.User{}, _q.predicates...),
+		withUserVotes:           _q.withUserVotes.Clone(),
+		withCreatedVotes:        _q.withCreatedVotes.Clone(),
+		withApps:                _q.withApps.Clone(),
+		withConsents:            _q.withConsents.Clone(),
+		withTeamMemberships:     _q.withTeamMemberships.Clone(),
+		withReceivedInvitations: _q.withReceivedInvitations.Clone(),
+		withCreatedTeams:        _q.withCreatedTeams.Clone(),
+		withCreatedTournaments:  _q.withCreatedTournaments.Clone(),
+		withTournamentAdmins:    _q.withTournamentAdmins.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -398,6 +523,61 @@ func (_q *UserQuery) WithConsents(opts ...func(*ConsentQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withConsents = query
+	return _q
+}
+
+// WithTeamMemberships tells the query-builder to eager-load the nodes that are connected to
+// the "team_memberships" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithTeamMemberships(opts ...func(*TeamMemberQuery)) *UserQuery {
+	query := (&TeamMemberClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTeamMemberships = query
+	return _q
+}
+
+// WithReceivedInvitations tells the query-builder to eager-load the nodes that are connected to
+// the "received_invitations" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithReceivedInvitations(opts ...func(*InvitationQuery)) *UserQuery {
+	query := (&InvitationClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withReceivedInvitations = query
+	return _q
+}
+
+// WithCreatedTeams tells the query-builder to eager-load the nodes that are connected to
+// the "created_teams" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithCreatedTeams(opts ...func(*TeamQuery)) *UserQuery {
+	query := (&TeamClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCreatedTeams = query
+	return _q
+}
+
+// WithCreatedTournaments tells the query-builder to eager-load the nodes that are connected to
+// the "created_tournaments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithCreatedTournaments(opts ...func(*TournamentQuery)) *UserQuery {
+	query := (&TournamentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCreatedTournaments = query
+	return _q
+}
+
+// WithTournamentAdmins tells the query-builder to eager-load the nodes that are connected to
+// the "tournament_admins" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithTournamentAdmins(opts ...func(*TournamentAdminQuery)) *UserQuery {
+	query := (&TournamentAdminClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTournamentAdmins = query
 	return _q
 }
 
@@ -479,11 +659,16 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [9]bool{
 			_q.withUserVotes != nil,
 			_q.withCreatedVotes != nil,
 			_q.withApps != nil,
 			_q.withConsents != nil,
+			_q.withTeamMemberships != nil,
+			_q.withReceivedInvitations != nil,
+			_q.withCreatedTeams != nil,
+			_q.withCreatedTournaments != nil,
+			_q.withTournamentAdmins != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -529,6 +714,41 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadConsents(ctx, query, nodes,
 			func(n *User) { n.Edges.Consents = []*Consent{} },
 			func(n *User, e *Consent) { n.Edges.Consents = append(n.Edges.Consents, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTeamMemberships; query != nil {
+		if err := _q.loadTeamMemberships(ctx, query, nodes,
+			func(n *User) { n.Edges.TeamMemberships = []*TeamMember{} },
+			func(n *User, e *TeamMember) { n.Edges.TeamMemberships = append(n.Edges.TeamMemberships, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withReceivedInvitations; query != nil {
+		if err := _q.loadReceivedInvitations(ctx, query, nodes,
+			func(n *User) { n.Edges.ReceivedInvitations = []*Invitation{} },
+			func(n *User, e *Invitation) { n.Edges.ReceivedInvitations = append(n.Edges.ReceivedInvitations, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCreatedTeams; query != nil {
+		if err := _q.loadCreatedTeams(ctx, query, nodes,
+			func(n *User) { n.Edges.CreatedTeams = []*Team{} },
+			func(n *User, e *Team) { n.Edges.CreatedTeams = append(n.Edges.CreatedTeams, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCreatedTournaments; query != nil {
+		if err := _q.loadCreatedTournaments(ctx, query, nodes,
+			func(n *User) { n.Edges.CreatedTournaments = []*Tournament{} },
+			func(n *User, e *Tournament) { n.Edges.CreatedTournaments = append(n.Edges.CreatedTournaments, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTournamentAdmins; query != nil {
+		if err := _q.loadTournamentAdmins(ctx, query, nodes,
+			func(n *User) { n.Edges.TournamentAdmins = []*TournamentAdmin{} },
+			func(n *User, e *TournamentAdmin) { n.Edges.TournamentAdmins = append(n.Edges.TournamentAdmins, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -652,6 +872,161 @@ func (_q *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, node
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadTeamMemberships(ctx context.Context, query *TeamMemberQuery, nodes []*User, init func(*User), assign func(*User, *TeamMember)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.TeamMember(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TeamMembershipsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_team_memberships
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_team_memberships" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_team_memberships" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadReceivedInvitations(ctx context.Context, query *InvitationQuery, nodes []*User, init func(*User), assign func(*User, *Invitation)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Invitation(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ReceivedInvitationsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_received_invitations
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_received_invitations" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_received_invitations" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadCreatedTeams(ctx context.Context, query *TeamQuery, nodes []*User, init func(*User), assign func(*User, *Team)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Team(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.CreatedTeamsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_created_teams
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_created_teams" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_created_teams" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadCreatedTournaments(ctx context.Context, query *TournamentQuery, nodes []*User, init func(*User), assign func(*User, *Tournament)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Tournament(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.CreatedTournamentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_created_tournaments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_created_tournaments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_created_tournaments" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadTournamentAdmins(ctx context.Context, query *TournamentAdminQuery, nodes []*User, init func(*User), assign func(*User, *TournamentAdmin)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.TournamentAdmin(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TournamentAdminsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_tournament_admins
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tournament_admins" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tournament_admins" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

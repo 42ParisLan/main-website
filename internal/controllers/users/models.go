@@ -4,6 +4,7 @@ import (
 	"base-website/internal/lightmodels"
 	usersmodels "base-website/internal/services/users/models"
 	"base-website/pkg/paging"
+	"net/http"
 )
 
 type userByIDOrLoginInput struct {
@@ -12,6 +13,12 @@ type userByIDOrLoginInput struct {
 
 type oneUserOutput struct {
 	Body *usersmodels.User `required:"true"`
+}
+
+type anonymizeOutput struct {
+	Body *usersmodels.User `required:"true"`
+
+	AuthCookie http.Cookie `header:"Set-Cookie"`
 }
 
 type searchUsersInput struct {

@@ -56,6 +56,17 @@ services:
       - INTRA_API_URL=https://api.intra.42.fr/v2
       - INTRA_CLIENT_ID=${INTRA_CLIENT_ID}
       - INTRA_CLIENT_SECRET=${INTRA_CLIENT_SECRET}
+      - ACCOUNT_ANONYMIZE_MIN_AGE_DAYS=0
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - base-website
+    depends_on:
+      - db
 
   frontend:
     build:

@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type components } from "@/lib/api/types";
+import { Link } from "@tanstack/react-router";
 import { BadgeCheckIcon, ExternalLink } from "lucide-react";
 
 type App = components["schemas"]["App"];
@@ -33,7 +34,7 @@ export default function AppList({ apps }: AppListProps) {
 			)}
 			{apps.map((app) => (
 				<li key={app.id}>
-					<a href={`/admin/apps/${app.id}`}>
+					<Link to={`/admin/apps/$appid`} params={{appid: String(app.id)}}>
 						<Card className="p-4 space-y-2 hover:shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center">
@@ -50,7 +51,7 @@ export default function AppList({ apps }: AppListProps) {
 								Owned By <span className="font-bold">{app.owner.username}</span>
 							</span>
 						</Card>
-					</a>
+					</Link>
 				</li>
 			))}
 		</ul>

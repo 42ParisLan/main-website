@@ -34,8 +34,8 @@ function WelcomePage() {
 							<h2 className="text-2xl font-semibold tracking-tight">Public Pages</h2>
 							<div className="flex flex-wrap justify-center gap-4">
 								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/tournament">
-										Tournament
+									<Link to="/tournaments">
+										Tournaments
 									</Link>
 								</Button>
 							</div>

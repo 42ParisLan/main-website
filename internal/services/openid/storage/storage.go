@@ -547,13 +547,7 @@ func (s *Storage) setUserinfo(
 			userInfo.EmailVerified = true
 		case oidc.ScopeProfile:
 			userInfo.PreferredUsername = user.Username
-			userInfo.Name = user.UsualFullName
-			userInfo.FamilyName = user.LastName
 			userInfo.Nickname = user.Username
-			userInfo.GivenName = user.FirstName
-			if user.UsualFirstName != nil {
-				userInfo.GivenName = *user.UsualFirstName
-			}
 			userInfo.Locale = oidc.NewLocale(language.English)
 			if user.Picture != nil {
 				userInfo.Picture = *user.Picture
