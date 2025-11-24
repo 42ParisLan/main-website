@@ -34,21 +34,21 @@ export default function PublicTournamentCard({
 		<Card>
 			<CardContent>
 				<div className="flex gap-4">
-					<div className="flex-shrink-0">
-						<Avatar>
+					{/* <div className="flex-shrink-0">
+						<Avatar> */}
 							{/** Use AvatarImage if creator has an avatar url, otherwise fallback to initials */}
-							{"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
+							{/* {"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
 								<AvatarImage src={tournament.creator.avatar_url as string} alt={creatorUsername} />
 							) : (
 								<AvatarFallback>{initials || "U"}</AvatarFallback>
 							)}
 						</Avatar>
-					</div>
+					</div> */}
 
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center justify-between gap-4">
 							<div className="min-w-0">
-								<h3 className="text-sm font-medium truncate">{tournament.name}</h3>
+								<h3 className="text-md font-medium truncate">{tournament.name}</h3>
 								<p className="text-xs text-muted-foreground truncate">
 									{tournament.description ?? "No description"}
 								</p>

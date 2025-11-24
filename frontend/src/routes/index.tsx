@@ -4,6 +4,8 @@ import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
 import { Footer } from '@/components/home-page/footer'
 import { Button } from '../components/ui/button';
 import { Link } from '@tanstack/react-router';
+import useQueryClient from '@/hooks/use-query-client';
+import PublicTournamentCard from '@/components/tournaments/public-tournament-card';
 
 
 export const Route = createFileRoute('/')({
@@ -11,6 +13,19 @@ export const Route = createFileRoute('/')({
 })
 
 function WelcomePage() {
+
+	const client = useQueryClient();
+
+	const {data: tournaments} = client.useQuery("get", "/tournaments", {
+		params: {
+			query: {
+				limit: 3,
+				status: "ongoing",
+				visible: "visible",
+			}
+		}
+	})
+
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="">
@@ -39,7 +54,19 @@ function WelcomePage() {
 						</div>
 					</div>
 					{/* TOURNAMENTS*/}
-					<ActiveTournaments/>
+					<div className='flex justify-evenly'>
+						{tournaments?.items?.map((tournament) => (
+							<PublicTournamentCard tournament={tournament}/>
+						))}
+						{tournaments?.items?.map((tournament) => (
+							<PublicTournamentCard tournament={tournament}/>
+						))}
+						{tournaments?.items?.map((tournament) => (
+							<PublicTournamentCard tournament={tournament}/>
+						))}
+					</div>
+					
+					{/* <ActiveTournaments tournaments={tournaments?.items ?? []}/> */}
 					{/* TOP PLAYERS */}
 					
 					<Footer/>
