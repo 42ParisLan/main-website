@@ -165,7 +165,7 @@ func (_c *RankGroupCreate) createSpec() (*RankGroup, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -176,13 +176,13 @@ func (_c *RankGroupCreate) createSpec() (*RankGroup, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.rank_group_tournament = &nodes[0]
+		_node.tournament_rank_groups = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.TeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,

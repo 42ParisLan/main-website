@@ -79,7 +79,7 @@ func (_q *TeamMemberQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, teammember.UserTable, teammember.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammember.UserTable, teammember.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -101,7 +101,7 @@ func (_q *TeamMemberQuery) QueryTeam() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TeamTable, teammember.TeamColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammember.TeamTable, teammember.TeamColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -123,7 +123,7 @@ func (_q *TeamMemberQuery) QueryTournament() *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammember.Table, teammember.FieldID, selector),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, teammember.TournamentTable, teammember.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammember.TournamentTable, teammember.TournamentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -499,10 +499,10 @@ func (_q *TeamMemberQuery) loadUser(ctx context.Context, query *UserQuery, nodes
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TeamMember)
 	for i := range nodes {
-		if nodes[i].team_member_user == nil {
+		if nodes[i].user_team_memberships == nil {
 			continue
 		}
-		fk := *nodes[i].team_member_user
+		fk := *nodes[i].user_team_memberships
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -519,7 +519,7 @@ func (_q *TeamMemberQuery) loadUser(ctx context.Context, query *UserQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_member_user" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_team_memberships" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -531,10 +531,10 @@ func (_q *TeamMemberQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TeamMember)
 	for i := range nodes {
-		if nodes[i].team_member_team == nil {
+		if nodes[i].team_members == nil {
 			continue
 		}
-		fk := *nodes[i].team_member_team
+		fk := *nodes[i].team_members
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -551,7 +551,7 @@ func (_q *TeamMemberQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_member_team" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "team_members" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -563,10 +563,10 @@ func (_q *TeamMemberQuery) loadTournament(ctx context.Context, query *Tournament
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TeamMember)
 	for i := range nodes {
-		if nodes[i].team_member_tournament == nil {
+		if nodes[i].tournament_team_members == nil {
 			continue
 		}
-		fk := *nodes[i].team_member_tournament
+		fk := *nodes[i].tournament_team_members
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -583,7 +583,7 @@ func (_q *TeamMemberQuery) loadTournament(ctx context.Context, query *Tournament
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_member_tournament" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "tournament_team_members" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -143,7 +143,7 @@ func (_c *UserVoteCreate) createSpec() (*UserVote, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   uservote.UserTable,
 			Columns: []string{uservote.UserColumn},
 			Bidi:    false,
@@ -154,13 +154,13 @@ func (_c *UserVoteCreate) createSpec() (*UserVote, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_vote_user = &nodes[0]
+		_node.user_user_votes = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.ComponentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   uservote.ComponentTable,
 			Columns: []string{uservote.ComponentColumn},
 			Bidi:    false,
@@ -171,7 +171,7 @@ func (_c *UserVoteCreate) createSpec() (*UserVote, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_vote_component = &nodes[0]
+		_node.component_user_votes = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

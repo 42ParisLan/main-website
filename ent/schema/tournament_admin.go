@@ -2,7 +2,6 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -22,22 +21,20 @@ func (TournamentAdmin) Fields() []ent.Field {
 
 func (TournamentAdmin) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("user", User.Type).
+		edge.From("user", User.Type).
+			Ref("tournament_admins").
 			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+			Required(),
 
-		edge.To("tournament", Tournament.Type).
+		edge.From("tournament", Tournament.Type).
+			Ref("admins").
 			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+			Required(),
 	}
 }
 
 func (TournamentAdmin) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Edges("user").
-			Edges("tournament").
-			Unique(),
+		index.Edges("user", "tournament").Unique(),
 	}
 }

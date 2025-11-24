@@ -6,6 +6,7 @@ import (
 	"base-website/ent/predicate"
 	"base-website/ent/rankgroup"
 	"base-website/ent/team"
+	"base-website/ent/teammember"
 	"base-website/ent/tournament"
 	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
@@ -23,15 +24,16 @@ import (
 // TournamentQuery is the builder for querying Tournament entities.
 type TournamentQuery struct {
 	config
-	ctx            *QueryContext
-	order          []tournament.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.Tournament
-	withCreator    *UserQuery
-	withAdmins     *TournamentAdminQuery
-	withTeams      *TeamQuery
-	withRankGroups *RankGroupQuery
-	withFKs        bool
+	ctx             *QueryContext
+	order           []tournament.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.Tournament
+	withCreator     *UserQuery
+	withAdmins      *TournamentAdminQuery
+	withTeams       *TeamQuery
+	withRankGroups  *RankGroupQuery
+	withTeamMembers *TeamMemberQuery
+	withFKs         bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -82,7 +84,7 @@ func (_q *TournamentQuery) QueryCreator() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, tournament.CreatorTable, tournament.CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, tournament.CreatorTable, tournament.CreatorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -104,7 +106,7 @@ func (_q *TournamentQuery) QueryAdmins() *TournamentAdminQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, selector),
 			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, tournament.AdminsTable, tournament.AdminsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.AdminsTable, tournament.AdminsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -126,7 +128,7 @@ func (_q *TournamentQuery) QueryTeams() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, tournament.TeamsTable, tournament.TeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.TeamsTable, tournament.TeamsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -148,7 +150,29 @@ func (_q *TournamentQuery) QueryRankGroups() *RankGroupQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tournament.Table, tournament.FieldID, selector),
 			sqlgraph.To(rankgroup.Table, rankgroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, tournament.RankGroupsTable, tournament.RankGroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.RankGroupsTable, tournament.RankGroupsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeamMembers chains the current query on the "team_members" edge.
+func (_q *TournamentQuery) QueryTeamMembers() *TeamMemberQuery {
+	query := (&TeamMemberClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tournament.Table, tournament.FieldID, selector),
+			sqlgraph.To(teammember.Table, teammember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tournament.TeamMembersTable, tournament.TeamMembersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -343,15 +367,16 @@ func (_q *TournamentQuery) Clone() *TournamentQuery {
 		return nil
 	}
 	return &TournamentQuery{
-		config:         _q.config,
-		ctx:            _q.ctx.Clone(),
-		order:          append([]tournament.OrderOption{}, _q.order...),
-		inters:         append([]Interceptor{}, _q.inters...),
-		predicates:     append([]predicate.Tournament{}, _q.predicates...),
-		withCreator:    _q.withCreator.Clone(),
-		withAdmins:     _q.withAdmins.Clone(),
-		withTeams:      _q.withTeams.Clone(),
-		withRankGroups: _q.withRankGroups.Clone(),
+		config:          _q.config,
+		ctx:             _q.ctx.Clone(),
+		order:           append([]tournament.OrderOption{}, _q.order...),
+		inters:          append([]Interceptor{}, _q.inters...),
+		predicates:      append([]predicate.Tournament{}, _q.predicates...),
+		withCreator:     _q.withCreator.Clone(),
+		withAdmins:      _q.withAdmins.Clone(),
+		withTeams:       _q.withTeams.Clone(),
+		withRankGroups:  _q.withRankGroups.Clone(),
+		withTeamMembers: _q.withTeamMembers.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -399,6 +424,17 @@ func (_q *TournamentQuery) WithRankGroups(opts ...func(*RankGroupQuery)) *Tourna
 		opt(query)
 	}
 	_q.withRankGroups = query
+	return _q
+}
+
+// WithTeamMembers tells the query-builder to eager-load the nodes that are connected to
+// the "team_members" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *TournamentQuery) WithTeamMembers(opts ...func(*TeamMemberQuery)) *TournamentQuery {
+	query := (&TeamMemberClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTeamMembers = query
 	return _q
 }
 
@@ -481,11 +517,12 @@ func (_q *TournamentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*T
 		nodes       = []*Tournament{}
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			_q.withCreator != nil,
 			_q.withAdmins != nil,
 			_q.withTeams != nil,
 			_q.withRankGroups != nil,
+			_q.withTeamMembers != nil,
 		}
 	)
 	if _q.withCreator != nil {
@@ -539,6 +576,13 @@ func (_q *TournamentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*T
 			return nil, err
 		}
 	}
+	if query := _q.withTeamMembers; query != nil {
+		if err := _q.loadTeamMembers(ctx, query, nodes,
+			func(n *Tournament) { n.Edges.TeamMembers = []*TeamMember{} },
+			func(n *Tournament, e *TeamMember) { n.Edges.TeamMembers = append(n.Edges.TeamMembers, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -546,10 +590,10 @@ func (_q *TournamentQuery) loadCreator(ctx context.Context, query *UserQuery, no
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Tournament)
 	for i := range nodes {
-		if nodes[i].tournament_creator == nil {
+		if nodes[i].user_created_tournaments == nil {
 			continue
 		}
-		fk := *nodes[i].tournament_creator
+		fk := *nodes[i].user_created_tournaments
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -566,7 +610,7 @@ func (_q *TournamentQuery) loadCreator(ctx context.Context, query *UserQuery, no
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "tournament_creator" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_created_tournaments" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -593,13 +637,13 @@ func (_q *TournamentQuery) loadAdmins(ctx context.Context, query *TournamentAdmi
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.tournament_admin_tournament
+		fk := n.tournament_admins
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "tournament_admin_tournament" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "tournament_admins" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "tournament_admin_tournament" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "tournament_admins" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -624,13 +668,13 @@ func (_q *TournamentQuery) loadTeams(ctx context.Context, query *TeamQuery, node
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.team_tournament
+		fk := n.tournament_teams
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "team_tournament" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "tournament_teams" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "team_tournament" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "tournament_teams" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -655,13 +699,44 @@ func (_q *TournamentQuery) loadRankGroups(ctx context.Context, query *RankGroupQ
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.rank_group_tournament
+		fk := n.tournament_rank_groups
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "rank_group_tournament" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "tournament_rank_groups" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "rank_group_tournament" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "tournament_rank_groups" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *TournamentQuery) loadTeamMembers(ctx context.Context, query *TeamMemberQuery, nodes []*Tournament, init func(*Tournament), assign func(*Tournament, *TeamMember)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Tournament)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.TeamMember(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(tournament.TeamMembersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.tournament_team_members
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "tournament_team_members" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "tournament_team_members" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

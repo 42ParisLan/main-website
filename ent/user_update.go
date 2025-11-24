@@ -596,7 +596,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -609,7 +609,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedUserVotesIDs(); len(nodes) > 0 && !_u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -625,7 +625,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -641,7 +641,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.CreatedVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -654,7 +654,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedCreatedVotesIDs(); len(nodes) > 0 && !_u.mutation.CreatedVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -670,7 +670,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.CreatedVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -686,7 +686,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.AppsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -699,7 +699,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedAppsIDs(); len(nodes) > 0 && !_u.mutation.AppsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -715,7 +715,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.AppsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -731,7 +731,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -744,7 +744,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !_u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -760,7 +760,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -776,7 +776,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.TeamMembershipsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -789,7 +789,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedTeamMembershipsIDs(); len(nodes) > 0 && !_u.mutation.TeamMembershipsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -805,7 +805,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.TeamMembershipsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -821,7 +821,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.ReceivedInvitationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -834,7 +834,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedReceivedInvitationsIDs(); len(nodes) > 0 && !_u.mutation.ReceivedInvitationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -850,7 +850,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.ReceivedInvitationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -866,7 +866,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.CreatedTeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -879,7 +879,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedCreatedTeamsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -895,7 +895,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.CreatedTeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -911,7 +911,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.CreatedTournamentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -924,7 +924,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedCreatedTournamentsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTournamentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -940,7 +940,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.CreatedTournamentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -956,7 +956,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.TournamentAdminsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,
@@ -969,7 +969,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedTournamentAdminsIDs(); len(nodes) > 0 && !_u.mutation.TournamentAdminsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,
@@ -985,7 +985,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.TournamentAdminsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,
@@ -1606,7 +1606,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -1619,7 +1619,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedUserVotesIDs(); len(nodes) > 0 && !_u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -1635,7 +1635,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -1651,7 +1651,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.CreatedVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -1664,7 +1664,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedCreatedVotesIDs(); len(nodes) > 0 && !_u.mutation.CreatedVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -1680,7 +1680,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.CreatedVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -1696,7 +1696,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.AppsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -1709,7 +1709,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedAppsIDs(); len(nodes) > 0 && !_u.mutation.AppsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -1725,7 +1725,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.AppsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -1741,7 +1741,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -1754,7 +1754,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !_u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -1770,7 +1770,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -1786,7 +1786,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.TeamMembershipsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -1799,7 +1799,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedTeamMembershipsIDs(); len(nodes) > 0 && !_u.mutation.TeamMembershipsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -1815,7 +1815,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.TeamMembershipsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -1831,7 +1831,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.ReceivedInvitationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -1844,7 +1844,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedReceivedInvitationsIDs(); len(nodes) > 0 && !_u.mutation.ReceivedInvitationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -1860,7 +1860,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.ReceivedInvitationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -1876,7 +1876,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.CreatedTeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -1889,7 +1889,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedCreatedTeamsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -1905,7 +1905,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.CreatedTeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -1921,7 +1921,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.CreatedTournamentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -1934,7 +1934,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedCreatedTournamentsIDs(); len(nodes) > 0 && !_u.mutation.CreatedTournamentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -1950,7 +1950,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.CreatedTournamentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -1966,7 +1966,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.TournamentAdminsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,
@@ -1979,7 +1979,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.RemovedTournamentAdminsIDs(); len(nodes) > 0 && !_u.mutation.TournamentAdminsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,
@@ -1995,7 +1995,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if nodes := _u.mutation.TournamentAdminsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,

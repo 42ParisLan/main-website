@@ -264,7 +264,7 @@ func HasTournament() predicate.RankGroup {
 	return predicate.RankGroup(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -287,7 +287,7 @@ func HasTeams() predicate.RankGroup {
 	return predicate.RankGroup(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeamsTable, TeamsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

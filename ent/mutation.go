@@ -7379,6 +7379,9 @@ type TournamentMutation struct {
 	rank_groups           map[int]struct{}
 	removedrank_groups    map[int]struct{}
 	clearedrank_groups    bool
+	team_members          map[int]struct{}
+	removedteam_members   map[int]struct{}
+	clearedteam_members   bool
 	done                  bool
 	oldValue              func(context.Context) (*Tournament, error)
 	predicates            []predicate.Tournament
@@ -8295,6 +8298,60 @@ func (m *TournamentMutation) ResetRankGroups() {
 	m.removedrank_groups = nil
 }
 
+// AddTeamMemberIDs adds the "team_members" edge to the TeamMember entity by ids.
+func (m *TournamentMutation) AddTeamMemberIDs(ids ...int) {
+	if m.team_members == nil {
+		m.team_members = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.team_members[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTeamMembers clears the "team_members" edge to the TeamMember entity.
+func (m *TournamentMutation) ClearTeamMembers() {
+	m.clearedteam_members = true
+}
+
+// TeamMembersCleared reports if the "team_members" edge to the TeamMember entity was cleared.
+func (m *TournamentMutation) TeamMembersCleared() bool {
+	return m.clearedteam_members
+}
+
+// RemoveTeamMemberIDs removes the "team_members" edge to the TeamMember entity by IDs.
+func (m *TournamentMutation) RemoveTeamMemberIDs(ids ...int) {
+	if m.removedteam_members == nil {
+		m.removedteam_members = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.team_members, ids[i])
+		m.removedteam_members[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTeamMembers returns the removed IDs of the "team_members" edge to the TeamMember entity.
+func (m *TournamentMutation) RemovedTeamMembersIDs() (ids []int) {
+	for id := range m.removedteam_members {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TeamMembersIDs returns the "team_members" edge IDs in the mutation.
+func (m *TournamentMutation) TeamMembersIDs() (ids []int) {
+	for id := range m.team_members {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTeamMembers resets all changes to the "team_members" edge.
+func (m *TournamentMutation) ResetTeamMembers() {
+	m.team_members = nil
+	m.clearedteam_members = false
+	m.removedteam_members = nil
+}
+
 // Where appends a list predicates to the TournamentMutation builder.
 func (m *TournamentMutation) Where(ps ...predicate.Tournament) {
 	m.predicates = append(m.predicates, ps...)
@@ -8708,7 +8765,7 @@ func (m *TournamentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TournamentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.creator != nil {
 		edges = append(edges, tournament.EdgeCreator)
 	}
@@ -8720,6 +8777,9 @@ func (m *TournamentMutation) AddedEdges() []string {
 	}
 	if m.rank_groups != nil {
 		edges = append(edges, tournament.EdgeRankGroups)
+	}
+	if m.team_members != nil {
+		edges = append(edges, tournament.EdgeTeamMembers)
 	}
 	return edges
 }
@@ -8750,13 +8810,19 @@ func (m *TournamentMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case tournament.EdgeTeamMembers:
+		ids := make([]ent.Value, 0, len(m.team_members))
+		for id := range m.team_members {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TournamentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedadmins != nil {
 		edges = append(edges, tournament.EdgeAdmins)
 	}
@@ -8765,6 +8831,9 @@ func (m *TournamentMutation) RemovedEdges() []string {
 	}
 	if m.removedrank_groups != nil {
 		edges = append(edges, tournament.EdgeRankGroups)
+	}
+	if m.removedteam_members != nil {
+		edges = append(edges, tournament.EdgeTeamMembers)
 	}
 	return edges
 }
@@ -8791,13 +8860,19 @@ func (m *TournamentMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case tournament.EdgeTeamMembers:
+		ids := make([]ent.Value, 0, len(m.removedteam_members))
+		for id := range m.removedteam_members {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TournamentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedcreator {
 		edges = append(edges, tournament.EdgeCreator)
 	}
@@ -8809,6 +8884,9 @@ func (m *TournamentMutation) ClearedEdges() []string {
 	}
 	if m.clearedrank_groups {
 		edges = append(edges, tournament.EdgeRankGroups)
+	}
+	if m.clearedteam_members {
+		edges = append(edges, tournament.EdgeTeamMembers)
 	}
 	return edges
 }
@@ -8825,6 +8903,8 @@ func (m *TournamentMutation) EdgeCleared(name string) bool {
 		return m.clearedteams
 	case tournament.EdgeRankGroups:
 		return m.clearedrank_groups
+	case tournament.EdgeTeamMembers:
+		return m.clearedteam_members
 	}
 	return false
 }
@@ -8855,6 +8935,9 @@ func (m *TournamentMutation) ResetEdge(name string) error {
 		return nil
 	case tournament.EdgeRankGroups:
 		m.ResetRankGroups()
+		return nil
+	case tournament.EdgeTeamMembers:
+		m.ResetTeamMembers()
 		return nil
 	}
 	return fmt.Errorf("unknown Tournament edge %s", name)

@@ -232,7 +232,7 @@ func (_u *ComponentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.VoteCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   component.VoteTable,
 			Columns: []string{component.VoteColumn},
 			Bidi:    false,
@@ -245,7 +245,7 @@ func (_u *ComponentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.VoteIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   component.VoteTable,
 			Columns: []string{component.VoteColumn},
 			Bidi:    false,
@@ -261,7 +261,7 @@ func (_u *ComponentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,
@@ -274,7 +274,7 @@ func (_u *ComponentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedUserVotesIDs(); len(nodes) > 0 && !_u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,
@@ -290,7 +290,7 @@ func (_u *ComponentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,
@@ -556,7 +556,7 @@ func (_u *ComponentUpdateOne) sqlSave(ctx context.Context) (_node *Component, er
 	if _u.mutation.VoteCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   component.VoteTable,
 			Columns: []string{component.VoteColumn},
 			Bidi:    false,
@@ -569,7 +569,7 @@ func (_u *ComponentUpdateOne) sqlSave(ctx context.Context) (_node *Component, er
 	if nodes := _u.mutation.VoteIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   component.VoteTable,
 			Columns: []string{component.VoteColumn},
 			Bidi:    false,
@@ -585,7 +585,7 @@ func (_u *ComponentUpdateOne) sqlSave(ctx context.Context) (_node *Component, er
 	if _u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,
@@ -598,7 +598,7 @@ func (_u *ComponentUpdateOne) sqlSave(ctx context.Context) (_node *Component, er
 	if nodes := _u.mutation.RemovedUserVotesIDs(); len(nodes) > 0 && !_u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,
@@ -614,7 +614,7 @@ func (_u *ComponentUpdateOne) sqlSave(ctx context.Context) (_node *Component, er
 	if nodes := _u.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   component.UserVotesTable,
 			Columns: []string{component.UserVotesColumn},
 			Bidi:    false,

@@ -780,7 +780,7 @@ func HasCreator() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -803,7 +803,7 @@ func HasAdmins() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, AdminsTable, AdminsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AdminsTable, AdminsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -826,7 +826,7 @@ func HasTeams() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeamsTable, TeamsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -849,7 +849,7 @@ func HasRankGroups() predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, RankGroupsTable, RankGroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, RankGroupsTable, RankGroupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -859,6 +859,29 @@ func HasRankGroups() predicate.Tournament {
 func HasRankGroupsWith(preds ...predicate.RankGroup) predicate.Tournament {
 	return predicate.Tournament(func(s *sql.Selector) {
 		step := newRankGroupsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTeamMembers applies the HasEdge predicate on the "team_members" edge.
+func HasTeamMembers() predicate.Tournament {
+	return predicate.Tournament(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeamMembersTable, TeamMembersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTeamMembersWith applies the HasEdge predicate on the "team_members" edge with a given conditions (other predicates).
+func HasTeamMembersWith(preds ...predicate.TeamMember) predicate.Tournament {
+	return predicate.Tournament(func(s *sql.Selector) {
+		step := newTeamMembersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -159,7 +159,7 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.UserTable,
 			Columns: []string{teammember.UserColumn},
 			Bidi:    false,
@@ -172,7 +172,7 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.UserTable,
 			Columns: []string{teammember.UserColumn},
 			Bidi:    false,
@@ -188,7 +188,7 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TeamTable,
 			Columns: []string{teammember.TeamColumn},
 			Bidi:    false,
@@ -201,7 +201,7 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if nodes := _u.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TeamTable,
 			Columns: []string{teammember.TeamColumn},
 			Bidi:    false,
@@ -217,7 +217,7 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TournamentTable,
 			Columns: []string{teammember.TournamentColumn},
 			Bidi:    false,
@@ -230,7 +230,7 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TournamentTable,
 			Columns: []string{teammember.TournamentColumn},
 			Bidi:    false,
@@ -422,7 +422,7 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.UserTable,
 			Columns: []string{teammember.UserColumn},
 			Bidi:    false,
@@ -435,7 +435,7 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.UserTable,
 			Columns: []string{teammember.UserColumn},
 			Bidi:    false,
@@ -451,7 +451,7 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	if _u.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TeamTable,
 			Columns: []string{teammember.TeamColumn},
 			Bidi:    false,
@@ -464,7 +464,7 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	if nodes := _u.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TeamTable,
 			Columns: []string{teammember.TeamColumn},
 			Bidi:    false,
@@ -480,7 +480,7 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TournamentTable,
 			Columns: []string{teammember.TournamentColumn},
 			Bidi:    false,
@@ -493,7 +493,7 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   teammember.TournamentTable,
 			Columns: []string{teammember.TournamentColumn},
 			Bidi:    false,

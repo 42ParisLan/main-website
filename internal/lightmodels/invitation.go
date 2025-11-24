@@ -8,6 +8,7 @@ import (
 )
 
 type Invitation struct {
+	ID        int        `json:"id" description:"Id of the invitation"`
 	Message   string     `json:"message" description:"Message of the invitation"`
 	Role      string     `json:"role" description:"Role in the team"`
 	CreatedAt time.Time  `json:"created_at" description:"invitation created_at"`
@@ -31,6 +32,7 @@ func NewInvitationFromEnt(ctx context.Context, entInvitation *ent.Invitation, S3
 	}
 
 	return &Invitation{
+		ID:        entInvitation.ID,
 		Message:   entInvitation.Message,
 		Role:      entInvitation.Role,
 		CreatedAt: entInvitation.CreatedAt,

@@ -255,7 +255,7 @@ func HasTeam() predicate.Invitation {
 	return predicate.Invitation(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, TeamTable, TeamColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TeamTable, TeamColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -278,7 +278,7 @@ func HasInvitee() predicate.Invitation {
 	return predicate.Invitation(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, InviteeTable, InviteeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, InviteeTable, InviteeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

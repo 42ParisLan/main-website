@@ -32,14 +32,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "team" package.
 	TeamInverseTable = "teams"
 	// TeamColumn is the table column denoting the team relation/edge.
-	TeamColumn = "invitation_team"
+	TeamColumn = "team_invitations"
 	// InviteeTable is the table that holds the invitee relation/edge.
 	InviteeTable = "invitations"
 	// InviteeInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	InviteeInverseTable = "users"
 	// InviteeColumn is the table column denoting the invitee relation/edge.
-	InviteeColumn = "invitation_invitee"
+	InviteeColumn = "user_received_invitations"
 )
 
 // Columns holds all SQL columns for invitation fields.
@@ -53,8 +53,8 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "invitations"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"invitation_team",
-	"invitation_invitee",
+	"team_invitations",
+	"user_received_invitations",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -117,13 +117,13 @@ func newTeamStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TeamInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, TeamTable, TeamColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, TeamTable, TeamColumn),
 	)
 }
 func newInviteeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(InviteeInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, InviteeTable, InviteeColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, InviteeTable, InviteeColumn),
 	)
 }

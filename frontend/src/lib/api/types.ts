@@ -280,6 +280,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/invitations/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept An Invitation
+         * @description This endpoint is used to accept an invitation.
+         */
+        post: operations["acceptInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -352,6 +372,26 @@ export interface paths {
          * @description This endpoint is used to get the consents of the current user.
          */
         get: operations["getMyConsents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Invitations For Me
+         * @description This endpoint is used to get invitations that belong to a user.
+         */
+        get: operations["getInvitationsForMe"];
         put?: never;
         post?: never;
         delete?: never;
@@ -965,7 +1005,7 @@ export interface components {
              */
             id: number;
             /** @example https://example.com/network.png */
-            image_url: string;
+            image_url: string | null;
             /** @example Network */
             name: string;
         };
@@ -1127,6 +1167,8 @@ export interface components {
             readonly $schema?: string;
             /** Format: date-time */
             created_at: string;
+            /** Format: int64 */
+            id: number;
             message: string;
             role: string;
             team: components["schemas"]["LightTeam"];
@@ -1153,6 +1195,11 @@ export interface components {
             id: number;
             /** @example Top 8 */
             name: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            position: number;
             /**
              * Format: int64
              * @example 8
@@ -2332,6 +2379,38 @@ export interface operations {
             };
         };
     };
+    acceptInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getCurrentUser: {
         parameters: {
             query?: never;
@@ -2436,6 +2515,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResponseConsent"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getInvitationsForMe: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseInvitation"];
                 };
             };
             /** @description Error */
@@ -2874,6 +2989,7 @@ export interface operations {
                     external_links?: string;
                     /** Format: binary */
                     image?: string;
+                    is_visible?: boolean;
                     /**
                      * Format: int64
                      * @default -1

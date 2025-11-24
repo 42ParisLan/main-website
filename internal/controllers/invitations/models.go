@@ -27,3 +27,9 @@ type oneInvitationOutput struct {
 type invitationIDInput struct {
 	InvitationID int `path:"id" required:"true" example:"42" description:"The invitation ID"`
 }
+
+type getInvitationForTeam struct {
+	TeamID int `path:"id" required:"true" example:"42" description:"The team ID"`
+
+	invitationsmodels.ListInvitationsParams
+}

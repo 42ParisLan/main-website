@@ -76,7 +76,7 @@ func (_q *ConsentQuery) QueryApplication() *AppQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(consent.Table, consent.FieldID, selector),
 			sqlgraph.To(app.Table, app.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, consent.ApplicationTable, consent.ApplicationColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, consent.ApplicationTable, consent.ApplicationColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -98,7 +98,7 @@ func (_q *ConsentQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(consent.Table, consent.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, consent.UserTable, consent.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, consent.UserTable, consent.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil

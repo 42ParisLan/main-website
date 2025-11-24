@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -34,14 +35,17 @@ func (Tournament) Fields() []ent.Field {
 
 func (Tournament) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("creator", User.Type).
+		edge.From("creator", User.Type).
+			Ref("created_tournaments").
 			Unique().
 			Required(),
-		edge.From("admins", TournamentAdmin.Type).
-			Ref("tournament"),
-		edge.From("teams", Team.Type).
-			Ref("tournament"),
-		edge.From("rank_groups", RankGroup.Type).
-			Ref("tournament"),
+		edge.To("admins", TournamentAdmin.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("teams", Team.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("rank_groups", RankGroup.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("team_members", TeamMember.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

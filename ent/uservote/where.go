@@ -105,7 +105,7 @@ func HasUser() predicate.UserVote {
 	return predicate.UserVote(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -128,7 +128,7 @@ func HasComponent() predicate.UserVote {
 	return predicate.UserVote(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ComponentTable, ComponentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ComponentTable, ComponentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

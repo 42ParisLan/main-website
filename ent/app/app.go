@@ -164,13 +164,13 @@ func newOwnerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(OwnerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, OwnerTable, OwnerColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
 	)
 }
 func newConsentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ConsentsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, ConsentsTable, ConsentsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
 	)
 }

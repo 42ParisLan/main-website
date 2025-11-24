@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -22,21 +21,20 @@ func (UserVote) Fields() []ent.Field {
 
 func (UserVote) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("user", User.Type).
+		edge.From("user", User.Type).
+			Ref("user_votes").
 			Unique().
 			Required(),
 
-		edge.To("component", Component.Type).
+		edge.From("component", Component.Type).
+			Ref("user_votes").
 			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+			Required(),
 	}
 }
 
 func (UserVote) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Edges("user").
-			Edges("component").
-			Unique(),
+		index.Edges("user", "component").Unique(),
 	}
 }

@@ -287,7 +287,7 @@ func (_c *AppCreate) createSpec() (*App, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   app.OwnerTable,
 			Columns: []string{app.OwnerColumn},
 			Bidi:    false,
@@ -304,7 +304,7 @@ func (_c *AppCreate) createSpec() (*App, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,

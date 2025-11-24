@@ -78,7 +78,7 @@ func (_q *RankGroupQuery) QueryTournament() *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rankgroup.Table, rankgroup.FieldID, selector),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, rankgroup.TournamentTable, rankgroup.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, rankgroup.TournamentTable, rankgroup.TournamentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -100,7 +100,7 @@ func (_q *RankGroupQuery) QueryTeams() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rankgroup.Table, rankgroup.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, rankgroup.TeamsTable, rankgroup.TeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, rankgroup.TeamsTable, rankgroup.TeamsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -458,10 +458,10 @@ func (_q *RankGroupQuery) loadTournament(ctx context.Context, query *TournamentQ
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*RankGroup)
 	for i := range nodes {
-		if nodes[i].rank_group_tournament == nil {
+		if nodes[i].tournament_rank_groups == nil {
 			continue
 		}
-		fk := *nodes[i].rank_group_tournament
+		fk := *nodes[i].tournament_rank_groups
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -478,7 +478,7 @@ func (_q *RankGroupQuery) loadTournament(ctx context.Context, query *TournamentQ
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rank_group_tournament" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "tournament_rank_groups" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -505,13 +505,13 @@ func (_q *RankGroupQuery) loadTeams(ctx context.Context, query *TeamQuery, nodes
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.team_rank_group
+		fk := n.rank_group_teams
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "team_rank_group" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "rank_group_teams" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "team_rank_group" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rank_group_teams" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

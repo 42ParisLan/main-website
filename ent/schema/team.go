@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 type Team struct {
@@ -30,17 +31,26 @@ func (Team) Fields() []ent.Field {
 
 func (Team) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("tournament", Tournament.Type).
-			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
-		edge.To("creator", User.Type).
+		edge.From("tournament", Tournament.Type).
+			Ref("teams").
 			Unique().
 			Required(),
-		edge.From("members", TeamMember.Type).
-			Ref("team"),
-		edge.To("rank_group", RankGroup.Type).Unique(),
-		edge.From("invitations", Invitation.Type).
-			Ref("team"),
+		edge.From("creator", User.Type).
+			Ref("created_teams").
+			Unique().
+			Required(),
+		edge.To("members", TeamMember.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.From("rank_group", RankGroup.Type).
+			Ref("teams").
+			Unique(),
+		edge.To("invitations", Invitation.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+	}
+}
+
+func (Team) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges("creator", "tournament").Unique(),
 	}
 }

@@ -22,10 +22,10 @@ type TournamentAdmin struct {
 	Role tournamentadmin.Role `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TournamentAdminQuery when eager-loading is set.
-	Edges                       TournamentAdminEdges `json:"edges"`
-	tournament_admin_user       *int
-	tournament_admin_tournament *int
-	selectValues                sql.SelectValues
+	Edges                  TournamentAdminEdges `json:"edges"`
+	tournament_admins      *int
+	user_tournament_admins *int
+	selectValues           sql.SelectValues
 }
 
 // TournamentAdminEdges holds the relations/edges for other nodes in the graph.
@@ -70,9 +70,9 @@ func (*TournamentAdmin) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case tournamentadmin.FieldRole:
 			values[i] = new(sql.NullString)
-		case tournamentadmin.ForeignKeys[0]: // tournament_admin_user
+		case tournamentadmin.ForeignKeys[0]: // tournament_admins
 			values[i] = new(sql.NullInt64)
-		case tournamentadmin.ForeignKeys[1]: // tournament_admin_tournament
+		case tournamentadmin.ForeignKeys[1]: // user_tournament_admins
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -103,17 +103,17 @@ func (_m *TournamentAdmin) assignValues(columns []string, values []any) error {
 			}
 		case tournamentadmin.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field tournament_admin_user", value)
+				return fmt.Errorf("unexpected type %T for edge-field tournament_admins", value)
 			} else if value.Valid {
-				_m.tournament_admin_user = new(int)
-				*_m.tournament_admin_user = int(value.Int64)
+				_m.tournament_admins = new(int)
+				*_m.tournament_admins = int(value.Int64)
 			}
 		case tournamentadmin.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field tournament_admin_tournament", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_tournament_admins", value)
 			} else if value.Valid {
-				_m.tournament_admin_tournament = new(int)
-				*_m.tournament_admin_tournament = int(value.Int64)
+				_m.user_tournament_admins = new(int)
+				*_m.user_tournament_admins = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

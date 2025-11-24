@@ -157,7 +157,7 @@ function getRedirectUrl(VITE_OAUTH_AUTHORIZE_URL: string, VITE_OAUTH_CLIENT_ID: 
 	return getAuthorizationUrl(callbackUrl.toString(), VITE_OAUTH_AUTHORIZE_URL, VITE_OAUTH_CLIENT_ID);
 }
 
-const matched = ["/admin/(.*)", "/admin", "/register", "/votes", "/votes/(.*)", "/tournaments/(.*)"];
+const matched = ["/admin/(.*)", "/admin", "/register", "/votes", "/votes/(.*)", "/tournaments/(.*)", "/template/invitations"];
 
 function isMatchedPathname(pathname: string): boolean {
 	return matched.some((pattern) => {

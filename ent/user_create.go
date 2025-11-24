@@ -421,7 +421,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.UserVotesTable,
 			Columns: []string{user.UserVotesColumn},
 			Bidi:    false,
@@ -437,7 +437,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.CreatedVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedVotesTable,
 			Columns: []string{user.CreatedVotesColumn},
 			Bidi:    false,
@@ -453,7 +453,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.AppsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.AppsTable,
 			Columns: []string{user.AppsColumn},
 			Bidi:    false,
@@ -469,7 +469,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ConsentsTable,
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
@@ -485,7 +485,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.TeamMembershipsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TeamMembershipsTable,
 			Columns: []string{user.TeamMembershipsColumn},
 			Bidi:    false,
@@ -501,7 +501,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.ReceivedInvitationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.ReceivedInvitationsTable,
 			Columns: []string{user.ReceivedInvitationsColumn},
 			Bidi:    false,
@@ -517,7 +517,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.CreatedTeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTeamsTable,
 			Columns: []string{user.CreatedTeamsColumn},
 			Bidi:    false,
@@ -533,7 +533,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.CreatedTournamentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.CreatedTournamentsTable,
 			Columns: []string{user.CreatedTournamentsColumn},
 			Bidi:    false,
@@ -549,7 +549,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.TournamentAdminsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   user.TournamentAdminsTable,
 			Columns: []string{user.TournamentAdminsColumn},
 			Bidi:    false,

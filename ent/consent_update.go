@@ -211,7 +211,7 @@ func (_u *ConsentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.ApplicationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.ApplicationTable,
 			Columns: []string{consent.ApplicationColumn},
 			Bidi:    false,
@@ -224,7 +224,7 @@ func (_u *ConsentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.ApplicationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.ApplicationTable,
 			Columns: []string{consent.ApplicationColumn},
 			Bidi:    false,
@@ -240,7 +240,7 @@ func (_u *ConsentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.UserTable,
 			Columns: []string{consent.UserColumn},
 			Bidi:    false,
@@ -253,7 +253,7 @@ func (_u *ConsentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.UserTable,
 			Columns: []string{consent.UserColumn},
 			Bidi:    false,
@@ -496,7 +496,7 @@ func (_u *ConsentUpdateOne) sqlSave(ctx context.Context) (_node *Consent, err er
 	if _u.mutation.ApplicationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.ApplicationTable,
 			Columns: []string{consent.ApplicationColumn},
 			Bidi:    false,
@@ -509,7 +509,7 @@ func (_u *ConsentUpdateOne) sqlSave(ctx context.Context) (_node *Consent, err er
 	if nodes := _u.mutation.ApplicationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.ApplicationTable,
 			Columns: []string{consent.ApplicationColumn},
 			Bidi:    false,
@@ -525,7 +525,7 @@ func (_u *ConsentUpdateOne) sqlSave(ctx context.Context) (_node *Consent, err er
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.UserTable,
 			Columns: []string{consent.UserColumn},
 			Bidi:    false,
@@ -538,7 +538,7 @@ func (_u *ConsentUpdateOne) sqlSave(ctx context.Context) (_node *Consent, err er
 	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   consent.UserTable,
 			Columns: []string{consent.UserColumn},
 			Bidi:    false,

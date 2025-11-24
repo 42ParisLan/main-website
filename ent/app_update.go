@@ -299,7 +299,7 @@ func (_u *AppUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   app.OwnerTable,
 			Columns: []string{app.OwnerColumn},
 			Bidi:    false,
@@ -312,7 +312,7 @@ func (_u *AppUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   app.OwnerTable,
 			Columns: []string{app.OwnerColumn},
 			Bidi:    false,
@@ -328,7 +328,7 @@ func (_u *AppUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,
@@ -341,7 +341,7 @@ func (_u *AppUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !_u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,
@@ -357,7 +357,7 @@ func (_u *AppUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,
@@ -688,7 +688,7 @@ func (_u *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   app.OwnerTable,
 			Columns: []string{app.OwnerColumn},
 			Bidi:    false,
@@ -701,7 +701,7 @@ func (_u *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   app.OwnerTable,
 			Columns: []string{app.OwnerColumn},
 			Bidi:    false,
@@ -717,7 +717,7 @@ func (_u *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 	if _u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,
@@ -730,7 +730,7 @@ func (_u *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 	if nodes := _u.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !_u.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,
@@ -746,7 +746,7 @@ func (_u *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 	if nodes := _u.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   app.ConsentsTable,
 			Columns: []string{app.ConsentsColumn},
 			Bidi:    false,

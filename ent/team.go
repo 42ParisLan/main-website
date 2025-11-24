@@ -38,11 +38,11 @@ type Team struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TeamQuery when eager-loading is set.
-	Edges           TeamEdges `json:"edges"`
-	team_tournament *int
-	team_creator    *int
-	team_rank_group *int
-	selectValues    sql.SelectValues
+	Edges              TeamEdges `json:"edges"`
+	rank_group_teams   *int
+	tournament_teams   *int
+	user_created_teams *int
+	selectValues       sql.SelectValues
 }
 
 // TeamEdges holds the relations/edges for other nodes in the graph.
@@ -126,11 +126,11 @@ func (*Team) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case team.FieldCreatedAt, team.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case team.ForeignKeys[0]: // team_tournament
+		case team.ForeignKeys[0]: // rank_group_teams
 			values[i] = new(sql.NullInt64)
-		case team.ForeignKeys[1]: // team_creator
+		case team.ForeignKeys[1]: // tournament_teams
 			values[i] = new(sql.NullInt64)
-		case team.ForeignKeys[2]: // team_rank_group
+		case team.ForeignKeys[2]: // user_created_teams
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -204,24 +204,24 @@ func (_m *Team) assignValues(columns []string, values []any) error {
 			}
 		case team.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field team_tournament", value)
+				return fmt.Errorf("unexpected type %T for edge-field rank_group_teams", value)
 			} else if value.Valid {
-				_m.team_tournament = new(int)
-				*_m.team_tournament = int(value.Int64)
+				_m.rank_group_teams = new(int)
+				*_m.rank_group_teams = int(value.Int64)
 			}
 		case team.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field team_creator", value)
+				return fmt.Errorf("unexpected type %T for edge-field tournament_teams", value)
 			} else if value.Valid {
-				_m.team_creator = new(int)
-				*_m.team_creator = int(value.Int64)
+				_m.tournament_teams = new(int)
+				*_m.tournament_teams = int(value.Int64)
 			}
 		case team.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field team_rank_group", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_created_teams", value)
 			} else if value.Valid {
-				_m.team_rank_group = new(int)
-				*_m.team_rank_group = int(value.Int64)
+				_m.user_created_teams = new(int)
+				*_m.user_created_teams = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

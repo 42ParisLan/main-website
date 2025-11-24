@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -30,15 +29,15 @@ func (Consent) Fields() []ent.Field {
 // Edges of the Consent.
 func (Consent) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("application", App.Type).
+		edge.From("application", App.Type).
+			Ref("consents").
 			Field("application_id").
 			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
-		edge.To("user", User.Type).
+			Required(),
+		edge.From("user", User.Type).
+			Ref("consents").
 			Field("user_id").
 			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+			Required(),
 	}
 }

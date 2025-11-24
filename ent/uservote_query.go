@@ -77,7 +77,7 @@ func (_q *UserVoteQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(uservote.Table, uservote.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, uservote.UserTable, uservote.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, uservote.UserTable, uservote.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -99,7 +99,7 @@ func (_q *UserVoteQuery) QueryComponent() *ComponentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(uservote.Table, uservote.FieldID, selector),
 			sqlgraph.To(component.Table, component.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, uservote.ComponentTable, uservote.ComponentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, uservote.ComponentTable, uservote.ComponentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -456,10 +456,10 @@ func (_q *UserVoteQuery) loadUser(ctx context.Context, query *UserQuery, nodes [
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*UserVote)
 	for i := range nodes {
-		if nodes[i].user_vote_user == nil {
+		if nodes[i].user_user_votes == nil {
 			continue
 		}
-		fk := *nodes[i].user_vote_user
+		fk := *nodes[i].user_user_votes
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -476,7 +476,7 @@ func (_q *UserVoteQuery) loadUser(ctx context.Context, query *UserQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_vote_user" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_user_votes" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -488,10 +488,10 @@ func (_q *UserVoteQuery) loadComponent(ctx context.Context, query *ComponentQuer
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*UserVote)
 	for i := range nodes {
-		if nodes[i].user_vote_component == nil {
+		if nodes[i].component_user_votes == nil {
 			continue
 		}
-		fk := *nodes[i].user_vote_component
+		fk := *nodes[i].component_user_votes
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -508,7 +508,7 @@ func (_q *UserVoteQuery) loadComponent(ctx context.Context, query *ComponentQuer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_vote_component" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "component_user_votes" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

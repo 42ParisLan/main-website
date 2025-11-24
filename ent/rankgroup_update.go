@@ -235,7 +235,7 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -248,7 +248,7 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -264,7 +264,7 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.TeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,
@@ -277,7 +277,7 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedTeamsIDs(); len(nodes) > 0 && !_u.mutation.TeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,
@@ -293,7 +293,7 @@ func (_u *RankGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.TeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,
@@ -562,7 +562,7 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if _u.mutation.TournamentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -575,7 +575,7 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if nodes := _u.mutation.TournamentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   rankgroup.TournamentTable,
 			Columns: []string{rankgroup.TournamentColumn},
 			Bidi:    false,
@@ -591,7 +591,7 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if _u.mutation.TeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,
@@ -604,7 +604,7 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if nodes := _u.mutation.RemovedTeamsIDs(); len(nodes) > 0 && !_u.mutation.TeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,
@@ -620,7 +620,7 @@ func (_u *RankGroupUpdateOne) sqlSave(ctx context.Context) (_node *RankGroup, er
 	if nodes := _u.mutation.TeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   rankgroup.TeamsTable,
 			Columns: []string{rankgroup.TeamsColumn},
 			Bidi:    false,

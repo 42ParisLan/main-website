@@ -151,6 +151,7 @@ components:
           type: integer
         image_url:
           example: https://example.com/network.png
+          nullable: true
           type: string
         name:
           example: Network
@@ -366,6 +367,9 @@ components:
         created_at:
           format: date-time
           type: string
+        id:
+          format: int64
+          type: integer
         message:
           type: string
         role:
@@ -375,6 +379,7 @@ components:
         user:
           $ref: "#/components/schemas/LightUser"
       required:
+        - id
         - message
         - role
         - created_at
@@ -416,6 +421,10 @@ components:
         name:
           example: Top 8
           type: string
+        position:
+          example: 1
+          format: int64
+          type: integer
         rank_max:
           example: 8
           format: int64
@@ -429,6 +438,7 @@ components:
         - name
         - rank_min
         - rank_max
+        - position
       type: object
     LightTeam:
       additionalProperties: false
@@ -2000,6 +2010,38 @@ paths:
       summary: Delete Invitation
       tags:
         - Invitations
+  /invitations/{id}/accept:
+    post:
+      description: This endpoint is used to accept an invitation.
+      operationId: acceptInvitation
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Accept An Invitation
+      tags:
+        - Invitations
   /me:
     get:
       description: This endpoint is used to get the current user.
@@ -2097,6 +2139,62 @@ paths:
       summary: Get my consents
       tags:
         - Consents
+  /me/invitations:
+    get:
+      description: This endpoint is used to get invitations that belong to a user.
+      operationId: getInvitationsForMe
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseInvitation"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Invitations For Me
+      tags:
+        - Invitations
   /me/permissions:
     get:
       description: This endpoint is used to get the current user RBAC permissions.

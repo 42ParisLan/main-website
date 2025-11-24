@@ -27,10 +27,10 @@ type Invitation struct {
 	Role string `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InvitationQuery when eager-loading is set.
-	Edges              InvitationEdges `json:"edges"`
-	invitation_team    *int
-	invitation_invitee *int
-	selectValues       sql.SelectValues
+	Edges                     InvitationEdges `json:"edges"`
+	team_invitations          *int
+	user_received_invitations *int
+	selectValues              sql.SelectValues
 }
 
 // InvitationEdges holds the relations/edges for other nodes in the graph.
@@ -77,9 +77,9 @@ func (*Invitation) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case invitation.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case invitation.ForeignKeys[0]: // invitation_team
+		case invitation.ForeignKeys[0]: // team_invitations
 			values[i] = new(sql.NullInt64)
-		case invitation.ForeignKeys[1]: // invitation_invitee
+		case invitation.ForeignKeys[1]: // user_received_invitations
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -122,17 +122,17 @@ func (_m *Invitation) assignValues(columns []string, values []any) error {
 			}
 		case invitation.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field invitation_team", value)
+				return fmt.Errorf("unexpected type %T for edge-field team_invitations", value)
 			} else if value.Valid {
-				_m.invitation_team = new(int)
-				*_m.invitation_team = int(value.Int64)
+				_m.team_invitations = new(int)
+				*_m.team_invitations = int(value.Int64)
 			}
 		case invitation.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field invitation_invitee", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_received_invitations", value)
 			} else if value.Valid {
-				_m.invitation_invitee = new(int)
-				*_m.invitation_invitee = int(value.Int64)
+				_m.user_received_invitations = new(int)
+				*_m.user_received_invitations = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

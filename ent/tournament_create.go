@@ -5,6 +5,7 @@ package ent
 import (
 	"base-website/ent/rankgroup"
 	"base-website/ent/team"
+	"base-website/ent/teammember"
 	"base-website/ent/tournament"
 	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
@@ -218,6 +219,21 @@ func (_c *TournamentCreate) AddRankGroups(v ...*RankGroup) *TournamentCreate {
 	return _c.AddRankGroupIDs(ids...)
 }
 
+// AddTeamMemberIDs adds the "team_members" edge to the TeamMember entity by IDs.
+func (_c *TournamentCreate) AddTeamMemberIDs(ids ...int) *TournamentCreate {
+	_c.mutation.AddTeamMemberIDs(ids...)
+	return _c
+}
+
+// AddTeamMembers adds the "team_members" edges to the TeamMember entity.
+func (_c *TournamentCreate) AddTeamMembers(v ...*TeamMember) *TournamentCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTeamMemberIDs(ids...)
+}
+
 // Mutation returns the TournamentMutation object of the builder.
 func (_c *TournamentCreate) Mutation() *TournamentMutation {
 	return _c.mutation
@@ -398,7 +414,7 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.CreatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   tournament.CreatorTable,
 			Columns: []string{tournament.CreatorColumn},
 			Bidi:    false,
@@ -409,13 +425,13 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.tournament_creator = &nodes[0]
+		_node.user_created_tournaments = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.AdminsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   tournament.AdminsTable,
 			Columns: []string{tournament.AdminsColumn},
 			Bidi:    false,
@@ -431,7 +447,7 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.TeamsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   tournament.TeamsTable,
 			Columns: []string{tournament.TeamsColumn},
 			Bidi:    false,
@@ -447,12 +463,28 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.RankGroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   tournament.RankGroupsTable,
 			Columns: []string{tournament.RankGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rankgroup.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TeamMembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tournament.TeamMembersTable,
+			Columns: []string{tournament.TeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(teammember.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -32,14 +32,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "tournament" package.
 	TournamentInverseTable = "tournaments"
 	// TournamentColumn is the table column denoting the tournament relation/edge.
-	TournamentColumn = "rank_group_tournament"
+	TournamentColumn = "tournament_rank_groups"
 	// TeamsTable is the table that holds the teams relation/edge.
 	TeamsTable = "teams"
 	// TeamsInverseTable is the table name for the Team entity.
 	// It exists in this package in order to avoid circular dependency with the "team" package.
 	TeamsInverseTable = "teams"
 	// TeamsColumn is the table column denoting the teams relation/edge.
-	TeamsColumn = "team_rank_group"
+	TeamsColumn = "rank_group_teams"
 )
 
 // Columns holds all SQL columns for rankgroup fields.
@@ -54,7 +54,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "rank_groups"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"rank_group_tournament",
+	"tournament_rank_groups",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -124,13 +124,13 @@ func newTournamentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TournamentInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
 	)
 }
 func newTeamsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TeamsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, TeamsTable, TeamsColumn),
 	)
 }

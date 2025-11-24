@@ -52,6 +52,8 @@ const (
 	EdgeTeams = "teams"
 	// EdgeRankGroups holds the string denoting the rank_groups edge name in mutations.
 	EdgeRankGroups = "rank_groups"
+	// EdgeTeamMembers holds the string denoting the team_members edge name in mutations.
+	EdgeTeamMembers = "team_members"
 	// Table holds the table name of the tournament in the database.
 	Table = "tournaments"
 	// CreatorTable is the table that holds the creator relation/edge.
@@ -60,28 +62,35 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	CreatorInverseTable = "users"
 	// CreatorColumn is the table column denoting the creator relation/edge.
-	CreatorColumn = "tournament_creator"
+	CreatorColumn = "user_created_tournaments"
 	// AdminsTable is the table that holds the admins relation/edge.
 	AdminsTable = "tournament_admins"
 	// AdminsInverseTable is the table name for the TournamentAdmin entity.
 	// It exists in this package in order to avoid circular dependency with the "tournamentadmin" package.
 	AdminsInverseTable = "tournament_admins"
 	// AdminsColumn is the table column denoting the admins relation/edge.
-	AdminsColumn = "tournament_admin_tournament"
+	AdminsColumn = "tournament_admins"
 	// TeamsTable is the table that holds the teams relation/edge.
 	TeamsTable = "teams"
 	// TeamsInverseTable is the table name for the Team entity.
 	// It exists in this package in order to avoid circular dependency with the "team" package.
 	TeamsInverseTable = "teams"
 	// TeamsColumn is the table column denoting the teams relation/edge.
-	TeamsColumn = "team_tournament"
+	TeamsColumn = "tournament_teams"
 	// RankGroupsTable is the table that holds the rank_groups relation/edge.
 	RankGroupsTable = "rank_groups"
 	// RankGroupsInverseTable is the table name for the RankGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "rankgroup" package.
 	RankGroupsInverseTable = "rank_groups"
 	// RankGroupsColumn is the table column denoting the rank_groups relation/edge.
-	RankGroupsColumn = "rank_group_tournament"
+	RankGroupsColumn = "tournament_rank_groups"
+	// TeamMembersTable is the table that holds the team_members relation/edge.
+	TeamMembersTable = "team_members"
+	// TeamMembersInverseTable is the table name for the TeamMember entity.
+	// It exists in this package in order to avoid circular dependency with the "teammember" package.
+	TeamMembersInverseTable = "team_members"
+	// TeamMembersColumn is the table column denoting the team_members relation/edge.
+	TeamMembersColumn = "tournament_team_members"
 )
 
 // Columns holds all SQL columns for tournament fields.
@@ -107,7 +116,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "tournaments"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"tournament_creator",
+	"user_created_tournaments",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -259,31 +268,52 @@ func ByRankGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRankGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTeamMembersCount orders the results by team_members count.
+func ByTeamMembersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTeamMembersStep(), opts...)
+	}
+}
+
+// ByTeamMembers orders the results by team_members terms.
+func ByTeamMembers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamMembersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCreatorStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
 	)
 }
 func newAdminsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AdminsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, AdminsTable, AdminsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, AdminsTable, AdminsColumn),
 	)
 }
 func newTeamsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TeamsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, TeamsTable, TeamsColumn),
 	)
 }
 func newRankGroupsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RankGroupsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, RankGroupsTable, RankGroupsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, RankGroupsTable, RankGroupsColumn),
+	)
+}
+func newTeamMembersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TeamMembersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TeamMembersTable, TeamMembersColumn),
 	)
 }

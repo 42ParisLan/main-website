@@ -55,32 +55,32 @@ func (ctrl *invitationController) Register(api huma.API) {
 		Security:    security.WithAuth("profile"),
 	}, ctrl.deleteInvitation)
 
-	// huma.Register(api, huma.Operation{
-	// 	Method:      "POST",
-	// 	Path:        "/invitations/{id}/accept",
-	// 	Summary:     "Accept An Invitation",
-	// 	Description: `This endpoint is used to accept an invitation.`,
-	// 	Tags:        []string{"Invitations"},
-	// 	OperationID: "acceptInvitation",
-	// 	Security:    security.WithAuth("profile"),
-	// }, ctrl.acceptInvitation)
+	huma.Register(api, huma.Operation{
+		Method:      "POST",
+		Path:        "/invitations/{id}/accept",
+		Summary:     "Accept An Invitation",
+		Description: `This endpoint is used to accept an invitation.`,
+		Tags:        []string{"Invitations"},
+		OperationID: "acceptInvitation",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.acceptInvitation)
 
-	// huma.Register(api, huma.Operation{
-	// 	Method:      "GET",
-	// 	Path:        "/users/{id}/invitations",
-	// 	Summary:     "Get Invitations For User",
-	// 	Description: `This endpoint is used to get invitations that belong to a user.`,
-	// 	Tags:        []string{"Invitations"},
-	// 	OperationID: "getInvitationsForUser",
-	// 	Security:    security.WithAuth("profile"),
-	// }, ctrl.getInvitationsForUser)
+	huma.Register(api, huma.Operation{
+		Method:      "GET",
+		Path:        "/me/invitations",
+		Summary:     "Get Invitations For Me",
+		Description: `This endpoint is used to get invitations that belong to a user.`,
+		Tags:        []string{"Invitations"},
+		OperationID: "getInvitationsForMe",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.getInvitationsForMe)
 }
 
 func (ctrl *invitationController) getInvitationsForTeam(
 	ctx context.Context,
-	input *invitationsmodels.ListInvitationsParams,
+	input *getInvitationForTeam,
 ) (*multipleInvitationsOutput, error) {
-	result, err := ctrl.invitationsService.ListInvitationsForTeam(ctx, input)
+	result, err := ctrl.invitationsService.ListInvitationsForTeam(ctx, input.TeamID, &input.ListInvitationsParams)
 	if err != nil {
 		return nil, err
 	}
@@ -112,5 +112,31 @@ func (ctrl *invitationController) deleteInvitation(
 	}
 	return &BodyMessage{
 		Body: "invitation succefully deleted",
+	}, nil
+}
+
+func (ctrl *invitationController) acceptInvitation(
+	ctx context.Context,
+	input *invitationIDInput,
+) (*BodyMessage, error) {
+	err := ctrl.invitationsService.AcceptInvitation(ctx, input.InvitationID)
+	if err != nil {
+		return nil, err
+	}
+	return &BodyMessage{
+		Body: "invitation succefully accepted",
+	}, nil
+}
+
+func (ctrl *invitationController) getInvitationsForMe(
+	ctx context.Context,
+	input *invitationsmodels.ListInvitationsParams,
+) (*multipleInvitationsOutput, error) {
+	result, err := ctrl.invitationsService.ListInvitationsForMe(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return &multipleInvitationsOutput{
+		Body: result,
 	}, nil
 }

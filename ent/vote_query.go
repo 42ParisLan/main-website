@@ -78,7 +78,7 @@ func (_q *VoteQuery) QueryComponents() *ComponentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(vote.Table, vote.FieldID, selector),
 			sqlgraph.To(component.Table, component.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, vote.ComponentsTable, vote.ComponentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, vote.ComponentsTable, vote.ComponentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -100,7 +100,7 @@ func (_q *VoteQuery) QueryCreator() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(vote.Table, vote.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, vote.CreatorTable, vote.CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, vote.CreatorTable, vote.CreatorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -473,13 +473,13 @@ func (_q *VoteQuery) loadComponents(ctx context.Context, query *ComponentQuery, 
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.component_vote
+		fk := n.vote_components
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "component_vote" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "vote_components" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "component_vote" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "vote_components" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -489,10 +489,10 @@ func (_q *VoteQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Vote)
 	for i := range nodes {
-		if nodes[i].vote_creator == nil {
+		if nodes[i].user_created_votes == nil {
 			continue
 		}
-		fk := *nodes[i].vote_creator
+		fk := *nodes[i].user_created_votes
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -509,7 +509,7 @@ func (_q *VoteQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "vote_creator" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_created_votes" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

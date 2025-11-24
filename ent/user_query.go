@@ -91,7 +91,7 @@ func (_q *UserQuery) QueryUserVotes() *UserVoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(uservote.Table, uservote.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.UserVotesTable, user.UserVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.UserVotesTable, user.UserVotesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -113,7 +113,7 @@ func (_q *UserQuery) QueryCreatedVotes() *VoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(vote.Table, vote.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.CreatedVotesTable, user.CreatedVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedVotesTable, user.CreatedVotesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -135,7 +135,7 @@ func (_q *UserQuery) QueryApps() *AppQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(app.Table, app.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.AppsTable, user.AppsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AppsTable, user.AppsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -157,7 +157,7 @@ func (_q *UserQuery) QueryConsents() *ConsentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(consent.Table, consent.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.ConsentsTable, user.ConsentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -179,7 +179,7 @@ func (_q *UserQuery) QueryTeamMemberships() *TeamMemberQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(teammember.Table, teammember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.TeamMembershipsTable, user.TeamMembershipsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TeamMembershipsTable, user.TeamMembershipsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -201,7 +201,7 @@ func (_q *UserQuery) QueryReceivedInvitations() *InvitationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(invitation.Table, invitation.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.ReceivedInvitationsTable, user.ReceivedInvitationsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReceivedInvitationsTable, user.ReceivedInvitationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -223,7 +223,7 @@ func (_q *UserQuery) QueryCreatedTeams() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.CreatedTeamsTable, user.CreatedTeamsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTeamsTable, user.CreatedTeamsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -245,7 +245,7 @@ func (_q *UserQuery) QueryCreatedTournaments() *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.CreatedTournamentsTable, user.CreatedTournamentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedTournamentsTable, user.CreatedTournamentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -267,7 +267,7 @@ func (_q *UserQuery) QueryTournamentAdmins() *TournamentAdminQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(tournamentadmin.Table, tournamentadmin.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.TournamentAdminsTable, user.TournamentAdminsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TournamentAdminsTable, user.TournamentAdminsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -774,13 +774,13 @@ func (_q *UserQuery) loadUserVotes(ctx context.Context, query *UserVoteQuery, no
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_vote_user
+		fk := n.user_user_votes
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_vote_user" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_user_votes" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_vote_user" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_user_votes" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -805,13 +805,13 @@ func (_q *UserQuery) loadCreatedVotes(ctx context.Context, query *VoteQuery, nod
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.vote_creator
+		fk := n.user_created_votes
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "vote_creator" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_created_votes" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "vote_creator" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_created_votes" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -896,13 +896,13 @@ func (_q *UserQuery) loadTeamMemberships(ctx context.Context, query *TeamMemberQ
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.team_member_user
+		fk := n.user_team_memberships
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "team_member_user" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_team_memberships" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "team_member_user" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_team_memberships" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -927,13 +927,13 @@ func (_q *UserQuery) loadReceivedInvitations(ctx context.Context, query *Invitat
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.invitation_invitee
+		fk := n.user_received_invitations
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "invitation_invitee" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_received_invitations" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "invitation_invitee" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_received_invitations" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -958,13 +958,13 @@ func (_q *UserQuery) loadCreatedTeams(ctx context.Context, query *TeamQuery, nod
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.team_creator
+		fk := n.user_created_teams
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "team_creator" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_created_teams" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "team_creator" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_created_teams" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -989,13 +989,13 @@ func (_q *UserQuery) loadCreatedTournaments(ctx context.Context, query *Tourname
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.tournament_creator
+		fk := n.user_created_tournaments
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "tournament_creator" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_created_tournaments" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "tournament_creator" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_created_tournaments" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1020,13 +1020,13 @@ func (_q *UserQuery) loadTournamentAdmins(ctx context.Context, query *Tournament
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.tournament_admin_user
+		fk := n.user_tournament_admins
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "tournament_admin_user" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_tournament_admins" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "tournament_admin_user" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tournament_admins" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

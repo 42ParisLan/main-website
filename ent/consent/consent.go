@@ -128,13 +128,13 @@ func newApplicationStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ApplicationInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, ApplicationTable, ApplicationColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, ApplicationTable, ApplicationColumn),
 	)
 }
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }

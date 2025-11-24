@@ -27,9 +27,9 @@ type RankGroup struct {
 	Position int `json:"position,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RankGroupQuery when eager-loading is set.
-	Edges                 RankGroupEdges `json:"edges"`
-	rank_group_tournament *int
-	selectValues          sql.SelectValues
+	Edges                  RankGroupEdges `json:"edges"`
+	tournament_rank_groups *int
+	selectValues           sql.SelectValues
 }
 
 // RankGroupEdges holds the relations/edges for other nodes in the graph.
@@ -72,7 +72,7 @@ func (*RankGroup) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case rankgroup.FieldName:
 			values[i] = new(sql.NullString)
-		case rankgroup.ForeignKeys[0]: // rank_group_tournament
+		case rankgroup.ForeignKeys[0]: // tournament_rank_groups
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -121,10 +121,10 @@ func (_m *RankGroup) assignValues(columns []string, values []any) error {
 			}
 		case rankgroup.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field rank_group_tournament", value)
+				return fmt.Errorf("unexpected type %T for edge-field tournament_rank_groups", value)
 			} else if value.Valid {
-				_m.rank_group_tournament = new(int)
-				*_m.rank_group_tournament = int(value.Int64)
+				_m.tournament_rank_groups = new(int)
+				*_m.tournament_rank_groups = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

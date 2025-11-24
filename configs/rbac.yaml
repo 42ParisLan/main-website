@@ -43,6 +43,10 @@ roles:
               methods: [GET, POST]
             - path: /invitations/*
               methods: [DELETE]
+            - path: /me/invitations
+              methods: [GET]
+            - path: /invitations/*/accept
+              methods: [POST]
 
     basic_admin:
         name: 'basic_admin'

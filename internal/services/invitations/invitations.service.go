@@ -24,9 +24,11 @@ import (
 )
 
 type InvitationsService interface {
-	ListInvitationsForTeam(ctx context.Context, params *invitationsmodels.ListInvitationsParams) (*paging.Response[*lightmodels.Invitation], error)
+	ListInvitationsForTeam(ctx context.Context, teamID int, params *invitationsmodels.ListInvitationsParams) (*paging.Response[*lightmodels.Invitation], error)
 	DeleteInvitation(ctx context.Context, invitationID int) error
+	AcceptInvitation(ctx context.Context, invitationID int) error
 	CreateInvitationForTeam(ctx context.Context, teamID int, input invitationsmodels.CreateInvitation) (*lightmodels.Invitation, error)
+	ListInvitationsForMe(ctx context.Context, params *invitationsmodels.ListInvitationsParams) (*paging.Response[*lightmodels.Invitation], error)
 }
 
 type invitationsService struct {
@@ -65,9 +67,30 @@ func New(
 
 func (svc *invitationsService) ListInvitationsForTeam(
 	ctx context.Context,
+	teamID int,
 	params *invitationsmodels.ListInvitationsParams,
 ) (*paging.Response[*lightmodels.Invitation], error) {
-	query := svc.databaseService.Invitation.Query().Where(invitation.HasTeamWith(team.IDEQ(params.TeamID)))
+	entTeam, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithTournament().
+		WithCreator().
+		Only(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "retrieve")
+	}
+	myRole, err := svc.tournamentsService.GetTournamentUserRole(ctx, entTeam.Edges.Tournament.ID)
+	if err != nil {
+		return nil, err
+	}
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if myRole == nil && userID != entTeam.Edges.Creator.ID {
+		return nil, huma.Error401Unauthorized("Only Creator or admin can see invitation")
+	}
+
+	query := svc.databaseService.Invitation.Query().Where(invitation.HasTeamWith(team.IDEQ(teamID)))
 
 	total, err := query.Count(ctx)
 	if err != nil {
@@ -164,6 +187,9 @@ func (svc *invitationsService) CreateInvitationForTeam(
 		WithInvitee().
 		WithTeam().
 		Only(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "retrieve")
+	}
 
 	return lightmodels.NewInvitationFromEnt(ctx, reloaded, svc.s3service), nil
 }
@@ -213,32 +239,80 @@ func (svc *invitationsService) DeleteInvitation(ctx context.Context, invitationI
 	return nil
 }
 
-// huma.Register(api, huma.Operation{
-// 	Method:      "POST",
-// 	Path:        "/invitations/{id}/accept",
-// 	Summary:     "Accept An Invitation",
-// 	Description: `This endpoint is used to accept an invitation.`,
-// 	Tags:        []string{"Invitations"},
-// 	OperationID: "acceptInvitation",
-// 	Security:    security.WithAuth("profile"),
-// }, ctrl.acceptInvitation)
+func (svc *invitationsService) AcceptInvitation(ctx context.Context, invitationID int) error {
+	entInvitation, err := svc.databaseService.Invitation.Query().
+		Where(invitation.IDEQ(invitationID)).
+		WithInvitee().
+		WithTeam(func(tQuery *ent.TeamQuery) {
+			tQuery.WithTournament()
+		}).
+		Only(ctx)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "retrieve")
+	}
 
-// huma.Register(api, huma.Operation{
-// 	Method:      "POST",
-// 	Path:        "/invitations/{id}/decline",
-// 	Summary:     "Decline An Invitation",
-// 	Description: `This endpoint is used to decline an invitation.`,
-// 	Tags:        []string{"Invitations"},
-// 	OperationID: "declineInvitation",
-// 	Security:    security.WithAuth("profile"),
-// }, ctrl.declineInvitation)
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return err
+	}
 
-// huma.Register(api, huma.Operation{
-// 	Method:      "GET",
-// 	Path:        "/users/{id}/invitations",
-// 	Summary:     "Get Invitations For User",
-// 	Description: `This endpoint is used to get invitations that belong to a user.`,
-// 	Tags:        []string{"Invitations"},
-// 	OperationID: "getInvitationsForUser",
-// 	Security:    security.WithAuth("profile"),
-// }, ctrl.getInvitationsForUser)
+	if entInvitation.Edges.Invitee == nil || entInvitation.Edges.Team == nil || entInvitation.Edges.Team.Edges.Tournament == nil {
+		return svc.errorFilter.Filter(fmt.Errorf("invitation edges not loaded for id %d", entInvitation.ID), "retrieve")
+	}
+
+	if entInvitation.Edges.Invitee.ID != userID {
+		return huma.Error401Unauthorized("Only Invitee can accept invitation")
+	}
+
+	if _, err := svc.databaseService.TeamMember.Create().
+		SetRole(entInvitation.Role).
+		SetTeamID(entInvitation.Edges.Team.ID).
+		SetUserID(entInvitation.Edges.Invitee.ID).
+		SetTournamentID(entInvitation.Edges.Team.Edges.Tournament.ID).
+		Save(ctx); err != nil {
+		return svc.errorFilter.Filter(err, "create_team_member")
+	}
+
+	_, _ = svc.databaseService.Invitation.Delete().
+		Where(invitation.HasInviteeWith(user.IDEQ(userID))).
+		Exec(ctx)
+
+	return nil
+}
+
+func (svc *invitationsService) ListInvitationsForMe(
+	ctx context.Context,
+	params *invitationsmodels.ListInvitationsParams,
+) (*paging.Response[*lightmodels.Invitation], error) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := svc.databaseService.Invitation.Query().Where(invitation.HasInviteeWith(user.IDEQ(userID)))
+
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "count")
+	}
+
+	query = paging.ApplyQueryPaging(query, params.Input)
+
+	if params.Order == "asc" {
+		query = query.Order(ent.Asc(invitation.FieldCreatedAt))
+	} else {
+		query = query.Order(ent.Desc(invitation.FieldCreatedAt))
+	}
+
+	invitations, err := query.
+		WithTeam().
+		WithInvitee().
+		All(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+
+	limit := params.Input.Limit
+	page := params.Input.Page
+	return paging.CreatePagingResponse(lightmodels.NewInvitationsFromEnt(ctx, invitations, svc.s3service), total, page, limit), nil
+}

@@ -28,14 +28,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
-	UserColumn = "user_vote_user"
+	UserColumn = "user_user_votes"
 	// ComponentTable is the table that holds the component relation/edge.
 	ComponentTable = "user_votes"
 	// ComponentInverseTable is the table name for the Component entity.
 	// It exists in this package in order to avoid circular dependency with the "component" package.
 	ComponentInverseTable = "components"
 	// ComponentColumn is the table column denoting the component relation/edge.
-	ComponentColumn = "user_vote_component"
+	ComponentColumn = "component_user_votes"
 )
 
 // Columns holds all SQL columns for uservote fields.
@@ -47,8 +47,8 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "user_votes"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_vote_user",
-	"user_vote_component",
+	"component_user_votes",
+	"user_user_votes",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -101,13 +101,13 @@ func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
 func newComponentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ComponentInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, ComponentTable, ComponentColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, ComponentTable, ComponentColumn),
 	)
 }

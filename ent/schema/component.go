@@ -22,11 +22,11 @@ func (Component) Fields() []ent.Field {
 
 func (Component) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("vote", Vote.Type).
+		edge.From("vote", Vote.Type).
+			Ref("components").
 			Unique().
-			Required().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
-		edge.From("user_votes", UserVote.Type).
-			Ref("component"),
+			Required(),
+		edge.To("user_votes", UserVote.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

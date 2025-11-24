@@ -84,7 +84,7 @@ func (_q *TeamQuery) QueryTournament() *TournamentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, selector),
 			sqlgraph.To(tournament.Table, tournament.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, team.TournamentTable, team.TournamentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, team.TournamentTable, team.TournamentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -106,7 +106,7 @@ func (_q *TeamQuery) QueryCreator() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, team.CreatorTable, team.CreatorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, team.CreatorTable, team.CreatorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -128,7 +128,7 @@ func (_q *TeamQuery) QueryMembers() *TeamMemberQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, selector),
 			sqlgraph.To(teammember.Table, teammember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, team.MembersTable, team.MembersColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, team.MembersTable, team.MembersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -150,7 +150,7 @@ func (_q *TeamQuery) QueryRankGroup() *RankGroupQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, selector),
 			sqlgraph.To(rankgroup.Table, rankgroup.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, team.RankGroupTable, team.RankGroupColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, team.RankGroupTable, team.RankGroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -172,7 +172,7 @@ func (_q *TeamQuery) QueryInvitations() *InvitationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, selector),
 			sqlgraph.To(invitation.Table, invitation.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, team.InvitationsTable, team.InvitationsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, team.InvitationsTable, team.InvitationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -588,10 +588,10 @@ func (_q *TeamQuery) loadTournament(ctx context.Context, query *TournamentQuery,
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Team)
 	for i := range nodes {
-		if nodes[i].team_tournament == nil {
+		if nodes[i].tournament_teams == nil {
 			continue
 		}
-		fk := *nodes[i].team_tournament
+		fk := *nodes[i].tournament_teams
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -608,7 +608,7 @@ func (_q *TeamQuery) loadTournament(ctx context.Context, query *TournamentQuery,
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_tournament" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "tournament_teams" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -620,10 +620,10 @@ func (_q *TeamQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Team)
 	for i := range nodes {
-		if nodes[i].team_creator == nil {
+		if nodes[i].user_created_teams == nil {
 			continue
 		}
-		fk := *nodes[i].team_creator
+		fk := *nodes[i].user_created_teams
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -640,7 +640,7 @@ func (_q *TeamQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_creator" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_created_teams" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -667,13 +667,13 @@ func (_q *TeamQuery) loadMembers(ctx context.Context, query *TeamMemberQuery, no
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.team_member_team
+		fk := n.team_members
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "team_member_team" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "team_members" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "team_member_team" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "team_members" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -683,10 +683,10 @@ func (_q *TeamQuery) loadRankGroup(ctx context.Context, query *RankGroupQuery, n
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Team)
 	for i := range nodes {
-		if nodes[i].team_rank_group == nil {
+		if nodes[i].rank_group_teams == nil {
 			continue
 		}
-		fk := *nodes[i].team_rank_group
+		fk := *nodes[i].rank_group_teams
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -703,7 +703,7 @@ func (_q *TeamQuery) loadRankGroup(ctx context.Context, query *RankGroupQuery, n
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_rank_group" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "rank_group_teams" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -730,13 +730,13 @@ func (_q *TeamQuery) loadInvitations(ctx context.Context, query *InvitationQuery
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.invitation_team
+		fk := n.team_invitations
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "invitation_team" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "team_invitations" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "invitation_team" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "team_invitations" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

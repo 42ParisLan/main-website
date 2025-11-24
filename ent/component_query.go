@@ -78,7 +78,7 @@ func (_q *ComponentQuery) QueryVote() *VoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(component.Table, component.FieldID, selector),
 			sqlgraph.To(vote.Table, vote.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, component.VoteTable, component.VoteColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, component.VoteTable, component.VoteColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -100,7 +100,7 @@ func (_q *ComponentQuery) QueryUserVotes() *UserVoteQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(component.Table, component.FieldID, selector),
 			sqlgraph.To(uservote.Table, uservote.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, component.UserVotesTable, component.UserVotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, component.UserVotesTable, component.UserVotesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -458,10 +458,10 @@ func (_q *ComponentQuery) loadVote(ctx context.Context, query *VoteQuery, nodes 
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Component)
 	for i := range nodes {
-		if nodes[i].component_vote == nil {
+		if nodes[i].vote_components == nil {
 			continue
 		}
-		fk := *nodes[i].component_vote
+		fk := *nodes[i].vote_components
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -478,7 +478,7 @@ func (_q *ComponentQuery) loadVote(ctx context.Context, query *VoteQuery, nodes 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "component_vote" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "vote_components" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -505,13 +505,13 @@ func (_q *ComponentQuery) loadUserVotes(ctx context.Context, query *UserVoteQuer
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_vote_component
+		fk := n.component_user_votes
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_vote_component" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "component_user_votes" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_vote_component" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "component_user_votes" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

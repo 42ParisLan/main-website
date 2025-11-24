@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PaginatedListControlled } from '@/components/ui/paginated-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import UserSearch from '@/components/users/user-search';
+import InvitationItem from '@/components/invitations/invitation-item';
 import useQueryClient from '@/hooks/use-query-client';
 import type { components } from '@/lib/api/types';
 import { useAuth } from '@/providers/auth.provider';
@@ -39,6 +41,19 @@ function RouteComponent() {
 				id_or_slug: tournamentid
 			}
 		}
+	})
+
+	const [page, setPage] = useState<number>(0);
+	const {data: invitations, isError: isErrorInvitations, isLoading: isLoadingInvitations} = client.useQuery("get", "/teams/{id}/invitations", {
+		params:{
+			path: {
+				id: team?.id ?? 0
+			},
+			query: {
+				page
+			}
+		},
+		enabled: !!team?.id,
 	})
 
 	const {mutate : mutateDelete} = client.useMutation("delete", "/teams/{id}", {
@@ -121,7 +136,7 @@ function RouteComponent() {
 		return Object.keys(tournament?.team_structure ?? {});
 	}, [tournament?.team_structure])
 
-	if (errorTeam && !errorTournament) {
+	if ((isErrorInvitations || errorTeam) && !errorTournament) {
 		router.navigate({to: `/tournaments/$tournamentid`, params: {tournamentid}})
 		return null
 	}
@@ -174,6 +189,27 @@ function RouteComponent() {
 						>
 							Invite User
 						</Button>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex justify-between'>
+						<CardTitle>
+							Invitations
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<PaginatedListControlled<components['schemas']['Invitation']>
+							data={invitations}
+							page={page}
+							onPageChange={setPage}
+							isLoading={isLoadingInvitations}
+							renderItem={(item) => (
+								<>
+									<InvitationItem invitation={item} tournamentid={tournament.slug} />
+								</>
+							)}
+							getItemKey={(item) => item.id}
+						/>
 					</CardContent>
 				</Card>
 				{/* Confirmation dialog for deleting visible tournaments */}

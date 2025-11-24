@@ -49,35 +49,35 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "tournament" package.
 	TournamentInverseTable = "tournaments"
 	// TournamentColumn is the table column denoting the tournament relation/edge.
-	TournamentColumn = "team_tournament"
+	TournamentColumn = "tournament_teams"
 	// CreatorTable is the table that holds the creator relation/edge.
 	CreatorTable = "teams"
 	// CreatorInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	CreatorInverseTable = "users"
 	// CreatorColumn is the table column denoting the creator relation/edge.
-	CreatorColumn = "team_creator"
+	CreatorColumn = "user_created_teams"
 	// MembersTable is the table that holds the members relation/edge.
 	MembersTable = "team_members"
 	// MembersInverseTable is the table name for the TeamMember entity.
 	// It exists in this package in order to avoid circular dependency with the "teammember" package.
 	MembersInverseTable = "team_members"
 	// MembersColumn is the table column denoting the members relation/edge.
-	MembersColumn = "team_member_team"
+	MembersColumn = "team_members"
 	// RankGroupTable is the table that holds the rank_group relation/edge.
 	RankGroupTable = "teams"
 	// RankGroupInverseTable is the table name for the RankGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "rankgroup" package.
 	RankGroupInverseTable = "rank_groups"
 	// RankGroupColumn is the table column denoting the rank_group relation/edge.
-	RankGroupColumn = "team_rank_group"
+	RankGroupColumn = "rank_group_teams"
 	// InvitationsTable is the table that holds the invitations relation/edge.
 	InvitationsTable = "invitations"
 	// InvitationsInverseTable is the table name for the Invitation entity.
 	// It exists in this package in order to avoid circular dependency with the "invitation" package.
 	InvitationsInverseTable = "invitations"
 	// InvitationsColumn is the table column denoting the invitations relation/edge.
-	InvitationsColumn = "invitation_team"
+	InvitationsColumn = "team_invitations"
 )
 
 // Columns holds all SQL columns for team fields.
@@ -96,9 +96,9 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "teams"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"team_tournament",
-	"team_creator",
-	"team_rank_group",
+	"rank_group_teams",
+	"tournament_teams",
+	"user_created_teams",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -253,34 +253,34 @@ func newTournamentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TournamentInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, TournamentTable, TournamentColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, TournamentTable, TournamentColumn),
 	)
 }
 func newCreatorStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, CreatorTable, CreatorColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, CreatorTable, CreatorColumn),
 	)
 }
 func newMembersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MembersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, MembersTable, MembersColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, MembersTable, MembersColumn),
 	)
 }
 func newRankGroupStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RankGroupInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, RankGroupTable, RankGroupColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, RankGroupTable, RankGroupColumn),
 	)
 }
 func newInvitationsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(InvitationsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, InvitationsTable, InvitationsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, InvitationsTable, InvitationsColumn),
 	)
 }
