@@ -25,7 +25,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 
 	// file upload state (selected file and preview URL)
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
-	const [previewUrl, setPreviewUrl] = useState<string>(component.image_url);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(component.image_url);
 
 	const {mutate, isPending} = client.useMutation("patch", "/components/{id}", {
 		onSuccess: () => {
@@ -87,8 +87,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 			if (value.description != initialValues.description) {
 				formData.append("description", value.description)
 			}
-			console.log(`1: '${previewUrl.toString()}' 2: '${initialValues.image_url}'`)
-			if (previewUrl.toString() != initialValues.image_url && value.image) {
+			if (previewUrl && previewUrl.toString() != initialValues.image_url && value.image) {
 				console.log("image changed")
 				formData.append("image", value.image);
 			}
