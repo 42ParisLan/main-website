@@ -6,6 +6,10 @@ import useQueryClient from '@/hooks/use-query-client'
 import type { components } from '@/lib/api/types';
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useState } from 'react';
+import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
+import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
+import { OldTournaments } from '@/components/tournaments/past-tournaments'
 
 export const Route = createFileRoute('/tournaments/')({
 	component: RouteComponent,
@@ -45,6 +49,11 @@ function RouteComponent() {
 	return (
 		<>
 			<div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6">
+				<Header/>
+					<div className="py-2 bg-black min-h-screen bg-background">
+						<ActiveTournaments/>
+						<OldTournaments/>
+					</div>
 				<Card className="@container/card">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0">
 						<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -62,7 +71,7 @@ function RouteComponent() {
 							itemsContainerClassName="flex flex-col gap-4"
 							itemLabel="user"
 							emptyMessage="No tournaments found"
-						/>
+							/>
 					</CardContent>
 				</Card>
 				<Card className="@container/card">
@@ -82,9 +91,10 @@ function RouteComponent() {
 							itemsContainerClassName="flex flex-col gap-4"
 							itemLabel="user"
 							emptyMessage="No tournaments found"
-						/>
+							/>
 					</CardContent>
 				</Card>
+				<Footer/>
 			</div>
 		</>
 	)

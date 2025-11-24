@@ -23,6 +23,8 @@ const buttonVariants = cva(
           "text-primary underline-offset-4 hover:underline",
         transparent:
           "bg-transparent whitespace-nowrap font-medium transition-all outline-none",
+        gradient:
+          "dark bg-gradient-to-br from-primary via-secondary to-purple-400",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

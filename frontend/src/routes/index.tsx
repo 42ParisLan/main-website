@@ -2,6 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Header } from '@/components/home-page/header'
 import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
 import { Footer } from '@/components/home-page/footer'
+import { Button } from '../components/ui/button';
+import { Link } from '@tanstack/react-router';
+
 
 export const Route = createFileRoute('/')({
 	component: WelcomePage,
@@ -25,7 +28,10 @@ function WelcomePage() {
 						</div>
 						<div className="w-full p-6 flex items-start gap-10">
 							<div className="">
-								<button className="p-3 border border-2 border-solid border-secondary hover:bg-secondary transition-all hover:text-white text-secondary transition-all ">JOIN TOURNAMENT</button>
+								<Button asChild size="xl" variant="gradient" className="p-3">
+                            		<Link to="/tournaments">JOIN TOURNAMENT</Link>
+                        		</Button>
+								{/* <button className="p-3 border border-2 border-solid border-secondary hover:bg-secondary transition-all hover:text-white text-secondary transition-all ">JOIN TOURNAMENT</button> */}
 							</div>
 							{/* <div className="p-2.5 text-white border border-2 border-solid border-white hover:bg-white transition-all hover:text-black">
 								<button>WATCH LIVE</button>
