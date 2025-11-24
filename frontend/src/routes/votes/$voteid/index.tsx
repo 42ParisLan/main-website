@@ -56,7 +56,7 @@ function RouteComponent() {
 					<CardContent>
 						<p>{component.description}</p>
 						<img
-							src={component.image_url}
+							src={component.image_url ?? "https://example.com/"}
 							alt={component.name}
 						/>
 					</CardContent>

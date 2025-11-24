@@ -28,10 +28,6 @@ export default function DefaultTournament({tournament}: {tournament: components[
 							<strong>Visible</strong>
 							<div className="text-sm">{tournament.is_visible ? 'Yes' : 'No'}</div>
 						</div>
-						<div>
-							<strong>State</strong>
-							<div className="text-sm">{tournament.state}</div>
-						</div>
 
 						<div>
 							<strong>Teams</strong>

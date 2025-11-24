@@ -205,7 +205,7 @@ function RouteComponent() {
 					rawPercentage={results[0].rawPercentage}
 					color={component1?.color}
 					label={component1?.name}
-					imageUrl={component1?.image_url}
+					imageUrl={component1?.image_url ?? "https://example.com/"}
 					side="left"
 					nb_vote={results[0].votes}
 				/>
@@ -222,7 +222,7 @@ function RouteComponent() {
 					rawPercentage={results[1].rawPercentage}
 					color={component2?.color}
 					label={component2?.name}
-					imageUrl={component2?.image_url}
+					imageUrl={component2?.image_url ?? "https://example.com/"}
 					side="right"
 					nb_vote={results[1].votes}
 				/>
