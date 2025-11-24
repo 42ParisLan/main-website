@@ -1,5 +1,5 @@
 import TournamentCard from '@/components/tournaments/admin/tournament-card';
-import PublicTournamentCard from '@/components/tournaments/tournament-card';
+import PublicTournamentCard from '@/components/tournaments/public-tournament-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PaginatedListControlled } from '@/components/ui/paginated-list';
 import useQueryClient from '@/hooks/use-query-client'

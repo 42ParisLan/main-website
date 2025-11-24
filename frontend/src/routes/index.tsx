@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import { Link } from '@tanstack/react-router'
-import { IconChalkboardTeacher } from '@tabler/icons-react'
+import { Header } from '@/components/home-page/header'
+import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
+import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute('/')({
 	component: WelcomePage,
@@ -9,63 +9,34 @@ export const Route = createFileRoute('/')({
 
 function WelcomePage() {
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-background">
-			<div className="container mx-auto px-4 py-16">
-				<div className="flex flex-col items-center justify-center space-y-8 text-center">
-					{/* Logo */}
-					<div className="flex justify-center">
-						<IconChalkboardTeacher className="w-24 h-24 text-primary" />
-					</div>
-
-					{/* Title */}
-					<div className="space-y-4 max-w-2xl">
-						<h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-							Welcome
-						</h1>
-						<p className="text-xl text-muted-foreground">
-							This is the public homepage. Customize this page to fit your needs.
-						</p>
-					</div>
-
-					{/* Navigation Sections */}
-					<div className="pt-8 space-y-8 w-full max-w-xl">
-						{/* Public Pages Section */}
-						<div className="space-y-4">
-							<h2 className="text-2xl font-semibold tracking-tight">Public Pages</h2>
-							<div className="flex flex-wrap justify-center gap-4">
-								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/tournaments">
-										Tournaments
-									</Link>
-								</Button>
-							</div>
+		<div className="min-h-screen bg-background">
+			<div className="">
+				<div className="flex flex-col items-center justify-centertext-center">
+					<Header/>
+					{/* Welcome message  */}
+					<div className="pl-3 bg-gradient-to-br dark from-black via-gray-900 to-secondary w-full h-130 flex flex-col items-start">
+						<div className="p-6 w-full h-70">
+							<h1 style={{ fontFamily: "Orbitron" }} className="font-orbitron py-3 text-7xl text-left font-bold text-white">COMPETE IN THE <br/> <span className="bg-gradient-to-r from-[#78D8F5] via-[#8F71F5] to-pink-300 bg-clip-text text-transparent"> ULTIMATE </span>GAMING <br/> ARENA</h1>
 						</div>
-
-						{/* Protected Pages Section */}
-						<div className="space-y-4">
-							<h2 className="text-2xl font-semibold tracking-tight">Protected Pages</h2>
-							<div className="flex flex-wrap justify-center gap-4">
-								<Button asChild size="lg" variant="outline" className="min-w-[140px]">
-									<Link to="/votes">
-										Votes
-									</Link>
-								</Button>
-							</div>
+						<div style={{ fontFamily: "Orbitron" }}  className="p-6 text-gray-300">
+							<p>Join thousands of elite gamers in the most prestigious esports tournaments.
+								<br/> Compete for glory, fame and massive prize blablabla.
+							</p>
 						</div>
-
-						{/* Admin Section */}
-						<div className="space-y-4">
-							<h2 className="text-2xl font-semibold tracking-tight">Admin Panel</h2>
-							<div className="flex justify-center">
-								<Button asChild size="lg" variant="default" className="min-w-[220px]">
-									<Link to="/admin">
-										<IconChalkboardTeacher className="mr-2 w-5 h-5" />
-										Access Admin Console
-									</Link>
-								</Button>
+						<div className="w-full p-6 flex items-start gap-10">
+							<div className="">
+								<button className="p-3 border border-2 border-solid border-secondary hover:bg-secondary transition-all hover:text-white text-secondary transition-all ">JOIN TOURNAMENT</button>
 							</div>
+							{/* <div className="p-2.5 text-white border border-2 border-solid border-white hover:bg-white transition-all hover:text-black">
+								<button>WATCH LIVE</button>
+							</div> */}
 						</div>
 					</div>
+					{/* TOURNAMENTS*/}
+					<ActiveTournaments/>
+					{/* TOP PLAYERS */}
+					
+					<Footer/>
 				</div>
 			</div>
 		</div>

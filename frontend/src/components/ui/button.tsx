@@ -16,21 +16,39 @@ const buttonVariants = cva(
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+          "dark bg-secondary text-black shadow-xs hover:bg-secondary/80",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: 
+          "text-primary underline-offset-4 hover:underline",
+        transparent:
+          "bg-transparent whitespace-nowrap font-medium transition-all outline-none",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        xl: "h-13 gap-1.5 px-3",
         icon: "size-9",
+        header: "h-8 gap-1.5 px-3 text-md",
+      },
+      radius: {
+          none: "rounded-none",
+          sm: "rounded-sm",
+          md: "rounded-md",
+          lg: "rounded-lg",
+          full: "rounded-full",
+      },
+      hover: {
+        none: "",
+        gradient: "hover:bg-gradient-to-br hover:from-primary hover:to-secondary dark",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      radius: "md",
+      hover: "none",
     },
   }
 )
@@ -39,6 +57,8 @@ function Button({
   className,
   variant,
   size,
+  radius,
+  hover,
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
@@ -50,7 +70,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, radius, hover, className }))}
       {...props}
     />
   )
