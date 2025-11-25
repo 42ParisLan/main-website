@@ -1,6 +1,7 @@
 import { OldTournamentCard } from '@/components/tournaments/past-tournament-card'
+import {type components} from "@/lib/api/types"
 
-export function OldTournaments() {
+export function OldTournaments({tournaments}: {tournaments: components['schemas']['LightTournament'][]}) {
     return(
         <div style={{ fontFamily: "Orbitron" }} className="w-full h-100 bg-gradient-to-tr from-black to-gray-800">
             <div className="w-full text-center">
@@ -8,10 +9,11 @@ export function OldTournaments() {
                 <p className="text-sm text-gray-400">Battle in the most competitive gmaing environment</p>
             </div>
             <div className="py-8 flex justify-center w-full h-full flex p-4 gap-4">
-                <button onClick={() => (window.location.href = "/tournaments/1")}
-                        className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
+                <div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
+                    
                     <OldTournamentCard/>
-                </button>
+                
+                </div>
                <button onClick={() => (window.location.href = "/tournaments/1")}
                         className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
                     <OldTournamentCard/>

@@ -54,19 +54,7 @@ function WelcomePage() {
 						</div>
 					</div>
 					{/* TOURNAMENTS*/}
-					<div className='flex justify-evenly'>
-						{tournaments?.items?.map((tournament) => (
-							<PublicTournamentCard tournament={tournament}/>
-						))}
-						{tournaments?.items?.map((tournament) => (
-							<PublicTournamentCard tournament={tournament}/>
-						))}
-						{tournaments?.items?.map((tournament) => (
-							<PublicTournamentCard tournament={tournament}/>
-						))}
-					</div>
-					
-					{/* <ActiveTournaments tournaments={tournaments?.items ?? []}/> */}
+					<ActiveTournaments tournaments={tournaments?.items ?? []}/>
 					{/* TOP PLAYERS */}
 					
 					<Footer/>

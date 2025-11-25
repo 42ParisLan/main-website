@@ -4,18 +4,30 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
+import { IconUsersGroup, IconClockHour4Filled } from "@tabler/icons-react";
 
 function formatDate(iso?: string) {
 	if (!iso) return "—";
 	try {
 		return new Date(iso).toLocaleString(undefined, {
-			dateStyle: "medium",
+			dateStyle: "short",
 			timeStyle: "short",
 		});
 	} catch {
 		return iso;
 	}
 }
+
+function daysLeft(date: string | Date) {
+  const end = new Date(date).getTime();
+  const now = Date.now();
+
+  const diff = end - now;
+
+  // conversion ms → jours
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
 
 export default function PublicTournamentCard({
 	tournament,
@@ -31,56 +43,64 @@ export default function PublicTournamentCard({
 		.join("");
 
 	return (
-		<Card>
-			<CardContent>
-				<div className="flex gap-4">
-					{/* <div className="flex-shrink-0">
-						<Avatar> */}
-							{/** Use AvatarImage if creator has an avatar url, otherwise fallback to initials */}
-							{/* {"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
-								<AvatarImage src={tournament.creator.avatar_url as string} alt={creatorUsername} />
-							) : (
-								<AvatarFallback>{initials || "U"}</AvatarFallback>
-							)}
-						</Avatar>
-					</div> */}
-
-					<div className="flex-1 min-w-0">
-						<div className="flex items-center justify-between gap-4">
-							<div className="min-w-0">
-								<h3 className="text-md font-medium truncate">{tournament.name}</h3>
-								<p className="text-xs text-muted-foreground truncate">
-									{tournament.description ?? "No description"}
-								</p>
-							</div>
-
-							<div className="flex items-center gap-2">
-								<Badge variant={tournament.is_visible ? "secondary" : "outline"}>
-									{tournament.is_visible ? "Public" : "Private"}
-								</Badge>
-							</div>
+		<Card className="transition-all transition-transform duration-200 hover:scale-105 h-full w-full flex flex-col justify-center bg-gray-900 border border-gray-800">
+            <CardContent className="flex flex-col gap-8">
+                <div className="flex justify-between">
+					<Avatar>
+						{/** Use AvatarImage if creator has an avatar url, otherwise fallback to initials */}
+						{"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
+						<AvatarImage src={tournament.creator.avatar_url as string} alt={creatorUsername} />
+		 					) : (
+		 						<AvatarFallback>{initials || "U"}</AvatarFallback>
+		 					)}
+		 			</Avatar>
+					<div className="text-white">
+						<h3 className="text-md font-medium truncate">{tournament.name}</h3>
+						<p className="text-xs text-muted-foreground truncate">
+							{tournament.description ?? "No description"}
+						</p>
+					</div>
+                </div>
+				{/* <div className="flex items-end gap-2">
+					<Badge variant={tournament.is_visible ? "secondary" : "outline"}>
+						{tournament.is_visible ? "Public" : "Private"}
+					</Badge>
+				</div> */}
+				<div className="flex flex-row">
+					<div className="text-xs text-gray-300">
+						<div>
+							<strong>Starts:</strong> {formatDate(tournament.tournament_start)}
 						</div>
-
-						<div className="mt-2 text-xs text-muted-foreground grid grid-cols-1 gap-1">
-							<div>
-								<strong>Starts:</strong> {formatDate(tournament.tournament_start)}
-							</div>
-							<div>
-								<strong>Registration:</strong>
-								<span className="ml-1">
-									{formatDate(tournament.registration_start)} — {formatDate(tournament.registration_end)}
-								</span>
-							</div>
-						</div>
-
-						<div className="mt-3 flex items-center gap-3">
-							<Button variant="secondary" size="sm" asChild>
-								<Link to={`/tournaments/$tournamentid`} params={{tournamentid: tournament.slug}}>View</Link>
-							</Button>
+						<div className="flex">
+							<IconClockHour4Filled className="h-4"/>
+							<strong>Registration:</strong>
+							<span className="ml-1">{daysLeft(tournament.registration_end)} days left</span>
 						</div>
 					</div>
 				</div>
-			</CardContent>
-		</Card>
+            </CardContent>
+        </Card>
+		// <Card className="h-50 flex bg-gray-900 border border-gray-800">
+		// 	<CardContent>
+		// 		<div className="flex-1 min-w-0">
+		// 			<div className="flex items-center justify-between gap-4">
+		// 				<Avatar>
+		// 					{/** Use AvatarImage if creator has an avatar url, otherwise fallback to initials */}
+		// 					{"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
+		// 						<AvatarImage src={tournament.creator.avatar_url as string} alt={creatorUsername} />
+		// 					) : (
+		// 						<AvatarFallback>{initials || "U"}</AvatarFallback>
+		// 					)}
+		// 				</Avatar>
+						
+						
+						
+		// 			</div>
+
+
+					
+		// 		</div>
+		// 	</CardContent>
+		// </Card>
 	);
 }
