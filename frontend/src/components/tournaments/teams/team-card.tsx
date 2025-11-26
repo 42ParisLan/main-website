@@ -1,7 +1,5 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent, CardHeader, CardTitle} from "../../ui/card";
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 
 export function TeamCard({team, tournament}: {team: components['schemas']['LightTeam'], tournament: components['schemas']['Tournament']}) {
     return (
