@@ -67,18 +67,18 @@ function RouteComponent() {
 				</CardHeader>
 				<CardContent>
 					<div className="grid grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-5">
-						{/* <TeamCard teams={teams?.items ?? []} tournament={tournament}/> */}
-						<PaginatedListControlled<components['schemas']['LightTeam']>
+						<TeamCard teams={teams?.items ?? []}/>
+						{/* <PaginatedListControlled<components['schemas']['LightTeam']>
 							data={teams}
 							page={0}
 							onPageChange={handlePageChange}
 							isLoading={isLoading}
 							itemsContainerClassName="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-5"
 							// renderItem={(team) => <TeamCard team={team}/>}
-							renderItem={(team) => <TeamCard team={team} tournament={tournament}/>}
+							renderItem={(team) => <TeamCard team={team}/>}
 							emptyMessage='No Teams for the moment'
 							getItemKey={(item) => item.id}
-							/>
+							/> */}
 						</div>
 				</CardContent>
 				{/* {data?.items?.map((team) => (
