@@ -14,6 +14,8 @@ import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute(
 	'/tournaments/$tournamentid/$teamid/edit/',
@@ -149,176 +151,191 @@ function RouteComponent() {
 	if (team && tournament) {
 		return (
 			<>
-				<Card>
-					<CardHeader className='flex justify-between'>
-						<CardTitle>
-							Edit {team.name}
-						</CardTitle>
-						team for tournament: "{tournament.name}"
-						<Button
-							variant="destructive"
-							onClick={() => setConfirmOpen(true)}
-						>
-							Delete Team
-						</Button>
-					</CardHeader>
-					<CardContent>
-						{Object.entries(tournament.team_structure).map(([key, _]) => {
-							const users = team.members?.filter((user) => user.role == key);
-							if (users && users.length > 0)
-							{
-								return (
-									<>
-										<p>{key}</p>
-										{users.map((team_member) => (
-											<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
-												<img
-													src={team_member.user?.picture ?? ''}
-													alt={team_member.user?.username ?? 'team member'}
-													className="w-10 h-10 rounded-full object-cover"
-												/>
-												<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
-											</div>
-										))}
-									</>
-								)
-							}
-						})}
-						<Button
-							onClick={() => setInvitationOpen(true)}
-						>
-							Invite User
-						</Button>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className='flex justify-between'>
-						<CardTitle>
-							Invitations
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<PaginatedListControlled<components['schemas']['Invitation']>
-							data={invitations}
-							page={page}
-							onPageChange={setPage}
-							isLoading={isLoadingInvitations}
-							renderItem={(item) => (
-								<>
-									<InvitationItem invitation={item} tournamentid={tournament.slug} />
-								</>
-							)}
-							getItemKey={(item) => item.id}
-						/>
-					</CardContent>
-				</Card>
-				{/* Confirmation dialog for deleting visible tournaments */}
-				<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>Delete team</DialogTitle>
-							<DialogDescription>
-								This action cannot be undone. Are you sure you want to continue?
-							</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<Button type="button" variant="ghost" onClick={() => setConfirmOpen(false)}>Cancel</Button>
-							<Button type="button" variant="destructive" onClick={() => { performDelete(); setConfirmOpen(false); }}>Delete</Button>
-						</DialogFooter>
-						<DialogClose />
-					</DialogContent>
-				</Dialog>
-				{/* Invitation dialog for adding users */}
-				<Dialog open={invitationOpen} onOpenChange={setInvitationOpen}>
-					<DialogContent>
-						<form
-							onSubmit={(e) => {
-								e.preventDefault();
-								inviteForm.handleSubmit();
-							}}
-							className="grid gap-6 py-4"
-						>
-							<DialogHeader>
-								<DialogTitle>Invite User</DialogTitle>
-								<DialogDescription>
-									This action cannot be undone. Are you sure you want to continue?
-								</DialogDescription>
-							</DialogHeader>
-							<inviteForm.Field
-								name='message'
-							>
-								{(field) => (
-									<div className="grid gap-2">
-										<Label htmlFor={field.name}>Message</Label>
-										<Input
-											id={field.name}
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											onBlur={field.handleBlur}
-											placeholder="Message for the invitation"
-											required
-										/>
-										{field.state.meta.errors?.[0] && (
-											<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
-										)}
-									</div>
-								)}
-							</inviteForm.Field>
-
-							<inviteForm.Field
-								name='user_id'
-							>
-								{(field) => (
-									<>
-										<UserSearch
-											onUserSelect={(user) => {
-											field.handleChange(user.id);
-											setSelectedUser(user);
-											}}
-											selectedUsers={new Set([field.state.value])}
-										/>
-										{selectedUser && (
+				<div className="min-h-screen flex flex-col bg-gray-800">
+					<Header/>
+					<div className="flex-1">
+						<Card className="text-white border-0  bg-gradient-to-br from-black via-foreground to-gray-700 ">
+							<CardContent className='p-6 font-bold p-4 flex justify-between'>
+								<CardTitle >
+									Edit {team.name}
+								</CardTitle>
+								Team for tournament: "{tournament.name}"
+								<Button
+									variant="destructive"
+									onClick={() => setConfirmOpen(true)}
+								>
+									Delete Team
+								</Button>
+							</CardContent>
+						</Card>
+						<div className="flex flex-row">
+							<Card className="w-full">
+								<CardContent>
+									{Object.entries(tournament.team_structure).map(([key, _]) => {
+										const users = team.members?.filter((user) => user.role == key);
+										if (users && users.length > 0)
+											{
+												return (
+													<>
+													<p>{key}</p>
+													{users.map((team_member) => (
+														<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
+															<img
+																src={team_member.user?.picture ?? ''}
+																alt={team_member.user?.username ?? 'team member'}
+																className="w-10 h-10 rounded-full object-cover"
+																/>
+															<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
+														</div>
+													))}
+												</>
+											)
+										}
+									})}
+									<Button
+										onClick={() => setInvitationOpen(true)}
+										>
+										Invite User
+									</Button>
+								</CardContent>
+							</Card>
+							<Card className="w-full">
+								<CardHeader className='flex justify-between'>
+									<CardTitle>
+										Invitations
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<PaginatedListControlled<components['schemas']['Invitation']>
+										data={invitations}
+										page={page}
+										onPageChange={setPage}
+										isLoading={isLoadingInvitations}
+										renderItem={(item) => (
 											<>
-												<div className="mt-4 p-3 bg-muted rounded-md">
-													<p className="text-sm font-medium">Selected user:</p>
-													<p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
-												</div>
+												<InvitationItem invitation={item} tournamentid={tournament.slug} />
 											</>
 										)}
-									</>
-								)}
-							</inviteForm.Field>
-
-							<inviteForm.Field
-								name='role'
-							>
-								{(field) => (
-									<Select
-										value={field.state.value}
-										onValueChange={(v) => field.handleChange(v)}
+										getItemKey={(item) => item.id}
+									/>
+								</CardContent>
+							</Card>
+						</div>
+						{/* Confirmation dialog for deleting visible tournaments */}
+						<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+							<DialogContent>
+								<DialogHeader>
+									<DialogTitle>Delete team</DialogTitle>
+									<DialogDescription>
+										This action cannot be undone. Are you sure you want to continue?
+									</DialogDescription>
+								</DialogHeader>
+								<DialogFooter>
+									<Button type="button" variant="ghost" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+									<Button type="button" variant="destructive" onClick={() => { performDelete(); setConfirmOpen(false); }}>Delete</Button>
+								</DialogFooter>
+								<DialogClose />
+							</DialogContent>
+						</Dialog>
+						{/* Invitation dialog for adding users */}
+						<Dialog open={invitationOpen} onOpenChange={setInvitationOpen}>
+							<DialogContent>
+								<form
+									onSubmit={(e) => {
+										e.preventDefault();
+										inviteForm.handleSubmit();
+									}}
+									className="grid gap-6 py-4"
+								>
+									<DialogHeader>
+										<DialogTitle>Invite User</DialogTitle>
+										<DialogDescription>
+											This action cannot be undone. Are you sure you want to continue?
+										</DialogDescription>
+									</DialogHeader>
+									<inviteForm.Field
+										name='message'
 									>
-										<SelectTrigger className="w-full">
-											<SelectValue placeholder="Select Role" />
-										</SelectTrigger>
-										<SelectContent>
-											{roles.map((r) => (
-												<SelectItem key={r} value={r}>
-													{r}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								)}
-							</inviteForm.Field>
-							<DialogFooter>
-								<Button type="button" variant="ghost" onClick={() => setInvitationOpen(false)}>Cancel</Button>
-								<Button type="submit">Invite</Button>
-							</DialogFooter>
-						</form>
-						<DialogClose />
-					</DialogContent>
-				</Dialog>
+										{(field) => (
+											<div className="grid gap-2">
+												<Label htmlFor={field.name}>Message</Label>
+												<Input
+													id={field.name}
+													value={field.state.value}
+													onChange={(e) => field.handleChange(e.target.value)}
+													onBlur={field.handleBlur}
+													placeholder="Message for the invitation"
+													required
+												/>
+												{field.state.meta.errors?.[0] && (
+													<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
+												)}
+											</div>
+										)}
+									</inviteForm.Field>
+
+									<inviteForm.Field
+										name='user_id'
+									>
+										{(field) => (
+											<>
+												<UserSearch
+													onUserSelect={(user) => {
+													field.handleChange(user.id);
+													setSelectedUser(user);
+													}}
+													selectedUsers={new Set([field.state.value])}
+												/>
+												{selectedUser && (
+													<>
+														<div className="mt-4 p-3 bg-muted rounded-md">
+															<p className="text-sm font-medium">Selected user:</p>
+															<p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
+														</div>
+													</>
+												)}
+											</>
+										)}
+									</inviteForm.Field>
+
+									<inviteForm.Field
+										name='role'
+									>
+										{(field) => (
+											<Select
+												value={field.state.value}
+												onValueChange={(v) => field.handleChange(v)}
+											>
+												<SelectTrigger className="w-full">
+													<SelectValue placeholder="Select Role" />
+												</SelectTrigger>
+												<SelectContent>
+													{roles.map((r) => (
+														<SelectItem key={r} value={r}>
+															{r}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										)}
+									</inviteForm.Field>
+									<DialogFooter>
+										<Button type="button" variant="ghost" onClick={() => setInvitationOpen(false)}>Cancel</Button>
+										<Button type="submit">Invite</Button>
+									</DialogFooter>
+								</form>
+								<DialogClose />
+							</DialogContent>
+						</Dialog>
+						<Footer/>
+					</div>
+				</div>
 			</>
 		)
 	}
 }
+
+//inviation sur cote
+//nom de la team en grand au milieu "TEAM nom" et le jeu
+//dans /tournaments/team mettre le nom du tournois
+//sur la page du tournois mettre register ee vote
