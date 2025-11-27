@@ -9,7 +9,10 @@ import { TeamCard } from '@/components/tournaments/teams/team-card';
 import { Separator } from 'radix-ui';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
- 
+import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
+import { TeamCard } from '@/components/tournaments/teams/team-card';
+import { Separator } from 'radix-ui';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
   component: RouteComponent,
