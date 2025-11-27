@@ -26,10 +26,10 @@ export default function MyProfileContent() {
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-black to-se1condary">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-black to-secondary">
       <Header/>
-      <div className="flex-1 border-0 bg-gradient-to-br from-secondary via-black to-primary">
-        <div className="p-6">
+      <div className="flex-1 border-0 dark bg-gradient-to-br from-primary via-background to-secondary">
+        <div className="p-6"> 
           <div className="py-2">
             <MyProfileCard user={user}/>
           </div>

@@ -1,4 +1,4 @@
-import TournamentCard from '@/components/tournaments/admin/tournament-card';
+// import TournamentCard from '@/components/tournaments/admin/tournament-card';
 import PublicTournamentCard from '@/components/tournaments/public-tournament-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PaginatedListControlled } from '@/components/ui/paginated-list';
@@ -88,7 +88,7 @@ function RouteComponent() {
 							isLoading={isLoadingOld}
 							page={oldPage}
 							onPageChange={handleOldPageChange}
-							renderItem={(tournament) => <TournamentCard tournament={tournament} />}
+							renderItem={(tournament) => <PublicTournamentCard tournament={tournament} />}
 							getItemKey={(tournament) => tournament.id}
 							itemsContainerClassName="flex flex-row gap-4"
 							itemLabel="user"

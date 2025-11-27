@@ -4,7 +4,10 @@ import useQueryClient from '@/hooks/use-query-client'
 import { useAuth } from '@/providers/auth.provider';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { useMemo } from 'react';
- 
+import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
+import { TeamCard } from '@/components/tournaments/teams/team-card';
+import { Separator } from 'radix-ui';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
   component: RouteComponent,
@@ -54,7 +57,45 @@ function RouteComponent() {
 	{
 		return (
 			<>
-				<Card>
+				<div className="min-h-screen flex flex-col bg-black ">
+					<Header/>
+					<Card className="border-0 flex-1 bg-gradient-to-br from-black via-foreground to-gray-700">
+						<CardHeader className="p-4 w-full flex items-center">
+							<CardTitle className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+								My team for the {tournament.name} tournament
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="flex flex-col items-center">
+							<div className="p-4 w-100">
+								<TeamCard team={team} tournament={tournament}/>
+							</div>
+							
+							{role == "creator" ? (
+							<>
+								<Button
+									variant="gradient"
+									asChild
+								>
+									<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
+										Edit Team
+									</Link>
+								</Button>
+							</>
+						) : role == "member" && (
+							<Button
+								variant="destructive"
+							>
+								Leave Team
+							</Button>
+						)}
+						</CardContent>
+					</Card>
+					<Footer/>
+				</div>
+			</>
+		)
+	}
+				{/* <Card>
 					<CardHeader className='flex justify-between'>
 						<CardTitle>
 							{team.name}
@@ -104,10 +145,8 @@ function RouteComponent() {
 							</Button>
 						)}
 					</CardFooter>
-				</Card>
-			</>
-		)
-	}
+				</Card> */}
+	
 
 	return null
 }

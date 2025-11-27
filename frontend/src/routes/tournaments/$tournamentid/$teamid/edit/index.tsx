@@ -151,11 +151,11 @@ function RouteComponent() {
 	if (team && tournament) {
 		return (
 			<>
-				<div className="min-h-screen flex flex-col bg-gray-800">
-					<Header/>
-					<div className="flex-1">
-						<Card className="text-white border-0  bg-gradient-to-br from-black via-foreground to-gray-700 ">
-							<CardContent className='p-6 font-bold p-4 flex justify-between'>
+				<Header/>
+				<div className="p-2  flex flex-col dark bg-gradient-to-br from-primary via-gray-800 to-secondary">
+					<div className="">
+						<Card className="p-2 text-white border-0 bg-gradient-to-br from-black to-gray-700 ">
+							<CardContent className='font-bold p-2 flex justify-between'>
 								<CardTitle >
 									Edit {team.name}
 								</CardTitle>
@@ -168,8 +168,8 @@ function RouteComponent() {
 								</Button>
 							</CardContent>
 						</Card>
-						<div className="flex flex-row">
-							<Card className="w-full">
+						<div className="flex py-2 gap-2 min-h-screen flex-row justify-center ">
+							<Card className=" w-full flex-1 border-0 bg-gradient-to-br from-black to-gray-700">
 								<CardContent>
 									{Object.entries(tournament.team_structure).map(([key, _]) => {
 										const users = team.members?.filter((user) => user.role == key);
@@ -199,7 +199,7 @@ function RouteComponent() {
 									</Button>
 								</CardContent>
 							</Card>
-							<Card className="w-full">
+							<Card className="w-full border-0 flex-1  bg-gradient-to-br from-black to-gray-700">
 								<CardHeader className='flex justify-between'>
 									<CardTitle>
 										Invitations
@@ -327,9 +327,9 @@ function RouteComponent() {
 								<DialogClose />
 							</DialogContent>
 						</Dialog>
-						<Footer/>
 					</div>
 				</div>
+				<Footer/>
 			</>
 		)
 	}
