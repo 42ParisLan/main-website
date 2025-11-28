@@ -207,9 +207,10 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "image_url", Type: field.TypeString, Nullable: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"DRAFT", "LOCKED"}, Default: "DRAFT"},
 		{Name: "is_locked", Type: field.TypeBool, Default: false},
-		{Name: "queue_position", Type: field.TypeInt, Nullable: true},
+		{Name: "is_registered", Type: field.TypeBool, Default: false},
+		{Name: "is_waitlisted", Type: field.TypeBool, Default: false},
+		{Name: "waitlist_position", Type: field.TypeInt, Nullable: true},
 		{Name: "score", Type: field.TypeInt, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -225,19 +226,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "teams_rank_groups_teams",
-				Columns:    []*schema.Column{TeamsColumns[9]},
+				Columns:    []*schema.Column{TeamsColumns[10]},
 				RefColumns: []*schema.Column{RankGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "teams_tournaments_teams",
-				Columns:    []*schema.Column{TeamsColumns[10]},
+				Columns:    []*schema.Column{TeamsColumns[11]},
 				RefColumns: []*schema.Column{TournamentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "teams_users_created_teams",
-				Columns:    []*schema.Column{TeamsColumns[11]},
+				Columns:    []*schema.Column{TeamsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -246,7 +247,7 @@ var (
 			{
 				Name:    "team_user_created_teams_tournament_teams",
 				Unique:  true,
-				Columns: []*schema.Column{TeamsColumns[11], TeamsColumns[10]},
+				Columns: []*schema.Column{TeamsColumns[12], TeamsColumns[11]},
 			},
 		},
 	}

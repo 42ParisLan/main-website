@@ -63,15 +63,23 @@ func init() {
 	teamFields := schema.Team{}.Fields()
 	_ = teamFields
 	// teamDescIsLocked is the schema descriptor for is_locked field.
-	teamDescIsLocked := teamFields[3].Descriptor()
+	teamDescIsLocked := teamFields[2].Descriptor()
 	// team.DefaultIsLocked holds the default value on creation for the is_locked field.
 	team.DefaultIsLocked = teamDescIsLocked.Default.(bool)
+	// teamDescIsRegistered is the schema descriptor for is_registered field.
+	teamDescIsRegistered := teamFields[3].Descriptor()
+	// team.DefaultIsRegistered holds the default value on creation for the is_registered field.
+	team.DefaultIsRegistered = teamDescIsRegistered.Default.(bool)
+	// teamDescIsWaitlisted is the schema descriptor for is_waitlisted field.
+	teamDescIsWaitlisted := teamFields[4].Descriptor()
+	// team.DefaultIsWaitlisted holds the default value on creation for the is_waitlisted field.
+	team.DefaultIsWaitlisted = teamDescIsWaitlisted.Default.(bool)
 	// teamDescCreatedAt is the schema descriptor for created_at field.
-	teamDescCreatedAt := teamFields[6].Descriptor()
+	teamDescCreatedAt := teamFields[7].Descriptor()
 	// team.DefaultCreatedAt holds the default value on creation for the created_at field.
 	team.DefaultCreatedAt = teamDescCreatedAt.Default.(func() time.Time)
 	// teamDescUpdatedAt is the schema descriptor for updated_at field.
-	teamDescUpdatedAt := teamFields[7].Descriptor()
+	teamDescUpdatedAt := teamFields[8].Descriptor()
 	// team.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	team.DefaultUpdatedAt = teamDescUpdatedAt.Default.(func() time.Time)
 	// team.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

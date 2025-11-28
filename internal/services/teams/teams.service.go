@@ -16,6 +16,7 @@ import (
 	"base-website/pkg/errorfilters"
 	"base-website/pkg/paging"
 	"context"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -32,6 +33,8 @@ type TeamsService interface {
 	GetTeam(ctx context.Context, teamID int) (*lightmodels.LightTeam, error)
 	UpdateTeam(ctx context.Context, teamID int, input *teamsmodels.UpdateTeam) (*lightmodels.LightTeam, error)
 	DeleteTeam(ctx context.Context, teamID int) error
+	LeaveTeam(ctx context.Context, teamID int) error
+	LockTeam(ctx context.Context, teamID int) (*lightmodels.LightTeam, error)
 }
 
 type teamsService struct {
@@ -73,6 +76,18 @@ func (svc *teamsService) ListTeamsByTournament(
 	params *teamsmodels.ListTeamsParams,
 ) (*paging.Response[*lightmodels.LightTeam], error) {
 	query := svc.databaseService.Team.Query().Where(team.HasTournamentWith(tournament.IDEQ(params.TournamentID)))
+
+	if params.Status != "all" {
+		if params.Status == "locked" || params.Status == "draft" {
+			query.Where(team.IsLockedEQ(params.Status == "locked"))
+		}
+		if params.Status == "register" {
+			query.Where(team.IsRegisteredEQ(true))
+		}
+		if params.Status == "waitlist" {
+			query.Where(team.IsWaitlistedEQ(true))
+		}
+	}
 
 	total, err := query.Count(ctx)
 	if err != nil {
@@ -329,10 +344,6 @@ func (svc *teamsService) DeleteTeam(
 
 	entTeam, err := svc.databaseService.Team.Query().
 		Where(team.IDEQ(teamID)).
-		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
-			teamMemberQuery.WithUser()
-		}).
-		WithRankGroup().
 		WithCreator().
 		WithTournament().
 		Only(ctx)
@@ -356,5 +367,180 @@ func (svc *teamsService) DeleteTeam(
 		svc.s3service.RemoveObject(ctx, *entTeam.ImageURL)
 	}
 
+	waitingTeam, err := svc.databaseService.Team.Query().
+		Where(
+			team.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)),
+			team.IsWaitlisted(true),
+		).
+		Order(ent.Asc(team.FieldWaitlistPosition)).
+		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	_, err = waitingTeam.Update().
+		SetIsRegistered(true).
+		SetIsWaitlisted(false).
+		ClearWaitlistPosition().
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+
+	waitlistTeams, _ := svc.databaseService.Team.Query().
+		Where(
+			team.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)),
+			team.IsWaitlisted(true),
+		).
+		Order(ent.Asc(team.FieldWaitlistPosition)).
+		All(ctx)
+
+	for i, t := range waitlistTeams {
+		t.Update().SetWaitlistPosition(i + 1).Save(ctx)
+	}
+
 	return nil
+}
+
+func (svc *teamsService) LeaveTeam(
+	ctx context.Context,
+	teamID int,
+) error {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	entTeam, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
+			teamMemberQuery.WithUser()
+		}).
+		WithCreator().
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	if entTeam.IsLocked == true {
+		return huma.Error401Unauthorized("can't leave team if this one is locked")
+	}
+
+	if entTeam.Edges.Creator != nil && userID == entTeam.Edges.Creator.ID {
+		return huma.Error401Unauthorized("creator of the team can't leave it")
+	}
+
+	for _, member := range entTeam.Edges.Members {
+		if member == nil || member.Edges.User == nil {
+			continue
+		}
+		if member.Edges.User.ID == userID {
+			if err := svc.databaseService.TeamMember.DeleteOneID(member.ID).Exec(ctx); err != nil {
+				return svc.errorFilter.Filter(err, "leave_team")
+			}
+			return nil
+		}
+	}
+
+	return huma.Error401Unauthorized("you're not in this team")
+}
+
+func (svc *teamsService) LockTeam(
+	ctx context.Context,
+	teamID int,
+) (*lightmodels.LightTeam, error) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	entTeam, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
+			teamMemberQuery.WithUser()
+		}).
+		WithCreator().
+		WithTournament().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if entTeam.Edges.Creator == nil || entTeam.Edges.Creator.ID != userID {
+		return nil, huma.Error401Unauthorized("only creator of the team can lock it")
+	}
+
+	teamsMembers := entTeam.Edges.Members
+
+	if entTeam.Edges.Tournament == nil {
+		return nil, svc.errorFilter.Filter(fmt.Errorf("team has no tournament attached"), "lock_team")
+	}
+
+	if entTeam.IsLocked {
+		return nil, huma.Error400BadRequest("team is already locked")
+	}
+
+	var parsed map[string]lightmodels.TeamStructure
+	bs, err := json.Marshal(entTeam.Edges.Tournament.TeamStructure)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure JSON: %w", err), "lock_team")
+	}
+	if err := json.Unmarshal(bs, &parsed); err != nil {
+		return nil, svc.errorFilter.Filter(fmt.Errorf("invalid teamStructure JSON: %w", err), "lock_team")
+	}
+
+	count := make(map[string]int, len(parsed))
+	for _, member := range teamsMembers {
+		if member == nil {
+			continue
+		}
+		count[member.Role] += 1
+	}
+	for role, value := range parsed {
+		c := count[role]
+		if c < value.Min || c > value.Max {
+			return nil, huma.Error400BadRequest("team does not match required structure")
+		}
+	}
+
+	update := svc.databaseService.Team.UpdateOneID(entTeam.ID).SetIsLocked(true)
+
+	registeredCount, _ := svc.databaseService.Team.Query().
+		Where(team.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)), team.IsRegistered(true)).
+		Count(ctx)
+
+	_, err = update.Save(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "save team")
+	}
+	if registeredCount < entTeam.Edges.Tournament.MaxTeams {
+		update.SetIsRegistered(true)
+		update.SetIsWaitlisted(false)
+		update.ClearWaitlistPosition()
+	} else {
+		waitlistCount, _ := svc.databaseService.Team.Query().
+			Where(team.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)), team.IsWaitlisted(true)).
+			Count(ctx)
+
+		update.SetIsRegistered(false)
+		update.SetIsWaitlisted(true)
+		update.SetWaitlistPosition(waitlistCount + 1)
+	}
+
+	reloaded, err := svc.databaseService.Team.Query().
+		Where(team.IDEQ(teamID)).
+		WithMembers(func(teamMemberQuery *ent.TeamMemberQuery) {
+			teamMemberQuery.WithUser()
+		}).
+		WithRankGroup().
+		WithCreator().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return lightmodels.NewLightTeamFromEnt(ctx, reloaded, svc.s3service), nil
 }

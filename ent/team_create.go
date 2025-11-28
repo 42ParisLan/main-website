@@ -45,20 +45,6 @@ func (_c *TeamCreate) SetNillableImageURL(v *string) *TeamCreate {
 	return _c
 }
 
-// SetStatus sets the "status" field.
-func (_c *TeamCreate) SetStatus(v team.Status) *TeamCreate {
-	_c.mutation.SetStatus(v)
-	return _c
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *TeamCreate) SetNillableStatus(v *team.Status) *TeamCreate {
-	if v != nil {
-		_c.SetStatus(*v)
-	}
-	return _c
-}
-
 // SetIsLocked sets the "is_locked" field.
 func (_c *TeamCreate) SetIsLocked(v bool) *TeamCreate {
 	_c.mutation.SetIsLocked(v)
@@ -73,16 +59,44 @@ func (_c *TeamCreate) SetNillableIsLocked(v *bool) *TeamCreate {
 	return _c
 }
 
-// SetQueuePosition sets the "queue_position" field.
-func (_c *TeamCreate) SetQueuePosition(v int) *TeamCreate {
-	_c.mutation.SetQueuePosition(v)
+// SetIsRegistered sets the "is_registered" field.
+func (_c *TeamCreate) SetIsRegistered(v bool) *TeamCreate {
+	_c.mutation.SetIsRegistered(v)
 	return _c
 }
 
-// SetNillableQueuePosition sets the "queue_position" field if the given value is not nil.
-func (_c *TeamCreate) SetNillableQueuePosition(v *int) *TeamCreate {
+// SetNillableIsRegistered sets the "is_registered" field if the given value is not nil.
+func (_c *TeamCreate) SetNillableIsRegistered(v *bool) *TeamCreate {
 	if v != nil {
-		_c.SetQueuePosition(*v)
+		_c.SetIsRegistered(*v)
+	}
+	return _c
+}
+
+// SetIsWaitlisted sets the "is_waitlisted" field.
+func (_c *TeamCreate) SetIsWaitlisted(v bool) *TeamCreate {
+	_c.mutation.SetIsWaitlisted(v)
+	return _c
+}
+
+// SetNillableIsWaitlisted sets the "is_waitlisted" field if the given value is not nil.
+func (_c *TeamCreate) SetNillableIsWaitlisted(v *bool) *TeamCreate {
+	if v != nil {
+		_c.SetIsWaitlisted(*v)
+	}
+	return _c
+}
+
+// SetWaitlistPosition sets the "waitlist_position" field.
+func (_c *TeamCreate) SetWaitlistPosition(v int) *TeamCreate {
+	_c.mutation.SetWaitlistPosition(v)
+	return _c
+}
+
+// SetNillableWaitlistPosition sets the "waitlist_position" field if the given value is not nil.
+func (_c *TeamCreate) SetNillableWaitlistPosition(v *int) *TeamCreate {
+	if v != nil {
+		_c.SetWaitlistPosition(*v)
 	}
 	return _c
 }
@@ -235,13 +249,17 @@ func (_c *TeamCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *TeamCreate) defaults() {
-	if _, ok := _c.mutation.Status(); !ok {
-		v := team.DefaultStatus
-		_c.mutation.SetStatus(v)
-	}
 	if _, ok := _c.mutation.IsLocked(); !ok {
 		v := team.DefaultIsLocked
 		_c.mutation.SetIsLocked(v)
+	}
+	if _, ok := _c.mutation.IsRegistered(); !ok {
+		v := team.DefaultIsRegistered
+		_c.mutation.SetIsRegistered(v)
+	}
+	if _, ok := _c.mutation.IsWaitlisted(); !ok {
+		v := team.DefaultIsWaitlisted
+		_c.mutation.SetIsWaitlisted(v)
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := team.DefaultCreatedAt()
@@ -258,16 +276,14 @@ func (_c *TeamCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Team.name"`)}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Team.status"`)}
-	}
-	if v, ok := _c.mutation.Status(); ok {
-		if err := team.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.IsLocked(); !ok {
 		return &ValidationError{Name: "is_locked", err: errors.New(`ent: missing required field "Team.is_locked"`)}
+	}
+	if _, ok := _c.mutation.IsRegistered(); !ok {
+		return &ValidationError{Name: "is_registered", err: errors.New(`ent: missing required field "Team.is_registered"`)}
+	}
+	if _, ok := _c.mutation.IsWaitlisted(); !ok {
+		return &ValidationError{Name: "is_waitlisted", err: errors.New(`ent: missing required field "Team.is_waitlisted"`)}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Team.created_at"`)}
@@ -315,17 +331,21 @@ func (_c *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 		_spec.SetField(team.FieldImageURL, field.TypeString, value)
 		_node.ImageURL = &value
 	}
-	if value, ok := _c.mutation.Status(); ok {
-		_spec.SetField(team.FieldStatus, field.TypeEnum, value)
-		_node.Status = value
-	}
 	if value, ok := _c.mutation.IsLocked(); ok {
 		_spec.SetField(team.FieldIsLocked, field.TypeBool, value)
 		_node.IsLocked = value
 	}
-	if value, ok := _c.mutation.QueuePosition(); ok {
-		_spec.SetField(team.FieldQueuePosition, field.TypeInt, value)
-		_node.QueuePosition = value
+	if value, ok := _c.mutation.IsRegistered(); ok {
+		_spec.SetField(team.FieldIsRegistered, field.TypeBool, value)
+		_node.IsRegistered = value
+	}
+	if value, ok := _c.mutation.IsWaitlisted(); ok {
+		_spec.SetField(team.FieldIsWaitlisted, field.TypeBool, value)
+		_node.IsWaitlisted = value
+	}
+	if value, ok := _c.mutation.WaitlistPosition(); ok {
+		_spec.SetField(team.FieldWaitlistPosition, field.TypeInt, value)
+		_node.WaitlistPosition = &value
 	}
 	if value, ok := _c.mutation.Score(); ok {
 		_spec.SetField(team.FieldScore, field.TypeInt, value)

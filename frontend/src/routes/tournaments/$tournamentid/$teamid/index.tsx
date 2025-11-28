@@ -3,7 +3,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import useQueryClient from '@/hooks/use-query-client'
 import { useAuth } from '@/providers/auth.provider';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
  
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
@@ -31,6 +32,35 @@ function RouteComponent() {
 			}
 		}
 	})
+
+	const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
+		onSuccess() {
+			toast.success("Team Successfuly Leaved")
+			if (tournament) {
+				router.navigate({
+					to: "/tournaments/$tournamentid",
+					params: {
+						tournamentid: tournament.slug,
+					},
+				})
+			}
+		},
+		onError(error) {
+			console.error('Failed to leave team', error)
+			toast.error("Failed to Leave Team")
+		}
+	})
+
+	const performLeave = useCallback(() => {
+		if (!team) return;
+		mutateLeave({
+			params: {
+				path: {
+					id: team.id,
+				},
+			},
+		});
+	}, [mutateLeave, team]);
 
 	const role = useMemo(() => {
 		if (team?.creator?.id === me.id) return 'creator'
@@ -85,23 +115,28 @@ function RouteComponent() {
 						})}
 					</CardContent>
 					<CardFooter>
-						{role == "creator" ? (
+						{team.is_locked == false && (
 							<>
-								<Button
-									variant="default"
-									asChild
-								>
-									<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-										Edit Team
-									</Link>
-								</Button>
+								{role == "creator" ? (
+									<>
+										<Button
+											variant="default"
+											asChild
+										>
+											<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
+												Edit Team
+											</Link>
+										</Button>
+									</>
+								) : role == "member" && (
+									<Button
+										variant="destructive"
+										onClick={performLeave}
+									>
+										Leave Team
+									</Button>
+								)}
 							</>
-						) : role == "member" && (
-							<Button
-								variant="destructive"
-							>
-								Leave Team
-							</Button>
 						)}
 					</CardFooter>
 				</Card>

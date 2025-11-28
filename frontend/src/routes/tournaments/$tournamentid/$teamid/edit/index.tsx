@@ -74,6 +74,25 @@ function RouteComponent() {
 		}
 	})
 
+	const {mutate : mutateLock} = client.useMutation("post", "/teams/{id}/lock", {
+		onSuccess() {
+			toast.success("Team Successfuly Locked")
+			if (team && tournament) {
+				router.navigate({
+					to: "/tournaments/$tournamentid/$teamid",
+					params: {
+						tournamentid: tournament.slug,
+						teamid: String(team.id)
+					},
+				})
+			}
+		},
+		onError(error) {
+			console.error('Failed to lock team', error)
+			toast.error("Failed to Lock Team, check that the team has correct structure")
+		}
+	})
+
 	const performDelete = useCallback(() => {
 		if (!team) return;
 		mutateDelete({
@@ -84,6 +103,17 @@ function RouteComponent() {
 			},
 		});
 	}, [mutateDelete, team]);
+
+	const performLock = useCallback(() => {
+		if (!team) return;
+		mutateLock({
+			params: {
+				path: {
+					id: team.id,
+				},
+			},
+		});
+	}, [mutateLock, team]);
 
 	const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -155,6 +185,11 @@ function RouteComponent() {
 							Edit {team.name}
 						</CardTitle>
 						team for tournament: "{tournament.name}"
+						<Button
+							onClick={performLock}
+						>
+							Lock Team
+						</Button>
 						<Button
 							variant="destructive"
 							onClick={() => setConfirmOpen(true)}

@@ -3,7 +3,6 @@
 package team
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -19,12 +18,14 @@ const (
 	FieldName = "name"
 	// FieldImageURL holds the string denoting the image_url field in the database.
 	FieldImageURL = "image_url"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
 	// FieldIsLocked holds the string denoting the is_locked field in the database.
 	FieldIsLocked = "is_locked"
-	// FieldQueuePosition holds the string denoting the queue_position field in the database.
-	FieldQueuePosition = "queue_position"
+	// FieldIsRegistered holds the string denoting the is_registered field in the database.
+	FieldIsRegistered = "is_registered"
+	// FieldIsWaitlisted holds the string denoting the is_waitlisted field in the database.
+	FieldIsWaitlisted = "is_waitlisted"
+	// FieldWaitlistPosition holds the string denoting the waitlist_position field in the database.
+	FieldWaitlistPosition = "waitlist_position"
 	// FieldScore holds the string denoting the score field in the database.
 	FieldScore = "score"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -85,9 +86,10 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldImageURL,
-	FieldStatus,
 	FieldIsLocked,
-	FieldQueuePosition,
+	FieldIsRegistered,
+	FieldIsWaitlisted,
+	FieldWaitlistPosition,
 	FieldScore,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -119,6 +121,10 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultIsLocked holds the default value on creation for the "is_locked" field.
 	DefaultIsLocked bool
+	// DefaultIsRegistered holds the default value on creation for the "is_registered" field.
+	DefaultIsRegistered bool
+	// DefaultIsWaitlisted holds the default value on creation for the "is_waitlisted" field.
+	DefaultIsWaitlisted bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -126,32 +132,6 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
-
-// Status defines the type for the "status" enum field.
-type Status string
-
-// StatusDRAFT is the default value of the Status enum.
-const DefaultStatus = StatusDRAFT
-
-// Status values.
-const (
-	StatusDRAFT  Status = "DRAFT"
-	StatusLOCKED Status = "LOCKED"
-)
-
-func (s Status) String() string {
-	return string(s)
-}
-
-// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusDRAFT, StatusLOCKED:
-		return nil
-	default:
-		return fmt.Errorf("team: invalid enum value for status field: %q", s)
-	}
-}
 
 // OrderOption defines the ordering options for the Team queries.
 type OrderOption func(*sql.Selector)
@@ -171,19 +151,24 @@ func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
 }
 
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
-}
-
 // ByIsLocked orders the results by the is_locked field.
 func ByIsLocked(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsLocked, opts...).ToFunc()
 }
 
-// ByQueuePosition orders the results by the queue_position field.
-func ByQueuePosition(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldQueuePosition, opts...).ToFunc()
+// ByIsRegistered orders the results by the is_registered field.
+func ByIsRegistered(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsRegistered, opts...).ToFunc()
+}
+
+// ByIsWaitlisted orders the results by the is_waitlisted field.
+func ByIsWaitlisted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsWaitlisted, opts...).ToFunc()
+}
+
+// ByWaitlistPosition orders the results by the waitlist_position field.
+func ByWaitlistPosition(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWaitlistPosition, opts...).ToFunc()
 }
 
 // ByScore orders the results by the score field.

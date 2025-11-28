@@ -492,6 +492,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/teams/{id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave Team
+         * @description This endpoint is used to leave a team.
+         */
+        post: operations["leaveTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/teams/{id}/lock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Lock Team
+         * @description This endpoint is used to lock a team.
+         */
+        post: operations["lockTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tournaments": {
         parameters: {
             query?: never;
@@ -1228,17 +1268,16 @@ export interface components {
             id: number;
             image_url?: string;
             is_locked: boolean;
+            is_registered: boolean;
+            is_waitlisted: boolean;
             members?: components["schemas"]["LightTeamMember"][] | null;
             /** @example Team Phoenix */
             name: string;
             rank_group?: components["schemas"]["LightRankGroup"];
             /** Format: int64 */
             score?: number;
-            /**
-             * @example DRAFT
-             * @enum {string}
-             */
-            status: "DRAFT" | "LOCKED";
+            /** Format: int64 */
+            waitlist_position?: number;
         };
         LightTeamMember: {
             /** @example player */
@@ -2802,6 +2841,70 @@ export interface operations {
             };
         };
     };
+    leaveTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    lockTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getAllTournaments: {
         parameters: {
             query?: {
@@ -3184,8 +3287,8 @@ export interface operations {
                 limit?: number;
                 /** @example asc */
                 order?: "asc" | "desc";
-                /** @example DRAFT */
-                status?: "DRAFT" | "LOCKED";
+                /** @example all */
+                status?: "all" | "locked" | "draft" | "register" | "waitlist";
             };
             header?: never;
             path: {

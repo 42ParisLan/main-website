@@ -24,12 +24,14 @@ type Team struct {
 	Name string `json:"name,omitempty"`
 	// ImageURL holds the value of the "image_url" field.
 	ImageURL *string `json:"image_url,omitempty"`
-	// Status holds the value of the "status" field.
-	Status team.Status `json:"status,omitempty"`
 	// IsLocked holds the value of the "is_locked" field.
 	IsLocked bool `json:"is_locked,omitempty"`
-	// QueuePosition holds the value of the "queue_position" field.
-	QueuePosition int `json:"queue_position,omitempty"`
+	// IsRegistered holds the value of the "is_registered" field.
+	IsRegistered bool `json:"is_registered,omitempty"`
+	// IsWaitlisted holds the value of the "is_waitlisted" field.
+	IsWaitlisted bool `json:"is_waitlisted,omitempty"`
+	// WaitlistPosition holds the value of the "waitlist_position" field.
+	WaitlistPosition *int `json:"waitlist_position,omitempty"`
 	// Score holds the value of the "score" field.
 	Score int `json:"score,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -118,11 +120,11 @@ func (*Team) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case team.FieldIsLocked:
+		case team.FieldIsLocked, team.FieldIsRegistered, team.FieldIsWaitlisted:
 			values[i] = new(sql.NullBool)
-		case team.FieldID, team.FieldQueuePosition, team.FieldScore:
+		case team.FieldID, team.FieldWaitlistPosition, team.FieldScore:
 			values[i] = new(sql.NullInt64)
-		case team.FieldName, team.FieldImageURL, team.FieldStatus:
+		case team.FieldName, team.FieldImageURL:
 			values[i] = new(sql.NullString)
 		case team.FieldCreatedAt, team.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -166,23 +168,30 @@ func (_m *Team) assignValues(columns []string, values []any) error {
 				_m.ImageURL = new(string)
 				*_m.ImageURL = value.String
 			}
-		case team.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				_m.Status = team.Status(value.String)
-			}
 		case team.FieldIsLocked:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_locked", values[i])
 			} else if value.Valid {
 				_m.IsLocked = value.Bool
 			}
-		case team.FieldQueuePosition:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field queue_position", values[i])
+		case team.FieldIsRegistered:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_registered", values[i])
 			} else if value.Valid {
-				_m.QueuePosition = int(value.Int64)
+				_m.IsRegistered = value.Bool
+			}
+		case team.FieldIsWaitlisted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_waitlisted", values[i])
+			} else if value.Valid {
+				_m.IsWaitlisted = value.Bool
+			}
+		case team.FieldWaitlistPosition:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field waitlist_position", values[i])
+			} else if value.Valid {
+				_m.WaitlistPosition = new(int)
+				*_m.WaitlistPosition = int(value.Int64)
 			}
 		case team.FieldScore:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -292,14 +301,19 @@ func (_m *Team) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Status))
-	builder.WriteString(", ")
 	builder.WriteString("is_locked=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsLocked))
 	builder.WriteString(", ")
-	builder.WriteString("queue_position=")
-	builder.WriteString(fmt.Sprintf("%v", _m.QueuePosition))
+	builder.WriteString("is_registered=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsRegistered))
+	builder.WriteString(", ")
+	builder.WriteString("is_waitlisted=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsWaitlisted))
+	builder.WriteString(", ")
+	if v := _m.WaitlistPosition; v != nil {
+		builder.WriteString("waitlist_position=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("score=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Score))
