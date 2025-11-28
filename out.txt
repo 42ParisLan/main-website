@@ -1,0 +1,678 @@
+.
+├── cmd
+│   └── api
+│       ├── Dockerfile.dev
+│       └── main.go
+├── configs
+│   └── rbac.yaml
+├── docker-compose.dev.yaml
+├── Dockerfile
+├── docs
+│   ├── 42lan-api.yaml
+│   ├── additional_specs.yaml
+│   └── API_DOC.md
+├── ent
+│   ├── app
+│   │   ├── app.go
+│   │   └── where.go
+│   ├── app_create.go
+│   ├── app_delete.go
+│   ├── app.go
+│   ├── app_query.go
+│   ├── app_update.go
+│   ├── authcode
+│   │   ├── authcode.go
+│   │   └── where.go
+│   ├── authcode_create.go
+│   ├── authcode_delete.go
+│   ├── authcode.go
+│   ├── authcode_query.go
+│   ├── authcode_update.go
+│   ├── authrefreshtoken
+│   │   ├── authrefreshtoken.go
+│   │   └── where.go
+│   ├── authrefreshtoken_create.go
+│   ├── authrefreshtoken_delete.go
+│   ├── authrefreshtoken.go
+│   ├── authrefreshtoken_query.go
+│   ├── authrefreshtoken_update.go
+│   ├── authtoken
+│   │   ├── authtoken.go
+│   │   └── where.go
+│   ├── authtoken_create.go
+│   ├── authtoken_delete.go
+│   ├── authtoken.go
+│   ├── authtoken_query.go
+│   ├── authtoken_update.go
+│   ├── client.go
+│   ├── client_healthcheck.go
+│   ├── component
+│   │   ├── component.go
+│   │   └── where.go
+│   ├── component_create.go
+│   ├── component_delete.go
+│   ├── component.go
+│   ├── component_query.go
+│   ├── component_update.go
+│   ├── consent
+│   │   ├── consent.go
+│   │   └── where.go
+│   ├── consent_create.go
+│   ├── consent_delete.go
+│   ├── consent.go
+│   ├── consent_query.go
+│   ├── consent_update.go
+│   ├── ent.go
+│   ├── enttest
+│   │   └── enttest.go
+│   ├── generate.go
+│   ├── hook
+│   │   └── hook.go
+│   ├── invitation
+│   │   ├── invitation.go
+│   │   └── where.go
+│   ├── invitation_create.go
+│   ├── invitation_delete.go
+│   ├── invitation.go
+│   ├── invitation_query.go
+│   ├── invitation_update.go
+│   ├── migrate
+│   │   ├── migrate.go
+│   │   ├── migrations
+│   │   │   ├── 20251124004240_init.sql
+│   │   │   └── atlas.sum
+│   │   └── schema.go
+│   ├── mutation.go
+│   ├── predicate
+│   │   └── predicate.go
+│   ├── rankgroup
+│   │   ├── rankgroup.go
+│   │   └── where.go
+│   ├── rankgroup_create.go
+│   ├── rankgroup_delete.go
+│   ├── rankgroup.go
+│   ├── rankgroup_query.go
+│   ├── rankgroup_update.go
+│   ├── runtime
+│   │   └── runtime.go
+│   ├── runtime.go
+│   ├── schema
+│   │   ├── app.go
+│   │   ├── auth_code.go
+│   │   ├── auth_refresh_token.go
+│   │   ├── auth_token.go
+│   │   ├── component.go
+│   │   ├── consent.go
+│   │   ├── invitation.go
+│   │   ├── rank_group.go
+│   │   ├── team.go
+│   │   ├── team_member.go
+│   │   ├── tournament_admin.go
+│   │   ├── tournament.go
+│   │   ├── user.go
+│   │   ├── uservote.go
+│   │   └── vote.go
+│   ├── team
+│   │   ├── team.go
+│   │   └── where.go
+│   ├── team_create.go
+│   ├── team_delete.go
+│   ├── team.go
+│   ├── teammember
+│   │   ├── teammember.go
+│   │   └── where.go
+│   ├── teammember_create.go
+│   ├── teammember_delete.go
+│   ├── teammember.go
+│   ├── teammember_query.go
+│   ├── teammember_update.go
+│   ├── team_query.go
+│   ├── team_update.go
+│   ├── tournament
+│   │   ├── tournament.go
+│   │   └── where.go
+│   ├── tournamentadmin
+│   │   ├── tournamentadmin.go
+│   │   └── where.go
+│   ├── tournamentadmin_create.go
+│   ├── tournamentadmin_delete.go
+│   ├── tournamentadmin.go
+│   ├── tournamentadmin_query.go
+│   ├── tournamentadmin_update.go
+│   ├── tournament_create.go
+│   ├── tournament_delete.go
+│   ├── tournament.go
+│   ├── tournament_query.go
+│   ├── tournament_update.go
+│   ├── tx.go
+│   ├── user
+│   │   ├── user.go
+│   │   └── where.go
+│   ├── user_create.go
+│   ├── user_delete.go
+│   ├── user.go
+│   ├── user_query.go
+│   ├── user_update.go
+│   ├── uservote
+│   │   ├── uservote.go
+│   │   └── where.go
+│   ├── uservote_create.go
+│   ├── uservote_delete.go
+│   ├── uservote.go
+│   ├── uservote_query.go
+│   ├── uservote_update.go
+│   ├── vote
+│   │   ├── vote.go
+│   │   └── where.go
+│   ├── vote_create.go
+│   ├── vote_delete.go
+│   ├── vote.go
+│   ├── vote_query.go
+│   └── vote_update.go
+├── frontend
+│   ├── components.json
+│   ├── Dockerfile.dev
+│   ├── index.html
+│   ├── node_modules
+│   │   ├── class-variance-authority -> .pnpm/class-variance-authority@0.7.1/node_modules/class-variance-authority
+│   │   ├── clsx -> .pnpm/clsx@2.1.1/node_modules/clsx
+│   │   ├── cmdk -> .pnpm/cmdk@1.1.1_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react@19.1.10_react-dom_aed2a4f0074fabf7daaab2f02681ab18/node_modules/cmdk
+│   │   ├── color -> .pnpm/color@5.0.2/node_modules/color
+│   │   ├── date-fns -> .pnpm/date-fns@4.1.0/node_modules/date-fns
+│   │   ├── @dnd-kit
+│   │   │   ├── core -> ../.pnpm/@dnd-kit+core@6.3.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/@dnd-kit/core
+│   │   │   ├── modifiers -> ../.pnpm/@dnd-kit+modifiers@9.0.0_@dnd-kit+core@6.3.1_react-dom@19.1.1_react@19.1.1__react@19.1.1__react@19.1.1/node_modules/@dnd-kit/modifiers
+│   │   │   ├── sortable -> ../.pnpm/@dnd-kit+sortable@10.0.0_@dnd-kit+core@6.3.1_react-dom@19.1.1_react@19.1.1__react@19.1.1__react@19.1.1/node_modules/@dnd-kit/sortable
+│   │   │   └── utilities -> ../.pnpm/@dnd-kit+utilities@3.2.2_react@19.1.1/node_modules/@dnd-kit/utilities
+│   │   ├── @emotion
+│   │   │   └── styled -> ../.pnpm/@emotion+styled@11.14.1_@emotion+react@11.14.0_@types+react@19.1.10_react@19.1.1__@types+react@19.1.10_react@19.1.1/node_modules/@emotion/styled
+│   │   ├── @hookform
+│   │   │   └── resolvers -> ../.pnpm/@hookform+resolvers@5.2.1_react-hook-form@7.62.0_react@19.1.1_/node_modules/@hookform/resolvers
+│   │   ├── jsdom -> .pnpm/jsdom@26.1.0/node_modules/jsdom
+│   │   ├── lucide-react -> .pnpm/lucide-react@0.476.0_react@19.1.1/node_modules/lucide-react
+│   │   ├── @mui
+│   │   │   └── x-charts -> ../.pnpm/@mui+x-charts@8.11.1_@emotion+react@11.14.0_@types+react@19.1.10_react@19.1.1__@emotion_5e974ea7efd1e76cd7c9d5028828e370/node_modules/@mui/x-charts
+│   │   ├── next-themes -> .pnpm/next-themes@0.4.6_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/next-themes
+│   │   ├── openapi-fetch -> .pnpm/openapi-fetch@0.15.0/node_modules/openapi-fetch
+│   │   ├── openapi-react-query -> .pnpm/openapi-react-query@0.5.1_@tanstack+react-query@5.85.3_react@19.1.1__openapi-fetch@0.15.0/node_modules/openapi-react-query
+│   │   ├── @radix-ui
+│   │   │   ├── react-avatar -> ../.pnpm/@radix-ui+react-avatar@1.1.10_@types+react-dom@19.1.7_@types+react@19.1.10__@types+reac_08af481ba6ad5329ef8c6590ff7a375c/node_modules/@radix-ui/react-avatar
+│   │   │   ├── react-checkbox -> ../.pnpm/@radix-ui+react-checkbox@1.3.3_@types+react-dom@19.1.7_@types+react@19.1.10__@types+rea_98d4aacef268dbfc9f971ac2a1594adf/node_modules/@radix-ui/react-checkbox
+│   │   │   ├── react-collapsible -> ../.pnpm/@radix-ui+react-collapsible@1.1.12_@types+react-dom@19.1.7_@types+react@19.1.10__@types_aebb002b81313ba96305f80e6a0c16d7/node_modules/@radix-ui/react-collapsible
+│   │   │   ├── react-dialog -> ../.pnpm/@radix-ui+react-dialog@1.1.15_@types+react-dom@19.1.7_@types+react@19.1.10__@types+reac_87ec300feba74a73e6bc6aae203201c9/node_modules/@radix-ui/react-dialog
+│   │   │   ├── react-dropdown-menu -> ../.pnpm/@radix-ui+react-dropdown-menu@2.1.16_@types+react-dom@19.1.7_@types+react@19.1.10__@typ_9811bc96a6853b8a0db066cc4320d7d9/node_modules/@radix-ui/react-dropdown-menu
+│   │   │   ├── react-label -> ../.pnpm/@radix-ui+react-label@2.1.7_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react@_490c3f10ee65aaea0fa95cfecfcd415a/node_modules/@radix-ui/react-label
+│   │   │   ├── react-popover -> ../.pnpm/@radix-ui+react-popover@1.1.15_@types+react-dom@19.1.7_@types+react@19.1.10__@types+rea_f359769bdc0cfe647d4ae7e456cb75f4/node_modules/@radix-ui/react-popover
+│   │   │   ├── react-scroll-area -> ../.pnpm/@radix-ui+react-scroll-area@1.2.10_@types+react-dom@19.1.7_@types+react@19.1.10__@types_e8fc3913acf189970d4c812db70c29e5/node_modules/@radix-ui/react-scroll-area
+│   │   │   ├── react-select -> ../.pnpm/@radix-ui+react-select@2.2.6_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react_fac4ee32bc8ebade400a9feb40353df4/node_modules/@radix-ui/react-select
+│   │   │   ├── react-separator -> ../.pnpm/@radix-ui+react-separator@1.1.7_@types+react-dom@19.1.7_@types+react@19.1.10__@types+re_24188cfb9c415b921d23dc76c5e4ff54/node_modules/@radix-ui/react-separator
+│   │   │   ├── react-slider -> ../.pnpm/@radix-ui+react-slider@1.3.6_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react_46cdf961019545dc66b2952885320df2/node_modules/@radix-ui/react-slider
+│   │   │   ├── react-slot -> ../.pnpm/@radix-ui+react-slot@1.2.3_@types+react@19.1.10_react@19.1.1/node_modules/@radix-ui/react-slot
+│   │   │   ├── react-switch -> ../.pnpm/@radix-ui+react-switch@1.2.6_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react_a896fa02afe5b41763eec882f0870328/node_modules/@radix-ui/react-switch
+│   │   │   ├── react-tabs -> ../.pnpm/@radix-ui+react-tabs@1.1.13_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react@_ac4566fa24a8b170b212602218d88326/node_modules/@radix-ui/react-tabs
+│   │   │   ├── react-toggle -> ../.pnpm/@radix-ui+react-toggle@1.1.10_@types+react-dom@19.1.7_@types+react@19.1.10__@types+reac_de9805047abdf852b6aa56cb98504e5c/node_modules/@radix-ui/react-toggle
+│   │   │   ├── react-toggle-group -> ../.pnpm/@radix-ui+react-toggle-group@1.1.11_@types+react-dom@19.1.7_@types+react@19.1.10__@type_d00710543ff15422d26c6b4c7dd30faa/node_modules/@radix-ui/react-toggle-group
+│   │   │   └── react-tooltip -> ../.pnpm/@radix-ui+react-tooltip@1.2.8_@types+react-dom@19.1.7_@types+react@19.1.10__@types+reac_652f6e82ac98249a8aaff4d0fbc50037/node_modules/@radix-ui/react-tooltip
+│   │   ├── radix-ui -> .pnpm/radix-ui@1.4.3_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react@19.1.10_react_341e54cac651ac465cfa94e3484e501f/node_modules/radix-ui
+│   │   ├── react -> .pnpm/react@19.1.1/node_modules/react
+│   │   ├── react-color -> .pnpm/react-color@2.19.3_react@19.1.1/node_modules/react-color
+│   │   ├── react-day-picker -> .pnpm/react-day-picker@9.8.1_react@19.1.1/node_modules/react-day-picker
+│   │   ├── react-dom -> .pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom
+│   │   ├── react-hook-form -> .pnpm/react-hook-form@7.62.0_react@19.1.1/node_modules/react-hook-form
+│   │   ├── recharts -> .pnpm/recharts@2.15.4_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/recharts
+│   │   ├── sonner -> .pnpm/sonner@2.0.7_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/sonner
+│   │   ├── @tabler
+│   │   │   └── icons-react -> ../.pnpm/@tabler+icons-react@3.34.1_react@19.1.1/node_modules/@tabler/icons-react
+│   │   ├── @tailwindcss
+│   │   │   └── vite -> ../.pnpm/@tailwindcss+vite@4.1.12_vite@6.4.0_@types+node@24.3.0_jiti@2.5.1_lightningcss@1.30.1_tsx@4.20.4_/node_modules/@tailwindcss/vite
+│   │   ├── tailwindcss -> .pnpm/tailwindcss@4.1.12/node_modules/tailwindcss
+│   │   ├── tailwindcss-animate -> .pnpm/tailwindcss-animate@1.0.7_tailwindcss@4.1.12/node_modules/tailwindcss-animate
+│   │   ├── tailwind-merge -> .pnpm/tailwind-merge@3.3.1/node_modules/tailwind-merge
+│   │   ├── @tanstack
+│   │   │   ├── query-sync-storage-persister -> ../.pnpm/@tanstack+query-sync-storage-persister@5.85.3/node_modules/@tanstack/query-sync-storage-persister
+│   │   │   ├── react-form -> ../.pnpm/@tanstack+react-form@1.23.7_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/@tanstack/react-form
+│   │   │   ├── react-query -> ../.pnpm/@tanstack+react-query@5.85.3_react@19.1.1/node_modules/@tanstack/react-query
+│   │   │   ├── react-query-devtools -> ../.pnpm/@tanstack+react-query-devtools@5.85.3_@tanstack+react-query@5.85.3_react@19.1.1__react@19.1.1/node_modules/@tanstack/react-query-devtools
+│   │   │   ├── react-router -> ../.pnpm/@tanstack+react-router@1.131.22_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/@tanstack/react-router
+│   │   │   ├── react-router-devtools -> ../.pnpm/@tanstack+react-router-devtools@1.131.22_@tanstack+react-router@1.131.22_react-dom@19.1_ccb137f4c0336a4013722845c1a5c6f9/node_modules/@tanstack/react-router-devtools
+│   │   │   ├── react-table -> ../.pnpm/@tanstack+react-table@8.21.3_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/@tanstack/react-table
+│   │   │   ├── router-plugin -> ../.pnpm/@tanstack+router-plugin@1.131.22_@tanstack+react-router@1.131.22_react-dom@19.1.1_react_15d07db6c58d1e9e197d79dea65c366e/node_modules/@tanstack/router-plugin
+│   │   │   └── zod-form-adapter -> ../.pnpm/@tanstack+zod-form-adapter@0.42.1_zod@3.25.76/node_modules/@tanstack/zod-form-adapter
+│   │   ├── @testing-library
+│   │   │   ├── dom -> ../.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom
+│   │   │   └── react -> ../.pnpm/@testing-library+react@16.3.0_@testing-library+dom@10.4.1_@types+react-dom@19.1.7_@type_6479d15b625ec3d34ccbc3611f2e562b/node_modules/@testing-library/react
+│   │   ├── tw-animate-css -> .pnpm/tw-animate-css@1.3.7/node_modules/tw-animate-css
+│   │   ├── @types
+│   │   │   ├── color -> ../.pnpm/@types+color@4.2.0/node_modules/@types/color
+│   │   │   ├── node -> ../.pnpm/@types+node@24.3.0/node_modules/@types/node
+│   │   │   ├── react -> ../.pnpm/@types+react@19.1.10/node_modules/@types/react
+│   │   │   └── react-dom -> ../.pnpm/@types+react-dom@19.1.7_@types+react@19.1.10/node_modules/@types/react-dom
+│   │   ├── typescript -> .pnpm/typescript@5.9.2/node_modules/typescript
+│   │   ├── vaul -> .pnpm/vaul@1.1.2_@types+react-dom@19.1.7_@types+react@19.1.10__@types+react@19.1.10_react-dom_3877581983ad1d96e3f0baa0581ce700/node_modules/vaul
+│   │   ├── vite -> .pnpm/vite@6.4.0_@types+node@24.3.0_jiti@2.5.1_lightningcss@1.30.1_tsx@4.20.4/node_modules/vite
+│   │   ├── @vitejs
+│   │   │   └── plugin-react -> ../.pnpm/@vitejs+plugin-react@4.7.0_vite@6.4.0_@types+node@24.3.0_jiti@2.5.1_lightningcss@1.30.1_tsx@4.20.4_/node_modules/@vitejs/plugin-react
+│   │   ├── vitest -> .pnpm/vitest@3.2.4_@types+node@24.3.0_jiti@2.5.1_jsdom@26.1.0_lightningcss@1.30.1_tsx@4.20.4/node_modules/vitest
+│   │   ├── web-vitals -> .pnpm/web-vitals@4.2.4/node_modules/web-vitals
+│   │   └── zod -> .pnpm/zod@3.25.76/node_modules/zod
+│   ├── package.json
+│   ├── pnpm-lock.yaml
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── logo192.png
+│   │   ├── logo512.png
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   ├── README.md
+│   ├── src
+│   │   ├── assets
+│   │   │   ├── fonts
+│   │   │   │   ├── FuturaPTBoldOblique.otf
+│   │   │   │   ├── FuturaPTBold.otf
+│   │   │   │   ├── FuturaPTBookOblique.otf
+│   │   │   │   ├── FuturaPTBook.otf
+│   │   │   │   ├── FuturaPTCondBoldOblique.otf
+│   │   │   │   ├── FuturaPTCondBold.otf
+│   │   │   │   ├── FuturaPTCondBookOblique.otf
+│   │   │   │   ├── FuturaPTCondBook.otf
+│   │   │   │   ├── FuturaPTCondExtraBoldOblique.otf
+│   │   │   │   ├── FuturaPTCondExtraBold.otf
+│   │   │   │   ├── FuturaPTCondMediumOblique.otf
+│   │   │   │   ├── FuturaPTCondMedium.otf
+│   │   │   │   ├── FuturaPTDemiOblique.otf
+│   │   │   │   ├── FuturaPTDemi.otf
+│   │   │   │   ├── FuturaPTExtraBoldOblique.otf
+│   │   │   │   ├── FuturaPTExtraBold.otf
+│   │   │   │   ├── FuturaPTHeavyOblique.otf
+│   │   │   │   ├── FuturaPTHeavy.otf
+│   │   │   │   ├── FuturaPTLightOblique.otf
+│   │   │   │   ├── FuturaPTLight.otf
+│   │   │   │   ├── FuturaPTMediumOblique.otf
+│   │   │   │   ├── FuturaPTMedium.otf
+│   │   │   │   ├── main.css
+│   │   │   │   └── README.md
+│   │   │   ├── logo.svg
+│   │   │   └── versus-vs-icon.svg
+│   │   ├── components
+│   │   │   ├── action-button.tsx
+│   │   │   ├── app-logo.tsx
+│   │   │   ├── apps
+│   │   │   │   ├── app
+│   │   │   │   │   ├── app-actions.tsx
+│   │   │   │   │   ├── app-create-button.tsx
+│   │   │   │   │   ├── app-display.tsx
+│   │   │   │   │   ├── app-form.tsx
+│   │   │   │   │   └── app-redirect-uri.tsx
+│   │   │   │   ├── app-list.tsx
+│   │   │   │   ├── app-search.tsx
+│   │   │   │   └── consent-list.tsx
+│   │   │   ├── copy-input.tsx
+│   │   │   ├── error-page.tsx
+│   │   │   ├── home-page
+│   │   │   │   ├── footer.tsx
+│   │   │   │   └── header.tsx
+│   │   │   ├── invitations
+│   │   │   │   └── invitation-item.tsx
+│   │   │   ├── layout-admin
+│   │   │   │   ├── app-sidebar.tsx
+│   │   │   │   ├── nav-items.tsx
+│   │   │   │   ├── nav-user.tsx
+│   │   │   │   └── site-header.tsx
+│   │   │   ├── loading-page.tsx
+│   │   │   ├── loading-spinner.tsx
+│   │   │   ├── public-users
+│   │   │   │   ├── my-profile
+│   │   │   │   │   ├── my-profile-card.tsx
+│   │   │   │   │   └── my-stats-card.tsx
+│   │   │   │   └── user-profile
+│   │   │   │       └── profile-card.tsx
+│   │   │   ├── tournaments
+│   │   │   │   ├── active-tournaments.tsx
+│   │   │   │   ├── admin
+│   │   │   │   │   ├── admins
+│   │   │   │   │   │   ├── admin-add-modal.tsx
+│   │   │   │   │   │   ├── admin-card.tsx
+│   │   │   │   │   │   └── admin-edit-modal.tsx
+│   │   │   │   │   ├── teams-card.tsx
+│   │   │   │   │   ├── tournament-admin-list.tsx
+│   │   │   │   │   ├── tournament-card.tsx
+│   │   │   │   │   ├── tournament-create.tsx
+│   │   │   │   │   └── tournament-edit.tsx
+│   │   │   │   ├── custom-pages
+│   │   │   │   │   └── default.tsx
+│   │   │   │   ├── past-tournament-card.tsx
+│   │   │   │   ├── past-tournaments.tsx
+│   │   │   │   ├── public-tournament-card.tsx
+│   │   │   │   └── teams
+│   │   │   │       └── team-card.tsx
+│   │   │   ├── ui
+│   │   │   │   ├── animated-progress.tsx
+│   │   │   │   ├── avatar.tsx
+│   │   │   │   ├── badge.tsx
+│   │   │   │   ├── breadcrumb.tsx
+│   │   │   │   ├── button.tsx
+│   │   │   │   ├── calendar.tsx
+│   │   │   │   ├── card.tsx
+│   │   │   │   ├── chart.tsx
+│   │   │   │   ├── checkbox.tsx
+│   │   │   │   ├── collapsible.tsx
+│   │   │   │   ├── command.tsx
+│   │   │   │   ├── dialog.tsx
+│   │   │   │   ├── drawer.tsx
+│   │   │   │   ├── dropdown-menu.tsx
+│   │   │   │   ├── form.tsx
+│   │   │   │   ├── input.tsx
+│   │   │   │   ├── label.tsx
+│   │   │   │   ├── multi-select.tsx
+│   │   │   │   ├── paginated-list.tsx
+│   │   │   │   ├── popover.tsx
+│   │   │   │   ├── scroll-area.tsx
+│   │   │   │   ├── search-input.tsx
+│   │   │   │   ├── select.tsx
+│   │   │   │   ├── separator.tsx
+│   │   │   │   ├── shadcn-io
+│   │   │   │   │   └── color-picker
+│   │   │   │   │       └── index.tsx
+│   │   │   │   ├── sheet.tsx
+│   │   │   │   ├── sidebar.tsx
+│   │   │   │   ├── skeleton.tsx
+│   │   │   │   ├── slider.tsx
+│   │   │   │   ├── sonner.tsx
+│   │   │   │   ├── switch.tsx
+│   │   │   │   ├── table.tsx
+│   │   │   │   ├── tabs.tsx
+│   │   │   │   ├── textarea.tsx
+│   │   │   │   ├── toggle-group.tsx
+│   │   │   │   ├── toggle.tsx
+│   │   │   │   └── tooltip.tsx
+│   │   │   ├── users
+│   │   │   │   ├── admins
+│   │   │   │   │   ├── admin-add-modal.tsx
+│   │   │   │   │   ├── admin-card.tsx
+│   │   │   │   │   └── admin-edit-modal.tsx
+│   │   │   │   ├── user-card.tsx
+│   │   │   │   └── user-search.tsx
+│   │   │   └── votes
+│   │   │       ├── component
+│   │   │       │   ├── component-create.tsx
+│   │   │       │   └── component-edit.tsx
+│   │   │       ├── vote-admin.tsx
+│   │   │       ├── vote-card.tsx
+│   │   │       ├── vote-create-modal.tsx
+│   │   │       └── vote-edit.tsx
+│   │   ├── hooks
+│   │   │   ├── use-can.ts
+│   │   │   ├── use-delayed-state.ts
+│   │   │   ├── use-mobile.ts
+│   │   │   ├── use-query-client.ts
+│   │   │   ├── use-sse.ts
+│   │   │   └── use-url-state.ts
+│   │   ├── integrations
+│   │   │   └── tanstack-query
+│   │   │       ├── layout.tsx
+│   │   │       └── root-provider.tsx
+│   │   ├── lib
+│   │   │   ├── api
+│   │   │   │   ├── client.ts
+│   │   │   │   └── types.ts
+│   │   │   ├── date.utils.ts
+│   │   │   └── utils.ts
+│   │   ├── logo.svg
+│   │   ├── main.tsx
+│   │   ├── providers
+│   │   │   ├── auth.provider.tsx
+│   │   │   ├── client.provider.tsx
+│   │   │   ├── env.provider.tsx
+│   │   │   └── query-client.provider.tsx
+│   │   ├── reportWebVitals.ts
+│   │   ├── routes
+│   │   │   ├── $.tsx
+│   │   │   ├── admin
+│   │   │   │   ├── admins
+│   │   │   │   │   └── index.tsx
+│   │   │   │   ├── apps
+│   │   │   │   │   ├── $appid
+│   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   ├── index.tsx
+│   │   │   │   │   └── me
+│   │   │   │   │       └── index.tsx
+│   │   │   │   ├── index.tsx
+│   │   │   │   ├── tournaments
+│   │   │   │   │   ├── $tournamentid
+│   │   │   │   │   │   ├── edit
+│   │   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   │   ├── index.tsx
+│   │   │   │   │   │   └── teams
+│   │   │   │   │   │       └── index.tsx
+│   │   │   │   │   ├── create
+│   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   └── index.tsx
+│   │   │   │   ├── users
+│   │   │   │   │   └── index.tsx
+│   │   │   │   └── votes
+│   │   │   │       ├── $voteid
+│   │   │   │       │   └── index.tsx
+│   │   │   │       └── index.tsx
+│   │   │   ├── admin.tsx
+│   │   │   ├── auth
+│   │   │   │   └── callback
+│   │   │   │       └── index.tsx
+│   │   │   ├── index.tsx
+│   │   │   ├── __root.tsx
+│   │   │   ├── template
+│   │   │   │   └── invitations
+│   │   │   │       └── index.tsx
+│   │   │   ├── tournaments
+│   │   │   │   ├── $tournamentid
+│   │   │   │   │   ├── $teamid
+│   │   │   │   │   │   ├── edit
+│   │   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   ├── index.tsx
+│   │   │   │   │   ├── register
+│   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   └── teams
+│   │   │   │   │       └── index.tsx
+│   │   │   │   └── index.tsx
+│   │   │   ├── users
+│   │   │   │   ├── $userid
+│   │   │   │   │   └── index.tsx
+│   │   │   │   ├── index.tsx
+│   │   │   │   └── me
+│   │   │   │       └── index.tsx
+│   │   │   └── votes
+│   │   │       ├── $voteid
+│   │   │       │   ├── index.tsx
+│   │   │       │   ├── live
+│   │   │       │   │   └── index.tsx
+│   │   │       │   └── results
+│   │   │       │       └── index.tsx
+│   │   │       └── index.tsx
+│   │   ├── routeTree.gen.ts
+│   │   ├── styles.css
+│   │   └── vite-env.d.ts
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── go.mod
+├── go.sum
+├── internal
+│   ├── controllers
+│   │   ├── apps
+│   │   │   ├── apps.controller.go
+│   │   │   └── models.go
+│   │   ├── auth
+│   │   │   ├── auth.controller.go
+│   │   │   └── models.go
+│   │   ├── consents
+│   │   │   ├── consents.controller.go
+│   │   │   └── models.go
+│   │   ├── controllers_init.go
+│   │   ├── env
+│   │   │   ├── env.controller.go
+│   │   │   └── models.go
+│   │   ├── invitations
+│   │   │   ├── invitations.controller.go
+│   │   │   └── models.go
+│   │   ├── rbac
+│   │   │   ├── models.go
+│   │   │   └── rbac.controller.go
+│   │   ├── teams
+│   │   │   ├── models.go
+│   │   │   └── teams.controller.go
+│   │   ├── tournaments
+│   │   │   ├── models.go
+│   │   │   └── tournaments.controller.go
+│   │   ├── users
+│   │   │   ├── models.go
+│   │   │   └── users.controller.go
+│   │   └── votes
+│   │       ├── models.go
+│   │       └── votes.controller.go
+│   ├── lightmodels
+│   │   ├── component.go
+│   │   ├── invitation.go
+│   │   ├── rankgroup.go
+│   │   ├── team.go
+│   │   ├── tournament_admin.go
+│   │   ├── tournament.go
+│   │   ├── user.go
+│   │   └── vote.go
+│   ├── middlewares
+│   │   ├── auth.go
+│   │   ├── cache_control.go
+│   │   ├── cors.go
+│   │   ├── huma_middleware.go
+│   │   ├── rbac.go
+│   │   └── request_logger.go
+│   ├── openapi
+│   │   ├── scalar_doc_handler.go
+│   │   ├── with_auth_schemes.go
+│   │   ├── with_overview_doc.go
+│   │   └── with_servers.go
+│   ├── security
+│   │   ├── claims_from_context.go
+│   │   ├── consts.go
+│   │   ├── permissions_from_context.go
+│   │   └── with_auth.go
+│   └── services
+│       ├── apps
+│       │   ├── apps.service.go
+│       │   └── models
+│       │       ├── apps.go
+│       │       └── search.go
+│       ├── auth
+│       │   ├── auth.service.go
+│       │   └── models
+│       │       └── token_set.go
+│       ├── config
+│       │   └── config.service.go
+│       ├── consents
+│       │   ├── consents.service.go
+│       │   └── models
+│       │       ├── consent.go
+│       │       └── search.go
+│       ├── database
+│       │   └── database.service.go
+│       ├── intra
+│       │   └── intra.service.go
+│       ├── invitations
+│       │   ├── invitations.service.go
+│       │   └── models
+│       │       ├── invitation.go
+│       │       └── search.go
+│       ├── openid
+│       │   ├── openid.go
+│       │   └── storage
+│       │       ├── oidc.go
+│       │       └── storage.go
+│       ├── pubsub
+│       │   └── pubsub.service.go
+│       ├── rbac
+│       │   └── rbac.service.go
+│       ├── s3
+│       │   └── s3.service.go
+│       ├── services_init.go
+│       ├── teams
+│       │   ├── models
+│       │   │   ├── search.go
+│       │   │   └── team.go
+│       │   └── teams.service.go
+│       ├── tournaments
+│       │   ├── models
+│       │   │   ├── search.go
+│       │   │   └── tournament.go
+│       │   ├── tournaments.admin.go
+│       │   └── tournaments.service.go
+│       ├── users
+│       │   ├── models
+│       │   │   ├── search.go
+│       │   │   └── user.go
+│       │   └── users.service.go
+│       └── votes
+│           ├── models
+│           │   ├── component.go
+│           │   ├── results.go
+│           │   ├── search.go
+│           │   └── vote.go
+│           ├── votes.admin.go
+│           └── votes.service.go
+├── Makefile
+├── out.txt
+├── pkg
+│   ├── authz
+│   │   └── authz.go
+│   ├── errorfilters
+│   │   └── ent_error_filter.go
+│   ├── intraclient
+│   │   ├── closes.go
+│   │   ├── intraclient.go
+│   │   ├── models
+│   │   │   ├── closes.go
+│   │   │   ├── coalitions.go
+│   │   │   ├── common_type.go
+│   │   │   ├── cursusUser.go
+│   │   │   ├── event.go
+│   │   │   ├── feedback.go
+│   │   │   ├── groupUser.go
+│   │   │   ├── internships.go
+│   │   │   ├── project.go
+│   │   │   ├── projectSession.go
+│   │   │   ├── projectUser.go
+│   │   │   ├── quest.go
+│   │   │   ├── questUser.go
+│   │   │   ├── scale.go
+│   │   │   ├── scale_team.go
+│   │   │   ├── team.go
+│   │   │   ├── userCandidature.go
+│   │   │   └── user.go
+│   │   ├── request_helpers.go
+│   │   └── users.go
+│   ├── logger
+│   │   ├── const.go
+│   │   └── instance.go
+│   ├── paging
+│   │   ├── paging.go
+│   │   ├── query_paging.go
+│   │   └── response_paging.go
+│   ├── ptr
+│   │   └── make.go
+│   └── rbac
+│       ├── models.go
+│       └── rbac.go
+├── scripts
+│   ├── atlas
+│   │   ├── gen-migrations.sh
+│   │   ├── migrate.sh
+│   │   └── web.sh
+│   └── docker
+│       └── api-entrypoint.sh
+├── spa
+│   ├── handler.go
+│   ├── public
+│   └── spafs.go
+└── tools
+    ├── go.mod
+    ├── go.sum
+    └── tools.go
+
+228 directories, 447 files

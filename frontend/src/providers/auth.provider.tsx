@@ -118,8 +118,14 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 
 	if (shouldAuth && showLoginPrompt) {
 		return (
-			<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
-				<Button onClick={authorize}>Login With 42</Button>
+			<div className="min-h-screen flex justify-center items-center dark bg-gradient-to-br from-black to-gray-800">
+				<div className="rounded-md p-1 bg-gradient-to-br from-primary to-secondary">
+					<div className="rounded-md p-[4px] text-white rounded-md p-2.5 bg-black transition-all outline-none hover:bg-transparent hover:text-black">
+						<Button onClick={authorize} size="header" variant="header"
+								>
+								Login With 42</Button>
+					</div>
+				</div>
 			</div>
 		);
 	}

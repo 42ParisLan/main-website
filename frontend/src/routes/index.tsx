@@ -44,7 +44,7 @@ function WelcomePage() {
 						<div className="w-full p-6 flex items-start gap-10">
 							<div className="">
 								<Button asChild size="xl" variant="gradient" className="p-3">
-                            		<Link to="/tournaments">JOIN TOURNAMENT</Link>
+                            		<Link to="/tournaments">JOIN TOURNAMENTS</Link>
                         		</Button>
 								{/* <button className="p-3 border border-2 border-solid border-secondary hover:bg-secondary transition-all hover:text-white text-secondary transition-all ">JOIN TOURNAMENT</button> */}
 							</div>

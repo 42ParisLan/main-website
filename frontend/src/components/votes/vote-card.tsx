@@ -49,41 +49,43 @@ function VoteCard({ vote }: VoteCardProps) {
 	}, [vote.start_at, vote.end_at]);
 
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>{vote.title}</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<p className="mb-4">{vote.description}</p>
-				{status === 'pending' && (
-					<p className="font-mono text-lg">Starts in: {timeLeft}</p>
-				)}
-				{status === 'active' && (
-					<>
-						<p className="font-mono text-lg">Ends in: {timeLeft}</p>
-						<Link 
-							to="/votes/$voteid"
-							params={{voteid: String(vote.id)}}
-							className="text-primary hover:underline"
-						>
-							Go vote
-						</Link>
-					</>
-				)}
-				{status === 'finished' && (
-					<>
-						<p className="text-muted-foreground">Vote is finished</p>
-						<Link 
-							to="/votes/$voteid/results"
-							params={{voteid: String(vote.id)}}
-							className="text-primary hover:underline"
-						>
-							See Results
-						</Link>
-					</>
-				)}
-			</CardContent>
-		</Card>
+		<div className="p-[4px] rounded-xl dark bg-gradient-to-r from-primary to-secondary transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl">
+			<Card className="border-0 overflow-hidden rounded-xl bg-gradient-to-br from-black to-gray-700 ">
+				<CardHeader>
+					<CardTitle>{vote.title}</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<p className="mb-4">{vote.description}</p>
+					{status === 'pending' && (
+						<p className="font-mono text-lg">Starts in: {timeLeft}</p>
+					)}
+					{status === 'active' && (
+						<>
+							<p className="font-mono text-lg">Ends in: {timeLeft}</p>
+							<Link 
+								to="/votes/$voteid"
+								params={{voteid: String(vote.id)}}
+								className="text-primary hover:underline"
+								>
+								Go vote
+							</Link>
+						</>
+					)}
+					{status === 'finished' && (
+						<>
+							<p className="text-muted-foreground">Vote is finished</p>
+							<Link 
+								to="/votes/$voteid/results"
+								params={{voteid: String(vote.id)}}
+								className="text-primary hover:underline"
+								>
+								See Results
+							</Link>
+						</>
+					)}
+				</CardContent>
+			</Card>
+		</div>
 	);
 }
 
