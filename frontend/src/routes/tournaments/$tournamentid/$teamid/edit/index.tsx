@@ -181,21 +181,124 @@ function RouteComponent() {
 	if (team && tournament) {
 		return (
 			<>
-				<Header/>
-				<div className="p-2  flex flex-col dark bg-gradient-to-br from-primary via-gray-800 to-secondary">
-					<div className="">
-						<Card className="p-2 text-white border-0 bg-gradient-to-br from-black to-gray-700 ">
-							<CardContent className='font-bold p-2 flex justify-between'>
-								<CardTitle >
-									Edit {team.name}
-								</CardTitle>
-								Team for tournament: "{tournament.name}"
-								{team.is_locked == false && (
-									<Button
-										onClick={performLock}
-									>
-										Lock Team
-									</Button>
+				<Card>
+					<CardHeader className='flex justify-between'>
+						<CardTitle>
+							Edit {team.name}
+						</CardTitle>
+						team for tournament: "{tournament.name}"
+						<Button
+							onClick={performLock}
+						>
+							Lock Team
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={() => setConfirmOpen(true)}
+						>
+							Delete Team
+						</Button>
+					</CardHeader>
+					<CardContent>
+						{Object.entries(tournament.team_structure).map(([key, _]) => {
+							const users = team.members?.filter((user) => user.role == key);
+							if (users && users.length > 0)
+							{
+								return (
+									<>
+										<p>{key}</p>
+										{users.map((team_member) => (
+											<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
+												<img
+													src={team_member.user?.picture ?? ''}
+													alt={team_member.user?.username ?? 'team member'}
+													className="w-10 h-10 rounded-full object-cover"
+												/>
+												<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
+											</div>
+										))}
+									</>
+								)
+							}
+						})}
+						<Button
+							onClick={() => setInvitationOpen(true)}
+						>
+							Invite User
+						</Button>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex justify-between'>
+						<CardTitle>
+							Invitations
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<PaginatedListControlled<components['schemas']['Invitation']>
+							data={invitations}
+							page={page}
+							onPageChange={setPage}
+							isLoading={isLoadingInvitations}
+							renderItem={(item) => (
+								<>
+									<InvitationItem invitation={item} tournamentid={tournament.slug} />
+								</>
+							)}
+							getItemKey={(item) => item.id}
+						/>
+					</CardContent>
+				</Card>
+				{/* Confirmation dialog for deleting visible tournaments */}
+				<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>Delete team</DialogTitle>
+							<DialogDescription>
+								This action cannot be undone. Are you sure you want to continue?
+							</DialogDescription>
+						</DialogHeader>
+						<DialogFooter>
+							<Button type="button" variant="ghost" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+							<Button type="button" variant="destructive" onClick={() => { performDelete(); setConfirmOpen(false); }}>Delete</Button>
+						</DialogFooter>
+						<DialogClose />
+					</DialogContent>
+				</Dialog>
+				{/* Invitation dialog for adding users */}
+				<Dialog open={invitationOpen} onOpenChange={setInvitationOpen}>
+					<DialogContent>
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								inviteForm.handleSubmit();
+							}}
+							className="grid gap-6 py-4"
+						>
+							<DialogHeader>
+								<DialogTitle>Invite User</DialogTitle>
+								<DialogDescription>
+									This action cannot be undone. Are you sure you want to continue?
+								</DialogDescription>
+							</DialogHeader>
+							<inviteForm.Field
+								name='message'
+							>
+								{(field) => (
+									<div className="grid gap-2">
+										<Label htmlFor={field.name}>Message</Label>
+										<Input
+											id={field.name}
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.target.value)}
+											onBlur={field.handleBlur}
+											placeholder="Message for the invitation"
+											required
+										/>
+										{field.state.meta.errors?.[0] && (
+											<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
+										)}
+									</div>
 								)}
 						<Button
 									variant="destructive"
