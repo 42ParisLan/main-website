@@ -18,6 +18,7 @@ import (
 	"base-website/pkg/paging"
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/samber/do"
@@ -148,16 +149,45 @@ func (svc *invitationsService) CreateInvitationForTeam(
 		return nil, huma.Error400BadRequest(fmt.Sprintf("role '%s' doesn't exist for this tournament", input.Role))
 	}
 
-	if entTeam.Edges.Tournament != nil {
-		tmExists, err := svc.databaseService.TeamMember.Query().Where(
-			teammember.HasUserWith(user.IDEQ(input.UserID)),
-			teammember.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)),
-		).Exist(ctx)
-		if err != nil {
-			return nil, svc.errorFilter.Filter(err, "check_team_member")
+	tmExists, err := svc.databaseService.TeamMember.Query().Where(
+		teammember.HasUserWith(user.IDEQ(input.UserID)),
+		teammember.HasTournamentWith(tournament.IDEQ(entTeam.Edges.Tournament.ID)),
+	).Exist(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "check_team_member")
+	}
+	if tmExists {
+		return nil, huma.Error400BadRequest("user already has a team in this tournament")
+	}
+
+	if raw, ok := entTeam.Edges.Tournament.TeamStructure[input.Role]; ok {
+		var maxAllowed int
+		if m, ok := raw.(map[string]interface{}); ok {
+			if mv, ok := m["max"]; ok {
+				s := fmt.Sprint(mv)
+				if f, err := strconv.ParseFloat(s, 64); err == nil {
+					maxAllowed = int(f)
+				}
+			}
 		}
-		if tmExists {
-			return nil, huma.Error400BadRequest("user already has a team in this tournament")
+		if maxAllowed > 0 {
+			membersCount, err := svc.databaseService.TeamMember.Query().Where(
+				teammember.HasTeamWith(team.IDEQ(entTeam.ID)),
+				teammember.RoleEQ(input.Role),
+			).Count(ctx)
+			if err != nil {
+				return nil, svc.errorFilter.Filter(err, "count_team_members")
+			}
+			invitesCount, err := svc.databaseService.Invitation.Query().Where(
+				invitation.HasTeamWith(team.IDEQ(entTeam.ID)),
+				invitation.RoleEQ(input.Role),
+			).Count(ctx)
+			if err != nil {
+				return nil, svc.errorFilter.Filter(err, "count_invitations")
+			}
+			if membersCount+invitesCount >= maxAllowed {
+				return nil, huma.Error400BadRequest(fmt.Sprintf("role '%s' is already full for this team", input.Role))
+			}
 		}
 	}
 

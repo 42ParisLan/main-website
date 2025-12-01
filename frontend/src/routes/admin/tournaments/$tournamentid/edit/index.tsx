@@ -73,7 +73,7 @@ function RouteComponent() {
 	}
 
 	if (data) {
-		let role = data?.admins?.find((admin) => admin.user.id === me?.id)?.role
+		let role = data.admins?.find((admin) => admin.user.id === me?.id)?.role
 		if (!role && hasRole(['super_admin'])) {
 			role = "CREATOR"
 		}

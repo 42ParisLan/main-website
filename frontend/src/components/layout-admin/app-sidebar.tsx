@@ -9,6 +9,9 @@ import {
 	IconBox,
 	IconCrown,
 	IconSquareRoundedPlus,
+	IconTrophy,
+	IconBinocularsFilled,
+	IconList,
 	type Icon,
 } from "@tabler/icons-react"
 
@@ -66,7 +69,7 @@ const data: SidebarData[] = [
 				title: "Tournaments",
 				redirect: "/admin/tournaments",
 				urlsMatch: ["/admin/tournaments/"],
-				icon: IconUsersGroup,
+				icon: IconList,
 			},
 			{
 				title: "Create Tournament",
@@ -86,13 +89,19 @@ const data: SidebarData[] = [
 						redirect: "/admin/tournaments/$tournamentid/",
 						urlsMatch: ["/admin/tournaments/*/", "/admin/tournaments/*/edit/"],
 						exceptions: ["/admin/tournaments/create/"],
-						icon: IconUsersGroup,
+						icon: IconBinocularsFilled,
 					},
 					{
 						title: "Teams",
 						redirect: "/admin/tournaments/$tournamentid/teams/",
 						urlsMatch: ["/admin/tournaments/*/teams/"],
 						icon: IconUsersGroup,
+					},
+					{
+						title: "Ranking",
+						redirect: "/admin/tournaments/$tournamentid/ranking/",
+						urlsMatch: ["/admin/tournaments/*/ranking/"],
+						icon: IconTrophy,
 					}
 				]
 			},

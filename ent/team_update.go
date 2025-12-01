@@ -67,20 +67,6 @@ func (_u *TeamUpdate) ClearImageURL() *TeamUpdate {
 	return _u
 }
 
-// SetStatus sets the "status" field.
-func (_u *TeamUpdate) SetStatus(v team.Status) *TeamUpdate {
-	_u.mutation.SetStatus(v)
-	return _u
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *TeamUpdate) SetNillableStatus(v *team.Status) *TeamUpdate {
-	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
 // SetIsLocked sets the "is_locked" field.
 func (_u *TeamUpdate) SetIsLocked(v bool) *TeamUpdate {
 	_u.mutation.SetIsLocked(v)
@@ -95,30 +81,58 @@ func (_u *TeamUpdate) SetNillableIsLocked(v *bool) *TeamUpdate {
 	return _u
 }
 
-// SetQueuePosition sets the "queue_position" field.
-func (_u *TeamUpdate) SetQueuePosition(v int) *TeamUpdate {
-	_u.mutation.ResetQueuePosition()
-	_u.mutation.SetQueuePosition(v)
+// SetIsRegistered sets the "is_registered" field.
+func (_u *TeamUpdate) SetIsRegistered(v bool) *TeamUpdate {
+	_u.mutation.SetIsRegistered(v)
 	return _u
 }
 
-// SetNillableQueuePosition sets the "queue_position" field if the given value is not nil.
-func (_u *TeamUpdate) SetNillableQueuePosition(v *int) *TeamUpdate {
+// SetNillableIsRegistered sets the "is_registered" field if the given value is not nil.
+func (_u *TeamUpdate) SetNillableIsRegistered(v *bool) *TeamUpdate {
 	if v != nil {
-		_u.SetQueuePosition(*v)
+		_u.SetIsRegistered(*v)
 	}
 	return _u
 }
 
-// AddQueuePosition adds value to the "queue_position" field.
-func (_u *TeamUpdate) AddQueuePosition(v int) *TeamUpdate {
-	_u.mutation.AddQueuePosition(v)
+// SetIsWaitlisted sets the "is_waitlisted" field.
+func (_u *TeamUpdate) SetIsWaitlisted(v bool) *TeamUpdate {
+	_u.mutation.SetIsWaitlisted(v)
 	return _u
 }
 
-// ClearQueuePosition clears the value of the "queue_position" field.
-func (_u *TeamUpdate) ClearQueuePosition() *TeamUpdate {
-	_u.mutation.ClearQueuePosition()
+// SetNillableIsWaitlisted sets the "is_waitlisted" field if the given value is not nil.
+func (_u *TeamUpdate) SetNillableIsWaitlisted(v *bool) *TeamUpdate {
+	if v != nil {
+		_u.SetIsWaitlisted(*v)
+	}
+	return _u
+}
+
+// SetWaitlistPosition sets the "waitlist_position" field.
+func (_u *TeamUpdate) SetWaitlistPosition(v int) *TeamUpdate {
+	_u.mutation.ResetWaitlistPosition()
+	_u.mutation.SetWaitlistPosition(v)
+	return _u
+}
+
+// SetNillableWaitlistPosition sets the "waitlist_position" field if the given value is not nil.
+func (_u *TeamUpdate) SetNillableWaitlistPosition(v *int) *TeamUpdate {
+	if v != nil {
+		_u.SetWaitlistPosition(*v)
+	}
+	return _u
+}
+
+// AddWaitlistPosition adds value to the "waitlist_position" field.
+func (_u *TeamUpdate) AddWaitlistPosition(v int) *TeamUpdate {
+	_u.mutation.AddWaitlistPosition(v)
+	return _u
+}
+
+// ClearWaitlistPosition clears the value of the "waitlist_position" field.
+func (_u *TeamUpdate) ClearWaitlistPosition() *TeamUpdate {
+	_u.mutation.ClearWaitlistPosition()
 	return _u
 }
 
@@ -343,11 +357,6 @@ func (_u *TeamUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TeamUpdate) check() error {
-	if v, ok := _u.mutation.Status(); ok {
-		if err := team.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
-		}
-	}
 	if _u.mutation.TournamentCleared() && len(_u.mutation.TournamentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Team.tournament"`)
 	}
@@ -378,20 +387,23 @@ func (_u *TeamUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.ImageURLCleared() {
 		_spec.ClearField(team.FieldImageURL, field.TypeString)
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(team.FieldStatus, field.TypeEnum, value)
-	}
 	if value, ok := _u.mutation.IsLocked(); ok {
 		_spec.SetField(team.FieldIsLocked, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.QueuePosition(); ok {
-		_spec.SetField(team.FieldQueuePosition, field.TypeInt, value)
+	if value, ok := _u.mutation.IsRegistered(); ok {
+		_spec.SetField(team.FieldIsRegistered, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.AddedQueuePosition(); ok {
-		_spec.AddField(team.FieldQueuePosition, field.TypeInt, value)
+	if value, ok := _u.mutation.IsWaitlisted(); ok {
+		_spec.SetField(team.FieldIsWaitlisted, field.TypeBool, value)
 	}
-	if _u.mutation.QueuePositionCleared() {
-		_spec.ClearField(team.FieldQueuePosition, field.TypeInt)
+	if value, ok := _u.mutation.WaitlistPosition(); ok {
+		_spec.SetField(team.FieldWaitlistPosition, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedWaitlistPosition(); ok {
+		_spec.AddField(team.FieldWaitlistPosition, field.TypeInt, value)
+	}
+	if _u.mutation.WaitlistPositionCleared() {
+		_spec.ClearField(team.FieldWaitlistPosition, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Score(); ok {
 		_spec.SetField(team.FieldScore, field.TypeInt, value)
@@ -639,20 +651,6 @@ func (_u *TeamUpdateOne) ClearImageURL() *TeamUpdateOne {
 	return _u
 }
 
-// SetStatus sets the "status" field.
-func (_u *TeamUpdateOne) SetStatus(v team.Status) *TeamUpdateOne {
-	_u.mutation.SetStatus(v)
-	return _u
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *TeamUpdateOne) SetNillableStatus(v *team.Status) *TeamUpdateOne {
-	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
 // SetIsLocked sets the "is_locked" field.
 func (_u *TeamUpdateOne) SetIsLocked(v bool) *TeamUpdateOne {
 	_u.mutation.SetIsLocked(v)
@@ -667,30 +665,58 @@ func (_u *TeamUpdateOne) SetNillableIsLocked(v *bool) *TeamUpdateOne {
 	return _u
 }
 
-// SetQueuePosition sets the "queue_position" field.
-func (_u *TeamUpdateOne) SetQueuePosition(v int) *TeamUpdateOne {
-	_u.mutation.ResetQueuePosition()
-	_u.mutation.SetQueuePosition(v)
+// SetIsRegistered sets the "is_registered" field.
+func (_u *TeamUpdateOne) SetIsRegistered(v bool) *TeamUpdateOne {
+	_u.mutation.SetIsRegistered(v)
 	return _u
 }
 
-// SetNillableQueuePosition sets the "queue_position" field if the given value is not nil.
-func (_u *TeamUpdateOne) SetNillableQueuePosition(v *int) *TeamUpdateOne {
+// SetNillableIsRegistered sets the "is_registered" field if the given value is not nil.
+func (_u *TeamUpdateOne) SetNillableIsRegistered(v *bool) *TeamUpdateOne {
 	if v != nil {
-		_u.SetQueuePosition(*v)
+		_u.SetIsRegistered(*v)
 	}
 	return _u
 }
 
-// AddQueuePosition adds value to the "queue_position" field.
-func (_u *TeamUpdateOne) AddQueuePosition(v int) *TeamUpdateOne {
-	_u.mutation.AddQueuePosition(v)
+// SetIsWaitlisted sets the "is_waitlisted" field.
+func (_u *TeamUpdateOne) SetIsWaitlisted(v bool) *TeamUpdateOne {
+	_u.mutation.SetIsWaitlisted(v)
 	return _u
 }
 
-// ClearQueuePosition clears the value of the "queue_position" field.
-func (_u *TeamUpdateOne) ClearQueuePosition() *TeamUpdateOne {
-	_u.mutation.ClearQueuePosition()
+// SetNillableIsWaitlisted sets the "is_waitlisted" field if the given value is not nil.
+func (_u *TeamUpdateOne) SetNillableIsWaitlisted(v *bool) *TeamUpdateOne {
+	if v != nil {
+		_u.SetIsWaitlisted(*v)
+	}
+	return _u
+}
+
+// SetWaitlistPosition sets the "waitlist_position" field.
+func (_u *TeamUpdateOne) SetWaitlistPosition(v int) *TeamUpdateOne {
+	_u.mutation.ResetWaitlistPosition()
+	_u.mutation.SetWaitlistPosition(v)
+	return _u
+}
+
+// SetNillableWaitlistPosition sets the "waitlist_position" field if the given value is not nil.
+func (_u *TeamUpdateOne) SetNillableWaitlistPosition(v *int) *TeamUpdateOne {
+	if v != nil {
+		_u.SetWaitlistPosition(*v)
+	}
+	return _u
+}
+
+// AddWaitlistPosition adds value to the "waitlist_position" field.
+func (_u *TeamUpdateOne) AddWaitlistPosition(v int) *TeamUpdateOne {
+	_u.mutation.AddWaitlistPosition(v)
+	return _u
+}
+
+// ClearWaitlistPosition clears the value of the "waitlist_position" field.
+func (_u *TeamUpdateOne) ClearWaitlistPosition() *TeamUpdateOne {
+	_u.mutation.ClearWaitlistPosition()
 	return _u
 }
 
@@ -928,11 +954,6 @@ func (_u *TeamUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TeamUpdateOne) check() error {
-	if v, ok := _u.mutation.Status(); ok {
-		if err := team.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
-		}
-	}
 	if _u.mutation.TournamentCleared() && len(_u.mutation.TournamentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Team.tournament"`)
 	}
@@ -980,20 +1001,23 @@ func (_u *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) {
 	if _u.mutation.ImageURLCleared() {
 		_spec.ClearField(team.FieldImageURL, field.TypeString)
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(team.FieldStatus, field.TypeEnum, value)
-	}
 	if value, ok := _u.mutation.IsLocked(); ok {
 		_spec.SetField(team.FieldIsLocked, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.QueuePosition(); ok {
-		_spec.SetField(team.FieldQueuePosition, field.TypeInt, value)
+	if value, ok := _u.mutation.IsRegistered(); ok {
+		_spec.SetField(team.FieldIsRegistered, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.AddedQueuePosition(); ok {
-		_spec.AddField(team.FieldQueuePosition, field.TypeInt, value)
+	if value, ok := _u.mutation.IsWaitlisted(); ok {
+		_spec.SetField(team.FieldIsWaitlisted, field.TypeBool, value)
 	}
-	if _u.mutation.QueuePositionCleared() {
-		_spec.ClearField(team.FieldQueuePosition, field.TypeInt)
+	if value, ok := _u.mutation.WaitlistPosition(); ok {
+		_spec.SetField(team.FieldWaitlistPosition, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedWaitlistPosition(); ok {
+		_spec.AddField(team.FieldWaitlistPosition, field.TypeInt, value)
+	}
+	if _u.mutation.WaitlistPositionCleared() {
+		_spec.ClearField(team.FieldWaitlistPosition, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Score(); ok {
 		_spec.SetField(team.FieldScore, field.TypeInt, value)
