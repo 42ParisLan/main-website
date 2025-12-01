@@ -30,6 +30,7 @@ type LightTournament struct {
 	CustomPageComponent *string                  `json:"custom_page_component,omitempty" description:"Optional React component for custom tournament page"`
 	ExternalLinks       *map[string]string       `json:"external_links,omitempty" description:"Optional external link for the tournament"`
 	Creator             *LightUser               `json:"creator" description:"The creator of the tournament"`
+	Status              string                   `json:"status" example:"upcoming" description:"Status of the tournament" enum:"upcoming,registration_open,registration_closed,ongoing,completed"`
 	CreatedAt           time.Time                `json:"created_at"`
 }
 
@@ -60,6 +61,7 @@ func NewLightTournamentFromEnt(entTournament *ent.Tournament) *LightTournament {
 		CustomPageComponent: &entTournament.CustomPageComponent,
 		ExternalLinks:       &entTournament.ExternalLinks,
 		Creator:             NewLightUserFromEnt(entTournament.Edges.Creator),
+		Status:              calculateTournamentStatus(entTournament.RegistrationStart, entTournament.RegistrationEnd, entTournament.TournamentStart, entTournament.TournamentEnd),
 		CreatedAt:           entTournament.CreatedAt,
 	}
 }
@@ -91,6 +93,7 @@ type Tournament struct {
 	Admins              []*LightTournamentAdmin  `json:"admins"`
 	Teams               []*LightTeam             `json:"teams,omitempty"`
 	RankGroups          []*LightRankGroup        `json:"rank_groups,omitempty"`
+	Status              string                   `json:"status" example:"upcoming" enum:"upcoming,registration_open,registration_closed,ongoing,completed"`
 	CreatedAt           time.Time                `json:"created_at"`
 }
 
@@ -152,6 +155,7 @@ func NewTournamentFromEnt(ctx context.Context, entTournament *ent.Tournament, S3
 		Admins:              admins,
 		Teams:               teams,
 		RankGroups:          rankGroups,
+		Status:              calculateTournamentStatus(entTournament.RegistrationStart, entTournament.RegistrationEnd, entTournament.TournamentStart, entTournament.TournamentEnd),
 		CreatedAt:           entTournament.CreatedAt,
 	}
 }
@@ -162,4 +166,21 @@ func NewTournamentsFromEnt(ctx context.Context, entTournaments []*ent.Tournament
 		tournaments[i] = NewTournamentFromEnt(ctx, t, S3Service)
 	}
 	return tournaments
+}
+
+func calculateTournamentStatus(regStart time.Time, regEnd time.Time, tournStart time.Time, tournEnd *time.Time) string {
+	now := time.Now()
+	if now.Before(regStart) {
+		return "upcoming"
+	}
+	if now.Before(regEnd) {
+		return "registration_open"
+	}
+	if now.Before(tournStart) {
+		return "registration_closed"
+	}
+	if tournEnd != nil && now.After(*tournEnd) {
+		return "completed"
+	}
+	return "ongoing"
 }

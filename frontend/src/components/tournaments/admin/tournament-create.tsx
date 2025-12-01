@@ -33,7 +33,7 @@ export default function TournamentCreate() {
 
 	const {mutate, isPending} = client.useMutation("post", "/tournaments", {
 		onSuccess(data) {
-			console.log("Tournament created successfully")
+			toast.success("Tournament created successfully")
 			router.navigate({to : `/admin/tournaments/${data.id}`})
 		},
 		onError(error) {

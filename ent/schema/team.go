@@ -18,11 +18,10 @@ func (Team) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
 		field.String("image_url").Optional().Nillable(),
-		field.Enum("status").
-			Values("DRAFT", "LOCKED").
-			Default("DRAFT"),
 		field.Bool("is_locked").Default(false),
-		field.Int("queue_position").Optional(),
+		field.Bool("is_registered").Default(false),
+		field.Bool("is_waitlisted").Default(false),
+		field.Int("waitlist_position").Optional().Nillable(),
 		field.Int("score").Optional(),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
@@ -54,3 +53,9 @@ func (Team) Indexes() []ent.Index {
 		index.Edges("creator", "tournament").Unique(),
 	}
 }
+
+// func (Team) Hook() []ent.Hook {
+// 	return []ent.Hook{
+// 		hooks.AssignRegistrationOnLockHook(),
+// 	}
+// }

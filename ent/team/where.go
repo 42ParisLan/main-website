@@ -70,9 +70,19 @@ func IsLocked(v bool) predicate.Team {
 	return predicate.Team(sql.FieldEQ(FieldIsLocked, v))
 }
 
-// QueuePosition applies equality check predicate on the "queue_position" field. It's identical to QueuePositionEQ.
-func QueuePosition(v int) predicate.Team {
-	return predicate.Team(sql.FieldEQ(FieldQueuePosition, v))
+// IsRegistered applies equality check predicate on the "is_registered" field. It's identical to IsRegisteredEQ.
+func IsRegistered(v bool) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldIsRegistered, v))
+}
+
+// IsWaitlisted applies equality check predicate on the "is_waitlisted" field. It's identical to IsWaitlistedEQ.
+func IsWaitlisted(v bool) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldIsWaitlisted, v))
+}
+
+// WaitlistPosition applies equality check predicate on the "waitlist_position" field. It's identical to WaitlistPositionEQ.
+func WaitlistPosition(v int) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldWaitlistPosition, v))
 }
 
 // Score applies equality check predicate on the "score" field. It's identical to ScoreEQ.
@@ -230,26 +240,6 @@ func ImageURLContainsFold(v string) predicate.Team {
 	return predicate.Team(sql.FieldContainsFold(FieldImageURL, v))
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.Team {
-	return predicate.Team(sql.FieldEQ(FieldStatus, v))
-}
-
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.Team {
-	return predicate.Team(sql.FieldNEQ(FieldStatus, v))
-}
-
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.Team {
-	return predicate.Team(sql.FieldIn(FieldStatus, vs...))
-}
-
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.Team {
-	return predicate.Team(sql.FieldNotIn(FieldStatus, vs...))
-}
-
 // IsLockedEQ applies the EQ predicate on the "is_locked" field.
 func IsLockedEQ(v bool) predicate.Team {
 	return predicate.Team(sql.FieldEQ(FieldIsLocked, v))
@@ -260,54 +250,74 @@ func IsLockedNEQ(v bool) predicate.Team {
 	return predicate.Team(sql.FieldNEQ(FieldIsLocked, v))
 }
 
-// QueuePositionEQ applies the EQ predicate on the "queue_position" field.
-func QueuePositionEQ(v int) predicate.Team {
-	return predicate.Team(sql.FieldEQ(FieldQueuePosition, v))
+// IsRegisteredEQ applies the EQ predicate on the "is_registered" field.
+func IsRegisteredEQ(v bool) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldIsRegistered, v))
 }
 
-// QueuePositionNEQ applies the NEQ predicate on the "queue_position" field.
-func QueuePositionNEQ(v int) predicate.Team {
-	return predicate.Team(sql.FieldNEQ(FieldQueuePosition, v))
+// IsRegisteredNEQ applies the NEQ predicate on the "is_registered" field.
+func IsRegisteredNEQ(v bool) predicate.Team {
+	return predicate.Team(sql.FieldNEQ(FieldIsRegistered, v))
 }
 
-// QueuePositionIn applies the In predicate on the "queue_position" field.
-func QueuePositionIn(vs ...int) predicate.Team {
-	return predicate.Team(sql.FieldIn(FieldQueuePosition, vs...))
+// IsWaitlistedEQ applies the EQ predicate on the "is_waitlisted" field.
+func IsWaitlistedEQ(v bool) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldIsWaitlisted, v))
 }
 
-// QueuePositionNotIn applies the NotIn predicate on the "queue_position" field.
-func QueuePositionNotIn(vs ...int) predicate.Team {
-	return predicate.Team(sql.FieldNotIn(FieldQueuePosition, vs...))
+// IsWaitlistedNEQ applies the NEQ predicate on the "is_waitlisted" field.
+func IsWaitlistedNEQ(v bool) predicate.Team {
+	return predicate.Team(sql.FieldNEQ(FieldIsWaitlisted, v))
 }
 
-// QueuePositionGT applies the GT predicate on the "queue_position" field.
-func QueuePositionGT(v int) predicate.Team {
-	return predicate.Team(sql.FieldGT(FieldQueuePosition, v))
+// WaitlistPositionEQ applies the EQ predicate on the "waitlist_position" field.
+func WaitlistPositionEQ(v int) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldWaitlistPosition, v))
 }
 
-// QueuePositionGTE applies the GTE predicate on the "queue_position" field.
-func QueuePositionGTE(v int) predicate.Team {
-	return predicate.Team(sql.FieldGTE(FieldQueuePosition, v))
+// WaitlistPositionNEQ applies the NEQ predicate on the "waitlist_position" field.
+func WaitlistPositionNEQ(v int) predicate.Team {
+	return predicate.Team(sql.FieldNEQ(FieldWaitlistPosition, v))
 }
 
-// QueuePositionLT applies the LT predicate on the "queue_position" field.
-func QueuePositionLT(v int) predicate.Team {
-	return predicate.Team(sql.FieldLT(FieldQueuePosition, v))
+// WaitlistPositionIn applies the In predicate on the "waitlist_position" field.
+func WaitlistPositionIn(vs ...int) predicate.Team {
+	return predicate.Team(sql.FieldIn(FieldWaitlistPosition, vs...))
 }
 
-// QueuePositionLTE applies the LTE predicate on the "queue_position" field.
-func QueuePositionLTE(v int) predicate.Team {
-	return predicate.Team(sql.FieldLTE(FieldQueuePosition, v))
+// WaitlistPositionNotIn applies the NotIn predicate on the "waitlist_position" field.
+func WaitlistPositionNotIn(vs ...int) predicate.Team {
+	return predicate.Team(sql.FieldNotIn(FieldWaitlistPosition, vs...))
 }
 
-// QueuePositionIsNil applies the IsNil predicate on the "queue_position" field.
-func QueuePositionIsNil() predicate.Team {
-	return predicate.Team(sql.FieldIsNull(FieldQueuePosition))
+// WaitlistPositionGT applies the GT predicate on the "waitlist_position" field.
+func WaitlistPositionGT(v int) predicate.Team {
+	return predicate.Team(sql.FieldGT(FieldWaitlistPosition, v))
 }
 
-// QueuePositionNotNil applies the NotNil predicate on the "queue_position" field.
-func QueuePositionNotNil() predicate.Team {
-	return predicate.Team(sql.FieldNotNull(FieldQueuePosition))
+// WaitlistPositionGTE applies the GTE predicate on the "waitlist_position" field.
+func WaitlistPositionGTE(v int) predicate.Team {
+	return predicate.Team(sql.FieldGTE(FieldWaitlistPosition, v))
+}
+
+// WaitlistPositionLT applies the LT predicate on the "waitlist_position" field.
+func WaitlistPositionLT(v int) predicate.Team {
+	return predicate.Team(sql.FieldLT(FieldWaitlistPosition, v))
+}
+
+// WaitlistPositionLTE applies the LTE predicate on the "waitlist_position" field.
+func WaitlistPositionLTE(v int) predicate.Team {
+	return predicate.Team(sql.FieldLTE(FieldWaitlistPosition, v))
+}
+
+// WaitlistPositionIsNil applies the IsNil predicate on the "waitlist_position" field.
+func WaitlistPositionIsNil() predicate.Team {
+	return predicate.Team(sql.FieldIsNull(FieldWaitlistPosition))
+}
+
+// WaitlistPositionNotNil applies the NotNil predicate on the "waitlist_position" field.
+func WaitlistPositionNotNil() predicate.Team {
+	return predicate.Team(sql.FieldNotNull(FieldWaitlistPosition))
 }
 
 // ScoreEQ applies the EQ predicate on the "score" field.

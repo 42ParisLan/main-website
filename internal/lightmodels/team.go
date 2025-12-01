@@ -38,16 +38,18 @@ func NewLightTeamMembersFromEnt(entTeamMembers []*ent.TeamMember) []*LightTeamMe
 }
 
 type LightTeam struct {
-	ID        int                `json:"id" example:"42"`
-	Name      string             `json:"name" example:"Team Phoenix"`
-	ImageURL  *string            `json:"image_url,omitempty"`
-	Status    string             `json:"status" example:"DRAFT" enum:"DRAFT,LOCKED"`
-	IsLocked  bool               `json:"is_locked"`
-	Score     *int               `json:"score,omitempty"`
-	RankGroup *LightRankGroup    `json:"rank_group,omitempty"`
-	Members   []*LightTeamMember `json:"members,omitempty"`
-	Creator   *LightUser         `json:"creator,omitempty"`
-	CreatedAt time.Time          `json:"created_at"`
+	ID               int                `json:"id" example:"42"`
+	Name             string             `json:"name" example:"Team Phoenix"`
+	ImageURL         *string            `json:"image_url,omitempty"`
+	IsLocked         bool               `json:"is_locked"`
+	IsRegistered     bool               `json:"is_registered"`
+	IsWaitlisted     bool               `json:"is_waitlisted"`
+	Score            *int               `json:"score,omitempty"`
+	RankGroup        *LightRankGroup    `json:"rank_group,omitempty"`
+	Members          []*LightTeamMember `json:"members,omitempty"`
+	Creator          *LightUser         `json:"creator,omitempty"`
+	WaitlistPosition *int               `json:"waitlist_position,omitempty"`
+	CreatedAt        time.Time          `json:"created_at"`
 }
 
 func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3service.S3Service) *LightTeam {
@@ -79,16 +81,18 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 	}
 
 	return &LightTeam{
-		ID:        entTeam.ID,
-		Name:      entTeam.Name,
-		ImageURL:  imageUrl,
-		Status:    string(entTeam.Status),
-		IsLocked:  entTeam.IsLocked,
-		Score:     &entTeam.Score,
-		RankGroup: rankGroup,
-		Members:   members,
-		Creator:   creator,
-		CreatedAt: entTeam.CreatedAt,
+		ID:               entTeam.ID,
+		Name:             entTeam.Name,
+		ImageURL:         imageUrl,
+		IsLocked:         entTeam.IsLocked,
+		IsRegistered:     entTeam.IsRegistered,
+		IsWaitlisted:     entTeam.IsWaitlisted,
+		Score:            &entTeam.Score,
+		RankGroup:        rankGroup,
+		Members:          members,
+		Creator:          creator,
+		WaitlistPosition: entTeam.WaitlistPosition,
+		CreatedAt:        entTeam.CreatedAt,
 	}
 }
 

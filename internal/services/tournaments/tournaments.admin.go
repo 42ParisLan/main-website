@@ -105,6 +105,9 @@ func (svc *tournamentsService) CreateTournament(
 		if v.Max < v.Min {
 			return nil, huma.Error400BadRequest("in team structure min can't be higher than max")
 		}
+		if v.Max <= 0 {
+			return nil, huma.Error400BadRequest("in team structure max can't be 0 or less")
+		}
 		var any interface{}
 		b, err := json.Marshal(v)
 		if err != nil {

@@ -5649,35 +5649,36 @@ func (m *RankGroupMutation) ResetEdge(name string) error {
 // TeamMutation represents an operation that mutates the Team nodes in the graph.
 type TeamMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int
-	name               *string
-	image_url          *string
-	status             *team.Status
-	is_locked          *bool
-	queue_position     *int
-	addqueue_position  *int
-	score              *int
-	addscore           *int
-	created_at         *time.Time
-	updated_at         *time.Time
-	clearedFields      map[string]struct{}
-	tournament         *int
-	clearedtournament  bool
-	creator            *int
-	clearedcreator     bool
-	members            map[int]struct{}
-	removedmembers     map[int]struct{}
-	clearedmembers     bool
-	rank_group         *int
-	clearedrank_group  bool
-	invitations        map[int]struct{}
-	removedinvitations map[int]struct{}
-	clearedinvitations bool
-	done               bool
-	oldValue           func(context.Context) (*Team, error)
-	predicates         []predicate.Team
+	op                   Op
+	typ                  string
+	id                   *int
+	name                 *string
+	image_url            *string
+	is_locked            *bool
+	is_registered        *bool
+	is_waitlisted        *bool
+	waitlist_position    *int
+	addwaitlist_position *int
+	score                *int
+	addscore             *int
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	tournament           *int
+	clearedtournament    bool
+	creator              *int
+	clearedcreator       bool
+	members              map[int]struct{}
+	removedmembers       map[int]struct{}
+	clearedmembers       bool
+	rank_group           *int
+	clearedrank_group    bool
+	invitations          map[int]struct{}
+	removedinvitations   map[int]struct{}
+	clearedinvitations   bool
+	done                 bool
+	oldValue             func(context.Context) (*Team, error)
+	predicates           []predicate.Team
 }
 
 var _ ent.Mutation = (*TeamMutation)(nil)
@@ -5863,42 +5864,6 @@ func (m *TeamMutation) ResetImageURL() {
 	delete(m.clearedFields, team.FieldImageURL)
 }
 
-// SetStatus sets the "status" field.
-func (m *TeamMutation) SetStatus(t team.Status) {
-	m.status = &t
-}
-
-// Status returns the value of the "status" field in the mutation.
-func (m *TeamMutation) Status() (r team.Status, exists bool) {
-	v := m.status
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatus returns the old "status" field's value of the Team entity.
-// If the Team object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TeamMutation) OldStatus(ctx context.Context) (v team.Status, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
-	}
-	return oldValue.Status, nil
-}
-
-// ResetStatus resets all changes to the "status" field.
-func (m *TeamMutation) ResetStatus() {
-	m.status = nil
-}
-
 // SetIsLocked sets the "is_locked" field.
 func (m *TeamMutation) SetIsLocked(b bool) {
 	m.is_locked = &b
@@ -5935,74 +5900,146 @@ func (m *TeamMutation) ResetIsLocked() {
 	m.is_locked = nil
 }
 
-// SetQueuePosition sets the "queue_position" field.
-func (m *TeamMutation) SetQueuePosition(i int) {
-	m.queue_position = &i
-	m.addqueue_position = nil
+// SetIsRegistered sets the "is_registered" field.
+func (m *TeamMutation) SetIsRegistered(b bool) {
+	m.is_registered = &b
 }
 
-// QueuePosition returns the value of the "queue_position" field in the mutation.
-func (m *TeamMutation) QueuePosition() (r int, exists bool) {
-	v := m.queue_position
+// IsRegistered returns the value of the "is_registered" field in the mutation.
+func (m *TeamMutation) IsRegistered() (r bool, exists bool) {
+	v := m.is_registered
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldQueuePosition returns the old "queue_position" field's value of the Team entity.
+// OldIsRegistered returns the old "is_registered" field's value of the Team entity.
 // If the Team object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TeamMutation) OldQueuePosition(ctx context.Context) (v int, err error) {
+func (m *TeamMutation) OldIsRegistered(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldQueuePosition is only allowed on UpdateOne operations")
+		return v, errors.New("OldIsRegistered is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldQueuePosition requires an ID field in the mutation")
+		return v, errors.New("OldIsRegistered requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldQueuePosition: %w", err)
+		return v, fmt.Errorf("querying old value for OldIsRegistered: %w", err)
 	}
-	return oldValue.QueuePosition, nil
+	return oldValue.IsRegistered, nil
 }
 
-// AddQueuePosition adds i to the "queue_position" field.
-func (m *TeamMutation) AddQueuePosition(i int) {
-	if m.addqueue_position != nil {
-		*m.addqueue_position += i
-	} else {
-		m.addqueue_position = &i
-	}
+// ResetIsRegistered resets all changes to the "is_registered" field.
+func (m *TeamMutation) ResetIsRegistered() {
+	m.is_registered = nil
 }
 
-// AddedQueuePosition returns the value that was added to the "queue_position" field in this mutation.
-func (m *TeamMutation) AddedQueuePosition() (r int, exists bool) {
-	v := m.addqueue_position
+// SetIsWaitlisted sets the "is_waitlisted" field.
+func (m *TeamMutation) SetIsWaitlisted(b bool) {
+	m.is_waitlisted = &b
+}
+
+// IsWaitlisted returns the value of the "is_waitlisted" field in the mutation.
+func (m *TeamMutation) IsWaitlisted() (r bool, exists bool) {
+	v := m.is_waitlisted
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ClearQueuePosition clears the value of the "queue_position" field.
-func (m *TeamMutation) ClearQueuePosition() {
-	m.queue_position = nil
-	m.addqueue_position = nil
-	m.clearedFields[team.FieldQueuePosition] = struct{}{}
+// OldIsWaitlisted returns the old "is_waitlisted" field's value of the Team entity.
+// If the Team object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeamMutation) OldIsWaitlisted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsWaitlisted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsWaitlisted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsWaitlisted: %w", err)
+	}
+	return oldValue.IsWaitlisted, nil
 }
 
-// QueuePositionCleared returns if the "queue_position" field was cleared in this mutation.
-func (m *TeamMutation) QueuePositionCleared() bool {
-	_, ok := m.clearedFields[team.FieldQueuePosition]
+// ResetIsWaitlisted resets all changes to the "is_waitlisted" field.
+func (m *TeamMutation) ResetIsWaitlisted() {
+	m.is_waitlisted = nil
+}
+
+// SetWaitlistPosition sets the "waitlist_position" field.
+func (m *TeamMutation) SetWaitlistPosition(i int) {
+	m.waitlist_position = &i
+	m.addwaitlist_position = nil
+}
+
+// WaitlistPosition returns the value of the "waitlist_position" field in the mutation.
+func (m *TeamMutation) WaitlistPosition() (r int, exists bool) {
+	v := m.waitlist_position
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWaitlistPosition returns the old "waitlist_position" field's value of the Team entity.
+// If the Team object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeamMutation) OldWaitlistPosition(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWaitlistPosition is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWaitlistPosition requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWaitlistPosition: %w", err)
+	}
+	return oldValue.WaitlistPosition, nil
+}
+
+// AddWaitlistPosition adds i to the "waitlist_position" field.
+func (m *TeamMutation) AddWaitlistPosition(i int) {
+	if m.addwaitlist_position != nil {
+		*m.addwaitlist_position += i
+	} else {
+		m.addwaitlist_position = &i
+	}
+}
+
+// AddedWaitlistPosition returns the value that was added to the "waitlist_position" field in this mutation.
+func (m *TeamMutation) AddedWaitlistPosition() (r int, exists bool) {
+	v := m.addwaitlist_position
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearWaitlistPosition clears the value of the "waitlist_position" field.
+func (m *TeamMutation) ClearWaitlistPosition() {
+	m.waitlist_position = nil
+	m.addwaitlist_position = nil
+	m.clearedFields[team.FieldWaitlistPosition] = struct{}{}
+}
+
+// WaitlistPositionCleared returns if the "waitlist_position" field was cleared in this mutation.
+func (m *TeamMutation) WaitlistPositionCleared() bool {
+	_, ok := m.clearedFields[team.FieldWaitlistPosition]
 	return ok
 }
 
-// ResetQueuePosition resets all changes to the "queue_position" field.
-func (m *TeamMutation) ResetQueuePosition() {
-	m.queue_position = nil
-	m.addqueue_position = nil
-	delete(m.clearedFields, team.FieldQueuePosition)
+// ResetWaitlistPosition resets all changes to the "waitlist_position" field.
+func (m *TeamMutation) ResetWaitlistPosition() {
+	m.waitlist_position = nil
+	m.addwaitlist_position = nil
+	delete(m.clearedFields, team.FieldWaitlistPosition)
 }
 
 // SetScore sets the "score" field.
@@ -6406,21 +6443,24 @@ func (m *TeamMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TeamMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, team.FieldName)
 	}
 	if m.image_url != nil {
 		fields = append(fields, team.FieldImageURL)
 	}
-	if m.status != nil {
-		fields = append(fields, team.FieldStatus)
-	}
 	if m.is_locked != nil {
 		fields = append(fields, team.FieldIsLocked)
 	}
-	if m.queue_position != nil {
-		fields = append(fields, team.FieldQueuePosition)
+	if m.is_registered != nil {
+		fields = append(fields, team.FieldIsRegistered)
+	}
+	if m.is_waitlisted != nil {
+		fields = append(fields, team.FieldIsWaitlisted)
+	}
+	if m.waitlist_position != nil {
+		fields = append(fields, team.FieldWaitlistPosition)
 	}
 	if m.score != nil {
 		fields = append(fields, team.FieldScore)
@@ -6443,12 +6483,14 @@ func (m *TeamMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case team.FieldImageURL:
 		return m.ImageURL()
-	case team.FieldStatus:
-		return m.Status()
 	case team.FieldIsLocked:
 		return m.IsLocked()
-	case team.FieldQueuePosition:
-		return m.QueuePosition()
+	case team.FieldIsRegistered:
+		return m.IsRegistered()
+	case team.FieldIsWaitlisted:
+		return m.IsWaitlisted()
+	case team.FieldWaitlistPosition:
+		return m.WaitlistPosition()
 	case team.FieldScore:
 		return m.Score()
 	case team.FieldCreatedAt:
@@ -6468,12 +6510,14 @@ func (m *TeamMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case team.FieldImageURL:
 		return m.OldImageURL(ctx)
-	case team.FieldStatus:
-		return m.OldStatus(ctx)
 	case team.FieldIsLocked:
 		return m.OldIsLocked(ctx)
-	case team.FieldQueuePosition:
-		return m.OldQueuePosition(ctx)
+	case team.FieldIsRegistered:
+		return m.OldIsRegistered(ctx)
+	case team.FieldIsWaitlisted:
+		return m.OldIsWaitlisted(ctx)
+	case team.FieldWaitlistPosition:
+		return m.OldWaitlistPosition(ctx)
 	case team.FieldScore:
 		return m.OldScore(ctx)
 	case team.FieldCreatedAt:
@@ -6503,13 +6547,6 @@ func (m *TeamMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetImageURL(v)
 		return nil
-	case team.FieldStatus:
-		v, ok := value.(team.Status)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStatus(v)
-		return nil
 	case team.FieldIsLocked:
 		v, ok := value.(bool)
 		if !ok {
@@ -6517,12 +6554,26 @@ func (m *TeamMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsLocked(v)
 		return nil
-	case team.FieldQueuePosition:
+	case team.FieldIsRegistered:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRegistered(v)
+		return nil
+	case team.FieldIsWaitlisted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsWaitlisted(v)
+		return nil
+	case team.FieldWaitlistPosition:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetQueuePosition(v)
+		m.SetWaitlistPosition(v)
 		return nil
 	case team.FieldScore:
 		v, ok := value.(int)
@@ -6553,8 +6604,8 @@ func (m *TeamMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *TeamMutation) AddedFields() []string {
 	var fields []string
-	if m.addqueue_position != nil {
-		fields = append(fields, team.FieldQueuePosition)
+	if m.addwaitlist_position != nil {
+		fields = append(fields, team.FieldWaitlistPosition)
 	}
 	if m.addscore != nil {
 		fields = append(fields, team.FieldScore)
@@ -6567,8 +6618,8 @@ func (m *TeamMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *TeamMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case team.FieldQueuePosition:
-		return m.AddedQueuePosition()
+	case team.FieldWaitlistPosition:
+		return m.AddedWaitlistPosition()
 	case team.FieldScore:
 		return m.AddedScore()
 	}
@@ -6580,12 +6631,12 @@ func (m *TeamMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *TeamMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case team.FieldQueuePosition:
+	case team.FieldWaitlistPosition:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddQueuePosition(v)
+		m.AddWaitlistPosition(v)
 		return nil
 	case team.FieldScore:
 		v, ok := value.(int)
@@ -6605,8 +6656,8 @@ func (m *TeamMutation) ClearedFields() []string {
 	if m.FieldCleared(team.FieldImageURL) {
 		fields = append(fields, team.FieldImageURL)
 	}
-	if m.FieldCleared(team.FieldQueuePosition) {
-		fields = append(fields, team.FieldQueuePosition)
+	if m.FieldCleared(team.FieldWaitlistPosition) {
+		fields = append(fields, team.FieldWaitlistPosition)
 	}
 	if m.FieldCleared(team.FieldScore) {
 		fields = append(fields, team.FieldScore)
@@ -6628,8 +6679,8 @@ func (m *TeamMutation) ClearField(name string) error {
 	case team.FieldImageURL:
 		m.ClearImageURL()
 		return nil
-	case team.FieldQueuePosition:
-		m.ClearQueuePosition()
+	case team.FieldWaitlistPosition:
+		m.ClearWaitlistPosition()
 		return nil
 	case team.FieldScore:
 		m.ClearScore()
@@ -6648,14 +6699,17 @@ func (m *TeamMutation) ResetField(name string) error {
 	case team.FieldImageURL:
 		m.ResetImageURL()
 		return nil
-	case team.FieldStatus:
-		m.ResetStatus()
-		return nil
 	case team.FieldIsLocked:
 		m.ResetIsLocked()
 		return nil
-	case team.FieldQueuePosition:
-		m.ResetQueuePosition()
+	case team.FieldIsRegistered:
+		m.ResetIsRegistered()
+		return nil
+	case team.FieldIsWaitlisted:
+		m.ResetIsWaitlisted()
+		return nil
+	case team.FieldWaitlistPosition:
+		m.ResetWaitlistPosition()
 		return nil
 	case team.FieldScore:
 		m.ResetScore()
