@@ -88,7 +88,6 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 				formData.append("description", value.description)
 			}
 			if (previewUrl && previewUrl.toString() != initialValues.image_url && value.image) {
-				console.log("image changed")
 				formData.append("image", value.image);
 			}
 
