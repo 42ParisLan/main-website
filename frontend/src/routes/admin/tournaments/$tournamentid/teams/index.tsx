@@ -30,40 +30,52 @@ function RouteComponent() {
 		}
 	})
 
-		const {data: teamsRegistered, isLoading: isLoadingRegistered} = client.useQuery("get", "/tournaments/{id}/teams", {
+	const {
+		data: teamsRegistered,
+		isLoading: isLoadingRegistered,
+		refetch: refetchRegistered,
+	} = client.useQuery('get', '/tournaments/{id}/teams', {
 		params: {
 			path: {
-				id: tournament?.id ?? 0
+				id: tournament?.id ?? 0,
 			},
 			query: {
 				page: pageRegistered,
-				status: "register"
-			}
-		}
+				status: 'register',
+			},
+		},
 	})
 
-		const {data: teamsDraft, isLoading: isLoadingDraft} = client.useQuery("get", "/tournaments/{id}/teams", {
-			params: {
-				path: {
-					id: tournament?.id ?? 0
-				},
-				query: {
-					page: pageDraft,
-					status: "draft"
-				}
-			}
-		})
-
-		const {data: teamsWaitlist, isLoading: isLoadingWaitlist} = client.useQuery("get", "/tournaments/{id}/teams", {
+	const {
+		data: teamsDraft,
+		isLoading: isLoadingDraft,
+		refetch: refetchDraft,
+	} = client.useQuery('get', '/tournaments/{id}/teams', {
 		params: {
 			path: {
-				id: tournament?.id ?? 0
+				id: tournament?.id ?? 0,
 			},
 			query: {
-					page: pageWaitlist,
-					status: "waitlist"
-			}
-		}
+				page: pageDraft,
+				status: 'draft',
+			},
+		},
+	})
+
+	const {
+		data: teamsWaitlist,
+		isLoading: isLoadingWaitlist,
+		refetch: refetchWaitlist,
+	} = client.useQuery('get', '/tournaments/{id}/teams', {
+		params: {
+			path: {
+				id: tournament?.id ?? 0,
+			},
+			query: {
+				page: pageWaitlist,
+				status: 'waitlist',
+			},
+		},
 	})
 
 	const handlePageChangeRegistered = useCallback((newPage: number) => {
@@ -79,14 +91,20 @@ function RouteComponent() {
 	}, [])
 
 	if (isError) {
-		router.navigate({to: '/admin/tournaments'})
+		router.navigate({ to: '/admin/tournaments' })
 		return
 	}
 
-	let role = tournament?.admins?.find((admin) => admin.user.id === me?.id)?.role
-	if (!role && hasRole(['super_admin'])) {
-		role = "CREATOR"
-	}
+	const role = tournament?.admins?.find(
+		(admin) => admin.user.id === me?.id,
+	)?.role
+	const isSuperAdmin = hasRole(['super_admin'])
+	const effectiveRole = role ?? (isSuperAdmin ? 'CREATOR' : undefined)
+
+	const canUpdate =
+		effectiveRole !== undefined &&
+		(!tournament?.tournament_end ||
+			new Date(tournament.tournament_end).getTime() > Date.now())
 
 	return (
 		<>
@@ -104,8 +122,14 @@ function RouteComponent() {
 							onPageChange={handlePageChangeRegistered}
 							isLoading={isLoadingRegistered}
 							itemsContainerClassName="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-5"
-							renderItem={(team) => <TeamCard team={team}/>} 
-							emptyMessage='No registered teams'
+							renderItem={(team) => (
+								<TeamCard
+									team={team}
+									update={canUpdate}
+									refetch={refetchRegistered}
+								/>
+							)}
+							emptyMessage="No registered teams"
 							getItemKey={(item) => item.id}
 						/>
 					</CardContent>
@@ -113,9 +137,7 @@ function RouteComponent() {
 
 				<Card className="@container/card">
 					<CardHeader>
-						<CardTitle>
-							Waitlist Teams {teamsWaitlist?.total}
-						</CardTitle>
+						<CardTitle>Waitlist Teams {teamsWaitlist?.total}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<PaginatedListControlled<components['schemas']['LightTeam']>
@@ -124,8 +146,14 @@ function RouteComponent() {
 							onPageChange={handlePageChangeWaitlist}
 							isLoading={isLoadingWaitlist}
 							itemsContainerClassName="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-5"
-							renderItem={(team) => <TeamCard team={team}/>} 
-							emptyMessage='No waitlisted teams'
+							renderItem={(team) => (
+								<TeamCard
+									team={team}
+									update={canUpdate}
+									refetch={refetchWaitlist}
+								/>
+							)}
+							emptyMessage="No waitlisted teams"
 							getItemKey={(item) => item.id}
 						/>
 					</CardContent>
@@ -133,9 +161,7 @@ function RouteComponent() {
 
 				<Card className="@container/card">
 					<CardHeader>
-						<CardTitle>
-							Draft Teams
-						</CardTitle>
+						<CardTitle>Draft Teams</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<PaginatedListControlled<components['schemas']['LightTeam']>
@@ -144,8 +170,14 @@ function RouteComponent() {
 							onPageChange={handlePageChangeDraft}
 							isLoading={isLoadingDraft}
 							itemsContainerClassName="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-5"
-							renderItem={(team) => <TeamCard team={team}/>} 
-							emptyMessage='No draft teams'
+							renderItem={(team) => (
+								<TeamCard
+									team={team}
+									update={canUpdate}
+									refetch={refetchDraft}
+								/>
+							)}
+							emptyMessage="No draft teams"
 							getItemKey={(item) => item.id}
 						/>
 					</CardContent>

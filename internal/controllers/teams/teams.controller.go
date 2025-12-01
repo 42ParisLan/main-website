@@ -104,6 +104,16 @@ func (ctrl *teamController) Register(api huma.API) {
 		OperationID: "lockTeam",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.lockTeam)
+
+	huma.Register(api, huma.Operation{
+		Method:      "POST",
+		Path:        "/teams/{id}/unlock",
+		Summary:     "Unlock Team",
+		Description: `This endpoint is used to unlock a team.`,
+		Tags:        []string{"Teams"},
+		OperationID: "unlockTeam",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.unlockTeam)
 }
 
 func (ctrl *teamController) getAllTeamsTournament(
@@ -202,6 +212,19 @@ func (ctrl *teamController) lockTeam(
 	input *teamIDInput,
 ) (*oneTeamOutput, error) {
 	result, err := ctrl.teamsService.LockTeam(ctx, input.TeamID)
+	if err != nil {
+		return nil, err
+	}
+	return &oneTeamOutput{
+		Body: result,
+	}, nil
+}
+
+func (ctrl *teamController) unlockTeam(
+	ctx context.Context,
+	input *teamIDInput,
+) (*oneTeamOutput, error) {
+	result, err := ctrl.teamsService.UnlockTeam(ctx, input.TeamID)
 	if err != nil {
 		return nil, err
 	}

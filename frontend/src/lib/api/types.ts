@@ -532,6 +532,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/teams/{id}/rank-group": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Team Rank Group
+         * @description This endpoint is used to update the rank group of a team.
+         */
+        patch: operations["updateTeamRankGroup"];
+        trace?: never;
+    };
+    "/teams/{id}/unlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unlock Team
+         * @description This endpoint is used to unlock a team.
+         */
+        post: operations["unlockTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tournaments": {
         parameters: {
             query?: never;
@@ -657,6 +697,30 @@ export interface paths {
          */
         get: operations["getUserTeamFromTournament"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{id}/rank-groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get All Rank Groups from Tournament
+         * @description This endpoint is used to get all rank groups from a tournament.
+         */
+        get: operations["getAllRankGroupsTournament"];
+        /**
+         * Update Rank Groups for Tournament
+         * @description This endpoint is used to update rank groups for a tournament.
+         */
+        put: operations["updateRankGroupsTournament"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1320,6 +1384,11 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
+            /**
+             * @example upcoming
+             * @enum {string}
+             */
+            status: "upcoming" | "registration_open" | "registration_closed" | "ongoing" | "completed";
             team_structure: {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
@@ -1695,6 +1764,11 @@ export interface components {
             registration_start: string;
             /** @example spring-cup-2025 */
             slug: string;
+            /**
+             * @example upcoming
+             * @enum {string}
+             */
+            status: "upcoming" | "registration_open" | "registration_closed" | "ongoing" | "completed";
             team_structure: {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
@@ -1703,6 +1777,27 @@ export interface components {
             tournament_end: string | null;
             /** Format: date-time */
             tournament_start: string;
+        };
+        UpdateRankGroup: {
+            /** Format: int64 */
+            position: number;
+            /** Format: int64 */
+            rank_max: number;
+            /** Format: int64 */
+            rank_min: number;
+        };
+        UpdateTeamRankGroupBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/UpdateTeamRankGroupBody.json
+             */
+            readonly $schema?: string;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            rank_group_id: number;
         };
         UpdateVote: {
             /**
@@ -2905,6 +3000,74 @@ export interface operations {
             };
         };
     };
+    updateTeamRankGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTeamRankGroupBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    unlockTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightTeam"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getAllTournaments: {
         parameters: {
             query?: {
@@ -3278,6 +3441,74 @@ export interface operations {
             };
         };
     };
+    getAllRankGroupsTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightRankGroup"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    updateRankGroupsTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRankGroup"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LightRankGroup"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getAllTeamsTournament: {
         parameters: {
             query?: {
@@ -3289,6 +3520,8 @@ export interface operations {
                 order?: "asc" | "desc";
                 /** @example all */
                 status?: "all" | "locked" | "draft" | "register" | "waitlist";
+                /** @example all */
+                has_rank_group?: "all" | "yes" | "no";
             };
             header?: never;
             path: {

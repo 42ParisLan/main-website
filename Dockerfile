@@ -1,5 +1,4 @@
 ARG VERSION
-ARG OUTRIG_VERSION="0.9.0"
 
 # --- Frontend ---
 # Docs: https://pnpm.io/docker
@@ -50,9 +49,6 @@ ENV MIGRATIONS_DIR="/app/migrations"
 ENV CI="true"
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* && apt-get clean
-
-RUN curl -sf https://outrig.run/install.sh | OUTRIG_VERSION=${OUTRIG_VERSION} sh \
-	&& mv ~/.local/bin/outrig /bin/
 
 RUN curl -sSf https://atlasgo.sh | sh
 

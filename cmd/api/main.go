@@ -24,7 +24,6 @@ import (
 	"github.com/samber/do"
 
 	_ "github.com/danielgtaylor/huma/v2/formats/cbor"
-	_ "github.com/outrigdev/outrig/autoinit"
 )
 
 func main() {
