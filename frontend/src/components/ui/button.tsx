@@ -24,7 +24,9 @@ const buttonVariants = cva(
         transparent:
           "bg-transparent whitespace-nowrap font-medium transition-all outline-none",
         gradient:
-          "dark bg-gradient-to-br from-primary via-secondary to-purple-400",
+          "dark text-gray-300 bg-gradient-to-br from-primary via-secondary to-purple-400",
+        border:
+          "",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -44,6 +46,7 @@ const buttonVariants = cva(
       hover: {
         none: "",
         gradient: "hover:bg-gradient-to-br hover:from-primary hover:to-secondary dark",
+        border: "hover:bg-gradient-to-br hover:from-primary hover:to-secondary dark"
       },
     },
     defaultVariants: {

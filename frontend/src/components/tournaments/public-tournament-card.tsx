@@ -88,27 +88,5 @@ export default function PublicTournamentCard({
 				</Card>
 			</Link>
 		</Button>
-		// <Card className="h-50 flex bg-gray-900 border border-gray-800">
-		// 	<CardContent>
-		// 		<div className="flex-1 min-w-0">
-		// 			<div className="flex items-center justify-between gap-4">
-		// 				<Avatar>
-		// 					{/** Use AvatarImage if creator has an avatar url, otherwise fallback to initials */}
-		// 					{"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
-		// 						<AvatarImage src={tournament.creator.avatar_url as string} alt={creatorUsername} />
-		// 					) : (
-		// 						<AvatarFallback>{initials || "U"}</AvatarFallback>
-		// 					)}
-		// 				</Avatar>
-						
-						
-						
-		// 			</div>
-
-
-					
-		// 		</div>
-		// 	</CardContent>
-		// </Card>
 	);
 }

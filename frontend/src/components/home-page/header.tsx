@@ -1,38 +1,69 @@
 import { IconChalkboardTeacher } from '@tabler/icons-react'
 import { Button } from '../ui/button';
 import { Link } from '@tanstack/react-router';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import LoadingPage from '@/components/loading-page';
+import useQueryClient from '@/hooks/use-query-client';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import logo from '@/assets/logo.svg';
 
 export function Header() {
+
+     const client = useQueryClient();
+    
+      const {data: user, isLoading} = client.useQuery("get", "/me")
+    
+      if (isLoading || user == undefined) {
+        return (
+          <LoadingPage/>
+        )
+      }
     return (
         <header className="bg-background sticky top-0 w-full">
             <div className="container-wrapper">
                 <nav className="flex items-center bg-black h-20 text-gray-300">
                     <div className="h-full flex items-center">
                         <button className="cursor-pointer" type="button" onClick={() => (window.location.href = "/")}>
-                            <IconChalkboardTeacher className="w-24 h-full" />
+                            <img src={logo}
+                                    className="h-30">
+                            </img>
                         </button>
                     </div>
                     <div className="flex items-center justify-center gap-4 h-full text-lg">
-                        <Button asChild size="header" variant="transparent" hover="gradient" radius="none" className="h-full inline-flex items-center justify-center">
-                            <Link to="/tournaments">Tournaments</Link>
-                        </Button>
-                         <Button asChild size="header" variant="transparent" hover="gradient" radius="none" className="h-full inline-flex items-center justify-center">
-                            <Link to="/votes">Votes</Link>
-                        </Button> <Button asChild size="header" variant="transparent" hover="gradient" radius="none" className="h-full inline-flex items-center justify-center">
-                            <Link to="/admin">Admin</Link>
-                        </Button>
+                        <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">
+                            <Button asChild size="header" variant="transparent" radius="none" className="h-full inline-flex items-center justify-center bg-black rounded-xl h-13">
+                                <Link to="/tournaments">Tournaments</Link>
+                            </Button>
+                        </div>
+                        <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">
+                            <Button asChild size="header" variant="transparent" radius="none" className="h-full inline-flex items-center justify-center bg-black rounded-xl h-13">
+                                <Link to="/votes">Votes</Link>
+                            </Button>
+                        </div>
+                        <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">
+                            <Button asChild size="header" variant="transparent" radius="none" className="h-full inline-flex items-center justify-center bg-black rounded-xl h-13">
+                                <Link to="/admin">Admin</Link>
+                            </Button>
+                        </div>                        
                     </div>
                     <div className="w-full p-6 flex gap-6 justify-end">
-                        <div className="rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary dark">
-                            <div className="rounded-md p-2.5 bg-black transition-all outline-none hover:bg-transparent hover:text-black">
-                                <Button asChild size="header" variant="transparent" className="h-full inline-flex items-center justify-center">
-                                    <Link to="/">Login</Link>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="p-0 h-auto w-auto rounded-full focus-visible:ring-0 focus:ring-0 focus:outline-none" variant="transparent">
+                                    <div className="rounded-full p-[4px] bg-gradient-to-br from-primary to-secondary dark">  
+                                        <Avatar className="h-12 w-12">
+                                        <AvatarImage src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'} alt="Profile" />
+                                        <AvatarFallback className="text-2xl">JD</AvatarFallback>
+                                        </Avatar>
+                                    </div>
                                 </Button>
-                            </div>
-                        </div>
-                        <Button asChild size="xl" variant="secondary" className="p-3">
-                            <Link to="/">Register</Link>
-                        </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="dark bg-background">
+                                <DropdownMenuItem asChild>
+                                    <Link to="/users/me">Profile</Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 					</div>
                 </nav>
             </div>

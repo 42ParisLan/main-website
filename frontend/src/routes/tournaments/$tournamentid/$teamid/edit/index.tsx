@@ -190,11 +190,13 @@ function RouteComponent() {
 									Edit {team.name}
 								</CardTitle>
 								Team for tournament: "{tournament.name}"
-								<Button
-							onClick={performLock}
-						>
-							Lock Team
-						</Button>
+								{team.is_locked == false && (
+									<Button
+										onClick={performLock}
+									>
+										Lock Team
+									</Button>
+								)}
 						<Button
 									variant="destructive"
 									onClick={() => setConfirmOpen(true)}
@@ -227,11 +229,13 @@ function RouteComponent() {
 											)
 										}
 									})}
-									<Button
-										onClick={() => setInvitationOpen(true)}
-										>
-										Invite User
-									</Button>
+									{team.is_locked == false && (
+										<Button
+											onClick={() => setInvitationOpen(true)}
+											>
+											Invite User
+										</Button>
+									)}
 								</CardContent>
 							</Card>
 							<Card className="w-full border-0 flex-1  bg-gradient-to-br from-black to-gray-700">
