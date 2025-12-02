@@ -11,7 +11,7 @@ type User = components['schemas']['User']
 
 function RouteComponent() {
   const router = useRouter();
-  const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
+  const [selectedUsers] = useState<Set<number>>(new Set());
 
   const handleUserSelect = (user: User) => {
 		router.navigate({to: `/users/${user.id}`})

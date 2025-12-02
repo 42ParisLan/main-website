@@ -6,8 +6,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Header } from '@/components/home-page/header'
 import { Footer } from '@/components/home-page/footer'
 import { TeamCard } from '@/components/tournaments/teams/team-card';
-import { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
+import { useMemo } from 'react';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
   component: RouteComponent,
@@ -35,34 +34,34 @@ function RouteComponent() {
 		}
 	})
 
-	const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
-		onSuccess() {
-			toast.success("Team Successfuly Leaved")
-			if (tournament) {
-				router.navigate({
-					to: "/tournaments/$tournamentid",
-					params: {
-						tournamentid: tournament.slug,
-					},
-				})
-			}
-		},
-		onError(error) {
-			console.error('Failed to leave team', error)
-			toast.error("Failed to Leave Team")
-		}
-	})
+	// const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
+	// 	onSuccess() {
+	// 		toast.success("Team Successfuly Leaved")
+	// 		if (tournament) {
+	// 			router.navigate({
+	// 				to: "/tournaments/$tournamentid",
+	// 				params: {
+	// 					tournamentid: tournament.slug,
+	// 				},
+	// 			})
+	// 		}
+	// 	},
+	// 	onError(error) {
+	// 		console.error('Failed to leave team', error)
+	// 		toast.error("Failed to Leave Team")
+	// 	}
+	// })
 
-	const performLeave = useCallback(() => {
-		if (!team) return;
-		mutateLeave({
-			params: {
-				path: {
-					id: team.id,
-				},
-			},
-		});
-	}, [mutateLeave, team]);
+	// const performLeave = useCallback(() => {
+	// 	if (!team) return;
+	// 	mutateLeave({
+	// 		params: {
+	// 			path: {
+	// 				id: team.id,
+	// 			},
+	// 		},
+	// 	});
+	// }, [mutateLeave, team]);
 
 	const role = useMemo(() => {
 		if (team?.creator?.id === me.id) return 'creator'

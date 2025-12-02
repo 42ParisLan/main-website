@@ -3,31 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle} from "../../ui/card";
 
 export function TeamCard({team, tournament}: {team: components['schemas']['LightTeam'], tournament: components['schemas']['Tournament']}) {
     console.log(tournament.name)//en attendant
+
+
     return (
         <div>
-            {/* <div className="text-white">
-                {Object.entries(tournament.team_structure).map(([key, _]) => {
-                    const users = team.members?.filter((user) => user.role == key);
-                    if (users && users.length > 0)
-                    {
-                        return (
-                            <>
-                                <p>{key}</p>
-                                {users.map((team_member) => (
-                                    <div key={team_member.user?.id} className="flex items-center gap-3 py-2">
-                                        <img
-                                            src={team_member.user?.picture ?? ''}
-                                            alt={team_member.user?.username ?? 'team member'}
-                                            className="w-10 h-10 rounded-full object-cover"
-                                        />
-                                        <p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
-                                    </div>
-                                ))}
-                            </>
-                        )
-                    }
-                })}
-            </div> */}
+            <div className="text-white">
+                
+            </div>
             <div className="p-[4px] rounded-xl dark bg-gradient-to-r from-primary to-secondary transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl">
                 <Card className="border-0 overflow-hidden rounded-xl bg-gradient-to-b from-black via-gray-800 to-gray-600 ">
                     <CardHeader>
@@ -58,7 +40,7 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
                                 return (
                                     <div key={index}
                                             className="rounded-full aspect-square size-full overflow-hidden"
-                                            onClick={() => (window.location.href = `/users/${user.id}`)}>
+                                            onClick={() => (window.location.href = `/users/${member?.user.id}`)}>
                                         <img 
                                             src={member?.user?.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
                                             className="hover:cursor-pointer object-cover size-full"

@@ -43,6 +43,10 @@ function RouteComponent() {
 		const handlePageChange = useCallback((newPage: number) => {
 			setPage(newPage)
 		}, [])
+
+		if (!tournament) {
+			return <div className="text-sm text-muted-foreground">No tournament found.</div>;
+		}
 	
 
 	return (

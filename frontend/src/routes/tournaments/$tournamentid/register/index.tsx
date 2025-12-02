@@ -60,8 +60,12 @@ function RouteComponent() {
 	if (isErrorTournament) {
 		return null
 	}
+	if (!tournament) {
+		return <div className="text-sm text-muted-foreground">No tournament found.</div>;
+	}
 
 	return (
+		
 		<>
 		<div>
 			<Header/>
