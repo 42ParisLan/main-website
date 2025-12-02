@@ -2,6 +2,8 @@ import { memo, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { components } from '@/lib/api/types';
 import { Link } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button';
+
 
 interface VoteCardProps {
 	vote: components['schemas']['LightVote'];
@@ -62,13 +64,25 @@ function VoteCard({ vote }: VoteCardProps) {
 					{status === 'active' && (
 						<>
 							<p className="font-mono text-lg">Ends in: {timeLeft}</p>
-							<Link 
-								to="/votes/$voteid"
-								params={{voteid: String(vote.id)}}
-								className="text-primary hover:underline"
-								>
-								Go vote
-							</Link>
+							<div className=" p-2 flex flex-row justify-between items-center">
+								<Button asChild variant="secondary">
+									<Link 
+										to="/votes/$voteid"
+										params={{voteid: String(vote.id)}}
+										>
+										Go vote
+									</Link>
+								</Button>
+								<Button asChild variant="secondary">
+									<Link 
+										to="/votes/$voteid/live"
+										params={{voteid: String(vote.id)}}
+										>
+										See live
+									</Link>
+								</Button>
+								
+							</div>
 						</>
 					)}
 					{status === 'finished' && (

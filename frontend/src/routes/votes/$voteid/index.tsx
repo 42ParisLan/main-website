@@ -43,7 +43,7 @@ function RouteComponent() {
 	return (
 		<div className="min-h-screen flex flex-col dark bg-gradient-to-br from-black to-gray-800">
 			<Header/>
-			<div className="flex-1 flex flex-col justify-evenly items-center gap-2">
+			<div className="flex-1 flex flex-col justify-evenly items-center gap-2 p-6">
 				<Card className="p-2 flex items-center w-full bg-gradient-to-br from-black to-gray-800">
 					<CardHeader>
 						<CardTitle>
@@ -53,11 +53,11 @@ function RouteComponent() {
 				</Card>
 				<div className="flex flex-row gap-4">
 					{vote?.components?.map((component) => (
-						<div style={{ backgroundColor : component.color }} className="p-[4px] rounded-xl">
+						<div style={{ backgroundColor : component.color }} className="min-h-[200px] min-w-[300px] p-[4px] rounded-xl">
 							<Card
 							key={component.id}
 							onClick={() => handleVote(component.id)}
-							className="cursor-pointer hover:opacity-90 transition-opacity"
+							className="w-full h-full bg-gray-900 cursor-pointer hover:opacity-90 transition-opacity"
 							>
 								<CardHeader>
 									<CardTitle>
@@ -75,7 +75,7 @@ function RouteComponent() {
 						</div>
 						))}
 					</div>
-			</div>
+				</div>
 			<Footer/>
 		</div>
 	)

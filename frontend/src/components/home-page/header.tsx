@@ -9,17 +9,21 @@ import logo from '@/assets/logo.svg';
 
 export function Header() {
 
-     const client = useQueryClient();
+    const client = useQueryClient();
+    let picture = 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg';
     
       const {data: user, isLoading} = client.useQuery("get", "/me")
     
-      if (isLoading || user == undefined) {
+      if (isLoading) {
         return (
           <LoadingPage/>
         )
       }
+      if (user) {
+        picture = user.picture;
+      }
     return (
-        <header className="bg-background sticky top-0 w-full">
+        <header className="bg-background sticky top-0 w-full ">
             <div className="container-wrapper">
                 <nav className="flex items-center bg-black h-20 text-gray-300">
                     <div className="h-full flex items-center">
@@ -52,7 +56,7 @@ export function Header() {
                                 <Button className="p-0 h-auto w-auto rounded-full focus-visible:ring-0 focus:ring-0 focus:outline-none" variant="transparent">
                                     <div className="rounded-full p-[4px] bg-gradient-to-br from-primary to-secondary dark">  
                                         <Avatar className="h-12 w-12">
-                                        <AvatarImage src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'} alt="Profile" />
+                                        <AvatarImage src={picture} alt="Profile" />
                                         <AvatarFallback className="text-2xl">JD</AvatarFallback>
                                         </Avatar>
                                     </div>

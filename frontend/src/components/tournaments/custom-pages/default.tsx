@@ -48,44 +48,64 @@ export default function DefaultTournament({tournament}: {tournament: components[
 			return () => clearInterval(interval);
 		}, [tournament.registration_start, tournament.registration_end]);
 	return (
-		<div className="grid grid-cols-1 gap-4 p-6">
-			<Card className="dark bg-gradient-to-br from-black to-gray-800">
-				<CardHeader>
-					<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-						{tournament.name}
-					</CardTitle>
-				</CardHeader>
-				{tournament.status === "registration_open" && (
+		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
+			{tournament.status === "registration_open" && (
+			<div className="flex flex-col gap-6">
+				<Card className="bg-gradient-to-br from-black to-gray-800">
+					<CardHeader>
+						<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+							{tournament.name}
+						</CardTitle>
+					</CardHeader>
+				</Card>
+				<Card className="bg-gradient-to-tr from-black to-gray-800">
 					<CardContent>
 						<RegisterCard tournament={tournament}/>
 					</CardContent>
-					)}
-				{tournament.status === "upcoming" && (
-					<CardContent>
-						{status === 'pending' && (
-						<p className="font-mono text-lg">Starts in: {timeLeft}</p>
-					)}
-						
-					</CardContent>
-				)}
-				{tournament.status === "ongoing" && (
+					<CardFooter>
+						<Button asChild variant="secondary">
+							<Link to="/tournaments/$tournamentid/register" params={{tournamentid: tournament.slug}}>
+								Register
+							</Link>
+						</Button>
+					</CardFooter>
+				</Card>
+			</div>
+				
+			)} 
+			{tournament.status === "upcoming" && (
+				<div className="flex flex-col p-2 gap-20">
+					<Card className=" dark bg-gradient-to-br from-black to-gray-800">
+							<CardHeader className="text-center text-2xl">
+								<CardTitle>REGISTRATION OPENS IN</CardTitle>
+							</CardHeader>
+					</Card>
+					<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
+						<Card className="bg-gradient-to-tr from-black to-gray-800">
+							<CardContent className="w-full h-full flex justify-center items-center">
+								{status === 'pending' && (
+									<p className="font-mono text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">{timeLeft}</p>
+								)}
+							</CardContent>
+						</Card>
+					</div>
+				</div>
+			)}
+			{tournament.status === "ongoing" && (
+				<Card>
 					<CardContent>
 
 					</CardContent>
-				)}
-				{tournament.status === "completed" && (
+				</Card>
+			)}
+			{tournament.status === "completed" && (
+				<Card>
 					<CardContent>
 						
 					</CardContent>
-				)}
-				<CardFooter>
-					<Button asChild variant="secondary">
-						<Link to="/tournaments/$tournamentid/register" params={{tournamentid: tournament.slug}}>
-							Register
-						</Link>
-					</Button>
-				</CardFooter>
-			</Card>
+				</Card>
+			)}
+				
 		</div>
 	)
 }

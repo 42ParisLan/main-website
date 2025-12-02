@@ -52,8 +52,8 @@ export default function RegisterCard({tournament}: {tournament: components['sche
                         {Object.entries(tournament.team_structure).map(([key, val]) => {
                             const display = val.min === val.max ? String(val.min) : `${val.min} - ${val.max}`
                             return (
-                                <div key={key} className="flex items-center justify-between rounded-md p-2 bg-muted text-sm">
-                                    <span className="font-medium">{key}</span>
+                                <div key={key} className="flex items-center gap-2 text-sm">
+                                    <span className="font-medium">{key}:</span>
                                     <span className="text-sm">{display}</span>
                                 </div>
                             )

@@ -55,9 +55,9 @@ function RouteComponent() {
 		)
 	} else {
 		return (
-			<div className="min-h-screen dark bg-background">
+			<div className="min-h-screen flex flex-col dark bg-background">
 				<Header/>
-				<div>
+				<div className="flex flex-col flex-1 ">
 					{data && (
 						<Component tournament={data} />
 					)}
