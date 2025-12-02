@@ -1,10 +1,9 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "../ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
-import { IconUsersGroup, IconClockHour4Filled } from "@tabler/icons-react";
+import { IconClockHour4Filled } from "@tabler/icons-react";
 
 function formatDate(iso?: string) {
 	if (!iso) return "—";
@@ -45,7 +44,6 @@ export default function PublicTournamentCard({
 	return (
 		<Button
 			asChild
-			variant="none"
 			className="border-none w-full h-full p-0 rounded-xl overflow-hidden transition-all transition-transform duration-200 hover:scale-105 "
 		>
 			<Link to={`/tournaments/$tournamentid`} params={{tournamentid: String(tournament.id)}} className="block w-full h-full">

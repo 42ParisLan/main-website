@@ -32,7 +32,7 @@ function RouteComponent() {
 			}
 			}
 		})
-		const {data: tournament, error: errorTournament} = client.useQuery("get", "/tournaments/{id_or_slug}", {
+		const {data: tournament} = client.useQuery("get", "/tournaments/{id_or_slug}", {
 			params: {
 				path: {
 					id_or_slug: tournamentid

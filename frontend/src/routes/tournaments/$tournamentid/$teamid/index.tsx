@@ -1,12 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import useQueryClient from '@/hooks/use-query-client'
 import { useAuth } from '@/providers/auth.provider';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Header } from '@/components/home-page/header'
 import { Footer } from '@/components/home-page/footer'
 import { TeamCard } from '@/components/tournaments/teams/team-card';
-import { Separator } from 'radix-ui';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 

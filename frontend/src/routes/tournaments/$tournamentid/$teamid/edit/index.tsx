@@ -197,7 +197,7 @@ function RouteComponent() {
 										Lock Team
 									</Button>
 								)}
-						<Button
+								<Button
 									variant="destructive"
 									onClick={() => setConfirmOpen(true)}
 								>

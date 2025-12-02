@@ -2,6 +2,7 @@ import type { components } from "@/lib/api/types";
 import { Card, CardContent, CardHeader, CardTitle} from "../../ui/card";
 
 export function TeamCard({team, tournament}: {team: components['schemas']['LightTeam'], tournament: components['schemas']['Tournament']}) {
+    console.log(tournament.name)//en attendant
     return (
         <div>
             {/* <div className="text-white">

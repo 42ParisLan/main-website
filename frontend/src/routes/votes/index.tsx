@@ -6,7 +6,6 @@ import VoteCard from '@/components/votes/vote-card';
 import type { components } from '@/lib/api/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
 import { Header } from '@/components/home-page/header'
 import { Footer } from '@/components/home-page/footer'
 

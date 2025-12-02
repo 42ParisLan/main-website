@@ -1,7 +1,6 @@
 import { OldTournamentCard } from '@/components/tournaments/past-tournament-card'
-import {type components} from "@/lib/api/types"
 
-export function OldTournaments({tournaments}: {tournaments: components['schemas']['LightTournament'][]}) {
+export function OldTournaments() {
     return(
         <div style={{ fontFamily: "Orbitron" }} className="w-full h-100 bg-gradient-to-tr from-black to-gray-800">
             <div className="w-full text-center">

@@ -1,4 +1,3 @@
-import { IconChalkboardTeacher } from '@tabler/icons-react'
 import { Button } from '../ui/button';
 import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,7 +19,7 @@ export function Header() {
         )
       }
       if (user) {
-        picture = user.picture;
+        picture = user.picture || picture;
       }
     return (
         <header className="bg-background sticky top-0 w-full ">
