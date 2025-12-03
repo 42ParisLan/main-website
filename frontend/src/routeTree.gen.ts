@@ -13,9 +13,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VotesIndexRouteImport } from './routes/votes/index'
+import { Route as UsersIndexRouteImport } from './routes/users/index'
 import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as VotesVoteidIndexRouteImport } from './routes/votes/$voteid/index'
+import { Route as UsersMeIndexRouteImport } from './routes/users/me/index'
+import { Route as UsersUseridIndexRouteImport } from './routes/users/$userid/index'
 import { Route as TournamentsTournamentidIndexRouteImport } from './routes/tournaments/$tournamentid/index'
 import { Route as TemplateInvitationsIndexRouteImport } from './routes/template/invitations/index'
 import { Route as AuthCallbackIndexRouteImport } from './routes/auth/callback/index'
@@ -59,6 +62,11 @@ const VotesIndexRoute = VotesIndexRouteImport.update({
   path: '/votes/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersIndexRoute = UsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TournamentsIndexRoute = TournamentsIndexRouteImport.update({
   id: '/tournaments/',
   path: '/tournaments/',
@@ -72,6 +80,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const VotesVoteidIndexRoute = VotesVoteidIndexRouteImport.update({
   id: '/votes/$voteid/',
   path: '/votes/$voteid/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersMeIndexRoute = UsersMeIndexRouteImport.update({
+  id: '/users/me/',
+  path: '/users/me/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersUseridIndexRoute = UsersUseridIndexRouteImport.update({
+  id: '/users/$userid/',
+  path: '/users/$userid/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TournamentsTournamentidIndexRoute =
@@ -202,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/users': typeof UsersIndexRoute
   '/votes': typeof VotesIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
   '/admin/apps': typeof AdminAppsIndexRoute
@@ -211,6 +230,8 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackIndexRoute
   '/template/invitations': typeof TemplateInvitationsIndexRoute
   '/tournaments/$tournamentid': typeof TournamentsTournamentidIndexRoute
+  '/users/$userid': typeof UsersUseridIndexRoute
+  '/users/me': typeof UsersMeIndexRoute
   '/votes/$voteid': typeof VotesVoteidIndexRoute
   '/admin/apps/$appid': typeof AdminAppsAppidIndexRoute
   '/admin/apps/me': typeof AdminAppsMeIndexRoute
@@ -232,6 +253,7 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/admin': typeof AdminIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/users': typeof UsersIndexRoute
   '/votes': typeof VotesIndexRoute
   '/admin/admins': typeof AdminAdminsIndexRoute
   '/admin/apps': typeof AdminAppsIndexRoute
@@ -241,6 +263,8 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackIndexRoute
   '/template/invitations': typeof TemplateInvitationsIndexRoute
   '/tournaments/$tournamentid': typeof TournamentsTournamentidIndexRoute
+  '/users/$userid': typeof UsersUseridIndexRoute
+  '/users/me': typeof UsersMeIndexRoute
   '/votes/$voteid': typeof VotesVoteidIndexRoute
   '/admin/apps/$appid': typeof AdminAppsAppidIndexRoute
   '/admin/apps/me': typeof AdminAppsMeIndexRoute
@@ -264,6 +288,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
+  '/users/': typeof UsersIndexRoute
   '/votes/': typeof VotesIndexRoute
   '/admin/admins/': typeof AdminAdminsIndexRoute
   '/admin/apps/': typeof AdminAppsIndexRoute
@@ -273,6 +298,8 @@ export interface FileRoutesById {
   '/auth/callback/': typeof AuthCallbackIndexRoute
   '/template/invitations/': typeof TemplateInvitationsIndexRoute
   '/tournaments/$tournamentid/': typeof TournamentsTournamentidIndexRoute
+  '/users/$userid/': typeof UsersUseridIndexRoute
+  '/users/me/': typeof UsersMeIndexRoute
   '/votes/$voteid/': typeof VotesVoteidIndexRoute
   '/admin/apps/$appid/': typeof AdminAppsAppidIndexRoute
   '/admin/apps/me/': typeof AdminAppsMeIndexRoute
@@ -297,6 +324,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/'
     | '/tournaments'
+    | '/users'
     | '/votes'
     | '/admin/admins'
     | '/admin/apps'
@@ -306,6 +334,8 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/template/invitations'
     | '/tournaments/$tournamentid'
+    | '/users/$userid'
+    | '/users/me'
     | '/votes/$voteid'
     | '/admin/apps/$appid'
     | '/admin/apps/me'
@@ -327,6 +357,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/tournaments'
+    | '/users'
     | '/votes'
     | '/admin/admins'
     | '/admin/apps'
@@ -336,6 +367,8 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/template/invitations'
     | '/tournaments/$tournamentid'
+    | '/users/$userid'
+    | '/users/me'
     | '/votes/$voteid'
     | '/admin/apps/$appid'
     | '/admin/apps/me'
@@ -358,6 +391,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/'
     | '/tournaments/'
+    | '/users/'
     | '/votes/'
     | '/admin/admins/'
     | '/admin/apps/'
@@ -367,6 +401,8 @@ export interface FileRouteTypes {
     | '/auth/callback/'
     | '/template/invitations/'
     | '/tournaments/$tournamentid/'
+    | '/users/$userid/'
+    | '/users/me/'
     | '/votes/$voteid/'
     | '/admin/apps/$appid/'
     | '/admin/apps/me/'
@@ -389,10 +425,13 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
   TournamentsIndexRoute: typeof TournamentsIndexRoute
+  UsersIndexRoute: typeof UsersIndexRoute
   VotesIndexRoute: typeof VotesIndexRoute
   AuthCallbackIndexRoute: typeof AuthCallbackIndexRoute
   TemplateInvitationsIndexRoute: typeof TemplateInvitationsIndexRoute
   TournamentsTournamentidIndexRoute: typeof TournamentsTournamentidIndexRoute
+  UsersUseridIndexRoute: typeof UsersUseridIndexRoute
+  UsersMeIndexRoute: typeof UsersMeIndexRoute
   VotesVoteidIndexRoute: typeof VotesVoteidIndexRoute
   TournamentsTournamentidTeamidIndexRoute: typeof TournamentsTournamentidTeamidIndexRoute
   TournamentsTournamentidRegisterIndexRoute: typeof TournamentsTournamentidRegisterIndexRoute
@@ -432,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VotesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/': {
+      id: '/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tournaments/': {
       id: '/tournaments/'
       path: '/tournaments'
@@ -451,6 +497,20 @@ declare module '@tanstack/react-router' {
       path: '/votes/$voteid'
       fullPath: '/votes/$voteid'
       preLoaderRoute: typeof VotesVoteidIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/me/': {
+      id: '/users/me/'
+      path: '/users/me'
+      fullPath: '/users/me'
+      preLoaderRoute: typeof UsersMeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userid/': {
+      id: '/users/$userid/'
+      path: '/users/$userid'
+      fullPath: '/users/$userid'
+      preLoaderRoute: typeof UsersUseridIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tournaments/$tournamentid/': {
@@ -655,10 +715,13 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
   TournamentsIndexRoute: TournamentsIndexRoute,
+  UsersIndexRoute: UsersIndexRoute,
   VotesIndexRoute: VotesIndexRoute,
   AuthCallbackIndexRoute: AuthCallbackIndexRoute,
   TemplateInvitationsIndexRoute: TemplateInvitationsIndexRoute,
   TournamentsTournamentidIndexRoute: TournamentsTournamentidIndexRoute,
+  UsersUseridIndexRoute: UsersUseridIndexRoute,
+  UsersMeIndexRoute: UsersMeIndexRoute,
   VotesVoteidIndexRoute: VotesVoteidIndexRoute,
   TournamentsTournamentidTeamidIndexRoute:
     TournamentsTournamentidTeamidIndexRoute,

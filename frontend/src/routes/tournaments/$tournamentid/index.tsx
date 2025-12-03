@@ -1,6 +1,8 @@
 import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo } from 'react'
+import { Header } from '@/components/home-page/header'
+import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute('/tournaments/$tournamentid/')({
   component: RouteComponent,
@@ -53,11 +55,15 @@ function RouteComponent() {
 		)
 	} else {
 		return (
-			<>
-				{data && (
-					<Component tournament={data} />
-				)}
-			</>
+			<div className="min-h-screen flex flex-col dark bg-background">
+				<Header/>
+				<div  className="flex flex-col flex-1 ">
+					{data && (
+						<Component tournament={data} />
+					)}
+				</div>
+				<Footer/>
+			</div>
 		)
 	}
 }

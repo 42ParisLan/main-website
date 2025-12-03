@@ -2,97 +2,107 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {type components} from "@/lib/api/types"
 import { Link } from "@tanstack/react-router"
-import { format } from 'date-fns'
+import RegisterCard from "./register-card"
+import {  useEffect, useState } from 'react';
 
 export default function DefaultTournament({tournament}: {tournament: components['schemas']['Tournament']}) {
+
+	const [timeLeft, setTimeLeft] = useState('');
+	const [status, setStatus] = useState<'pending' | 'active' | 'finished'>('pending');
+
+	
+	useEffect(() => {
+			const updateCountdown = () => {
+				const now = new Date().getTime();
+				const start = new Date(tournament.registration_start).getTime();
+				const end = new Date(tournament.registration_end).getTime();
+	
+				let diff: number;
+				let newStatus: 'pending' | 'active' | 'finished';
+	
+				if (now < start) {
+					diff = start - now;
+					newStatus = 'pending';
+				} else if (now < end) {
+					diff = end - now;
+					newStatus = 'active';
+				} else {
+					setTimeLeft('00:00:00');
+					setStatus('finished');
+					return;
+				}
+	
+				const hours = Math.floor(diff / (1000 * 60 * 60));
+				const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+				const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+	
+				setTimeLeft(
+					`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+				);
+				setStatus(newStatus);
+			};
+	
+			updateCountdown();
+			const interval = setInterval(updateCountdown, 1000);
+	
+			return () => clearInterval(interval);
+		}, [tournament.registration_start, tournament.registration_end]);
 	return (
-		<div className="*:tournament-[slot=card]:from-primary/5 *:tournament-[slot=card]:to-card dark:*:tournament-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:tournament-[slot=card]:bg-gradient-to-t *:tournament-[slot=card]:shadow-xs lg:px-6">
-			<Card className="@container/card">
-				<CardHeader>
-					<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-						{tournament.name}
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-						<div>
-							<strong>Name</strong>
-							<div className="text-sm">{tournament.name}</div>
-						</div>
-						<div>
-							<strong>Slug</strong>
-							<div className="text-sm">{tournament.slug}</div>
-						</div>
-
-						<div>
-							<strong>Visible</strong>
-							<div className="text-sm">{tournament.is_visible ? 'Yes' : 'No'}</div>
-						</div>
-
-						<div>
-							<strong>Teams</strong>
-							<div className="text-sm">{tournament.teams?.length ?? 0} / {tournament.max_teams}</div>
-						</div>
-						<div>
-							<strong>External link</strong>
-							<div className="text-sm">
-								{tournament.external_links ? (
-									Object.entries(tournament.external_links).map(([label, url]) => (
-										<a key={label} href={url as string} target="_blank" rel="noopener noreferrer" className="underline text-primary">{label}</a>
-									))
-								) : (
-									<span className="text-muted-foreground">—</span>
+		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
+			{tournament.status === "registration_open" && (
+			<div className="flex flex-col gap-6">
+				<Card style={{ fontFamily: "Orbitron" }} className="bg-gradient-to-br from-black to-gray-800">
+					<CardHeader>
+						<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+							{tournament.name}
+						</CardTitle>
+					</CardHeader>
+				</Card>
+				<Card className="bg-gradient-to-tr from-black to-gray-800">
+					<CardContent>
+						<RegisterCard tournament={tournament}/>
+					</CardContent>
+					<CardFooter>
+						<Button asChild variant="secondary">
+							<Link to="/tournaments/$tournamentid/register" params={{tournamentid: tournament.slug}}>
+								Register
+							</Link>
+						</Button>
+					</CardFooter>
+				</Card>
+			</div>
+				
+			)} 
+			{tournament.status === "upcoming" && (
+				<div style={{ fontFamily: "Orbitron" }} className="flex flex-col justify-center p-2 gap-20">
+					<h2  className="text-gray-300 text-center text-5xl font-bold">REGISTRATION OPENS IN</h2>
+		
+					<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
+						<Card className="bg-gradient-to-tr from-black to-gray-800">
+							<CardContent className="w-full h-full flex justify-center items-center">
+								{status === 'pending' && (
+									<p className="font-mono text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">{timeLeft}</p>
 								)}
-							</div>
-						</div>
-
-						<div>
-							<strong>Registration</strong>
-							<div className="text-sm">{tournament.registration_start ? format(new Date(tournament.registration_start), 'Pp') : '—'} — {tournament.registration_end ? format(new Date(tournament.registration_end), 'Pp') : '—'}</div>
-						</div>
-
-						<div>
-							<strong>Tournament</strong>
-							<div className="text-sm">{tournament.tournament_start ? format(new Date(tournament.tournament_start), 'Pp') : '—'} — {tournament.tournament_end ? format(new Date(tournament.tournament_end), 'Pp') : '—'}</div>
-						</div>
-
-						<div className="sm:col-span-2">
-							<strong>Team structure</strong>
-							<div className="mt-1 space-y-2">
-								<div className="grid gap-2">
-									{Object.entries(tournament.team_structure).map(([key, val]) => {
-										const display = val.min === val.max ? String(val.min) : `${val.min} - ${val.max}`
-										return (
-											<div key={key} className="flex items-center justify-between rounded-md p-2 bg-muted text-sm">
-												<span className="font-medium">{key}</span>
-												<span className="text-sm">{display}</span>
-											</div>
-										)
-									})}
-								</div>
-							</div>
-						</div>
-
-						<div className="sm:col-span-2">
-							<strong>Description</strong>
-							<div className="text-sm mt-1">{tournament.description ?? <span className="text-muted-foreground">No description</span>}</div>
-						</div>
-
-						<div>
-							<strong>Custom page</strong>
-							<div className="text-sm">{tournament.custom_page_component ?? 'default'}</div>
-						</div>
-
+							</CardContent>
+						</Card>
 					</div>
-				</CardContent>
-				<CardFooter>
-					<Button asChild>
-						<Link to="/tournaments/$tournamentid/register" params={{tournamentid: tournament.slug}}>
-							Register
-						</Link>
-					</Button>
-				</CardFooter>
-			</Card>
+				</div>
+			)}
+			{tournament.status === "ongoing" && (
+				<Card>
+					<CardContent>
+
+					</CardContent>
+				</Card>
+			)}
+			{tournament.status === "completed" && (
+				<Card>
+					<CardContent>
+						
+					</CardContent>
+				</Card>
+			)}
+				
 		</div>
 	)
 }
