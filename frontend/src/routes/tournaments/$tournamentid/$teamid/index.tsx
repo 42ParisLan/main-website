@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import useQueryClient from '@/hooks/use-query-client'
 import { useAuth } from '@/providers/auth.provider';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
