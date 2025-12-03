@@ -3,8 +3,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from '../../ui/card';
 import { Button } from "../../ui/button";
+import { useCallback } from 'react';
+import useQueryClient from '@/hooks/use-query-client';
+import { toast } from 'sonner';
+import { useRouter } from '@tanstack/react-router'
 
 export default function MyProfileCard({user}: {user: components['schemas']['User']}) {
+    
+    const client = useQueryClient();
+    const router = useRouter();
+    
+
+    const {mutate : anonymizeUser} = client.useMutation("post", "/me/anonymize", {
+		onSuccess() {
+			toast.success("User Successfuly Anonymize")
+			router.navigate({ to: "/users/me"})
+		},
+		onError(error) {
+			console.error('Failed to anonymize user', error)
+			toast.error("Failed to Anonymize user")
+		}
+	})
 
     return (
         <Card className="dark border-0 bg-gradient-to-t from-gray-800 to-black">
@@ -27,7 +46,16 @@ export default function MyProfileCard({user}: {user: components['schemas']['User
                             <Button variant="default" type="button" className="text-white">Refresh from intra</Button>
                         </div>
                         <div>
-                            <Button className="" variant="destructive" type="button">Anonymize </Button>
+                            {/* {user.anonymize_at  && ( */}
+									<Button
+                                        className=""
+                                        variant="destructive"
+                                        type="button"
+										onClick={() => anonymizeUser({})}
+									>
+										Anonymize
+									</Button>
+								{/* )} */}
                         </div>
                     </div>
                 </div>

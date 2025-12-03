@@ -61,7 +61,7 @@ function RouteComponent() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="flex justify-center w-full h-full flex p-4 gap-4">
-						<div className="">
+						<div className="w-200 h-400">
 							<PaginatedListControlled<components['schemas']['LightTournament']>
 							data={NewTournament}
 							isLoading={isLoadingNew}

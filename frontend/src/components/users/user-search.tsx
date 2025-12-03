@@ -27,7 +27,7 @@ export default function UserSearch({ selectedUsers, onUserSelect, kind = undefin
 	});
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 text-white">
 			<Input
 				placeholder="Search users..."
 				value={searchQuery}

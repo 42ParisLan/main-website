@@ -1,5 +1,6 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent, CardHeader, CardTitle} from "../../ui/card";
+import { Link } from '@tanstack/react-router';
 
 export function TeamCard({team, tournament}: {team: components['schemas']['LightTeam'], tournament: components['schemas']['Tournament']}) {
     console.log(tournament.name)//en attendant
@@ -38,15 +39,15 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
                                 {Array.from({ length: 3 }).map((_, index) => {
                                 const member = team.members?.[index];
                                 return (
-                                    <div key={index}
-                                            className="rounded-full aspect-square size-full overflow-hidden"
-                                            onClick={() => (window.location.href = `/users/${member?.user.id}`)}>
-                                        <img 
-                                            src={member?.user?.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
-                                            className="hover:cursor-pointer object-cover size-full"
-                                            alt={member?.user?.username }
-                                            title={member?.user?.username }
-                                            />
+                                    <div key={index} className="rounded-full aspect-square size-full overflow-hidden">                                       
+                                        <Link to={`/users/$userid`} params={{ userid: String(member?.user.id) }}>
+                                            <img 
+                                                src={member?.user?.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
+                                                className="hover:cursor-pointer object-cover size-full"
+                                                alt={member?.user?.username }
+                                                title={member?.user?.username }
+                                                />
+                                        </Link>
                                     </div>
                                 )})}
                             </div>

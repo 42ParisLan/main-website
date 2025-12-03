@@ -51,7 +51,7 @@ export default function DefaultTournament({tournament}: {tournament: components[
 		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
 			{tournament.status === "registration_open" && (
 			<div className="flex flex-col gap-6">
-				<Card className="bg-gradient-to-br from-black to-gray-800">
+				<Card style={{ fontFamily: "Orbitron" }} className="bg-gradient-to-br from-black to-gray-800">
 					<CardHeader>
 						<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 							{tournament.name}
@@ -74,12 +74,9 @@ export default function DefaultTournament({tournament}: {tournament: components[
 				
 			)} 
 			{tournament.status === "upcoming" && (
-				<div className="flex flex-col p-2 gap-20">
-					<Card className=" dark bg-gradient-to-br from-black to-gray-800">
-							<CardHeader className="text-center text-2xl">
-								<CardTitle>REGISTRATION OPENS IN</CardTitle>
-							</CardHeader>
-					</Card>
+				<div style={{ fontFamily: "Orbitron" }} className="flex flex-col justify-center p-2 gap-20">
+					<h2  className="text-gray-300 text-center text-5xl font-bold">REGISTRATION OPENS IN</h2>
+		
 					<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
 						<Card className="bg-gradient-to-tr from-black to-gray-800">
 							<CardContent className="w-full h-full flex justify-center items-center">
