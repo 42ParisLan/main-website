@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from '../../ui/card';
 import { Button } from "../../ui/button";
-import { useCallback } from 'react';
 import useQueryClient from '@/hooks/use-query-client';
 import { toast } from 'sonner';
 import { useRouter } from '@tanstack/react-router'
