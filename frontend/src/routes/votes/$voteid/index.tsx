@@ -3,6 +3,9 @@ import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCallback } from 'react';
 
+import { Footer } from '@/components/home-page/footer'
+import { Header } from '@/components/home-page/header'
+
 export const Route = createFileRoute('/votes/$voteid/')({
   component: RouteComponent,
 })
