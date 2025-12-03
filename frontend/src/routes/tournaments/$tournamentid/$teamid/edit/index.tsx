@@ -239,7 +239,6 @@ function RouteComponent() {
 								)}
 							</CardContent>
 						</Card>
-
 						<Card className="w-full border-0 flex-1  bg-gradient-to-br from-black to-gray-700">
 							<CardHeader className='flex justify-between'>
 								<CardTitle>

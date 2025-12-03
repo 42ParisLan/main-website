@@ -4,7 +4,6 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react';
 import { Header } from '@/components/home-page/header'
 import { Footer } from '@/components/home-page/footer'
-import { useAuth } from '@/providers/auth.provider';
 
 export const Route = createFileRoute('/users/')({
   component: RouteComponent,
@@ -15,8 +14,6 @@ type User = components['schemas']['User']
 function RouteComponent() {
   const router = useRouter();
   const [selectedUsers] = useState<Set<number>>(new Set());
-  const {me} = useAuth();
-  
 
   const handleUserSelect = (user: User) => {
 		router.navigate({to: `/users/${user.id}`})
