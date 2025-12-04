@@ -4,6 +4,7 @@ import {type components} from "@/lib/api/types"
 import { Link } from "@tanstack/react-router"
 import RegisterCard from "./register-card"
 import {  useEffect, useState } from 'react';
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHeader, TableHead, TableRow } from "@/components/ui/table"
 
 export default function DefaultTournament({tournament}: {tournament: components['schemas']['Tournament']}) {
 
@@ -51,7 +52,7 @@ export default function DefaultTournament({tournament}: {tournament: components[
 		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
 			{tournament.status === "registration_open" && (
 			<div className="flex flex-col gap-6">
-				<Card style={{ fontFamily: "Orbitron" }} className="bg-gradient-to-br from-black to-gray-800">
+				{/* <Card style={{ fontFamily: "Orbitron" }} className="bg-gradient-to-br from-black to-gray-800">
 					<CardHeader>
 						<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 							{tournament.name}
@@ -69,6 +70,25 @@ export default function DefaultTournament({tournament}: {tournament: components[
 							</Link>
 						</Button>
 					</CardFooter>
+				</Card> */}
+				<Card>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Date</TableHead>
+									<TableHead>Place</TableHead>
+									<TableHead>Tier</TableHead>
+									<TableHead>Tournament</TableHead>
+									<TableHead>Result</TableHead>
+									<TableHead>Prize</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableCell></TableCell>
+							</TableBody>
+						</Table>
+					</CardContent>
 				</Card>
 			</div>
 				
@@ -98,7 +118,7 @@ export default function DefaultTournament({tournament}: {tournament: components[
 			{tournament.status === "completed" && (
 				<Card>
 					<CardContent>
-						
+						STats
 					</CardContent>
 				</Card>
 			)}

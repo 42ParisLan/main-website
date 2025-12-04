@@ -9,8 +9,8 @@ export function ActiveTournaments({tournaments}: {tournaments: components['schem
                         <h2 className="text-bold text-white p-3 text-3xl">ACTIVE TOURNAMENTS</h2>
                         <p className="text-sm text-gray-400">Battle in the most competitive gaming environment</p>
                     </div>
-                    <div className="py-8 flex justify-center w-full h-full flex p-4 gap-4">
-                        <div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
+                    <div className="py-8 flex justify-center w-full h-full flex p-4">
+                        <div className="h-50 w-70 transition-all transition-transform duration-200 hover:scale-105">
                             {tournaments.length > 0 && (
                             <>
                                 <PublicTournamentCard tournament={tournaments[0]}/>
@@ -18,13 +18,13 @@ export function ActiveTournaments({tournaments}: {tournaments: components['schem
                         )}
                         </div>
                         
-                       <div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
+                       <div className="h-50 w-70 transition-all transition-transform duration-200 hover:scale-105">
                             {tournaments.length > 1 && (
                             <>
                                 <PublicTournamentCard tournament={tournaments[1]}/>
                             </>
                         )}
-                        </div><div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
+                        </div><div className="h-50 w-70 transition-all transition-transform duration-200 hover:scale-105">
                             {tournaments.length > 2 && (
                             <>
                                 <PublicTournamentCard tournament={tournaments[2]}/>

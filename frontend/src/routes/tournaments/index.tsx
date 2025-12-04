@@ -47,57 +47,56 @@ function RouteComponent() {
 	}, []);
 
 	return (
-		<>
-			<div className="min-h-screen bg-black">
+		
+			<div className="min-h-screen flex flex-col bg-black">
 				<Header/>
-					{/* <div className="py-2 bg-black min-h-screen bg-background">
-						<ActiveTournaments tournaments={NewTournament?.items ?? []}/>
-						<OldTournaments tournaments={NewTournament?.items ?? []}/>
-					</div> */}
-				<Card  style={{ fontFamily: "Orbitron" }} className=" rounded-none @container/card border-none w-full h-150 bg-gradient-to-br from-black to-gray-800">
-					<CardHeader className="w-full text-center">
-						<CardTitle className="text-bold text-white p-3 text-3xl">
-							OnGoing Tournament
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="flex justify-center w-full h-full flex p-4 gap-4">
-						<div className="w-200 h-400">
+				<div className="flex flex-1 flex-col">
+					<Card  style={{ fontFamily: "Orbitron" }} className=" rounded-none @container/card border-none w-full h-150 bg-gradient-to-br from-black to-gray-800">
+						<CardHeader className="w-full text-center">
+							<CardTitle className="text-bold text-white p-3 text-3xl">
+								OnGoing Tournament
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="flex justify-center w-full h-full flex p-4 gap-4">
+							<div className="">
+								<PaginatedListControlled<components['schemas']['LightTournament']>
+								data={NewTournament}
+								isLoading={isLoadingNew}
+								page={newPage}
+								onPageChange={handleNewPageChange}
+								renderItem={(tournaments) => <PublicTournamentCard tournament={tournaments}/>}
+								getItemKey={(tournament) => tournament.id}
+								itemsContainerClassName="flex flex-row gap-4"
+								itemLabel="user"
+								emptyMessage="No tournaments found"
+								/>
+							</div>
+						</CardContent>
+					</Card >
+					<Card className="@container/card rounded-none border-none w-full h-100 bg-gradient-to-tr from-black to-gray-800">
+						<CardHeader className="flex flex-row items-center justify-between space-y-0">
+							<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+								Finish Tournament
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
 							<PaginatedListControlled<components['schemas']['LightTournament']>
-							data={NewTournament}
-							isLoading={isLoadingNew}
-							page={newPage}
-							onPageChange={handleNewPageChange}
-							renderItem={(tournaments) => <PublicTournamentCard tournament={tournaments}/>}
-							getItemKey={(tournament) => tournament.id}
-							itemsContainerClassName="flex flex-row gap-4"
-							itemLabel="user"
-							emptyMessage="No tournaments found"
-							/>
-						</div>
-					</CardContent>
-				</Card >
-				<Card className="@container/card rounded-none border-none w-full h-100 bg-gradient-to-tr from-black to-gray-800">
-					<CardHeader className="flex flex-row items-center justify-between space-y-0">
-						<CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-							Finish Tournament
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<PaginatedListControlled<components['schemas']['LightTournament']>
-							data={OldTournament}
-							isLoading={isLoadingOld}
-							page={oldPage}
-							onPageChange={handleOldPageChange}
-							renderItem={(tournament) => <PublicTournamentCard tournament={tournament} />}
-							getItemKey={(tournament) => tournament.id}
-							itemsContainerClassName="flex flex-row gap-4"
-							itemLabel="user"
-							emptyMessage="No tournaments found"
-							/>
-					</CardContent>
-				</Card>
+								data={OldTournament}
+								isLoading={isLoadingOld}
+								page={oldPage}
+								onPageChange={handleOldPageChange}
+								renderItem={(tournament) => <PublicTournamentCard tournament={tournament} />}
+								getItemKey={(tournament) => tournament.id}
+								itemsContainerClassName="flex flex-row gap-4"
+								itemLabel="user"
+								emptyMessage="No tournaments found"
+								/>
+						</CardContent>
+					</Card>
+				</div>
+
 				<Footer/>
 			</div>
-		</>
+
 	)
 }
