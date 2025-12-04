@@ -51,10 +51,10 @@ func New(configService configservice.ConfigService) (S3Service, error) {
 		logger: logger.New().WithContext("S3Service"),
 	}
 
-	// try ensure bucket at startup (best-effort)
-	go func() {
-		_ = s.EnsureBucket(context.Background())
-	}()
+	err = s.EnsureBucket(context.Background())
+	if err != nil {
+		return nil, err
+	}
 
 	return s, nil
 }
