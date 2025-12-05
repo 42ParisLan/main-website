@@ -84,8 +84,16 @@ export default function DefaultTournament({tournament}: {tournament: components[
 									<TableHead>Prize</TableHead>
 								</TableRow>
 							</TableHeader>
-							<TableBody>
-								<TableCell></TableCell>
+							<TableBody className="">
+								<TableRow>
+									<TableCell className="">{tournament.tournament_start}</TableCell>
+									<TableCell className="">3rd-4th</TableCell>
+									<TableCell>B-Tier</TableCell>
+									<TableCell>{tournament.name}</TableCell>
+									<TableCell>2 : 3</TableCell>
+									<TableCell>Prize</TableCell>
+								</TableRow>
+							
 							</TableBody>
 						</Table>
 					</CardContent>
