@@ -22,9 +22,13 @@ function RootComponent() {
 			<ClientProvider>
 				<ReactQueryClientProvider>
 						<AuthProvider VITE_OAUTH_AUTHORIZE_URL={VITE_OAUTH_AUTHORIZE_URL} VITE_OAUTH_CLIENT_ID={VITE_OAUTH_CLIENT_ID}>
-							{!hideHeader && <Header />}
-							<Outlet/>
-							{!hideFooter && <Footer />}
+							<div className="flex flex-col min-h-screen">
+								{!hideHeader && <Header />}
+								<main className="flex-1">
+									<Outlet/>
+								</main>
+								{!hideFooter && <Footer />}
+							</div>
 						</AuthProvider>
 					<TanStackRouterDevtools />
 					<ReactQueryDevtools />

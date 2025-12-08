@@ -372,7 +372,10 @@ func (svc *teamsService) DeleteTeam(
 	if err != nil {
 		return err
 	}
-	if myRole == nil || entTeam.Edges.Creator == nil || entTeam.Edges.Creator.ID != userID {
+	isCreator := entTeam.Edges.Creator != nil && entTeam.Edges.Creator.ID == userID
+	hasTournamentRole := myRole != nil
+
+	if !isCreator && !hasTournamentRole {
 		return huma.Error401Unauthorized("don't have required role")
 	}
 

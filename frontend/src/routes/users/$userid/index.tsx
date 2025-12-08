@@ -5,44 +5,44 @@ import LoadingPage from '@/components/loading-page';
 import { useAuth } from '@/providers/auth.provider';
 
 export const Route = createFileRoute('/users/$userid/')({
-  component: ProfileContent,
+	component: ProfileContent,
 })
 
 export default function ProfileContent() {
-  const { userid } = Route.useParams();
-  const client = useQueryClient();
-  const router = useRouter();
-  const {me} = useAuth();
+	const { userid } = Route.useParams();
+	const client = useQueryClient();
+	const router = useRouter();
+	const {me} = useAuth();
 
-  const {data: user, error: errorUser, isLoading} = client.useQuery("get", "/users/{id_or_login}", {
-		params: {
-			path: {
-				id_or_login: userid
+	const {data: user, error: errorUser, isLoading} = client.useQuery("get", "/users/{id_or_login}", {
+			params: {
+				path: {
+					id_or_login: userid
+				}
 			}
-		}
-	})
+		})
 
-  if (errorUser) {
-    router.navigate({to: "/users"})
-  }
+	if (errorUser) {
+		router.navigate({to: "/users"})
+	}
 
-  if (isLoading || user == undefined) {
-    return (
-      <LoadingPage/>
-    )
-  }
+	if (isLoading) {
+		return (
+		<LoadingPage/>
+		)
+	}
 
-  if (user.id == me.id) {
-    router.navigate({to :"/users/me"})
-  }
+	if (user?.id == me.id) {
+		router.navigate({to :"/users/me"})
+	}
 
-  return (
-    <div>
-      <Card>
-        <CardContent>
-          <div><p>test</p></div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+	return (
+		<div>
+		<Card>
+			<CardContent>
+			<div><p>{user?.username}</p></div>
+			</CardContent>
+		</Card>
+		</div>
+	);
 }

@@ -17,6 +17,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { Link } from '@tanstack/react-router';
 
 export default function TopUsers({
 	users,
@@ -24,7 +25,7 @@ export default function TopUsers({
 	users: components['schemas']['LightUser'][];
 }) {
 	return (
-		<Card>
+		<Card className='max-w-[500px] w-full'>
 			<CardHeader>
 				<CardTitle>Top Players</CardTitle>
 				<CardDescription>
@@ -37,7 +38,6 @@ export default function TopUsers({
 						<TableRow>
 							<TableHead className="w-[50px]">Rank</TableHead>
 							<TableHead>Player</TableHead>
-							<TableHead className="text-right">Elo</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -46,47 +46,48 @@ export default function TopUsers({
 								<TableCell
 									className={`text-center font-bold text-white ${
 										index === 0
-											? 'bg-[#665400]'
+											? 'bg-[var(--placement-1)]'
 											: index === 1
-												? 'bg-[#223f44]'
+												? 'bg-[var(--placement-2)]'
 												: index === 2
-													? 'bg-[#4b3d1b]'
+													? 'bg-[var(--placement-3)]'
 													: index === 3
-														? 'bg-[#663700]'
-														: 'bg-[#1f8383]'
+														? 'bg-[var(--placement-4)]'
+														: 'bg-[var(--placement-lightblue)]'
 									}`}
 								>
 									{index + 1}
 								</TableCell>
 								<TableCell>
-									<div className="flex items-center gap-3">
-										<Avatar className="h-9 w-9">
-											<AvatarImage
-												src={user.picture ?? defaultpicture}
-												alt="Avatar"
-											/>
-											<AvatarFallback>
-												{user.username.slice(0, 2)}
-											</AvatarFallback>
-										</Avatar>
-										<div className="flex items-center gap-2">
-											{user.username}
-											{index < 3 && (
-												<Crown
-													size={16}
-													className={
-														index === 0
-															? 'text-yellow-500'
-															: index === 1
-																? 'text-gray-400'
-																: 'text-yellow-700'
-													}
+									<Link to={"/users/$userid"} params={{userid: String(user.id)}}>
+										<div className="flex items-center gap-3">
+											<Avatar className="h-9 w-9">
+												<AvatarImage
+													src={user.picture ?? defaultpicture}
+													alt="Avatar"
 												/>
-											)}
+												<AvatarFallback>
+													{user.username.slice(0, 2)}
+												</AvatarFallback>
+											</Avatar>
+											<div className="flex items-center gap-2">
+												{user.username}
+												{index < 3 && (
+													<Crown
+														size={16}
+														className={
+															index === 0
+																? 'text-yellow-500'
+																: index === 1
+																	? 'text-gray-400'
+																	: 'text-yellow-700'
+														}
+													/>
+												)}
+											</div>
 										</div>
-									</div>
+									</Link>
 								</TableCell>
-								<TableCell className="text-right">N/A</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

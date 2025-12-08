@@ -10,25 +10,32 @@ export const Route = createFileRoute('/users/')({
 type User = components['schemas']['User']
 
 function RouteComponent() {
-  const router = useRouter();
-  const [selectedUsers] = useState<Set<number>>(new Set());
+	const router = useRouter();
+	const [selectedUsers] = useState<Set<number>>(new Set());
 
-  const handleUserSelect = (user: User) => {
-		router.navigate({to: `/users/${user.id}`})
-	};
+	const handleUserSelect = (user: User) => {
+			router.navigate({to: `/users/${user.id}`})
+		};
 
-  return (
-    <div className="flex flex-col min-h-screen dark bg-gradient-to-br from-black to-gray-800">
-        <div className="flex flex-1 flex-col gap-8">
-          <div  >
-            <h3 className="p-4 text-white text-center font-bold text-3xl">Find Users</h3>
-          </div>
-          <UserSearch
-            selectedUsers={selectedUsers}
-            onUserSelect={handleUserSelect}
-            kind="user"
-          />
-        </div>
-    </div>
-  );
+	return (
+		<div className="flex flex-col min-h-screen dark bg-background">
+			<div className="container mx-auto px-4 lg:px-6 py-12 flex-1">
+				<div className="max-w-4xl mx-auto">
+					<div className="mb-8">
+						<h1 className="text-4xl md:text-5xl font-bold text-center mb-3 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+							Find Players
+						</h1>
+						<p className="text-center text-muted-foreground text-lg">
+							Search and discover players from 42
+						</p>
+					</div>
+					<UserSearch
+						selectedUsers={selectedUsers}
+						onUserSelect={handleUserSelect}
+						kind="user"
+					/>
+				</div>
+			</div>
+		</div>
+	);
 }

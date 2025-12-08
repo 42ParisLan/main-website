@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import {type components} from "@/lib/api/types"
 import { Link } from "@tanstack/react-router"
 import RegisterCard from '../registration/register-card';
-import {  useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function DefaultTournament({
 	tournament,

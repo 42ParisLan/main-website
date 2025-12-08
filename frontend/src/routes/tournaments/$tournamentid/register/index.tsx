@@ -2,7 +2,7 @@
 import useQueryClient from '@/hooks/use-query-client'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react';
-import  CreateTeamCard from '@/components/tournaments/custom-pages/create-team-card'
+import  CreateTeamCard from '@/components/tournaments/registration/create-team-card'
 
 export const Route = createFileRoute('/tournaments/$tournamentid/register/')({
   component: RouteComponent,

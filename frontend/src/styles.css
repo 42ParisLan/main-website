@@ -231,3 +231,31 @@ code {
 		),
 		radial-gradient(100% 100%, var(--primary) 0px, transparent 50%);
 }
+
+.gradient-border {
+	position: relative;
+	background: black;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	transition: all 0.3s ease;
+}
+
+.gradient-border::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 0.75rem;
+	padding: 3px;
+	background: linear-gradient(to right, var(--primary), var(--secondary));
+	-webkit-mask: linear-gradient(#fff 0 0) content-box,
+		linear-gradient(#fff 0 0);
+	mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.gradient-border:hover::before {
+	opacity: 1;
+}

@@ -4,33 +4,17 @@ import {type components} from "@/lib/api/types"
 
 export function ActiveTournaments({tournaments}: {tournaments: components['schemas']['LightTournament'][]}) {
 	return(
-		<div className="w-full h-100">
-			<div className="w-full text-center">
-				<h2 className="text-bold text-white p-3 text-3xl">ACTIVE TOURNAMENTS</h2>
-				<p className="text-sm text-gray-400">See some actives tournaments to participate</p>
+		<div className="w-full">
+			<div className="w-full text-center mb-8">
+				<h2 className="font-bold text-white text-3xl mb-2">ACTIVE TOURNAMENTS</h2>
+				<p className="text-sm text-gray-400">See some active tournaments to participate</p>
 			</div>
-			<div className="py-8 flex justify-center w-full h-full flex p-4 gap-4">
-				<div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
-					{tournaments.length > 0 && (
-					<>
-						<PublicTournamentCard tournament={tournaments[0]}/>
-					</>
-				)}
-				</div>
-				
-			<div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
-					{tournaments.length > 1 && (
-					<>
-						<PublicTournamentCard tournament={tournaments[1]}/>
-					</>
-				)}
-				</div><div className="h-50 w-100 transition-all transition-transform duration-200 hover:scale-105">
-					{tournaments.length > 2 && (
-					<>
-						<PublicTournamentCard tournament={tournaments[2]}/>
-					</>
-				)}
-				</div>
+			<div className="flex flex-wrap justify-center items-center gap-6 px-4">
+				{tournaments.slice(0, 3).map((tournament) => (
+					<div key={tournament.id} className="flex-shrink-0 w-full sm:w-[350px] transition-transform duration-200 hover:scale-105">
+						<PublicTournamentCard tournament={tournament} />
+					</div>
+				))}
 			</div>
 		</div>
 	);
