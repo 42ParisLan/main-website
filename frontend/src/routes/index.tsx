@@ -36,15 +36,18 @@ function WelcomePage() {
 			{/* Welcome message  */}
 			<div className="hero-gradient px-6 w-full py-10 md:h-130 flex flex-col md:flex-row items-center justify-around gap-8">
 				<div className="flex flex-col text-center md:text-left">
-					<div className="p-2 w-full">
-						<h1 className="py-3 text-3xl md:text-6xl font-bold text-white">42 STUDENT <br/> <span className="arcade bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> GAMING </span> LEAGUE</h1>
+					<div className="flex flex-col gap-0.5 leading-none">
+						<h1 className="text-3xl md:text-6xl font-bold text-white">COMPETE IN</h1>
+						<span className="arcade bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-2xl md:text-5xl">42 ESPORTS</span>
+						<h1 className="text-3xl md:text-6xl font-bold text-white">TOURNAMENTS</h1>
 					</div>
 					<div className="p-2 text-gray-300">
 						<p>
-							Join students from 42 in epic e-sport tournaments.
+							Play. Compete. Meet 42 players in brackets
 							<br/>
-							Compete in games like Rocket League, League of Legends,<br/>
-							Super Smash Bros., and Counter-Strike.
+							across Rocket League, League of Legends,
+							<br/>
+							Super Smash Bros., Counter-Strike, and more.
 						</p>
 					</div>
 				</div>
