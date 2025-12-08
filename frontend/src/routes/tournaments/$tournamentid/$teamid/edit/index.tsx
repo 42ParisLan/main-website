@@ -205,6 +205,7 @@ function RouteComponent() {
 						</CardContent>
 					</Card>
 					<div className="flex flex-1 py-2 gap-2 flex-row justify-center ">
+						
 						<Card className=" w-full flex-1 border-0 bg-gradient-to-br from-black to-gray-700">
 							<CardContent>
 								{Object.entries(tournament.team_structure).map(([key, _]) => {
@@ -213,15 +214,16 @@ function RouteComponent() {
 										{
 											return (
 												<>
-												<p>{key}</p>
+												<p>{key} / {team.members?.length}</p>
 												{users.map((team_member) => (
-													<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
+													<div key={team_member.user?.id} className="flex items-center gap-3 py-2 flex-col">
 														<img
 															src={team_member.user?.picture ?? ''}
 															alt={team_member.user?.username ?? 'team member'}
 															className="w-10 h-10 rounded-full object-cover"
 															/>
 														<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
+														<p className="">n players = {team.members?.length} </p>
 													</div>
 												))}
 											</>
@@ -237,6 +239,7 @@ function RouteComponent() {
 								)}
 							</CardContent>
 						</Card>
+
 						<Card className="w-full border-0 flex-1  bg-gradient-to-br from-black to-gray-700">
 							<CardHeader className='flex justify-between'>
 								<CardTitle>

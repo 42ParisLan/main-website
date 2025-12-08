@@ -22,15 +22,15 @@ export function Header() {
         picture = user.picture || picture;
       }
     return (
-        <header className="bg-background sticky top-0 w-full ">
-            <div className="container-wrapper">
+        <header className="bg-background sticky top-0 w-full">
+            <div className="">
                 <nav className="flex items-center bg-black h-20 text-gray-300">
-                    <div className="h-full flex items-center">
-                        <button className="cursor-pointer" type="button" onClick={() => (window.location.href = "/")}>
+                    <div className="h-20 flex items-center">
+                        <Link to="/">
                             <img src={logo}
-                                    className="h-30">
+                                    className="h-20 w-auto object-contain">
                             </img>
-                        </button>
+                        </Link>
                     </div>
                     <div className="flex items-center justify-center gap-4 h-full text-lg">
                         <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">

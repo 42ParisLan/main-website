@@ -10,21 +10,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-background shadow-xs hover:bg-primary/90",
+          "cursor-ponter bg-primary text-primary-background shadow-xs hover:bg-primary/90",
         destructive:
-          "dark bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "cursor-ponter dark bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "cursor-ponter border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
-          "dark bg-secondary text-black shadow-xs hover:bg-secondary/80",
+          "cursor-ponter dark bg-secondary text-black shadow-xs hover:bg-secondary/80",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+          "cursor-ponter hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: 
-          "text-primary underline-offset-4 hover:underline",
+          "cursor-ponter text-primary underline-offset-4 hover:underline",
         transparent:
-          "bg-transparent whitespace-nowrap font-medium transition-all outline-none",
+          "cursor-ponter bg-transparent whitespace-nowrap font-medium transition-all outline-none",
         gradient:
-          "dark text-gray-300 bg-gradient-to-br from-primary via-secondary to-purple-400",
+          "cursor-ponter dark text-gray-300 bg-gradient-to-br from-primary via-secondary to-purple-400",
         border:
           "",
       },

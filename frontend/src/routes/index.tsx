@@ -32,12 +32,13 @@ function WelcomePage() {
 				<div className="flex flex-col items-center justify-centertext-center">
 					<Header/>
 					{/* Welcome message  */}
-					<div className="flex flex-row justify-between pl-3 bg-gradient-to-br dark from-black via-gray-900 to-secondary w-full h-130 flex flex-col items-start">
-						<div className="">
+					
+					<div className="flex flex-row justify-evenly pl-3 bg-gradient-to-br dark from-black via-gray-900 to-secondary w-full h-130 flex flex-col">
+						<div className="flex flex-col items-center">
 							<div className="p-6 w-full h-70">
-								<h1 style={{ fontFamily: "Orbitron" }} className="font-orbitron py-3 text-7xl text-left font-bold text-white">COMPETE IN THE <br/> <span className="bg-gradient-to-r from-[#78D8F5] via-[#8F71F5] to-pink-300 bg-clip-text text-transparent"> ULTIMATE </span>GAMING <br/> ARENA</h1>
+								<h1 style={{ fontFamily: "Orbitron" }} className="font-orbitron py-3 sm:text-5xl md:text-5xl lg:text-7xl text-left font-bold text-white">COMPETE IN THE <br/> <span className="bg-gradient-to-r from-[#78D8F5] via-[#8F71F5] to-pink-300 bg-clip-text text-transparent"> ULTIMATE </span>GAMING <br/> ARENA</h1>
 							</div>
-							<div style={{ fontFamily: "Orbitron" }}  className="p-6 text-gray-300">
+							<div style={{ fontFamily: "Orbitron" }}  className="p-6 text-gray-300 sm:text-5xl md:text-sm lg:text-xl">
 								<p>Join thousands of elite gamers in the most prestigious esports tournaments.
 									<br/> Compete for glory, fame and massive prize blablabla.
 								</p>
@@ -54,7 +55,7 @@ function WelcomePage() {
 									</div> */}
 							</div>
 						</div>
-						<div className="pr-2 w-150">
+						<div className="pr-2 min-w-130">
 							<img src={logo}></img>
 						</div>				
 					</div>

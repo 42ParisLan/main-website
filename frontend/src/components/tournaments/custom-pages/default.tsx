@@ -4,7 +4,7 @@ import {type components} from "@/lib/api/types"
 import { Link } from "@tanstack/react-router"
 import RegisterCard from "./register-card"
 import {  useEffect, useState } from 'react';
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHeader, TableHead, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table"
 
 export default function DefaultTournament({tournament}: {tournament: components['schemas']['Tournament']}) {
 
@@ -52,7 +52,7 @@ export default function DefaultTournament({tournament}: {tournament: components[
 		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
 			{tournament.status === "registration_open" && (
 			<div className="flex flex-col gap-6">
-				{/* <Card style={{ fontFamily: "Orbitron" }} className="bg-gradient-to-br from-black to-gray-800">
+				<Card style={{ fontFamily: "Orbitron" }} className="bg-gradient-to-br from-black to-gray-800">
 					<CardHeader>
 						<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 							{tournament.name}
@@ -70,42 +70,15 @@ export default function DefaultTournament({tournament}: {tournament: components[
 							</Link>
 						</Button>
 					</CardFooter>
-				</Card> */}
-				<Card>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Date</TableHead>
-									<TableHead>Place</TableHead>
-									<TableHead>Tier</TableHead>
-									<TableHead>Tournament</TableHead>
-									<TableHead>Result</TableHead>
-									<TableHead>Prize</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody className="">
-								<TableRow>
-									<TableCell className="">{tournament.tournament_start}</TableCell>
-									<TableCell className="">3rd-4th</TableCell>
-									<TableCell>B-Tier</TableCell>
-									<TableCell>{tournament.name}</TableCell>
-									<TableCell>2 : 3</TableCell>
-									<TableCell>Prize</TableCell>
-								</TableRow>
-							
-							</TableBody>
-						</Table>
-					</CardContent>
 				</Card>
 			</div>
 				
 			)} 
 			{tournament.status === "upcoming" && (
-				<div style={{ fontFamily: "Orbitron" }} className="flex flex-col justify-center p-2 gap-20">
+				<div style={{ fontFamily: "Orbitron" }} className="flex flex-col justify-center items-center p-2 gap-20">
 					<h2  className="text-gray-300 text-center text-5xl font-bold">REGISTRATION OPENS IN</h2>
 		
-					<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
+					<div className="flex flex-col justify-center items-center rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
 						<Card className="bg-gradient-to-tr from-black to-gray-800">
 							<CardContent className="w-full h-full flex justify-center items-center">
 								{status === 'pending' && (
@@ -124,11 +97,35 @@ export default function DefaultTournament({tournament}: {tournament: components[
 				</Card>
 			)}
 			{tournament.status === "completed" && (
-				<Card>
-					<CardContent>
-						STats
-					</CardContent>
-				</Card>
+				<div className="bg-gradient-to-br from-primary to-secondary p-1 rounded-md">
+					<Card className="dark bg-gradient-to-b from-black to-gray-900">
+						<CardContent>
+							<Table className="">
+								<TableHeader >
+									<TableRow className="hover:bg-transparent">
+										<TableHead>Date</TableHead>
+										<TableHead>Place</TableHead>
+										<TableHead>Tier</TableHead>
+										<TableHead>Tournament</TableHead>
+										<TableHead>Result</TableHead>
+										<TableHead>Prize</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody className="">
+									<TableRow>
+										<TableCell className="">{tournament.tournament_start}</TableCell>
+										<TableCell className="">3rd-4th</TableCell>
+										<TableCell>B-Tier</TableCell>
+										<TableCell>{tournament.name}</TableCell>
+										<TableCell>2 : 3</TableCell>
+										<TableCell>Prize</TableCell>
+									</TableRow>
+								
+								</TableBody>
+							</Table>
+						</CardContent>
+					</Card>
+				</div>
 			)}
 				
 		</div>
