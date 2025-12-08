@@ -2,7 +2,7 @@ import { OldTournamentCard } from '@/components/tournaments/past-tournament-card
 
 export function OldTournaments() {
     return(
-        <div style={{ fontFamily: "Orbitron" }} className="w-full h-100 bg-gradient-to-tr from-black to-gray-800">
+        <div  className="w-full h-100 bg-gradient-to-tr from-black to-gray-800">
             <div className="w-full text-center">
                 <h2 className="text-bold text-white p-3 text-3xl">PAST TOURNAMENTS</h2>
                 <p className="text-sm text-gray-400">Battle in the most competitive gmaing environment</p>

@@ -1358,7 +1358,7 @@ export interface components {
             external_links?: {
                 [key: string]: string;
             };
-            iamge_url: string;
+            iamge_url: string | null;
             /**
              * Format: int64
              * @example 42

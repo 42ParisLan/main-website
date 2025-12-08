@@ -3,7 +3,6 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import useQueryClient from '@/hooks/use-query-client';
 import LoadingPage from '@/components/loading-page';
 import { useAuth } from '@/providers/auth.provider';
-import { Header } from '@/components/home-page/header'
 
 export const Route = createFileRoute('/users/$userid/')({
   component: ProfileContent,
@@ -39,7 +38,6 @@ export default function ProfileContent() {
 
   return (
     <div>
-      <Header/>
       <Card>
         <CardContent>
           <div><p>test</p></div>

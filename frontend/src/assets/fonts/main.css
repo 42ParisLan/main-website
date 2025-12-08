@@ -153,3 +153,8 @@
 	font-weight: 500;
 	font-style: italic;
 }
+
+@font-face {
+	font-family: 'Karmatic Arcade';
+	src: url('./ka1.ttf');
+}

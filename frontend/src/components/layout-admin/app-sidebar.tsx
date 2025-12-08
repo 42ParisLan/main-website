@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 import {
-	IconChalkboardTeacher,
 	IconChevronLeft,
 	IconNotes,
 	IconUser,
@@ -14,6 +13,7 @@ import {
 	IconList,
 	type Icon,
 } from "@tabler/icons-react"
+import logo from "@/assets/logo.svg"
 
 import { NavItems } from "@/components/layout-admin/nav-items"
 import { NavUser } from "@/components/layout-admin/nav-user"
@@ -171,7 +171,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
 							<Link to="/admin">
-								<IconChalkboardTeacher className="!size-5" />
+								<img src={logo} alt="42LAN Logo" className="!size-12" />
 								<span className="text-base font-semibold">Admin Dashboard</span>
 							</Link>
 						</SidebarMenuButton>

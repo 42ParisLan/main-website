@@ -520,6 +520,7 @@ components:
             type: string
           type: object
         iamge_url:
+          nullable: true
           type: string
         id:
           example: 42

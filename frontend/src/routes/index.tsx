@@ -1,11 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Header } from '@/components/home-page/header'
 import { ActiveTournaments } from '@/components/tournaments/active-tournaments'
-import { Footer } from '@/components/home-page/footer'
 import { Button } from '../components/ui/button';
 import { Link } from '@tanstack/react-router';
 import useQueryClient from '@/hooks/use-query-client';
 import logo from '@/assets/logo.svg';
+import TopUsers from '@/components/users/top-users';
 
 
 export const Route = createFileRoute('/')({
@@ -26,43 +25,45 @@ function WelcomePage() {
 		}
 	})
 
+	const { data: users } = client.useQuery('get', '/users', {
+		params: {
+			query: {
+				limit: 10,
+			},
+		},
+	});
+
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="">
 				<div className="flex flex-col items-center justify-centertext-center">
-					<Header/>
 					{/* Welcome message  */}
-					<div className="flex flex-row justify-between pl-3 bg-gradient-to-br dark from-black via-gray-900 to-secondary w-full h-130 flex flex-col items-start">
-						<div className="">
-							<div className="p-6 w-full h-70">
-								<h1 style={{ fontFamily: "Orbitron" }} className="font-orbitron py-3 text-7xl text-left font-bold text-white">COMPETE IN THE <br/> <span className="bg-gradient-to-r from-[#78D8F5] via-[#8F71F5] to-pink-300 bg-clip-text text-transparent"> ULTIMATE </span>GAMING <br/> ARENA</h1>
+					<div className="hero-gradient px-6 w-full py-10 md:h-130 flex flex-col md:flex-row items-center justify-around gap-8">
+						<div className="flex flex-col text-center md:text-left">
+							<div className="p-2 w-full">
+								<h1 className="py-3 text-3xl md:text-6xl font-bold text-white">42 STUDENT <br/> <span className="arcade bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> GAMING </span> LEAGUE</h1>
 							</div>
-							<div style={{ fontFamily: "Orbitron" }}  className="p-6 text-gray-300">
-								<p>Join thousands of elite gamers in the most prestigious esports tournaments.
-									<br/> Compete for glory, fame and massive prize blablabla.
+							<div className="p-2 text-gray-300">
+								<p>
+									Join students from 42 in epic e-sport tournaments.
+									<br/>
+									Compete in games like Rocket League, League of Legends, Super Smash Bros., and Counter-Strike.
 								</p>
 							</div>
-							<div className="w-full p-6 flex items-start gap-10">
-								<div className="">
-									<Button asChild size="xl" variant="gradient" className="p-3">
-										<Link to="/tournaments">JOIN TOURNAMENTS</Link>
-									</Button>
-									{/* <button className="p-3 border border-2 border-solid border-secondary hover:bg-secondary transition-all hover:text-white text-secondary transition-all ">JOIN TOURNAMENT</button> */}
-								</div>
-								{/* <div className="p-2.5 text-white border border-2 border-solid border-white hover:bg-white transition-all hover:text-black">
-									<button>WATCH LIVE</button>
-									</div> */}
+							<div className="w-full p-2 flex justify-center md:justify-start items-start gap-10">
+								<Button asChild size="xl" variant="gradient" className="p-3">
+									<Link to="/tournaments">JOIN TOURNAMENTS</Link>
+								</Button>
 							</div>
 						</div>
-						<div className="pr-2 w-150">
-							<img src={logo}></img>
-						</div>				
+						<div className="w-1/2 md:w-150">
+							<img src={logo} alt="logo"/>
+						</div>
 					</div>
-					{/* TOURNAMENTS*/}
-					<ActiveTournaments tournaments={tournaments?.items ?? []}/>
-					{/* TOP PLAYERS */}
-					
-					<Footer/>
+					<div className="w-full p-4 space-y-8 tournament-gradient">
+						<ActiveTournaments tournaments={tournaments?.items ?? []} />
+						<TopUsers users={users?.items ?? []} />
+					</div>
 				</div>
 			</div>
 		</div>

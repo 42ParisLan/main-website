@@ -1,9 +1,9 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "../../ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "../../ui/avatar";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Link } from "@tanstack/react-router";
+import defaultimage from "@/assets/default.png"
 
 function formatDate(iso?: string) {
 	if (!iso) return "—";
@@ -24,25 +24,15 @@ export default function TournamentCard({
 }) {
 	const creatorUsername = tournament.creator?.username ?? "unknown";
 
-	const initials = creatorUsername
-		.split(" ")
-		.map((s) => s[0]?.toUpperCase())
-		.slice(0, 2)
-		.join("");
-
 	return (
 		<Card>
 			<CardContent>
 				<div className="flex gap-4">
 					<div className="flex-shrink-0">
-						<Avatar>
-							{/** Use AvatarImage if creator has an avatar url, otherwise fallback to initials */}
-							{"avatar_url" in tournament.creator && tournament.creator.avatar_url ? (
-								<AvatarImage src={tournament.creator.avatar_url as string} alt={creatorUsername} />
-							) : (
-								<AvatarFallback>{initials || "U"}</AvatarFallback>
-							)}
-						</Avatar>
+						<img
+							src={tournament.iamge_url ?? defaultimage}
+							className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+						/>
 					</div>
 
 					<div className="flex-1 min-w-0">
