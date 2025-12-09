@@ -43,7 +43,7 @@ services:
       - DB_NAME=base-website
       - DB_PORT=5432
       - VALKEY_ADDRESS=redis://valkey:6380
-      - MINIO_ENDPOINT=host.docker.internal:9000
+      - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_USE_SSL=false

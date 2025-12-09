@@ -82,41 +82,38 @@ function RouteComponent() {
 	if (team && tournament)
 	{
 		return (
-			<>
-				<div className="min-h-screen flex flex-col bg-black ">
-					<Card className="border-0 flex-1 bg-gradient-to-br from-black via-foreground to-gray-700">
-						<CardHeader className="p-4 w-full flex items-center">
-							<CardTitle className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-								My team for the {tournament.name} tournament
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="flex flex-col items-center">
-							<div className="p-4 w-100">
-								<TeamCard team={team} tournament={tournament}/>
-							</div>
-							
-							{role == "creator" ? (
-							<>
-								<Button
-									variant="gradient"
-									asChild
-								>
-									<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-										Edit Team
-									</Link>
-								</Button>
-							</>
-						) : role == "member" && (
+			<div className="flex flex-col bg-black min-h-screen">
+				<Card className="border-0 flex-1 bg-gradient-to-br from-black via-background to-gray-800">
+					<CardHeader className="p-4 w-full flex items-center">
+						<CardTitle className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+							My team for the {tournament.name} tournament
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="gap-4 flex flex-col justify-center items-center">
+						<div className="w-100">
+							<TeamCard team={team} tournament={tournament}/>
+						</div>
+						{role == "creator" ? (
+						<>
 							<Button
-								variant="destructive"
+								variant="secondary"
+								asChild
 							>
-								Leave Team
+								<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
+									Edit Team
+								</Link>
 							</Button>
-						)}
-						</CardContent>
-					</Card>
-				</div>
-			</>
+						</>
+					) : role == "member" && (
+						<Button
+							variant="destructive"
+						>
+							Leave Team
+						</Button>
+					)}
+					</CardContent>
+				</Card>
+			</div>
 		)
 	}
 				{/* <Card>

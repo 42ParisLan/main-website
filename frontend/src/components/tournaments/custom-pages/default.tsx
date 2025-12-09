@@ -11,8 +11,10 @@ export default function DefaultTournament({
 }: {
 	tournament: components['schemas']['Tournament'];
 	refetch: () => any;
+	user: ReturnType<typeof useAuth>['me'];
 }) {
 	const [timeLeft, setTimeLeft] = useState('');
+
 
 	useEffect(() => {
 		if (tournament.status !== 'upcoming') return;
@@ -106,7 +108,7 @@ export default function DefaultTournament({
 				<div className="bg-gradient-to-br from-primary to-secondary p-1 rounded-md">
 					<Card className="dark bg-gradient-to-b from-black to-gray-900">
 						<CardContent>
-							<Table className="">
+							{/* <Table className="">
 								<TableHeader >
 									<TableRow className="hover:bg-transparent">
 										<TableHead>Date</TableHead>
@@ -128,12 +130,11 @@ export default function DefaultTournament({
 									</TableRow>
 								
 								</TableBody>
-							</Table>
+							</Table> */}
 						</CardContent>
 					</Card>
 				</div>
 			)}
-				
 		</div>
 	)
 }

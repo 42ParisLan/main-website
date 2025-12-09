@@ -32,7 +32,7 @@ function WelcomePage() {
 	});
 
 	return (
-		<div className="flex flex-col items-center bg-background">
+		<div className="flex flex-col items-center bg-background dark">
 			{/* Welcome message  */}
 			<div className="hero-gradient px-6 w-full py-10 md:h-130 flex flex-col md:flex-row items-center justify-around gap-8">
 				<div className="flex flex-col text-center md:text-left">

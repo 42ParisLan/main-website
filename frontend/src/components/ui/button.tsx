@@ -10,19 +10,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "cursor-ponter bg-primary text-primary-background shadow-xs hover:bg-primary/90",
+          "cursor-pointer bg-primary text-primary-background shadow-xs hover:bg-primary/90",
         destructive:
-          "cursor-ponter dark bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "cursor-pointer dark bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
-          "cursor-ponter border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "cursor-pointer border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
-          "cursor-ponter dark bg-secondary text-black shadow-xs hover:bg-secondary/80",
+          "cursor-pointer dark bg-secondary text-black shadow-xs hover:bg-secondary/80",
         ghost:
-          "cursor-ponter hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+          "cursor-pointer hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: 
-          "cursor-ponter text-primary underline-offset-4 hover:underline",
+          "cursor-pointer text-primary underline-offset-4 hover:underline",
         transparent:
-          "cursor-ponter bg-transparent whitespace-nowrap font-medium transition-all outline-none",
+          "cursor-pointer bg-transparent whitespace-nowrap font-medium transition-all outline-none",
         gradient:
           "dark text-gray-300 bg-gradient-to-br from-primary via-secondary to-purple-400",
         "gradient-border":
@@ -36,7 +36,7 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         xl: "h-13 gap-1.5 px-3",
         icon: "size-9",
-        header: "h-8 gap-1.5 px-3 text-md",
+        header: "h-16 gap-1.5 px-3 text-md",
       },
       radius: {
           none: "rounded-none",

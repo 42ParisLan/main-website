@@ -1,7 +1,7 @@
 import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo } from 'react'
-
+import { useAuth } from '@/providers/auth.provider';
 export const Route = createFileRoute('/tournaments/$tournamentid/')({
   component: RouteComponent,
 })
@@ -9,6 +9,7 @@ export const Route = createFileRoute('/tournaments/$tournamentid/')({
 function RouteComponent() {
 	const {tournamentid} = Route.useParams();
 	const router = useRouter();
+	const { me: user } = useAuth();
 
 	const client = useQueryClient();
 
@@ -42,6 +43,22 @@ function RouteComponent() {
 		router.navigate({to: '/tournaments'})
 		return
 	}
+	
+	if (!data) {
+		return <div className="text-sm text-muted-foreground">Loading tournament…</div>
+	}
+
+	//ca marche pas ce que je veux faire
+	const userTeam = data.teams?.find(team =>
+		team.members?.some(member => member.user?.id === user.id)
+	);
+	
+
+	if (userTeam) {
+		console.log("icic")
+		router.navigate({ to: `/tournaments/${data.id}/${userTeam.id}` });
+		return null;
+  }
 
 	const chosen = data?.custom_page_component || "default"
 	const Component = componentMap[chosen] ?? componentMap['default'] ?? (() => <p>Missing component</p>)
@@ -56,7 +73,7 @@ function RouteComponent() {
 			<div className="min-h-screen flex flex-col dark bg-background">
 				<div  className="flex flex-col flex-1 ">
 					{data && (
-						<Component tournament={data} refetch={refetch} />
+						<Component tournament={data} refetch={refetch}  user={user} />
 					)}
 				</div>
 			</div>
