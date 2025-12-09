@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
+import { Route as GdprRouteImport } from './routes/gdpr'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
@@ -42,6 +44,16 @@ import { Route as AdminTournamentsTournamentidTeamsIndexRouteImport } from './ro
 import { Route as AdminTournamentsTournamentidRankingIndexRouteImport } from './routes/admin/tournaments/$tournamentid/ranking/index'
 import { Route as AdminTournamentsTournamentidEditIndexRouteImport } from './routes/admin/tournaments/$tournamentid/edit/index'
 
+const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GdprRoute = GdprRouteImport.update({
+  id: '/gdpr',
+  path: '/gdpr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -218,6 +230,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
+  '/gdpr': typeof GdprRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/admin/': typeof AdminIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/users': typeof UsersIndexRoute
@@ -251,6 +265,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/gdpr': typeof GdprRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/admin': typeof AdminIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/users': typeof UsersIndexRoute
@@ -286,6 +302,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
+  '/gdpr': typeof GdprRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/admin/': typeof AdminIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
   '/users/': typeof UsersIndexRoute
@@ -322,6 +340,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
+    | '/gdpr'
+    | '/terms-of-service'
     | '/admin/'
     | '/tournaments'
     | '/users'
@@ -355,6 +375,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
+    | '/gdpr'
+    | '/terms-of-service'
     | '/admin'
     | '/tournaments'
     | '/users'
@@ -389,6 +411,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
+    | '/gdpr'
+    | '/terms-of-service'
     | '/admin/'
     | '/tournaments/'
     | '/users/'
@@ -424,6 +448,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
+  GdprRoute: typeof GdprRoute
+  TermsOfServiceRoute: typeof TermsOfServiceRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
   VotesIndexRoute: typeof VotesIndexRoute
@@ -443,6 +469,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gdpr': {
+      id: '/gdpr'
+      path: '/gdpr'
+      fullPath: '/gdpr'
+      preLoaderRoute: typeof GdprRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -714,6 +754,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
+  GdprRoute: GdprRoute,
+  TermsOfServiceRoute: TermsOfServiceRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,
   VotesIndexRoute: VotesIndexRoute,

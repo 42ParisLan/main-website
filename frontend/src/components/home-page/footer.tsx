@@ -1,42 +1,29 @@
-import { IconBrandDiscordFilled, IconBrandTwitterFilled, IconBrandYoutubeFilled, IconBrandTwitch } from '@tabler/icons-react'
+import { IconBrandDiscordFilled, IconBrandX, IconBrandYoutubeFilled } from '@tabler/icons-react'
+import { Link } from '@tanstack/react-router';
+import logo from '@/assets/logo.svg';
 
 export function Footer() {
-    return(
-        <footer style={{ fontFamily: "Orbitron" }} className="w-full h-60 bg-black">
-            <div className="gap-2 p-10 h-full w-full flex justify-evenly flex-row text-gray-400">
-                <div className="gap-4 flex flex-col text-left">
-                    <span className="bg-gradient-to-r from-[#78D8F5] via-[#8F71F5] to-pink-300 bg-clip-text text-transparent"> 42LAN</span>
-                    <span className="text-gray-400 text-xs">ecrire des trucs ici</span>
-                    <div className="flex gap-4 py-6">
-                        <IconBrandDiscordFilled/>
-                        <IconBrandTwitterFilled/>
-                        <IconBrandYoutubeFilled/>
-                        <IconBrandTwitch/>
-                    </div>
-                </div>
-                <div className="gap-4 text-xs flex flex-col">
-                    <span className="text-lg text-white">Tournaments</span>
-                    <a href="#">Active events</a>
-                    <a href="">Upcoming</a>
-                    <a href="">blablabla</a>
-                </div>
-                <div className="gap-4 text-xs flex flex-col">
-                    <span className="text-lg text-white">Community</span>
-                    <a href="">Forum</a>
-                    <a href="">Discord</a>
-                    <a href="">bllablabal</a>
-                </div>
-                <div className="gap-4 text-xs flex flex-col">
-                    <span className="text-lg text-white">Support</span>
-                    <a href="">Help Center</a>
-                    <a href="">Contact</a>
-                    <a href="">Rules</a>
-                </div>
-
-            </div>
-            <div className="bg-black text-xs text-gray-400 flex flex items-center justify-center">
-                <span>2025 blablabla qu'estce qu'on ecrit ici </span>
-            </div>
-        </footer>
-    );
+	return(
+		<footer className="w-full bg-black py-8">
+			<div className="container mx-auto px-4">
+				<div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8">
+					<Link to="/">
+						<img src={logo} alt="42LAN Logo" className="h-8" />
+					</Link>
+					<div className="flex gap-4">
+						<a href="#" aria-label="Discord" className="text-gray-400 hover:text-white"><IconBrandDiscordFilled/></a>
+						<a href="#" aria-label="X" className="text-gray-400 hover:text-white"><IconBrandX/></a>
+						<a href="#" aria-label="Youtube" className="text-gray-400 hover:text-white"><IconBrandYoutubeFilled/></a>
+					</div>
+					<div className="flex flex-col md:flex-row gap-4 text-xs">
+						<Link to="/terms-of-service" className="text-gray-400 hover:text-white">Terms of Service</Link>
+						<Link to="/gdpr" className="text-gray-400 hover:text-white">Privacy Policy (GDPR)</Link>
+					</div>
+				</div>
+				<div className="mt-8 border-t border-gray-800 pt-4 text-center text-xs text-gray-400">
+					<span>© 2025 42LAN. All rights reserved.</span>
+				</div>
+			</div>
+		</footer>
+	);
 }

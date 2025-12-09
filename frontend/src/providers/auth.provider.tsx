@@ -69,7 +69,7 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 	const [error, setError] = useState<string | null>(null);
 	const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-	const shouldAuth = useMemo(() => isMatchedPathname(location.pathname), [location.pathname]);
+	const shouldAuth = useMemo(() => location.pathname != "/auth/callback", [location.pathname]);
 
 	const authorize = useCallback(() => {
 		window.location.href = getRedirectUrl(VITE_OAUTH_AUTHORIZE_URL, VITE_OAUTH_CLIENT_ID);
@@ -121,9 +121,9 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 			<div className="min-h-screen flex justify-center items-center dark bg-gradient-to-br from-black to-gray-800">
 				<div className="rounded-md p-1 bg-gradient-to-br from-primary to-secondary">
 					<div className="rounded-md  text-white bg-black transition-all outline-none hover:bg-transparent hover:text-black focus-visible:ring-0 focus:ring-0 focus:outline-none">
-						<Button onClick={authorize} size="header" variant="transparent"
-								>
-								Login With 42</Button>
+						<Button onClick={authorize} size="header" variant="transparent">
+							Login With 42
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -163,11 +163,3 @@ function getRedirectUrl(VITE_OAUTH_AUTHORIZE_URL: string, VITE_OAUTH_CLIENT_ID: 
 	return getAuthorizationUrl(callbackUrl.toString(), VITE_OAUTH_AUTHORIZE_URL, VITE_OAUTH_CLIENT_ID);
 }
 
-const matched = ["/admin/(.*)", "/admin", "/register", "/votes", "/votes/(.*)", "/tournaments/(.*)", "/template/invitations"];
-
-function isMatchedPathname(pathname: string): boolean {
-	return matched.some((pattern) => {
-		const regex = new RegExp(`^${pattern.replace(/\(.*\)/, ".*")}$`);
-		return regex.test(pathname);
-	});
-}

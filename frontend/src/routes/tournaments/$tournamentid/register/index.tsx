@@ -2,9 +2,7 @@
 import useQueryClient from '@/hooks/use-query-client'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react';
-import { Header } from '@/components/home-page/header'
-import { Footer } from '@/components/home-page/footer'
-import  CreateTeamCard from '@/components/tournaments/custom-pages/create-team-card'
+import  CreateTeamCard from '@/components/tournaments/registration/create-team-card'
 
 export const Route = createFileRoute('/tournaments/$tournamentid/register/')({
   component: RouteComponent,
@@ -67,14 +65,9 @@ function RouteComponent() {
 	return (
 		
 		<>
-		<div>
-			<Header/>
-				<div className="dark bg-gradient-to-br from-black to-gray-800 p-4">
-					<CreateTeamCard tournament={tournament}/>
-				</div>
-			<Footer/>
-		</div>
-			
+			<div className="dark bg-gradient-to-br from-black to-gray-800 p-4">
+				<CreateTeamCard tournament={tournament}/>
+			</div>
 		</>
 	)
 }

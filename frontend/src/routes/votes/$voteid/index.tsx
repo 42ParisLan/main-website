@@ -3,9 +3,6 @@ import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCallback } from 'react';
 
-import { Footer } from '@/components/home-page/footer'
-import { Header } from '@/components/home-page/header'
-
 export const Route = createFileRoute('/votes/$voteid/')({
   component: RouteComponent,
 })
@@ -42,7 +39,6 @@ function RouteComponent() {
 
 	return (
 		<div className="min-h-screen flex flex-col dark bg-gradient-to-br from-black to-gray-800">
-			<Header/>
 			<div className="flex-1 flex flex-col justify-evenly items-center gap-2 p-6">
 				<Card className="p-2 flex items-center w-full bg-gradient-to-br from-black to-gray-800">
 					<CardHeader>
@@ -76,7 +72,6 @@ function RouteComponent() {
 						))}
 					</div>
 				</div>
-			<Footer/>
 		</div>
 	)
 }

@@ -25,6 +25,8 @@ const buttonVariants = cva(
           "bg-transparent whitespace-nowrap font-medium transition-all outline-none",
         gradient:
           "dark text-gray-300 bg-gradient-to-br from-primary via-secondary to-purple-400",
+        "gradient-border":
+          "gradient-border text-white [&>*]:relative [&>*]:z-10",
         border:
           "",
       },

@@ -110,7 +110,7 @@ func (svc *tournamentsService) ListTournaments(
 
 	limit := params.Input.Limit
 	page := params.Input.Page
-	return paging.CreatePagingResponse(lightmodels.NewLightTournamentsFromEnt(tournaments), total, page, limit), nil
+	return paging.CreatePagingResponse(lightmodels.NewLightTournamentsFromEnt(ctx, tournaments, svc.s3service), total, page, limit), nil
 }
 
 func (svc *tournamentsService) GetTournamentByID(

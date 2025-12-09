@@ -19,7 +19,7 @@ type LightTournament struct {
 	Slug                string                   `json:"slug" example:"spring-cup-2025" description:"Unique slug of the tournament"`
 	Name                string                   `json:"name" example:"Spring Cup 2025" description:"The name of the tournament"`
 	Description         string                   `json:"description,omitempty" example:"School-wide League of Legends tournament" description:"Description of the tournament"`
-	ImageUrl            string                   `json:"iamge_url" description:"Image url of the tournament"`
+	ImageUrl            *string                  `json:"iamge_url" description:"Image url of the tournament"`
 	IsVisible           bool                     `json:"is_visible" description:"Whether the tournament is visible to users"`
 	RegistrationStart   time.Time                `json:"registration_start" example:"2025-03-01T00:00:00Z" description:"When registration starts"`
 	RegistrationEnd     time.Time                `json:"registration_end" example:"2025-03-10T23:59:59Z" description:"When registration ends"`
@@ -34,7 +34,7 @@ type LightTournament struct {
 	CreatedAt           time.Time                `json:"created_at"`
 }
 
-func NewLightTournamentFromEnt(entTournament *ent.Tournament) *LightTournament {
+func NewLightTournamentFromEnt(ctx context.Context, entTournament *ent.Tournament, S3Service s3service.S3Service) *LightTournament {
 	if entTournament == nil {
 		return nil
 	}
@@ -46,11 +46,20 @@ func NewLightTournamentFromEnt(entTournament *ent.Tournament) *LightTournament {
 		}
 	}
 
+	var imageUrl *string
+	if entTournament.ImageURL != nil {
+		u, err := S3Service.PresignedGet(ctx, *entTournament.ImageURL, time.Hour)
+		if err == nil {
+			imageUrl = &u
+		}
+	}
+
 	return &LightTournament{
 		ID:                  entTournament.ID,
 		Slug:                entTournament.Slug,
 		Name:                entTournament.Name,
 		Description:         entTournament.Description,
+		ImageUrl:            imageUrl,
 		IsVisible:           entTournament.IsVisible,
 		RegistrationStart:   entTournament.RegistrationStart,
 		RegistrationEnd:     entTournament.RegistrationEnd,
@@ -66,10 +75,10 @@ func NewLightTournamentFromEnt(entTournament *ent.Tournament) *LightTournament {
 	}
 }
 
-func NewLightTournamentsFromEnt(entTournaments []*ent.Tournament) []*LightTournament {
+func NewLightTournamentsFromEnt(ctx context.Context, entTournaments []*ent.Tournament, S3Service s3service.S3Service) []*LightTournament {
 	tournaments := make([]*LightTournament, len(entTournaments))
 	for i, t := range entTournaments {
-		tournaments[i] = NewLightTournamentFromEnt(t)
+		tournaments[i] = NewLightTournamentFromEnt(ctx, t, S3Service)
 	}
 	return tournaments
 }
