@@ -14,7 +14,6 @@ export default function DefaultTournament({
 }) {
 	const [timeLeft, setTimeLeft] = useState('');
 
-
 	useEffect(() => {
 		if (tournament.status !== 'upcoming') return;
 		const updateCountdown = () => {

@@ -13,7 +13,7 @@ import { useState } from 'react';
 export function Header() {
 	const {me} = useAuth();
 	const logout = useLogout()
-	 const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
 	return (

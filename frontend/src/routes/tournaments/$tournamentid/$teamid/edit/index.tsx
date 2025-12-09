@@ -370,8 +370,3 @@ function RouteComponent() {
 		)
 	}
 }
-
-//inviation sur cote
-//nom de la team en grand au milieu "TEAM nom" et le jeu
-//dans /tournaments/team mettre le nom du tournois
-//sur la page du tournois mettre register ee vote

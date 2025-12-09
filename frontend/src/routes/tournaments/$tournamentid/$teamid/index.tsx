@@ -3,7 +3,8 @@ import useQueryClient from '@/hooks/use-query-client'
 import { useAuth } from '@/providers/auth.provider';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { TeamCard } from '@/components/tournaments/teams/team-card';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
   component: RouteComponent,
@@ -31,34 +32,34 @@ function RouteComponent() {
 		}
 	})
 
-	// const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
-	// 	onSuccess() {
-	// 		toast.success("Team Successfuly Leaved")
-	// 		if (tournament) {
-	// 			router.navigate({
-	// 				to: "/tournaments/$tournamentid",
-	// 				params: {
-	// 					tournamentid: tournament.slug,
-	// 				},
-	// 			})
-	// 		}
-	// 	},
-	// 	onError(error) {
-	// 		console.error('Failed to leave team', error)
-	// 		toast.error("Failed to Leave Team")
-	// 	}
-	// })
+	const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
+		onSuccess() {
+			toast.success("Team Successfuly Leaved")
+			if (tournament) {
+				router.navigate({
+					to: "/tournaments/$tournamentid",
+					params: {
+						tournamentid: tournament.slug,
+					},
+				})
+			}
+		},
+		onError(error) {
+			console.error('Failed to leave team', error)
+			toast.error("Failed to Leave Team")
+		}
+	})
 
-	// const performLeave = useCallback(() => {
-	// 	if (!team) return;
-	// 	mutateLeave({
-	// 		params: {
-	// 			path: {
-	// 				id: team.id,
-	// 			},
-	// 		},
-	// 	});
-	// }, [mutateLeave, team]);
+	const performLeave = useCallback(() => {
+		if (!team) return;
+		mutateLeave({
+			params: {
+				path: {
+					id: team.id,
+				},
+			},
+		});
+	}, [mutateLeave, team]);
 
 	const role = useMemo(() => {
 		if (team?.creator?.id === me.id) return 'creator'
@@ -97,6 +98,7 @@ function RouteComponent() {
 				) : role == "member" && (
 					<Button
 						variant="destructive"
+						onClick={performLeave}
 					>
 						Leave Team
 					</Button>
