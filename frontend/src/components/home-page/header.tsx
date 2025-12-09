@@ -1,82 +1,69 @@
 import { Button } from '../ui/button';
 import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import LoadingPage from '@/components/loading-page';
-import useQueryClient from '@/hooks/use-query-client';
+import defaultpng from "@/assets/default.png"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import logo from '@/assets/logo.svg';
+import { useAuth, useLogout } from '@/providers/auth.provider';
+import { HeaderNotifs } from './header-notif';
 
 export function Header() {
+	const {me} = useAuth();
+	const logout = useLogout()
 
-    const client = useQueryClient();
-    let picture = 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg';
-    
-      const {data: user, isLoading} = client.useQuery("get", "/me")
-    
-      if (isLoading) {
-        return (
-          <LoadingPage/>
-        )
-      }
-      if (user) {
-        picture = user.picture || picture;
-      }
-    return (
-        <header className="bg-background sticky top-0 w-full ">
-            <div className="container-wrapper">
-                <nav className="flex items-center bg-black h-20 text-gray-300">
-                    <div className="h-full flex items-center">
-                        <button className="cursor-pointer" type="button" onClick={() => (window.location.href = "/")}>
-                            <img src={logo}
-                                    className="h-30">
-                            </img>
-                        </button>
-                    </div>
-                    <div className="flex items-center justify-center gap-4 h-full text-lg">
-                        <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">
-                            <Button asChild size="header" variant="transparent" radius="none" className="h-full inline-flex items-center justify-center bg-black rounded-xl h-13">
-                                <Link to="/tournaments">Tournaments</Link>
-                            </Button>
-                        </div>
-                        <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">
-                            <Button asChild size="header" variant="transparent" radius="none" className="h-full inline-flex items-center justify-center bg-black rounded-xl h-13">
-                                <Link to="/votes">Votes</Link>
-                            </Button>
-                        </div>
-                        <div className="rounded-xl p-1 bg-transparent hover:bg-gradient-to-r hover:from-primary hover:to-secondary dark transition-all duration-300">
-                            <Button asChild size="header" variant="transparent" radius="none" className="h-full inline-flex items-center justify-center bg-black rounded-xl h-13">
-                                <Link to="/admin">Admin</Link>
-                            </Button>
-                        </div>                        
-                    </div>
-                    <div className="w-full p-6 flex gap-6 justify-end">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button className="p-0 h-auto w-auto rounded-full focus-visible:ring-0 focus:ring-0 focus:outline-none" variant="transparent">
-                                    <div className="rounded-full p-[4px] bg-gradient-to-br from-primary to-secondary dark">  
-                                        <Avatar className="h-12 w-12">
-                                        <AvatarImage src={picture} alt="Profile" />
-                                        <AvatarFallback className="text-2xl">JD</AvatarFallback>
-                                        </Avatar>
-                                    </div>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="dark bg-background">
-                                <DropdownMenuItem asChild>
-                                    <Link to="/users/me">Profile</Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+	return (
+		<header className="sticky top-0 w-full z-[1000] border-b border-border/50 bg-black/95 backdrop-blur-sm">
+			<div className="container mx-auto px-4 lg:px-6">
+				<nav className="flex items-center justify-between h-20">
+					<div className="flex items-center gap-12">
+						<Link to="/" className="shrink-0">
+							<img src={logo} alt="Logo" className="h-10 w-auto" />
+						</Link>
+						<div className="hidden md:flex items-center gap-2">
+							<Button asChild size="header" variant="gradient-border">
+								<Link to="/tournaments">Tournaments</Link>
+							</Button>
+							<Button asChild size="header" variant="gradient-border">
+								<Link to="/votes">Votes</Link>
+							</Button>
+							{me.roles.includes("basic_admin") && (
+								<Button asChild size="header" variant="gradient-border">
+									<Link to="/admin">Admin</Link>
+								</Button>
+							)}
+						</div>
 					</div>
-                </nav>
-            </div>
-        </header>
-    );
+					<div className="flex items-center gap-4">
+						<HeaderNotifs />
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button className="p-0 h-auto w-auto rounded-full focus-visible:ring-2 ring-primary/50 hover:ring-primary transition-all" variant="transparent">
+									<div className="rounded-full p-[2px] bg-gradient-to-br from-primary to-secondary">  
+										<Avatar className="h-10 w-10">
+											<AvatarImage src={me.picture ?? defaultpng} alt="Profile" />
+											<AvatarFallback className="text-sm font-medium">
+												{me.username?.slice(0, 2).toUpperCase() || 'U'}
+											</AvatarFallback>
+										</Avatar>
+									</div>
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="dark bg-card border border-border/50 w-48 mt-2">
+								<DropdownMenuItem asChild>
+									<Button variant="ghost" className="w-full justify-start" asChild>
+										<Link to="/users/me">Profile</Link>
+									</Button>
+								</DropdownMenuItem>
+								<DropdownMenuItem asChild>
+									<Button variant="destructive" className="w-full justify-start" onClick={logout}>
+										Logout
+									</Button>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
+				</nav>
+			</div>
+		</header>
+	);
 }
-
-{/* <Button asChild size="lg" variant="default" className="min-w-[220px]">
-    <Link to="/admin">
-        <IconChalkboardTeacher className="mr-2 w-5 h-5" />
-        Access Admin Console
-    </Link>
-</Button> */}

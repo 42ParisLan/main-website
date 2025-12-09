@@ -1,8 +1,6 @@
 import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo } from 'react'
-import { Header } from '@/components/home-page/header'
-import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute('/tournaments/$tournamentid/')({
   component: RouteComponent,
@@ -14,7 +12,7 @@ function RouteComponent() {
 
 	const client = useQueryClient();
 
-	const {data, isLoading, isError} = client.useQuery("get", "/tournaments/{id_or_slug}", {
+	const {data, isLoading, isError, refetch} = client.useQuery("get", "/tournaments/{id_or_slug}", {
 		params:{
 			path: {
 				id_or_slug: tournamentid
@@ -56,13 +54,11 @@ function RouteComponent() {
 	} else {
 		return (
 			<div className="min-h-screen flex flex-col dark bg-background">
-				<Header/>
 				<div  className="flex flex-col flex-1 ">
 					{data && (
-						<Component tournament={data} />
+						<Component tournament={data} refetch={refetch} />
 					)}
 				</div>
-				<Footer/>
 			</div>
 		)
 	}

@@ -6,8 +6,6 @@ import VoteCard from '@/components/votes/vote-card';
 import type { components } from '@/lib/api/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Header } from '@/components/home-page/header'
-import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute('/votes/')({
 	component: RouteComponent,
@@ -38,7 +36,6 @@ function RouteComponent() {
 
 	return (
 		<div className='min-h-screen flex flex-col dark bg-gradient-to-br from-black to-gray-800'>
-			<Header/>
 			<div className="flex flex-1">
 				<div className="w-full p-4">
 					<div className="text-white p-4">
@@ -72,7 +69,6 @@ function RouteComponent() {
 						/>
 				</div>
 			</div>
-			<Footer/>
 		</div>
 	)
 }

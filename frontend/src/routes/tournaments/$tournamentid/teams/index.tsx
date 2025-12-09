@@ -7,8 +7,6 @@ import { Input} from '@/components/ui/input';
 import { useCallback, useState } from 'react';
 import {type components} from "@/lib/api/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Header } from '@/components/home-page/header'
-import { Footer } from '@/components/home-page/footer'
 
 
 export const Route = createFileRoute('/tournaments/$tournamentid/teams/')({
@@ -52,7 +50,6 @@ function RouteComponent() {
 	return (
 		<>
 		<div className="min-h-screen flex flex-col bg-black ">
-			<Header/>
 			<Card className="border-0 flex-1 bg-gradient-to-br from-black via-foreground to-gray-700">
 				<CardHeader className="p-4 flex flex-row items-center justify-between space-y-0 gap-4">
 					<CardTitle className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">Teams</CardTitle>
@@ -91,7 +88,6 @@ function RouteComponent() {
 					</>
 					))} */}
 				</Card>
-				<Footer/>
 			</div>
 		</>
 	)

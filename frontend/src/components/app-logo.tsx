@@ -1,22 +1,25 @@
 
-import { cn } from "@/lib/utils";
-import type { DetailedHTMLProps, ImgHTMLAttributes } from "react";
+import { cn } from '@/lib/utils';
+import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react';
+import logo from '@/assets/logo.svg';
+import { Link } from '@tanstack/react-router';
 
 export type AppLogoProps = DetailedHTMLProps<
-  ImgHTMLAttributes<HTMLImageElement>,
-  HTMLImageElement
+	ImgHTMLAttributes<HTMLImageElement>,
+	HTMLImageElement
 >;
 
 export default function AppLogo(props: AppLogoProps) {
 	return (
-		<img
-			src="/42paris.svg"
-			alt="Logo"
-			className={cn("cursor-pointer dark:filter dark:invert", props.className)}
-			width={100}
-			height={100}
-			onClick={() => (window.location.href = "/dash")}
-			{...props}
-		/>
+		<Link to="/">
+			<img
+				src={logo}
+				alt="Logo"
+				className={cn('cursor-pointer', props.className)}
+				width={100}
+				height={100}
+				{...props}
+			/>
+		</Link>
 	);
 }

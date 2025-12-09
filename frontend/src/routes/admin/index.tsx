@@ -16,7 +16,7 @@ function DashboardIndex() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						Welcome to the Pedago Dashboard! You are now authenticated and can access all features.
+						Welcome to the Admin Dashboard! You are now authenticated and can access all features.
 					</CardContent>
 				</Card>
 			</div>

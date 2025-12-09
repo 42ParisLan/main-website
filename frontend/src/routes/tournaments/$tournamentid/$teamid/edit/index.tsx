@@ -14,8 +14,6 @@ import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Header } from '@/components/home-page/header'
-import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute(
 	'/tournaments/$tournamentid/$teamid/edit/',
@@ -181,7 +179,6 @@ function RouteComponent() {
 	if (team && tournament) {
 		return (
 			<div className=" min-h-screen flex flex-col">
-				<Header/>
 				<div className="flex flex-1 flex-col p-2 dark bg-gradient-to-br from-primary via-gray-800 to-secondary">
 					<Card className="p-2 text-white border-0 bg-gradient-to-br from-black to-gray-700 ">
 						<CardContent className='font-bold p-2 flex justify-between'>
@@ -365,9 +362,7 @@ function RouteComponent() {
 							<DialogClose />
 						</DialogContent>
 					</Dialog>
-					
 				</div>
-				<Footer/>
 			</div>
 		)
 	}
