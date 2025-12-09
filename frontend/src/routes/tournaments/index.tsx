@@ -4,8 +4,6 @@ import useQueryClient from '@/hooks/use-query-client';
 import type { components } from '@/lib/api/types';
 import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useState } from 'react';
-import { Header } from '@/components/home-page/header'
-import { Footer } from '@/components/home-page/footer'
 
 export const Route = createFileRoute('/tournaments/')({
     component: RouteComponent,

@@ -4,6 +4,7 @@ import {type components} from "@/lib/api/types"
 import { Link } from "@tanstack/react-router"
 import RegisterCard from '../registration/register-card';
 import { useEffect, useState } from 'react';
+import { useAuth } from "@/providers/auth.provider";
 
 export default function DefaultTournament({
 	tournament,
