@@ -121,7 +121,7 @@ export default function AuthProvider({ VITE_OAUTH_AUTHORIZE_URL,
 			<div className="min-h-screen flex justify-center items-center dark bg-gradient-to-br from-black to-gray-800">
 				<div className="rounded-md p-1 bg-gradient-to-br from-primary to-secondary">
 					<div className="rounded-md  text-white bg-black transition-all outline-none hover:bg-transparent hover:text-black focus-visible:ring-0 focus:ring-0 focus:outline-none">
-						<Button onClick={authorize} size="header" variant="transparent">
+						<Button onClick={authorize} size="default" variant="transparent">
 							Login With 42
 						</Button>
 					</div>
