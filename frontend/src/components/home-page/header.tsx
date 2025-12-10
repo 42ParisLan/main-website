@@ -48,7 +48,7 @@ export function Header() {
 									</div>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="dark bg-card border border-border/50 w-48 mt-2">
+							<DropdownMenuContent align="end" side="bottom" sideOffset={12} className="dark bg-card border border-border/50 w-48 mt-2">
 								<DropdownMenuItem asChild>
 									<Button variant="ghost" className="w-full justify-start" asChild>
 										<Link to="/users/me">Profile</Link>

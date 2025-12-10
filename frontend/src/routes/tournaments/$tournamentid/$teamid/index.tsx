@@ -82,97 +82,28 @@ function RouteComponent() {
 	if (team && tournament)
 	{
 		return (
-			<div className="flex flex-col bg-black min-h-screen">
-				<Card className="border-0 flex-1 bg-gradient-to-br from-black via-background to-gray-800">
-					<CardHeader className="p-4 w-full flex items-center">
-						<CardTitle className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-							My team for the {tournament.name} tournament
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="gap-4 flex flex-col justify-center items-center">
-						<div className="w-100">
-							<TeamCard team={team} tournament={tournament}/>
-						</div>
-						{role == "creator" ? (
-						<>
-							<Button
-								variant="secondary"
-								asChild
-							>
-								<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-									Edit Team
-								</Link>
-							</Button>
-						</>
-					) : role == "member" && (
-						<Button
-							variant="destructive"
-						>
-							Leave Team
-						</Button>
-					)}
-					</CardContent>
-				</Card>
+			<div className="flex flex-1 dark grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
+				<TeamCard team={team} tournament={tournament}/>
+				{role == "creator" ? (
+				<div>
+					<Button
+						variant="secondary"
+						asChild
+					>
+						<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
+							Edit Team
+						</Link>
+					</Button>
+				</div>
+				) : role == "member" && (
+					<Button
+						variant="destructive"
+					>
+						Leave Team
+					</Button>
+				)}
 			</div>
 		)
 	}
-				{/* <Card>
-					<CardHeader className='flex justify-between'>
-						<CardTitle>
-							{team.name}
-						</CardTitle>
-						team for tournament: "{tournament.name}"
-					</CardHeader>
-					<CardContent>
-						{Object.entries(tournament.team_structure).map(([key, _]) => {
-							const users = team.members?.filter((user) => user.role == key);
-							if (users && users.length > 0)
-							{
-								return (
-									<>
-										<p>{key}</p>
-										{users.map((team_member) => (
-											<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
-												<img
-													src={team_member.user?.picture ?? ''}
-													alt={team_member.user?.username ?? 'team member'}
-													className="w-10 h-10 rounded-full object-cover"
-												/>
-												<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
-											</div>
-										))}
-									</>
-								)
-							}
-						})}
-					</CardContent>
-					<CardFooter>
-						{team.is_locked == false && (
-							<>
-								{role == "creator" ? (
-									<>
-										<Button
-											variant="default"
-											asChild
-										>
-											<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-												Edit Team
-											</Link>
-										</Button>
-									</>
-								) : role == "member" && (
-									<Button
-										variant="destructive"
-										onClick={performLeave}
-									>
-										Leave Team
-									</Button>
-								)}
-							</>
-						)}
-					</CardFooter>
-				</Card> */}
-	
-
 	return null
 }

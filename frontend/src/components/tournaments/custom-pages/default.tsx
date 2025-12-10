@@ -55,15 +55,15 @@ export default function DefaultTournament({
 	return (
 		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
 			{tournament.status === 'registration_open' && (
-				<div className="flex flex-col gap-6">
-					<Card className="bg-gradient-to-br from-black to-gray-800">
+				<div className="flex flex-col items-center gap-6">
+					<Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
 						<CardHeader>
 							<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 								{tournament.name}
 							</CardTitle>
 						</CardHeader>
 					</Card>
-					<Card className="bg-gradient-to-tr from-black to-gray-800">
+					<Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
 						<CardContent>
 							<RegisterCard tournament={tournament} />
 						</CardContent>

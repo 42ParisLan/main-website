@@ -65,7 +65,7 @@ function RouteComponent() {
 	return (
 		
 		<>
-			<div className="dark bg-gradient-to-br from-black to-gray-800 p-4">
+			<div className="bg-gradient-to-br from-black to-gray-800 p-4 flex flex-col items-center dark">
 				<CreateTeamCard tournament={tournament}/>
 			</div>
 		</>

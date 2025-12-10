@@ -77,7 +77,7 @@ export default function CreateTeamCard({tournament}: {tournament: components['sc
 		
 
     return (
-			<Card className="dark bg-gradient-to-tr from-black to-gray-800">
+			<Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
 				<CardHeader>
 					<CardTitle>Create Team</CardTitle>
 				</CardHeader>
@@ -164,6 +164,7 @@ export default function CreateTeamCard({tournament}: {tournament: components['sc
 										<Button
 											type="button"
 											className="inline-flex"
+											variant="secondary"
 											onClick={() => fileInputRef.current?.click()}
 											>
 											Upload image
@@ -195,7 +196,7 @@ export default function CreateTeamCard({tournament}: {tournament: components['sc
 						</form.Field>
 
 						<div className="flex items-center justify-end">
-							<Button type="submit" disabled={isCreating} className="w-full sm:w-auto">
+							<Button type="submit" variant="secondary" disabled={isCreating} className="w-full sm:w-auto">
 								{isCreating ? 'Creating…' : 'Create Team'}
 							</Button>
 						</div>

@@ -1,5 +1,5 @@
 import type { components } from "@/lib/api/types";
-import { Card, CardContent} from "../../ui/card";
+import { Card, CardContent, CardHeader, CardTitle} from "../../ui/card";
 import { Link } from '@tanstack/react-router';
 
 export function TeamCard({team, tournament}: {team: components['schemas']['LightTeam'], tournament: components['schemas']['Tournament']}) {
@@ -7,8 +7,15 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
 
 
     return (
-        <div className="min-w-150 p-[4px] rounded-xl dark bg-gradient-to-r from-primary to-secondary transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl">
-            <Card className="p-0 border-0 rounded-xl bg-gradient-to-b from-black via-gray-800 to-gray-600 ">
+        <div className="flex flex-col items-center gap-6">
+            <Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl ">
+                <CardHeader className="">
+                    <CardTitle className="text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                        My team for the {tournament.name} tournament
+                    </CardTitle>
+                </CardHeader>
+            </Card>
+            <Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
                 <CardContent className="gap-12 p-0 flex flex-row items-center justify-start m-3">
                     <div className="">
                         <div className="pr-4">
