@@ -1,13 +1,17 @@
 package invitationscontroller
 
 import (
+	"base-website/internal/lightmodels"
 	"base-website/internal/security"
 	invitationsservice "base-website/internal/services/invitations"
 	invitationsmodels "base-website/internal/services/invitations/models"
 	pubsubservice "base-website/internal/services/pubsub"
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/sse"
 	"github.com/samber/do"
 )
 
@@ -25,6 +29,18 @@ func Init(api huma.API, injector *do.Injector) {
 }
 
 func (ctrl *invitationController) Register(api huma.API) {
+	sse.Register(api, huma.Operation{
+		Method:      "GET",
+		Path:        "/me/invitations/live",
+		Summary:     "Live invitations stream",
+		Description: `Server-Sent Events stream that first sends the latest invitations, then pushes new invitations in real-time.`,
+		Tags:        []string{"Invitations"},
+		OperationID: "liveInvitations",
+		Security:    security.WithAuth("profile"),
+	}, map[string]any{
+		"message": lightmodels.Invitation{},
+	}, ctrl.liveInvitations)
+
 	huma.Register(api, huma.Operation{
 		Method:      "GET",
 		Path:        "/teams/{id}/invitations",
@@ -139,4 +155,35 @@ func (ctrl *invitationController) getInvitationsForMe(
 	return &multipleInvitationsOutput{
 		Body: result,
 	}, nil
+}
+
+func (ctrl *invitationController) liveInvitations(
+	ctx context.Context,
+	input *struct{},
+	send sse.Sender,
+) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return
+	}
+
+	// Send initial batch (latest 10 invitations for the current user)
+	initial, err := ctrl.invitationsService.ListLastInvitationsForMe(ctx, 3)
+	if err == nil && initial != nil {
+		for _, inv := range initial {
+			if inv != nil {
+				_ = send.Data(inv)
+			}
+		}
+	}
+
+	// Subscribe to user-specific invitation channel
+	_ = ctrl.pubsubService.Subscribe(ctx, fmt.Sprintf("Invitation:%d", userID), func(message []byte) error {
+		var invitation lightmodels.Invitation
+		if err := json.Unmarshal(message, &invitation); err != nil {
+			return err
+		}
+
+		return send.Data(invitation)
+	})
 }

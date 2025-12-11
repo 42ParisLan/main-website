@@ -400,6 +400,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/me/invitations/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Live invitations stream
+         * @description Server-Sent Events stream that first sends the latest invitations, then pushes new invitations in real-time.
+         */
+        get: operations["liveInvitations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Live notifications stream
+         * @description Server-Sent Events stream that sends live notifications in real-time. Streams new notifications as they occur.
+         */
+        get: operations["liveNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me/permissions": {
         parameters: {
             query?: never;
@@ -414,6 +454,26 @@ export interface paths {
         get: operations["getCurrentUserRBACPermissions"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark notification as read
+         * @description This endpoint is used to mark a notification as read.
+         */
+        post: operations["markNotificationAsRead"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1325,6 +1385,8 @@ export interface components {
             /** Format: date-time */
             created_at: string;
             creator?: components["schemas"]["LightUser"];
+            /** Format: int64 */
+            elo?: number;
             /**
              * Format: int64
              * @example 42
@@ -1344,6 +1406,13 @@ export interface components {
             waitlist_position?: number;
         };
         LightTeamMember: {
+            /** @example true */
+            can_receive_team_elo: boolean;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            id: number;
             /** @example player */
             role: string;
             user: components["schemas"]["LightUser"];
@@ -1393,6 +1462,11 @@ export interface components {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
             /**
+             * @example C Tier
+             * @enum {string}
+             */
+            tier: "S Tier" | "A Tier" | "B Tier" | "C Tier" | "D Tier" | "E Tier" | "F Tier";
+            /**
              * Format: date-time
              * @example 2025-03-20T23:59:59Z
              */
@@ -1417,6 +1491,11 @@ export interface components {
              * @example 2024-01-01T00:00:00Z
              */
             created_at: string;
+            /**
+             * Format: int64
+             * @example 0
+             */
+            elo: number;
             /** @example froz@42paris.fr */
             email: string;
             /**
@@ -1478,6 +1557,19 @@ export interface components {
             title: string;
             /** @example true */
             visible: boolean;
+        };
+        Notification: {
+            /** Format: date-time */
+            created_at: string;
+            href?: string;
+            /** Format: int64 */
+            id: number;
+            message: string;
+            read: boolean;
+            /** Format: date-time */
+            read_at?: string;
+            title: string;
+            type: string;
         };
         Permission: {
             /**
@@ -1773,6 +1865,11 @@ export interface components {
                 [key: string]: components["schemas"]["TeamStructure"];
             };
             teams?: components["schemas"]["LightTeam"][] | null;
+            /**
+             * @example C Tier
+             * @enum {string}
+             */
+            tier: "S Tier" | "A Tier" | "B Tier" | "C Tier" | "D Tier" | "E Tier" | "F Tier";
             /** Format: date-time */
             tournament_end: string | null;
             /** Format: date-time */
@@ -1835,6 +1932,11 @@ export interface components {
              * @example 2024-01-01T00:00:00Z
              */
             created_at: string;
+            /**
+             * Format: int64
+             * @example 0
+             */
+            elo: number;
             /** @example froz@42paris.fr */
             email: string;
             /**
@@ -2698,6 +2800,86 @@ export interface operations {
             };
         };
     };
+    liveInvitations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": {
+                        data: components["schemas"]["Invitation"];
+                        /**
+                         * @description The event name.
+                         * @constant
+                         */
+                        event?: "message";
+                        /** @description The event ID. */
+                        id?: number;
+                        /** @description The retry time in milliseconds. */
+                        retry?: number;
+                    }[];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    liveNotifications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": {
+                        data: components["schemas"]["Notification"];
+                        /**
+                         * @description The event name.
+                         * @constant
+                         */
+                        event?: "message";
+                        /** @description The event ID. */
+                        id?: number;
+                        /** @description The retry time in milliseconds. */
+                        retry?: number;
+                    }[];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
     getCurrentUserRBACPermissions: {
         parameters: {
             query?: never;
@@ -2714,6 +2896,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Permission"][];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    markNotificationAsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
             /** @description Error */
@@ -3144,6 +3358,12 @@ export interface operations {
                     slug: string;
                     team_structure?: string;
                     /**
+                     * @default C Tier
+                     * @example C Tier
+                     * @enum {string}
+                     */
+                    tier?: "S Tier" | "A Tier" | "B Tier" | "C Tier" | "D Tier" | "E Tier" | "F Tier";
+                    /**
                      * Format: date-time
                      * @example 2025-03-15T00:00:00Z
                      */
@@ -3272,6 +3492,11 @@ export interface operations {
                      * @example 2025-03-01T00:00:00Z
                      */
                     registration_start?: string;
+                    /**
+                     * @example C Tier
+                     * @enum {string}
+                     */
+                    tier?: "S Tier" | "A Tier" | "B Tier" | "C Tier" | "D Tier" | "E Tier" | "F Tier";
                     /**
                      * Format: date-time
                      * @example 2025-03-15T00:00:00Z

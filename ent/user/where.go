@@ -90,6 +90,11 @@ func Picture(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPicture, v))
 }
 
+// Elo applies equality check predicate on the "elo" field. It's identical to EloEQ.
+func Elo(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldElo, v))
+}
+
 // UsernameEQ applies the EQ predicate on the "username" field.
 func UsernameEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldUsername, v))
@@ -495,6 +500,46 @@ func KindNotIn(vs ...Kind) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldKind, vs...))
 }
 
+// EloEQ applies the EQ predicate on the "elo" field.
+func EloEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldElo, v))
+}
+
+// EloNEQ applies the NEQ predicate on the "elo" field.
+func EloNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldElo, v))
+}
+
+// EloIn applies the In predicate on the "elo" field.
+func EloIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldElo, vs...))
+}
+
+// EloNotIn applies the NotIn predicate on the "elo" field.
+func EloNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldElo, vs...))
+}
+
+// EloGT applies the GT predicate on the "elo" field.
+func EloGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldElo, v))
+}
+
+// EloGTE applies the GTE predicate on the "elo" field.
+func EloGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldElo, v))
+}
+
+// EloLT applies the LT predicate on the "elo" field.
+func EloLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldElo, v))
+}
+
+// EloLTE applies the LTE predicate on the "elo" field.
+func EloLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldElo, v))
+}
+
 // HasUserVotes applies the HasEdge predicate on the "user_votes" edge.
 func HasUserVotes() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -694,6 +739,29 @@ func HasTournamentAdmins() predicate.User {
 func HasTournamentAdminsWith(preds ...predicate.TournamentAdmin) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newTournamentAdminsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasNotifications applies the HasEdge predicate on the "notifications" edge.
+func HasNotifications() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotificationsTable, NotificationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNotificationsWith applies the HasEdge predicate on the "notifications" edge with a given conditions (other predicates).
+func HasNotificationsWith(preds ...predicate.Notification) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newNotificationsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

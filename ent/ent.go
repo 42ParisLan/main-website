@@ -10,6 +10,7 @@ import (
 	"base-website/ent/component"
 	"base-website/ent/consent"
 	"base-website/ent/invitation"
+	"base-website/ent/notification"
 	"base-website/ent/rankgroup"
 	"base-website/ent/team"
 	"base-website/ent/teammember"
@@ -94,6 +95,7 @@ func checkColumn(t, c string) error {
 			component.Table:        component.ValidColumn,
 			consent.Table:          consent.ValidColumn,
 			invitation.Table:       invitation.ValidColumn,
+			notification.Table:     notification.ValidColumn,
 			rankgroup.Table:        rankgroup.ValidColumn,
 			team.Table:             team.ValidColumn,
 			teammember.Table:       teammember.ValidColumn,

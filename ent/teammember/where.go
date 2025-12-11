@@ -59,6 +59,11 @@ func Role(v string) predicate.TeamMember {
 	return predicate.TeamMember(sql.FieldEQ(FieldRole, v))
 }
 
+// CanReceiveTeamElo applies equality check predicate on the "can_receive_team_elo" field. It's identical to CanReceiveTeamEloEQ.
+func CanReceiveTeamElo(v bool) predicate.TeamMember {
+	return predicate.TeamMember(sql.FieldEQ(FieldCanReceiveTeamElo, v))
+}
+
 // RoleEQ applies the EQ predicate on the "role" field.
 func RoleEQ(v string) predicate.TeamMember {
 	return predicate.TeamMember(sql.FieldEQ(FieldRole, v))
@@ -122,6 +127,16 @@ func RoleEqualFold(v string) predicate.TeamMember {
 // RoleContainsFold applies the ContainsFold predicate on the "role" field.
 func RoleContainsFold(v string) predicate.TeamMember {
 	return predicate.TeamMember(sql.FieldContainsFold(FieldRole, v))
+}
+
+// CanReceiveTeamEloEQ applies the EQ predicate on the "can_receive_team_elo" field.
+func CanReceiveTeamEloEQ(v bool) predicate.TeamMember {
+	return predicate.TeamMember(sql.FieldEQ(FieldCanReceiveTeamElo, v))
+}
+
+// CanReceiveTeamEloNEQ applies the NEQ predicate on the "can_receive_team_elo" field.
+func CanReceiveTeamEloNEQ(v bool) predicate.TeamMember {
+	return predicate.TeamMember(sql.FieldNEQ(FieldCanReceiveTeamElo, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

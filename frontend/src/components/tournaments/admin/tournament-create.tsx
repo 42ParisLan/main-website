@@ -49,6 +49,7 @@ export default function TournamentCreate() {
 			description: "",
 			max_teams: 0,
 			name: "",
+			tier: "C Tier",
 			registration_end: "",
 			registration_start: "",
 			tournament_start: "",
@@ -152,6 +153,41 @@ export default function TournamentCreate() {
 							placeholder="Name of the tournament"
 							required
 						/>
+						{field.state.meta.errors?.[0] && (
+							<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
+						)}
+					</div>
+				)}
+			</form.Field>
+
+			<form.Field
+				name="tier"
+				validators={{
+					onChange: ({ value }: { value: unknown }) => {
+						const allowed = ["S Tier", "A Tier", "B Tier", "C Tier", "D Tier", "E Tier", "F Tier"]
+						return allowed.includes(String(value)) ? undefined : "Select a tier"
+					}
+				}}
+			>
+				{(field) => (
+					<div className="grid gap-2">
+						<Label htmlFor={field.name}>Tier</Label>
+						<Select
+							value={field.state.value}
+							onValueChange={(value) => field.handleChange(value)}
+						>
+							<SelectTrigger className="w-[180px]" id={field.name}>
+								<SelectValue placeholder="Select a tier" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup>
+									<SelectLabel>Tier</SelectLabel>
+									{["S Tier", "A Tier", "B Tier", "C Tier", "D Tier", "E Tier", "F Tier"].map((tier) => (
+										<SelectItem key={tier} value={tier}>{tier}</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
 						{field.state.meta.errors?.[0] && (
 							<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
 						)}

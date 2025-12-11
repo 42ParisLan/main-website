@@ -6,6 +6,7 @@ import (
 	"base-website/ent/app"
 	"base-website/ent/consent"
 	"base-website/ent/invitation"
+	"base-website/ent/notification"
 	"base-website/ent/team"
 	"base-website/ent/teammember"
 	"base-website/ent/tournament"
@@ -128,6 +129,20 @@ func (_c *UserCreate) SetNillableKind(v *user.Kind) *UserCreate {
 // SetRoles sets the "roles" field.
 func (_c *UserCreate) SetRoles(v []string) *UserCreate {
 	_c.mutation.SetRoles(v)
+	return _c
+}
+
+// SetElo sets the "elo" field.
+func (_c *UserCreate) SetElo(v int) *UserCreate {
+	_c.mutation.SetElo(v)
+	return _c
+}
+
+// SetNillableElo sets the "elo" field if the given value is not nil.
+func (_c *UserCreate) SetNillableElo(v *int) *UserCreate {
+	if v != nil {
+		_c.SetElo(*v)
+	}
 	return _c
 }
 
@@ -272,6 +287,21 @@ func (_c *UserCreate) AddTournamentAdmins(v ...*TournamentAdmin) *UserCreate {
 	return _c.AddTournamentAdminIDs(ids...)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (_c *UserCreate) AddNotificationIDs(ids ...int) *UserCreate {
+	_c.mutation.AddNotificationIDs(ids...)
+	return _c
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (_c *UserCreate) AddNotifications(v ...*Notification) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_c *UserCreate) Mutation() *UserMutation {
 	return _c.mutation
@@ -323,6 +353,10 @@ func (_c *UserCreate) defaults() {
 		v := user.DefaultRoles
 		_c.mutation.SetRoles(v)
 	}
+	if _, ok := _c.mutation.Elo(); !ok {
+		v := user.DefaultElo
+		_c.mutation.SetElo(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -349,6 +383,9 @@ func (_c *UserCreate) check() error {
 	}
 	if _, ok := _c.mutation.Roles(); !ok {
 		return &ValidationError{Name: "roles", err: errors.New(`ent: missing required field "User.roles"`)}
+	}
+	if _, ok := _c.mutation.Elo(); !ok {
+		return &ValidationError{Name: "elo", err: errors.New(`ent: missing required field "User.elo"`)}
 	}
 	return nil
 }
@@ -417,6 +454,10 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Roles(); ok {
 		_spec.SetField(user.FieldRoles, field.TypeJSON, value)
 		_node.Roles = value
+	}
+	if value, ok := _c.mutation.Elo(); ok {
+		_spec.SetField(user.FieldElo, field.TypeInt, value)
+		_node.Elo = value
 	}
 	if nodes := _c.mutation.UserVotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -555,6 +596,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

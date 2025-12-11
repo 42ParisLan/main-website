@@ -172,6 +172,49 @@ var (
 			},
 		},
 	}
+	// NotificationsColumns holds the columns for the "notifications" table.
+	NotificationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeString},
+		{Name: "title", Type: field.TypeString},
+		{Name: "message", Type: field.TypeString, Nullable: true},
+		{Name: "href", Type: field.TypeString, Nullable: true},
+		{Name: "read", Type: field.TypeBool, Default: false},
+		{Name: "read_at", Type: field.TypeTime, Nullable: true},
+		{Name: "user_notifications", Type: field.TypeInt},
+	}
+	// NotificationsTable holds the schema information for the "notifications" table.
+	NotificationsTable = &schema.Table{
+		Name:       "notifications",
+		Columns:    NotificationsColumns,
+		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "notifications_users_notifications",
+				Columns:    []*schema.Column{NotificationsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notification_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[1]},
+			},
+			{
+				Name:    "notification_read",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[6]},
+			},
+			{
+				Name:    "notification_user_notifications",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[8]},
+			},
+		},
+	}
 	// RankGroupsColumns holds the columns for the "rank_groups" table.
 	RankGroupsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -212,6 +255,7 @@ var (
 		{Name: "is_waitlisted", Type: field.TypeBool, Default: false},
 		{Name: "waitlist_position", Type: field.TypeInt, Nullable: true},
 		{Name: "score", Type: field.TypeInt, Nullable: true},
+		{Name: "elo", Type: field.TypeInt, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "rank_group_teams", Type: field.TypeInt, Nullable: true},
@@ -226,19 +270,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "teams_rank_groups_teams",
-				Columns:    []*schema.Column{TeamsColumns[10]},
+				Columns:    []*schema.Column{TeamsColumns[11]},
 				RefColumns: []*schema.Column{RankGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "teams_tournaments_teams",
-				Columns:    []*schema.Column{TeamsColumns[11]},
+				Columns:    []*schema.Column{TeamsColumns[12]},
 				RefColumns: []*schema.Column{TournamentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "teams_users_created_teams",
-				Columns:    []*schema.Column{TeamsColumns[12]},
+				Columns:    []*schema.Column{TeamsColumns[13]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -247,7 +291,7 @@ var (
 			{
 				Name:    "team_user_created_teams_tournament_teams",
 				Unique:  true,
-				Columns: []*schema.Column{TeamsColumns[12], TeamsColumns[11]},
+				Columns: []*schema.Column{TeamsColumns[13], TeamsColumns[12]},
 			},
 		},
 	}
@@ -255,6 +299,7 @@ var (
 	TeamMembersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "role", Type: field.TypeString},
+		{Name: "can_receive_team_elo", Type: field.TypeBool, Default: true},
 		{Name: "team_members", Type: field.TypeInt},
 		{Name: "tournament_team_members", Type: field.TypeInt},
 		{Name: "user_team_memberships", Type: field.TypeInt},
@@ -267,19 +312,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "team_members_teams_members",
-				Columns:    []*schema.Column{TeamMembersColumns[2]},
+				Columns:    []*schema.Column{TeamMembersColumns[3]},
 				RefColumns: []*schema.Column{TeamsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "team_members_tournaments_team_members",
-				Columns:    []*schema.Column{TeamMembersColumns[3]},
+				Columns:    []*schema.Column{TeamMembersColumns[4]},
 				RefColumns: []*schema.Column{TournamentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "team_members_users_team_memberships",
-				Columns:    []*schema.Column{TeamMembersColumns[4]},
+				Columns:    []*schema.Column{TeamMembersColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -288,12 +333,12 @@ var (
 			{
 				Name:    "teammember_user_team_memberships_tournament_team_members",
 				Unique:  true,
-				Columns: []*schema.Column{TeamMembersColumns[4], TeamMembersColumns[3]},
+				Columns: []*schema.Column{TeamMembersColumns[5], TeamMembersColumns[4]},
 			},
 			{
 				Name:    "teammember_user_team_memberships_team_members",
 				Unique:  true,
-				Columns: []*schema.Column{TeamMembersColumns[4], TeamMembersColumns[2]},
+				Columns: []*schema.Column{TeamMembersColumns[5], TeamMembersColumns[3]},
 			},
 		},
 	}
@@ -313,6 +358,7 @@ var (
 		{Name: "team_structure", Type: field.TypeJSON, Nullable: true},
 		{Name: "custom_page_component", Type: field.TypeString, Default: "default"},
 		{Name: "external_links", Type: field.TypeJSON, Nullable: true},
+		{Name: "tier", Type: field.TypeEnum, Enums: []string{"S Tier", "A Tier", "B Tier", "C Tier", "D Tier", "E Tier", "F Tier"}, Default: "C Tier"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_created_tournaments", Type: field.TypeInt},
@@ -325,7 +371,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "tournaments_users_created_tournaments",
-				Columns:    []*schema.Column{TournamentsColumns[16]},
+				Columns:    []*schema.Column{TournamentsColumns[17]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -377,6 +423,7 @@ var (
 		{Name: "picture", Type: field.TypeString, Nullable: true},
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"user", "admin"}, Default: "user"},
 		{Name: "roles", Type: field.TypeJSON},
+		{Name: "elo", Type: field.TypeInt, Default: 0},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -453,6 +500,7 @@ var (
 		ComponentsTable,
 		ConsentsTable,
 		InvitationsTable,
+		NotificationsTable,
 		RankGroupsTable,
 		TeamsTable,
 		TeamMembersTable,
@@ -471,6 +519,7 @@ func init() {
 	ConsentsTable.ForeignKeys[1].RefTable = UsersTable
 	InvitationsTable.ForeignKeys[0].RefTable = TeamsTable
 	InvitationsTable.ForeignKeys[1].RefTable = UsersTable
+	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
 	RankGroupsTable.ForeignKeys[0].RefTable = TournamentsTable
 	TeamsTable.ForeignKeys[0].RefTable = RankGroupsTable
 	TeamsTable.ForeignKeys[1].RefTable = TournamentsTable

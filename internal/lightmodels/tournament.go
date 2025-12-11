@@ -29,6 +29,7 @@ type LightTournament struct {
 	TeamStructure       map[string]TeamStructure `json:"team_structure" description:"JSON describing team roles, min/max players, etc."`
 	CustomPageComponent *string                  `json:"custom_page_component,omitempty" description:"Optional React component for custom tournament page"`
 	ExternalLinks       *map[string]string       `json:"external_links,omitempty" description:"Optional external link for the tournament"`
+	Tier                string                   `json:"tier" example:"C Tier" description:"Tournament tier" enum:"S Tier,A Tier,B Tier,C Tier,D Tier,E Tier,F Tier"`
 	Creator             *LightUser               `json:"creator" description:"The creator of the tournament"`
 	Status              string                   `json:"status" example:"upcoming" description:"Status of the tournament" enum:"upcoming,registration_open,registration_closed,ongoing,completed"`
 	CreatedAt           time.Time                `json:"created_at"`
@@ -69,6 +70,7 @@ func NewLightTournamentFromEnt(ctx context.Context, entTournament *ent.Tournamen
 		TeamStructure:       ts,
 		CustomPageComponent: &entTournament.CustomPageComponent,
 		ExternalLinks:       &entTournament.ExternalLinks,
+		Tier:                string(entTournament.Tier),
 		Creator:             NewLightUserFromEnt(entTournament.Edges.Creator),
 		Status:              calculateTournamentStatus(entTournament.RegistrationStart, entTournament.RegistrationEnd, entTournament.TournamentStart, entTournament.TournamentEnd),
 		CreatedAt:           entTournament.CreatedAt,
@@ -98,6 +100,7 @@ type Tournament struct {
 	TeamStructure       map[string]TeamStructure `json:"team_structure"`
 	CustomPageComponent string                   `json:"custom_page_component"`
 	ExternalLinks       *map[string]string       `json:"external_links,omitempty"`
+	Tier                string                   `json:"tier" example:"C Tier" description:"Tournament tier" enum:"S Tier,A Tier,B Tier,C Tier,D Tier,E Tier,F Tier"`
 	Creator             *LightUser               `json:"creator"`
 	Admins              []*LightTournamentAdmin  `json:"admins"`
 	Teams               []*LightTeam             `json:"teams,omitempty"`
@@ -160,6 +163,7 @@ func NewTournamentFromEnt(ctx context.Context, entTournament *ent.Tournament, S3
 		TeamStructure:       ts,
 		CustomPageComponent: entTournament.CustomPageComponent,
 		ExternalLinks:       &entTournament.ExternalLinks,
+		Tier:                string(entTournament.Tier),
 		Creator:             NewLightUserFromEnt(entTournament.Edges.Creator),
 		Admins:              admins,
 		Teams:               teams,

@@ -6,6 +6,7 @@ import (
 	consentscontroller "base-website/internal/controllers/consents"
 	envcontroller "base-website/internal/controllers/env"
 	invitationscontroller "base-website/internal/controllers/invitations"
+	notificationscontroller "base-website/internal/controllers/notifications"
 	rankgroupcontroller "base-website/internal/controllers/rank_group"
 	rbaccrontroller "base-website/internal/controllers/rbac"
 	teamscontroller "base-website/internal/controllers/teams"
@@ -35,6 +36,7 @@ func controllersList() []controllerInitFunc {
 		rankgroupcontroller.Init,
 		consentscontroller.Init,
 		appsccontroller.Init,
+		notificationscontroller.Init,
 	}
 }
 

@@ -34,6 +34,8 @@ type Team struct {
 	WaitlistPosition *int `json:"waitlist_position,omitempty"`
 	// Score holds the value of the "score" field.
 	Score int `json:"score,omitempty"`
+	// Elo holds the value of the "elo" field.
+	Elo *int `json:"elo,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -122,7 +124,7 @@ func (*Team) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case team.FieldIsLocked, team.FieldIsRegistered, team.FieldIsWaitlisted:
 			values[i] = new(sql.NullBool)
-		case team.FieldID, team.FieldWaitlistPosition, team.FieldScore:
+		case team.FieldID, team.FieldWaitlistPosition, team.FieldScore, team.FieldElo:
 			values[i] = new(sql.NullInt64)
 		case team.FieldName, team.FieldImageURL:
 			values[i] = new(sql.NullString)
@@ -198,6 +200,13 @@ func (_m *Team) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field score", values[i])
 			} else if value.Valid {
 				_m.Score = int(value.Int64)
+			}
+		case team.FieldElo:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field elo", values[i])
+			} else if value.Valid {
+				_m.Elo = new(int)
+				*_m.Elo = int(value.Int64)
 			}
 		case team.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -317,6 +326,11 @@ func (_m *Team) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("score=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Score))
+	builder.WriteString(", ")
+	if v := _m.Elo; v != nil {
+		builder.WriteString("elo=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

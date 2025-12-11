@@ -15,12 +15,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import useQueryClient from '@/hooks/use-query-client'
 import type { components } from '@/lib/api/types'
 import errorModelToDescription from '@/lib/utils'
 import { IconEdit } from '@tabler/icons-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import defaultpicture from '@/assets/default.png'
 
 interface TeamRankGroupCardProps {
 	team: components['schemas']['LightTeam']
@@ -68,6 +71,10 @@ export function TeamRankGroupCard({
 		})
 	}
 
+	const handleToggleElo = (memberId: number, currentValue: boolean) => {
+		console.log(`Change value for ${memberId} with ${currentValue}`)
+	}
+
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -109,7 +116,7 @@ export function TeamRankGroupCard({
 				</Dialog>
 			</CardHeader>
 			<CardContent>
-				<div className="flex items-center gap-4">
+				<div className="flex items-center gap-4 mb-4">
 					{team.image_url && (
 						<img
 							src={team.image_url}
@@ -125,6 +132,28 @@ export function TeamRankGroupCard({
 							{team.members?.length ?? 0} members
 						</p>
 					</div>
+				</div>
+				<div className="grid gap-2">
+					{team.members?.map((member) => (
+						<div key={member.id} className="flex items-center justify-between gap-3 p-2 rounded-lg bg-muted/50">
+							<div className="flex items-center gap-3">
+								<Avatar className="h-8 w-8">
+									<AvatarImage
+										src={member.user?.picture ?? defaultpicture}
+										alt={member.user?.username ?? 'User'}
+									/>
+									<AvatarFallback>
+										{member.user?.username?.slice(0, 2) ?? 'U'}
+									</AvatarFallback>
+								</Avatar>
+								<span className="text-sm font-medium">{member.user?.username ?? 'Unknown'}</span>
+							</div>
+							<Switch
+								defaultChecked={member.can_receive_team_elo ?? false}
+								onCheckedChange={() => handleToggleElo(member.id, member.can_receive_team_elo ?? false)}
+							/>
+						</div>
+					))}
 				</div>
 			</CardContent>
 		</Card>

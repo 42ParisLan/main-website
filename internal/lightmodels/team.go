@@ -9,8 +9,10 @@ import (
 )
 
 type LightTeamMember struct {
-	User *LightUser `json:"user" description:"The user information of the team member"`
-	Role string     `json:"role" example:"player" description:"The role of the user in the team, e.g., player, coach, substitute"`
+	ID                int        `json:"id" example:"42" description:"The ID of the team member"`
+	User              *LightUser `json:"user" description:"The user information of the team member"`
+	Role              string     `json:"role" example:"player" description:"The role of the user in the team, e.g., player, coach, substitute"`
+	CanReceiveTeamElo bool       `json:"can_receive_team_elo" example:"true" description:"Whether this member receives team ELO"`
 }
 
 func NewLightTeamMemberFromEnt(entTeamMember *ent.TeamMember) *LightTeamMember {
@@ -24,8 +26,10 @@ func NewLightTeamMemberFromEnt(entTeamMember *ent.TeamMember) *LightTeamMember {
 	}
 
 	return &LightTeamMember{
-		User: user,
-		Role: entTeamMember.Role,
+		ID:                entTeamMember.ID,
+		User:              user,
+		Role:              entTeamMember.Role,
+		CanReceiveTeamElo: entTeamMember.CanReceiveTeamElo,
 	}
 }
 
@@ -45,6 +49,7 @@ type LightTeam struct {
 	IsRegistered     bool               `json:"is_registered"`
 	IsWaitlisted     bool               `json:"is_waitlisted"`
 	Score            *int               `json:"score,omitempty"`
+	Elo              *int               `json:"elo,omitempty" description:"Team ELO rating"`
 	RankGroup        *LightRankGroup    `json:"rank_group,omitempty"`
 	Members          []*LightTeamMember `json:"members,omitempty"`
 	Creator          *LightUser         `json:"creator,omitempty"`
@@ -88,6 +93,7 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 		IsRegistered:     entTeam.IsRegistered,
 		IsWaitlisted:     entTeam.IsWaitlisted,
 		Score:            &entTeam.Score,
+		Elo:              entTeam.Elo,
 		RankGroup:        rankGroup,
 		Members:          members,
 		Creator:          creator,

@@ -6,6 +6,7 @@ import (
 	"base-website/ent/app"
 	"base-website/ent/consent"
 	"base-website/ent/invitation"
+	"base-website/ent/notification"
 	"base-website/ent/predicate"
 	"base-website/ent/team"
 	"base-website/ent/teammember"
@@ -165,6 +166,27 @@ func (_u *UserUpdate) AppendRoles(v []string) *UserUpdate {
 	return _u
 }
 
+// SetElo sets the "elo" field.
+func (_u *UserUpdate) SetElo(v int) *UserUpdate {
+	_u.mutation.ResetElo()
+	_u.mutation.SetElo(v)
+	return _u
+}
+
+// SetNillableElo sets the "elo" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableElo(v *int) *UserUpdate {
+	if v != nil {
+		_u.SetElo(*v)
+	}
+	return _u
+}
+
+// AddElo adds value to the "elo" field.
+func (_u *UserUpdate) AddElo(v int) *UserUpdate {
+	_u.mutation.AddElo(v)
+	return _u
+}
+
 // AddUserVoteIDs adds the "user_votes" edge to the UserVote entity by IDs.
 func (_u *UserUpdate) AddUserVoteIDs(ids ...int) *UserUpdate {
 	_u.mutation.AddUserVoteIDs(ids...)
@@ -298,6 +320,21 @@ func (_u *UserUpdate) AddTournamentAdmins(v ...*TournamentAdmin) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.AddTournamentAdminIDs(ids...)
+}
+
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (_u *UserUpdate) AddNotificationIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddNotificationIDs(ids...)
+	return _u
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (_u *UserUpdate) AddNotifications(v ...*Notification) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddNotificationIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -494,6 +531,27 @@ func (_u *UserUpdate) RemoveTournamentAdmins(v ...*TournamentAdmin) *UserUpdate 
 	return _u.RemoveTournamentAdminIDs(ids...)
 }
 
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (_u *UserUpdate) ClearNotifications() *UserUpdate {
+	_u.mutation.ClearNotifications()
+	return _u
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (_u *UserUpdate) RemoveNotificationIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveNotificationIDs(ids...)
+	return _u
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (_u *UserUpdate) RemoveNotifications(v ...*Notification) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveNotificationIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *UserUpdate) Save(ctx context.Context) (int, error) {
 	_u.defaults()
@@ -592,6 +650,12 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, user.FieldRoles, value)
 		})
+	}
+	if value, ok := _u.mutation.Elo(); ok {
+		_spec.SetField(user.FieldElo, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedElo(); ok {
+		_spec.AddField(user.FieldElo, field.TypeInt, value)
 	}
 	if _u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -998,6 +1062,51 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !_u.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -1145,6 +1254,27 @@ func (_u *UserUpdateOne) AppendRoles(v []string) *UserUpdateOne {
 	return _u
 }
 
+// SetElo sets the "elo" field.
+func (_u *UserUpdateOne) SetElo(v int) *UserUpdateOne {
+	_u.mutation.ResetElo()
+	_u.mutation.SetElo(v)
+	return _u
+}
+
+// SetNillableElo sets the "elo" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableElo(v *int) *UserUpdateOne {
+	if v != nil {
+		_u.SetElo(*v)
+	}
+	return _u
+}
+
+// AddElo adds value to the "elo" field.
+func (_u *UserUpdateOne) AddElo(v int) *UserUpdateOne {
+	_u.mutation.AddElo(v)
+	return _u
+}
+
 // AddUserVoteIDs adds the "user_votes" edge to the UserVote entity by IDs.
 func (_u *UserUpdateOne) AddUserVoteIDs(ids ...int) *UserUpdateOne {
 	_u.mutation.AddUserVoteIDs(ids...)
@@ -1278,6 +1408,21 @@ func (_u *UserUpdateOne) AddTournamentAdmins(v ...*TournamentAdmin) *UserUpdateO
 		ids[i] = v[i].ID
 	}
 	return _u.AddTournamentAdminIDs(ids...)
+}
+
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (_u *UserUpdateOne) AddNotificationIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddNotificationIDs(ids...)
+	return _u
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (_u *UserUpdateOne) AddNotifications(v ...*Notification) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddNotificationIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -1474,6 +1619,27 @@ func (_u *UserUpdateOne) RemoveTournamentAdmins(v ...*TournamentAdmin) *UserUpda
 	return _u.RemoveTournamentAdminIDs(ids...)
 }
 
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (_u *UserUpdateOne) ClearNotifications() *UserUpdateOne {
+	_u.mutation.ClearNotifications()
+	return _u
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (_u *UserUpdateOne) RemoveNotificationIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveNotificationIDs(ids...)
+	return _u
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (_u *UserUpdateOne) RemoveNotifications(v ...*Notification) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveNotificationIDs(ids...)
+}
+
 // Where appends a list predicates to the UserUpdate builder.
 func (_u *UserUpdateOne) Where(ps ...predicate.User) *UserUpdateOne {
 	_u.mutation.Where(ps...)
@@ -1602,6 +1768,12 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, user.FieldRoles, value)
 		})
+	}
+	if value, ok := _u.mutation.Elo(); ok {
+		_spec.SetField(user.FieldElo, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedElo(); ok {
+		_spec.AddField(user.FieldElo, field.TypeInt, value)
 	}
 	if _u.mutation.UserVotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2001,6 +2173,51 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(tournamentadmin.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !_u.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: []string{user.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

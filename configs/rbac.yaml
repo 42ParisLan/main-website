@@ -53,7 +53,13 @@ roles:
               methods: [DELETE]
             - path: /me/invitations
               methods: [GET]
+            - path: /me/invitations/live
+              methods: [GET]
             - path: /invitations/*/accept
+              methods: [POST]
+            - path: /me/notifications
+              methods: [GET]
+            - path: /notifications/*/read
               methods: [POST]
             - path: /me/consents
               methods: [GET]

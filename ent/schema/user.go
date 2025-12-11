@@ -27,6 +27,7 @@ func (User) Fields() []ent.Field {
 		field.String("picture").Optional().Nillable(),
 		field.Enum("kind").Values("user", "admin").Default("user"),
 		field.Strings("roles").Default([]string{"user"}),
+		field.Int("elo").Default(0),
 	}
 }
 
@@ -48,6 +49,8 @@ func (User) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 		edge.To("created_tournaments", Tournament.Type),
 		edge.To("tournament_admins", TournamentAdmin.Type).
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("notifications", Notification.Type).
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }

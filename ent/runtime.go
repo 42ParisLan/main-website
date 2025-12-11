@@ -7,8 +7,10 @@ import (
 	"base-website/ent/authcode"
 	"base-website/ent/consent"
 	"base-website/ent/invitation"
+	"base-website/ent/notification"
 	"base-website/ent/schema"
 	"base-website/ent/team"
+	"base-website/ent/teammember"
 	"base-website/ent/tournament"
 	"base-website/ent/user"
 	"base-website/ent/uservote"
@@ -60,6 +62,24 @@ func init() {
 	invitationDescCreatedAt := invitationFields[0].Descriptor()
 	// invitation.DefaultCreatedAt holds the default value on creation for the created_at field.
 	invitation.DefaultCreatedAt = invitationDescCreatedAt.Default.(func() time.Time)
+	notificationFields := schema.Notification{}.Fields()
+	_ = notificationFields
+	// notificationDescCreatedAt is the schema descriptor for created_at field.
+	notificationDescCreatedAt := notificationFields[0].Descriptor()
+	// notification.DefaultCreatedAt holds the default value on creation for the created_at field.
+	notification.DefaultCreatedAt = notificationDescCreatedAt.Default.(func() time.Time)
+	// notificationDescType is the schema descriptor for type field.
+	notificationDescType := notificationFields[1].Descriptor()
+	// notification.TypeValidator is a validator for the "type" field. It is called by the builders before save.
+	notification.TypeValidator = notificationDescType.Validators[0].(func(string) error)
+	// notificationDescTitle is the schema descriptor for title field.
+	notificationDescTitle := notificationFields[2].Descriptor()
+	// notification.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	notification.TitleValidator = notificationDescTitle.Validators[0].(func(string) error)
+	// notificationDescRead is the schema descriptor for read field.
+	notificationDescRead := notificationFields[5].Descriptor()
+	// notification.DefaultRead holds the default value on creation for the read field.
+	notification.DefaultRead = notificationDescRead.Default.(bool)
 	teamFields := schema.Team{}.Fields()
 	_ = teamFields
 	// teamDescIsLocked is the schema descriptor for is_locked field.
@@ -75,15 +95,21 @@ func init() {
 	// team.DefaultIsWaitlisted holds the default value on creation for the is_waitlisted field.
 	team.DefaultIsWaitlisted = teamDescIsWaitlisted.Default.(bool)
 	// teamDescCreatedAt is the schema descriptor for created_at field.
-	teamDescCreatedAt := teamFields[7].Descriptor()
+	teamDescCreatedAt := teamFields[8].Descriptor()
 	// team.DefaultCreatedAt holds the default value on creation for the created_at field.
 	team.DefaultCreatedAt = teamDescCreatedAt.Default.(func() time.Time)
 	// teamDescUpdatedAt is the schema descriptor for updated_at field.
-	teamDescUpdatedAt := teamFields[8].Descriptor()
+	teamDescUpdatedAt := teamFields[9].Descriptor()
 	// team.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	team.DefaultUpdatedAt = teamDescUpdatedAt.Default.(func() time.Time)
 	// team.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	team.UpdateDefaultUpdatedAt = teamDescUpdatedAt.UpdateDefault.(func() time.Time)
+	teammemberFields := schema.TeamMember{}.Fields()
+	_ = teammemberFields
+	// teammemberDescCanReceiveTeamElo is the schema descriptor for can_receive_team_elo field.
+	teammemberDescCanReceiveTeamElo := teammemberFields[1].Descriptor()
+	// teammember.DefaultCanReceiveTeamElo holds the default value on creation for the can_receive_team_elo field.
+	teammember.DefaultCanReceiveTeamElo = teammemberDescCanReceiveTeamElo.Default.(bool)
 	tournamentFields := schema.Tournament{}.Fields()
 	_ = tournamentFields
 	// tournamentDescIsVisible is the schema descriptor for is_visible field.
@@ -95,11 +121,11 @@ func init() {
 	// tournament.DefaultCustomPageComponent holds the default value on creation for the custom_page_component field.
 	tournament.DefaultCustomPageComponent = tournamentDescCustomPageComponent.Default.(string)
 	// tournamentDescCreatedAt is the schema descriptor for created_at field.
-	tournamentDescCreatedAt := tournamentFields[13].Descriptor()
+	tournamentDescCreatedAt := tournamentFields[14].Descriptor()
 	// tournament.DefaultCreatedAt holds the default value on creation for the created_at field.
 	tournament.DefaultCreatedAt = tournamentDescCreatedAt.Default.(func() time.Time)
 	// tournamentDescUpdatedAt is the schema descriptor for updated_at field.
-	tournamentDescUpdatedAt := tournamentFields[14].Descriptor()
+	tournamentDescUpdatedAt := tournamentFields[15].Descriptor()
 	// tournament.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	tournament.DefaultUpdatedAt = tournamentDescUpdatedAt.Default.(func() time.Time)
 	// tournament.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -122,6 +148,10 @@ func init() {
 	userDescRoles := userFields[9].Descriptor()
 	// user.DefaultRoles holds the default value on creation for the roles field.
 	user.DefaultRoles = userDescRoles.Default.([]string)
+	// userDescElo is the schema descriptor for elo field.
+	userDescElo := userFields[10].Descriptor()
+	// user.DefaultElo holds the default value on creation for the elo field.
+	user.DefaultElo = userDescElo.Default.(int)
 	uservoteFields := schema.UserVote{}.Fields()
 	_ = uservoteFields
 	// uservoteDescCreatedAt is the schema descriptor for created_at field.

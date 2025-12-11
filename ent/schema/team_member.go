@@ -14,6 +14,7 @@ type TeamMember struct {
 func (TeamMember) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("role"), // e.g., "player", "coach", "substitute"
+		field.Bool("can_receive_team_elo").Default(true),
 	}
 }
 

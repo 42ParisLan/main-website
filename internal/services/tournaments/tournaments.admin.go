@@ -2,6 +2,7 @@ package tournamentsservice
 
 import (
 	"base-website/ent"
+	"base-website/ent/team"
 	"base-website/ent/tournament"
 	"base-website/ent/tournamentadmin"
 	"base-website/ent/user"
@@ -85,6 +86,11 @@ func (svc *tournamentsService) CreateTournament(
 		SetRegistrationEnd(input.RegistrationEnd).
 		SetTournamentStart(input.TournamentStart).
 		SetMaxTeams(input.MaxTeams)
+
+	// Set tier if provided
+	if input.Tier != "" {
+		entBuilder = entBuilder.SetTier(tournament.Tier(input.Tier))
+	}
 
 	// Team Structure parse
 	var parsed map[string]lightmodels.TeamStructure
@@ -243,6 +249,9 @@ func (svc *tournamentsService) UpdateTournament(ctx context.Context, tournamentI
 	if input.MaxTeams > 3 {
 		update.SetMaxTeams(input.MaxTeams)
 		// Need to reacalculate position of teams
+	}
+	if input.Tier != "" {
+		update.SetTier(tournament.Tier(input.Tier))
 	}
 	if input.CustomPageComponent != "" {
 		update.SetCustomPageComponent(input.CustomPageComponent)
@@ -491,4 +500,56 @@ func (svc *tournamentsService) DeleteAdminToTournament(
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
 	return lightmodels.NewTournamentFromEnt(ctx, reloaded, svc.s3service), nil
+}
+
+func (svc *tournamentsService) EndTournament(
+	ctx context.Context,
+	tournamentID int,
+) error {
+	myRole, err := svc.GetTournamentUserRole(ctx, tournamentID)
+	if err != nil {
+		return err
+	}
+	if myRole == nil || *myRole == tournamentadmin.RoleADMIN {
+		return huma.Error401Unauthorized("don't have required role")
+	}
+
+	entTournament, err := svc.databaseService.Tournament.Get(ctx, tournamentID)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "get tournament")
+	}
+	now := time.Now()
+	if entTournament.RegistrationEnd.After(now) {
+		return huma.Error401Unauthorized("can't end tournament when registration are not closed")
+	}
+
+	_, err = svc.databaseService.Tournament.UpdateOneID(tournamentID).
+		SetTournamentEnd(now).
+		Save(ctx)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "update tournament")
+	}
+
+	teams, err := svc.databaseService.Team.Query().
+		Where(
+			team.HasTournamentWith(tournament.IDEQ(tournamentID)),
+			team.IsRegisteredEQ(false),
+			team.Not(team.HasRankGroup()),
+		).
+		All(ctx)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "get teams")
+	}
+
+	for _, t := range teams {
+		if err := svc.databaseService.Team.DeleteOneID(t.ID).Exec(ctx); err != nil {
+			return svc.errorFilter.Filter(err, "delete team")
+		}
+
+		if t.ImageURL != nil {
+			svc.s3service.RemoveObject(ctx, *t.ImageURL)
+		}
+	}
+
+	return nil
 }
