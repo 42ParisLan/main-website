@@ -36,6 +36,8 @@ type User struct {
 	Kind user.Kind `json:"kind,omitempty"`
 	// Roles holds the value of the "roles" field.
 	Roles []string `json:"roles,omitempty"`
+	// Elo holds the value of the "elo" field.
+	Elo int `json:"elo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -62,9 +64,11 @@ type UserEdges struct {
 	CreatedTournaments []*Tournament `json:"created_tournaments,omitempty"`
 	// TournamentAdmins holds the value of the tournament_admins edge.
 	TournamentAdmins []*TournamentAdmin `json:"tournament_admins,omitempty"`
+	// Notifications holds the value of the notifications edge.
+	Notifications []*Notification `json:"notifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // UserVotesOrErr returns the UserVotes value or an error if the edge
@@ -148,6 +152,15 @@ func (e UserEdges) TournamentAdminsOrErr() ([]*TournamentAdmin, error) {
 	return nil, &NotLoadedError{edge: "tournament_admins"}
 }
 
+// NotificationsOrErr returns the Notifications value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) NotificationsOrErr() ([]*Notification, error) {
+	if e.loadedTypes[9] {
+		return e.Notifications, nil
+	}
+	return nil, &NotLoadedError{edge: "notifications"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -155,7 +168,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldRoles:
 			values[i] = new([]byte)
-		case user.FieldID, user.FieldIntraID:
+		case user.FieldID, user.FieldIntraID, user.FieldElo:
 			values[i] = new(sql.NullInt64)
 		case user.FieldUsername, user.FieldEmail, user.FieldPicture, user.FieldKind:
 			values[i] = new(sql.NullString)
@@ -241,6 +254,12 @@ func (_m *User) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field roles: %w", err)
 				}
 			}
+		case user.FieldElo:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field elo", values[i])
+			} else if value.Valid {
+				_m.Elo = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -299,6 +318,11 @@ func (_m *User) QueryTournamentAdmins() *TournamentAdminQuery {
 	return NewUserClient(_m.config).QueryTournamentAdmins(_m)
 }
 
+// QueryNotifications queries the "notifications" edge of the User entity.
+func (_m *User) QueryNotifications() *NotificationQuery {
+	return NewUserClient(_m.config).QueryNotifications(_m)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -354,6 +378,9 @@ func (_m *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("roles=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Roles))
+	builder.WriteString(", ")
+	builder.WriteString("elo=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Elo))
 	builder.WriteByte(')')
 	return builder.String()
 }

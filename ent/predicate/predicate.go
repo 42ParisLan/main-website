@@ -27,6 +27,9 @@ type Consent func(*sql.Selector)
 // Invitation is the predicate function for invitation builders.
 type Invitation func(*sql.Selector)
 
+// Notification is the predicate function for notification builders.
+type Notification func(*sql.Selector)
+
 // RankGroup is the predicate function for rankgroup builders.
 type RankGroup func(*sql.Selector)
 

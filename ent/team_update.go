@@ -163,6 +163,33 @@ func (_u *TeamUpdate) ClearScore() *TeamUpdate {
 	return _u
 }
 
+// SetElo sets the "elo" field.
+func (_u *TeamUpdate) SetElo(v int) *TeamUpdate {
+	_u.mutation.ResetElo()
+	_u.mutation.SetElo(v)
+	return _u
+}
+
+// SetNillableElo sets the "elo" field if the given value is not nil.
+func (_u *TeamUpdate) SetNillableElo(v *int) *TeamUpdate {
+	if v != nil {
+		_u.SetElo(*v)
+	}
+	return _u
+}
+
+// AddElo adds value to the "elo" field.
+func (_u *TeamUpdate) AddElo(v int) *TeamUpdate {
+	_u.mutation.AddElo(v)
+	return _u
+}
+
+// ClearElo clears the value of the "elo" field.
+func (_u *TeamUpdate) ClearElo() *TeamUpdate {
+	_u.mutation.ClearElo()
+	return _u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_u *TeamUpdate) SetCreatedAt(v time.Time) *TeamUpdate {
 	_u.mutation.SetCreatedAt(v)
@@ -413,6 +440,15 @@ func (_u *TeamUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ScoreCleared() {
 		_spec.ClearField(team.FieldScore, field.TypeInt)
+	}
+	if value, ok := _u.mutation.Elo(); ok {
+		_spec.SetField(team.FieldElo, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedElo(); ok {
+		_spec.AddField(team.FieldElo, field.TypeInt, value)
+	}
+	if _u.mutation.EloCleared() {
+		_spec.ClearField(team.FieldElo, field.TypeInt)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)
@@ -747,6 +783,33 @@ func (_u *TeamUpdateOne) ClearScore() *TeamUpdateOne {
 	return _u
 }
 
+// SetElo sets the "elo" field.
+func (_u *TeamUpdateOne) SetElo(v int) *TeamUpdateOne {
+	_u.mutation.ResetElo()
+	_u.mutation.SetElo(v)
+	return _u
+}
+
+// SetNillableElo sets the "elo" field if the given value is not nil.
+func (_u *TeamUpdateOne) SetNillableElo(v *int) *TeamUpdateOne {
+	if v != nil {
+		_u.SetElo(*v)
+	}
+	return _u
+}
+
+// AddElo adds value to the "elo" field.
+func (_u *TeamUpdateOne) AddElo(v int) *TeamUpdateOne {
+	_u.mutation.AddElo(v)
+	return _u
+}
+
+// ClearElo clears the value of the "elo" field.
+func (_u *TeamUpdateOne) ClearElo() *TeamUpdateOne {
+	_u.mutation.ClearElo()
+	return _u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_u *TeamUpdateOne) SetCreatedAt(v time.Time) *TeamUpdateOne {
 	_u.mutation.SetCreatedAt(v)
@@ -1027,6 +1090,15 @@ func (_u *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) {
 	}
 	if _u.mutation.ScoreCleared() {
 		_spec.ClearField(team.FieldScore, field.TypeInt)
+	}
+	if value, ok := _u.mutation.Elo(); ok {
+		_spec.SetField(team.FieldElo, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedElo(); ok {
+		_spec.AddField(team.FieldElo, field.TypeInt, value)
+	}
+	if _u.mutation.EloCleared() {
+		_spec.ClearField(team.FieldElo, field.TypeInt)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)

@@ -30,6 +30,7 @@ type InvitationsService interface {
 	AcceptInvitation(ctx context.Context, invitationID int) error
 	CreateInvitationForTeam(ctx context.Context, teamID int, input invitationsmodels.CreateInvitation) (*lightmodels.Invitation, error)
 	ListInvitationsForMe(ctx context.Context, params *invitationsmodels.ListInvitationsParams) (*paging.Response[*lightmodels.Invitation], error)
+	ListLastInvitationsForMe(ctx context.Context, limit int) ([]*lightmodels.Invitation, error)
 }
 
 type invitationsService struct {
@@ -345,4 +346,31 @@ func (svc *invitationsService) ListInvitationsForMe(
 	limit := params.Input.Limit
 	page := params.Input.Page
 	return paging.CreatePagingResponse(lightmodels.NewInvitationsFromEnt(ctx, invitations, svc.s3service), total, page, limit), nil
+}
+
+func (svc *invitationsService) ListLastInvitationsForMe(
+	ctx context.Context,
+	limit int,
+) ([]*lightmodels.Invitation, error) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if limit <= 0 {
+		limit = 3
+	}
+
+	invites, err := svc.databaseService.Invitation.Query().
+		Where(invitation.HasInviteeWith(user.IDEQ(userID))).
+		Order(ent.Desc(invitation.FieldCreatedAt)).
+		Limit(limit).
+		WithTeam().
+		WithInvitee().
+		All(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "list")
+	}
+
+	return lightmodels.NewInvitationsFromEnt(ctx, invites, svc.s3service), nil
 }

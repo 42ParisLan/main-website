@@ -90,6 +90,11 @@ func Score(v int) predicate.Team {
 	return predicate.Team(sql.FieldEQ(FieldScore, v))
 }
 
+// Elo applies equality check predicate on the "elo" field. It's identical to EloEQ.
+func Elo(v int) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldElo, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Team {
 	return predicate.Team(sql.FieldEQ(FieldCreatedAt, v))
@@ -368,6 +373,56 @@ func ScoreIsNil() predicate.Team {
 // ScoreNotNil applies the NotNil predicate on the "score" field.
 func ScoreNotNil() predicate.Team {
 	return predicate.Team(sql.FieldNotNull(FieldScore))
+}
+
+// EloEQ applies the EQ predicate on the "elo" field.
+func EloEQ(v int) predicate.Team {
+	return predicate.Team(sql.FieldEQ(FieldElo, v))
+}
+
+// EloNEQ applies the NEQ predicate on the "elo" field.
+func EloNEQ(v int) predicate.Team {
+	return predicate.Team(sql.FieldNEQ(FieldElo, v))
+}
+
+// EloIn applies the In predicate on the "elo" field.
+func EloIn(vs ...int) predicate.Team {
+	return predicate.Team(sql.FieldIn(FieldElo, vs...))
+}
+
+// EloNotIn applies the NotIn predicate on the "elo" field.
+func EloNotIn(vs ...int) predicate.Team {
+	return predicate.Team(sql.FieldNotIn(FieldElo, vs...))
+}
+
+// EloGT applies the GT predicate on the "elo" field.
+func EloGT(v int) predicate.Team {
+	return predicate.Team(sql.FieldGT(FieldElo, v))
+}
+
+// EloGTE applies the GTE predicate on the "elo" field.
+func EloGTE(v int) predicate.Team {
+	return predicate.Team(sql.FieldGTE(FieldElo, v))
+}
+
+// EloLT applies the LT predicate on the "elo" field.
+func EloLT(v int) predicate.Team {
+	return predicate.Team(sql.FieldLT(FieldElo, v))
+}
+
+// EloLTE applies the LTE predicate on the "elo" field.
+func EloLTE(v int) predicate.Team {
+	return predicate.Team(sql.FieldLTE(FieldElo, v))
+}
+
+// EloIsNil applies the IsNil predicate on the "elo" field.
+func EloIsNil() predicate.Team {
+	return predicate.Team(sql.FieldIsNull(FieldElo))
+}
+
+// EloNotNil applies the NotNil predicate on the "elo" field.
+func EloNotNil() predicate.Team {
+	return predicate.Team(sql.FieldNotNull(FieldElo))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

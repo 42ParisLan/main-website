@@ -16,6 +16,7 @@ type LightUser struct {
 	Picture   *string   `json:"picture" example:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Rick_Astley-cropped.jpg/220px-Rick_Astley-cropped.jpg" description:"The picture of the user"`
 	Kind      user.Kind `json:"kind" example:"user" description:"The kind of the user" enum:"user,admin"`
 	Roles     []string  `json:"roles" example:"[\"user\"]" description:"The roles of the user" nullable:"false"`
+	Elo       int       `json:"elo" example:"0" description:"The ELO rating of the user"`
 }
 
 func NewLightUserFromEnt(entUser *ent.User) *LightUser {
@@ -31,6 +32,7 @@ func NewLightUserFromEnt(entUser *ent.User) *LightUser {
 		Picture:   entUser.Picture,
 		Kind:      entUser.Kind,
 		Roles:     entUser.Roles,
+		Elo:       entUser.Elo,
 	}
 }
 

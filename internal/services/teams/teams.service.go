@@ -9,6 +9,8 @@ import (
 	"base-website/internal/lightmodels"
 	"base-website/internal/security"
 	databaseservice "base-website/internal/services/database"
+	notificationsservice "base-website/internal/services/notifications"
+	pubsubservice "base-website/internal/services/pubsub"
 	rbacservice "base-website/internal/services/rbac"
 	s3service "base-website/internal/services/s3"
 	teamsmodels "base-website/internal/services/teams/models"
@@ -39,11 +41,13 @@ type TeamsService interface {
 }
 
 type teamsService struct {
-	databaseService    databaseservice.DatabaseService
-	errorFilter        errorfilters.ErrorFilter
-	rbacService        rbacservice.RBACService
-	s3service          s3service.S3Service
-	tournamentsService tournamentsservice.TournamentsService
+	databaseService      databaseservice.DatabaseService
+	errorFilter          errorfilters.ErrorFilter
+	rbacService          rbacservice.RBACService
+	s3service            s3service.S3Service
+	tournamentsService   tournamentsservice.TournamentsService
+	notificationsService notificationsservice.NotificationsService
+	pubsubService        pubsubservice.PubSubService
 }
 
 func NewProvider() func(i *do.Injector) (TeamsService, error) {
@@ -53,6 +57,8 @@ func NewProvider() func(i *do.Injector) (TeamsService, error) {
 			do.MustInvoke[rbacservice.RBACService](i),
 			do.MustInvoke[s3service.S3Service](i),
 			do.MustInvoke[tournamentsservice.TournamentsService](i),
+			do.MustInvoke[notificationsservice.NotificationsService](i),
+			do.MustInvoke[pubsubservice.PubSubService](i),
 		)
 	}
 }
@@ -62,13 +68,17 @@ func New(
 	rbacService rbacservice.RBACService,
 	s3service s3service.S3Service,
 	tournamentsService tournamentsservice.TournamentsService,
+	notificationsService notificationsservice.NotificationsService,
+	pubsubService pubsubservice.PubSubService,
 ) (TeamsService, error) {
 	return &teamsService{
-		databaseService:    databaseService,
-		errorFilter:        errorfilters.NewEntErrorFilter().WithEntityTypeName("team"),
-		rbacService:        rbacService,
-		s3service:          s3service,
-		tournamentsService: tournamentsService,
+		databaseService:      databaseService,
+		errorFilter:          errorfilters.NewEntErrorFilter().WithEntityTypeName("team"),
+		rbacService:          rbacService,
+		s3service:            s3service,
+		tournamentsService:   tournamentsService,
+		notificationsService: notificationsService,
+		pubsubService:        pubsubService,
 	}, nil
 }
 
@@ -400,7 +410,7 @@ func (svc *teamsService) DeleteTeam(
 		}
 
 		if waitingTeam != nil {
-			_, err = waitingTeam.Update().
+			waitingTeam, err = waitingTeam.Update().
 				SetIsRegistered(true).
 				SetIsWaitlisted(false).
 				ClearWaitlistPosition().
@@ -408,6 +418,15 @@ func (svc *teamsService) DeleteTeam(
 			if err != nil {
 				return err
 			}
+
+			waitingTeam, _ = svc.databaseService.Team.Query().
+				Where(team.IDEQ(waitingTeam.ID)).
+				WithMembers(func(q *ent.TeamMemberQuery) {
+					q.WithUser()
+				}).
+				WithTournament().
+				Only(ctx)
+			svc.sendTeamRegistrationNotifications(ctx, waitingTeam)
 		}
 	}
 
@@ -568,10 +587,13 @@ func (svc *teamsService) LockTeam(
 		}).
 		WithRankGroup().
 		WithCreator().
+		WithTournament().
 		Only(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	svc.sendTeamRegistrationNotifications(ctx, reloaded)
 
 	return lightmodels.NewLightTeamFromEnt(ctx, reloaded, svc.s3service), nil
 }
@@ -635,7 +657,7 @@ func (svc *teamsService) UnlockTeam(
 		}
 
 		if waitingTeam != nil {
-			_, err = waitingTeam.Update().
+			waitingTeam, err = waitingTeam.Update().
 				SetIsRegistered(true).
 				SetIsWaitlisted(false).
 				ClearWaitlistPosition().
@@ -643,6 +665,15 @@ func (svc *teamsService) UnlockTeam(
 			if err != nil {
 				return nil, err
 			}
+
+			waitingTeam, _ = svc.databaseService.Team.Query().
+				Where(team.IDEQ(waitingTeam.ID)).
+				WithMembers(func(q *ent.TeamMemberQuery) {
+					q.WithUser()
+				}).
+				WithTournament().
+				Only(ctx)
+			svc.sendTeamRegistrationNotifications(ctx, waitingTeam)
 		}
 	}
 
@@ -673,4 +704,42 @@ func (svc *teamsService) UnlockTeam(
 	}
 
 	return lightmodels.NewLightTeamFromEnt(ctx, reloaded, svc.s3service), nil
+}
+
+func (svc *teamsService) sendTeamRegistrationNotifications(ctx context.Context, entTeam *ent.Team) {
+	if entTeam == nil || !entTeam.IsRegistered || entTeam.Edges.Tournament == nil {
+		return
+	}
+
+	members, err := svc.databaseService.TeamMember.Query().
+		Where(teammember.HasTeamWith(team.IDEQ(entTeam.ID))).
+		WithUser().
+		All(ctx)
+	if err != nil {
+		return
+	}
+
+	href := fmt.Sprintf("/tournaments/%s/teams/%d", entTeam.Edges.Tournament.Slug, entTeam.ID)
+
+	for _, member := range members {
+		if member == nil || member.Edges.User == nil {
+			continue
+		}
+
+		notif, err := svc.notificationsService.CreateNotification(
+			ctx,
+			member.Edges.User.ID,
+			"team",
+			"Team Registered",
+			fmt.Sprintf("Your team '%s' has been registered to the tournament", entTeam.Name),
+			href,
+		)
+		if err != nil {
+			continue
+		}
+
+		if data, err := json.Marshal(lightmodels.NewNotificationFromEnt(notif)); err == nil {
+			svc.pubsubService.Publish(ctx, fmt.Sprintf("Notification:%d", member.Edges.User.ID), data)
+		}
+	}
 }

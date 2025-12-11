@@ -3,6 +3,7 @@
 package tournament
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -40,6 +41,8 @@ const (
 	FieldCustomPageComponent = "custom_page_component"
 	// FieldExternalLinks holds the string denoting the external_links field in the database.
 	FieldExternalLinks = "external_links"
+	// FieldTier holds the string denoting the tier field in the database.
+	FieldTier = "tier"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -109,6 +112,7 @@ var Columns = []string{
 	FieldTeamStructure,
 	FieldCustomPageComponent,
 	FieldExternalLinks,
+	FieldTier,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -146,6 +150,37 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
+
+// Tier defines the type for the "tier" enum field.
+type Tier string
+
+// TierCTier is the default value of the Tier enum.
+const DefaultTier = TierCTier
+
+// Tier values.
+const (
+	TierSTier Tier = "S Tier"
+	TierATier Tier = "A Tier"
+	TierBTier Tier = "B Tier"
+	TierCTier Tier = "C Tier"
+	TierDTier Tier = "D Tier"
+	TierETier Tier = "E Tier"
+	TierFTier Tier = "F Tier"
+)
+
+func (t Tier) String() string {
+	return string(t)
+}
+
+// TierValidator is a validator for the "tier" field enum values. It is called by the builders before save.
+func TierValidator(t Tier) error {
+	switch t {
+	case TierSTier, TierATier, TierBTier, TierCTier, TierDTier, TierETier, TierFTier:
+		return nil
+	default:
+		return fmt.Errorf("tournament: invalid enum value for tier field: %q", t)
+	}
+}
 
 // OrderOption defines the ordering options for the Tournament queries.
 type OrderOption func(*sql.Selector)
@@ -208,6 +243,11 @@ func ByMaxTeams(opts ...sql.OrderTermOption) OrderOption {
 // ByCustomPageComponent orders the results by the custom_page_component field.
 func ByCustomPageComponent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCustomPageComponent, opts...).ToFunc()
+}
+
+// ByTier orders the results by the tier field.
+func ByTier(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTier, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

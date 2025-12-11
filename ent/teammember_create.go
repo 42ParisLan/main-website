@@ -28,6 +28,20 @@ func (_c *TeamMemberCreate) SetRole(v string) *TeamMemberCreate {
 	return _c
 }
 
+// SetCanReceiveTeamElo sets the "can_receive_team_elo" field.
+func (_c *TeamMemberCreate) SetCanReceiveTeamElo(v bool) *TeamMemberCreate {
+	_c.mutation.SetCanReceiveTeamElo(v)
+	return _c
+}
+
+// SetNillableCanReceiveTeamElo sets the "can_receive_team_elo" field if the given value is not nil.
+func (_c *TeamMemberCreate) SetNillableCanReceiveTeamElo(v *bool) *TeamMemberCreate {
+	if v != nil {
+		_c.SetCanReceiveTeamElo(*v)
+	}
+	return _c
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (_c *TeamMemberCreate) SetUserID(id int) *TeamMemberCreate {
 	_c.mutation.SetUserID(id)
@@ -68,6 +82,7 @@ func (_c *TeamMemberCreate) Mutation() *TeamMemberMutation {
 
 // Save creates the TeamMember in the database.
 func (_c *TeamMemberCreate) Save(ctx context.Context) (*TeamMember, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -93,10 +108,21 @@ func (_c *TeamMemberCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_c *TeamMemberCreate) defaults() {
+	if _, ok := _c.mutation.CanReceiveTeamElo(); !ok {
+		v := teammember.DefaultCanReceiveTeamElo
+		_c.mutation.SetCanReceiveTeamElo(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_c *TeamMemberCreate) check() error {
 	if _, ok := _c.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "TeamMember.role"`)}
+	}
+	if _, ok := _c.mutation.CanReceiveTeamElo(); !ok {
+		return &ValidationError{Name: "can_receive_team_elo", err: errors.New(`ent: missing required field "TeamMember.can_receive_team_elo"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "TeamMember.user"`)}
@@ -136,6 +162,10 @@ func (_c *TeamMemberCreate) createSpec() (*TeamMember, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Role(); ok {
 		_spec.SetField(teammember.FieldRole, field.TypeString, value)
 		_node.Role = value
+	}
+	if value, ok := _c.mutation.CanReceiveTeamElo(); ok {
+		_spec.SetField(teammember.FieldCanReceiveTeamElo, field.TypeBool, value)
+		_node.CanReceiveTeamElo = value
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -209,6 +239,7 @@ func (_c *TeamMemberCreateBulk) Save(ctx context.Context) ([]*TeamMember, error)
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*TeamMemberMutation)
 				if !ok {

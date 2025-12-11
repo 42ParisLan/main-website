@@ -454,6 +454,9 @@ components:
           type: string
         creator:
           $ref: "#/components/schemas/LightUser"
+        elo:
+          format: int64
+          type: integer
         id:
           example: 42
           format: int64
@@ -493,14 +496,23 @@ components:
     LightTeamMember:
       additionalProperties: false
       properties:
+        can_receive_team_elo:
+          example: true
+          type: boolean
+        id:
+          example: 42
+          format: int64
+          type: integer
         role:
           example: player
           type: string
         user:
           $ref: "#/components/schemas/LightUser"
       required:
+        - id
         - user
         - role
+        - can_receive_team_elo
       type: object
     LightTournament:
       additionalProperties: false
@@ -559,6 +571,17 @@ components:
           additionalProperties:
             $ref: "#/components/schemas/TeamStructure"
           type: object
+        tier:
+          enum:
+            - S Tier
+            - A Tier
+            - B Tier
+            - C Tier
+            - D Tier
+            - E Tier
+            - F Tier
+          example: C Tier
+          type: string
         tournament_end:
           example: "2025-03-20T23:59:59Z"
           format: date-time
@@ -580,6 +603,7 @@ components:
         - tournament_end
         - max_teams
         - team_structure
+        - tier
         - creator
         - status
         - created_at
@@ -607,6 +631,10 @@ components:
           example: "2024-01-01T00:00:00Z"
           format: date-time
           type: string
+        elo:
+          example: 0
+          format: int64
+          type: integer
         email:
           example: froz@42paris.fr
           type: string
@@ -646,6 +674,7 @@ components:
         - picture
         - kind
         - roles
+        - elo
       type: object
     LightVote:
       additionalProperties: false
@@ -691,6 +720,36 @@ components:
         - components_count
         - visible
         - creator
+      type: object
+    Notification:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        href:
+          type: string
+        id:
+          format: int64
+          type: integer
+        message:
+          type: string
+        read:
+          type: boolean
+        read_at:
+          format: date-time
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+      required:
+        - id
+        - created_at
+        - type
+        - title
+        - message
+        - read
       type: object
     Permission:
       additionalProperties: false
@@ -1108,6 +1167,17 @@ components:
             $ref: "#/components/schemas/LightTeam"
           nullable: true
           type: array
+        tier:
+          enum:
+            - S Tier
+            - A Tier
+            - B Tier
+            - C Tier
+            - D Tier
+            - E Tier
+            - F Tier
+          example: C Tier
+          type: string
         tournament_end:
           format: date-time
           nullable: true
@@ -1129,6 +1199,7 @@ components:
         - max_teams
         - team_structure
         - custom_page_component
+        - tier
         - creator
         - admins
         - status
@@ -1212,6 +1283,10 @@ components:
           example: "2024-01-01T00:00:00Z"
           format: date-time
           type: string
+        elo:
+          example: 0
+          format: int64
+          type: integer
         email:
           example: froz@42paris.fr
           type: string
@@ -1251,6 +1326,7 @@ components:
         - picture
         - kind
         - roles
+        - elo
       type: object
     Vote:
       additionalProperties: false
@@ -2251,6 +2327,94 @@ paths:
       summary: Get Invitations For Me
       tags:
         - Invitations
+  /me/invitations/live:
+    get:
+      description: Server-Sent Events stream that first sends the latest invitations, then pushes new invitations in real-time.
+      operationId: liveInvitations
+      responses:
+        "200":
+          content:
+            text/event-stream:
+              schema:
+                description: Each oneOf object in the array represents one possible Server Sent Events (SSE) message, serialized as UTF-8 text according to the SSE specification.
+                items:
+                  oneOf:
+                    - properties:
+                        data:
+                          $ref: "#/components/schemas/Invitation"
+                        event:
+                          const: message
+                          description: The event name.
+                          type: string
+                        id:
+                          description: The event ID.
+                          type: integer
+                        retry:
+                          description: The retry time in milliseconds.
+                          type: integer
+                      required:
+                        - data
+                      title: Event message
+                      type: object
+                title: Server Sent Events
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Live invitations stream
+      tags:
+        - Invitations
+  /me/notifications:
+    get:
+      description: Server-Sent Events stream that sends live notifications in real-time. Streams new notifications as they occur.
+      operationId: liveNotifications
+      responses:
+        "200":
+          content:
+            text/event-stream:
+              schema:
+                description: Each oneOf object in the array represents one possible Server Sent Events (SSE) message, serialized as UTF-8 text according to the SSE specification.
+                items:
+                  oneOf:
+                    - properties:
+                        data:
+                          $ref: "#/components/schemas/Notification"
+                        event:
+                          const: message
+                          description: The event name.
+                          type: string
+                        id:
+                          description: The event ID.
+                          type: integer
+                        retry:
+                          description: The retry time in milliseconds.
+                          type: integer
+                      required:
+                        - data
+                      title: Event message
+                      type: object
+                title: Server Sent Events
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Live notifications stream
+      tags:
+        - Notifications
   /me/permissions:
     get:
       description: This endpoint is used to get the current user RBAC permissions.
@@ -2277,6 +2441,38 @@ paths:
       tags:
         - RBAC
         - Users
+  /notifications/{id}/read:
+    post:
+      description: This endpoint is used to mark a notification as read.
+      operationId: markNotificationAsRead
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Mark notification as read
+      tags:
+        - Notifications
   /roles:
     get:
       description: This endpoint is used to get the roles.
@@ -2755,6 +2951,8 @@ paths:
                 contentType: text/plain
               team_structure:
                 contentType: text/plain
+              tier:
+                contentType: text/plain
               tournament_start:
                 contentType: text/plain
             schema:
@@ -2789,6 +2987,18 @@ paths:
                   example: spring-cup-2025
                   type: string
                 team_structure:
+                  type: string
+                tier:
+                  default: C Tier
+                  enum:
+                    - S Tier
+                    - A Tier
+                    - B Tier
+                    - C Tier
+                    - D Tier
+                    - E Tier
+                    - F Tier
+                  example: C Tier
                   type: string
                 tournament_start:
                   example: "2025-03-15T00:00:00Z"
@@ -2916,6 +3126,8 @@ paths:
                 contentType: text/plain
               registration_start:
                 contentType: text/plain
+              tier:
+                contentType: text/plain
               tournament_start:
                 contentType: text/plain
             schema:
@@ -2946,6 +3158,17 @@ paths:
                 registration_start:
                   example: "2025-03-01T00:00:00Z"
                   format: date-time
+                  type: string
+                tier:
+                  enum:
+                    - S Tier
+                    - A Tier
+                    - B Tier
+                    - C Tier
+                    - D Tier
+                    - E Tier
+                    - F Tier
+                  example: C Tier
                   type: string
                 tournament_start:
                   example: "2025-03-15T00:00:00Z"
@@ -3096,6 +3319,38 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: edit admin of tournament
+      tags:
+        - Tournament
+  /tournaments/{id}/end:
+    post:
+      description: This endpoint is used to end a tournament, set the end date to now, and delete unregistered teams without rank groups.
+      operationId: endTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: End Tournament
       tags:
         - Tournament
   /tournaments/{id}/me/team:

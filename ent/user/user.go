@@ -33,6 +33,8 @@ const (
 	FieldKind = "kind"
 	// FieldRoles holds the string denoting the roles field in the database.
 	FieldRoles = "roles"
+	// FieldElo holds the string denoting the elo field in the database.
+	FieldElo = "elo"
 	// EdgeUserVotes holds the string denoting the user_votes edge name in mutations.
 	EdgeUserVotes = "user_votes"
 	// EdgeCreatedVotes holds the string denoting the created_votes edge name in mutations.
@@ -51,6 +53,8 @@ const (
 	EdgeCreatedTournaments = "created_tournaments"
 	// EdgeTournamentAdmins holds the string denoting the tournament_admins edge name in mutations.
 	EdgeTournamentAdmins = "tournament_admins"
+	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
+	EdgeNotifications = "notifications"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserVotesTable is the table that holds the user_votes relation/edge.
@@ -116,6 +120,13 @@ const (
 	TournamentAdminsInverseTable = "tournament_admins"
 	// TournamentAdminsColumn is the table column denoting the tournament_admins relation/edge.
 	TournamentAdminsColumn = "user_tournament_admins"
+	// NotificationsTable is the table that holds the notifications relation/edge.
+	NotificationsTable = "notifications"
+	// NotificationsInverseTable is the table name for the Notification entity.
+	// It exists in this package in order to avoid circular dependency with the "notification" package.
+	NotificationsInverseTable = "notifications"
+	// NotificationsColumn is the table column denoting the notifications relation/edge.
+	NotificationsColumn = "user_notifications"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -130,6 +141,7 @@ var Columns = []string{
 	FieldPicture,
 	FieldKind,
 	FieldRoles,
+	FieldElo,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -151,6 +163,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultRoles holds the default value on creation for the "roles" field.
 	DefaultRoles []string
+	// DefaultElo holds the default value on creation for the "elo" field.
+	DefaultElo int
 )
 
 // Kind defines the type for the "kind" enum field.
@@ -225,6 +239,11 @@ func ByPicture(opts ...sql.OrderTermOption) OrderOption {
 // ByKind orders the results by the kind field.
 func ByKind(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKind, opts...).ToFunc()
+}
+
+// ByElo orders the results by the elo field.
+func ByElo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldElo, opts...).ToFunc()
 }
 
 // ByUserVotesCount orders the results by user_votes count.
@@ -352,6 +371,20 @@ func ByTournamentAdmins(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption 
 		sqlgraph.OrderByNeighborTerms(s, newTournamentAdminsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByNotificationsCount orders the results by notifications count.
+func ByNotificationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newNotificationsStep(), opts...)
+	}
+}
+
+// ByNotifications orders the results by notifications terms.
+func ByNotifications(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newNotificationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserVotesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -413,5 +446,12 @@ func newTournamentAdminsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TournamentAdminsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, TournamentAdminsTable, TournamentAdminsColumn),
+	)
+}
+func newNotificationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(NotificationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, NotificationsTable, NotificationsColumn),
 	)
 }

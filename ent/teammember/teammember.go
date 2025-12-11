@@ -14,6 +14,8 @@ const (
 	FieldID = "id"
 	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
+	// FieldCanReceiveTeamElo holds the string denoting the can_receive_team_elo field in the database.
+	FieldCanReceiveTeamElo = "can_receive_team_elo"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeTeam holds the string denoting the team edge name in mutations.
@@ -49,6 +51,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldRole,
+	FieldCanReceiveTeamElo,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "team_members"
@@ -74,6 +77,11 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+var (
+	// DefaultCanReceiveTeamElo holds the default value on creation for the "can_receive_team_elo" field.
+	DefaultCanReceiveTeamElo bool
+)
+
 // OrderOption defines the ordering options for the TeamMember queries.
 type OrderOption func(*sql.Selector)
 
@@ -85,6 +93,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByRole orders the results by the role field.
 func ByRole(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByCanReceiveTeamElo orders the results by the can_receive_team_elo field.
+func ByCanReceiveTeamElo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCanReceiveTeamElo, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.
