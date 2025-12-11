@@ -230,6 +230,20 @@ func (_u *TournamentUpdate) ClearExternalLinks() *TournamentUpdate {
 	return _u
 }
 
+// SetTier sets the "tier" field.
+func (_u *TournamentUpdate) SetTier(v tournament.Tier) *TournamentUpdate {
+	_u.mutation.SetTier(v)
+	return _u
+}
+
+// SetNillableTier sets the "tier" field if the given value is not nil.
+func (_u *TournamentUpdate) SetNillableTier(v *tournament.Tier) *TournamentUpdate {
+	if v != nil {
+		_u.SetTier(*v)
+	}
+	return _u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_u *TournamentUpdate) SetCreatedAt(v time.Time) *TournamentUpdate {
 	_u.mutation.SetCreatedAt(v)
@@ -454,6 +468,11 @@ func (_u *TournamentUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TournamentUpdate) check() error {
+	if v, ok := _u.mutation.Tier(); ok {
+		if err := tournament.TierValidator(v); err != nil {
+			return &ValidationError{Name: "tier", err: fmt.Errorf(`ent: validator failed for field "Tournament.tier": %w`, err)}
+		}
+	}
 	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Tournament.creator"`)
 	}
@@ -525,6 +544,9 @@ func (_u *TournamentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if _u.mutation.ExternalLinksCleared() {
 		_spec.ClearField(tournament.FieldExternalLinks, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Tier(); ok {
+		_spec.SetField(tournament.FieldTier, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)
@@ -958,6 +980,20 @@ func (_u *TournamentUpdateOne) ClearExternalLinks() *TournamentUpdateOne {
 	return _u
 }
 
+// SetTier sets the "tier" field.
+func (_u *TournamentUpdateOne) SetTier(v tournament.Tier) *TournamentUpdateOne {
+	_u.mutation.SetTier(v)
+	return _u
+}
+
+// SetNillableTier sets the "tier" field if the given value is not nil.
+func (_u *TournamentUpdateOne) SetNillableTier(v *tournament.Tier) *TournamentUpdateOne {
+	if v != nil {
+		_u.SetTier(*v)
+	}
+	return _u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_u *TournamentUpdateOne) SetCreatedAt(v time.Time) *TournamentUpdateOne {
 	_u.mutation.SetCreatedAt(v)
@@ -1195,6 +1231,11 @@ func (_u *TournamentUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TournamentUpdateOne) check() error {
+	if v, ok := _u.mutation.Tier(); ok {
+		if err := tournament.TierValidator(v); err != nil {
+			return &ValidationError{Name: "tier", err: fmt.Errorf(`ent: validator failed for field "Tournament.tier": %w`, err)}
+		}
+	}
 	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Tournament.creator"`)
 	}
@@ -1283,6 +1324,9 @@ func (_u *TournamentUpdateOne) sqlSave(ctx context.Context) (_node *Tournament, 
 	}
 	if _u.mutation.ExternalLinksCleared() {
 		_spec.ClearField(tournament.FieldExternalLinks, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Tier(); ok {
+		_spec.SetField(tournament.FieldTier, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)

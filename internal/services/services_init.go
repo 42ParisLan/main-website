@@ -8,6 +8,7 @@ import (
 	databaseservice "base-website/internal/services/database"
 	intraservice "base-website/internal/services/intra"
 	invitationsservice "base-website/internal/services/invitations"
+	notificationsservice "base-website/internal/services/notifications"
 	openidservice "base-website/internal/services/openid"
 	pubsubservice "base-website/internal/services/pubsub"
 	rankgroupservice "base-website/internal/services/rank_group"
@@ -38,5 +39,6 @@ func InitServices(i *do.Injector) error {
 	do.Provide(i, consentsservice.NewProvider())
 	do.Provide(i, invitationsservice.NewProvider())
 	do.Provide(i, rankgroupservice.NewProvider())
+	do.Provide(i, notificationsservice.NewProvider())
 	return nil
 }

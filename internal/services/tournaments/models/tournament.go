@@ -14,6 +14,7 @@ type CreateTournament struct {
 	RegistrationEnd     time.Time     `form:"registration_end" example:"2025-03-10T23:59:59Z" description:"When registration ends" required:"true"`
 	TournamentStart     time.Time     `form:"tournament_start" example:"2025-03-15T00:00:00Z" description:"Start date of tournament" required:"true"`
 	MaxTeams            int           `form:"max_teams" example:"32" description:"Maximum number of teams allowed" required:"true" minimum:"3"`
+	Tier                string        `form:"tier" example:"C Tier" description:"Tournament tier" enum:"S Tier,A Tier,B Tier,C Tier,D Tier,E Tier,F Tier" default:"C Tier"`
 	TeamStructure       string        `form:"team_structure" description:"JSON describing team roles, min/max players, etc."`
 	CustomPageComponent string        `form:"custom_page_component" description:"Optional React component for custom tournament page"`
 	Image               huma.FormFile `form:"image" contentType:"image/*" description:"The uploaded image file"`
@@ -26,6 +27,7 @@ type UpdateTournament struct {
 	RegistrationEnd     time.Time     `form:"registration_end" example:"2025-03-10T23:59:59Z" description:"When registration ends"`
 	TournamentStart     time.Time     `form:"tournament_start" example:"2025-03-15T00:00:00Z" description:"Start date of tournament"`
 	MaxTeams            int           `form:"max_teams" example:"32" default:"-1" description:"Maximum number of teams allowed"`
+	Tier                string        `form:"tier" example:"C Tier" description:"Tournament tier" enum:"S Tier,A Tier,B Tier,C Tier,D Tier,E Tier,F Tier"`
 	CustomPageComponent string        `form:"custom_page_component" description:"Optional React component for custom tournament page"`
 	ExternalLinks       string        `form:"external_links" description:"Optional external links for the tournament (JSON string)"`
 	Image               huma.FormFile `form:"image" contentType:"image/*" description:"The uploaded image file"`

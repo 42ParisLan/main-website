@@ -38,6 +38,7 @@ export default function TopUsers({
 						<TableRow>
 							<TableHead className="w-[50px]">Rank</TableHead>
 							<TableHead>Player</TableHead>
+							<TableHead className="text-right w-[80px]">Elo</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -88,6 +89,7 @@ export default function TopUsers({
 										</div>
 									</Link>
 								</TableCell>
+								<TableCell className="text-right font-semibold text-white/90">{user.elo == 0 ? 'N/A' : user.elo}</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

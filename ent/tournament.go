@@ -45,6 +45,8 @@ type Tournament struct {
 	CustomPageComponent string `json:"custom_page_component,omitempty"`
 	// ExternalLinks holds the value of the "external_links" field.
 	ExternalLinks map[string]string `json:"external_links,omitempty"`
+	// Tier holds the value of the "tier" field.
+	Tier tournament.Tier `json:"tier,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -131,7 +133,7 @@ func (*Tournament) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case tournament.FieldID, tournament.FieldMaxTeams:
 			values[i] = new(sql.NullInt64)
-		case tournament.FieldSlug, tournament.FieldName, tournament.FieldDescription, tournament.FieldImageURL, tournament.FieldCustomPageComponent:
+		case tournament.FieldSlug, tournament.FieldName, tournament.FieldDescription, tournament.FieldImageURL, tournament.FieldCustomPageComponent, tournament.FieldTier:
 			values[i] = new(sql.NullString)
 		case tournament.FieldRegistrationStart, tournament.FieldRegistrationEnd, tournament.FieldTournamentStart, tournament.FieldTournamentEnd, tournament.FieldCreatedAt, tournament.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -241,6 +243,12 @@ func (_m *Tournament) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &_m.ExternalLinks); err != nil {
 					return fmt.Errorf("unmarshal field external_links: %w", err)
 				}
+			}
+		case tournament.FieldTier:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tier", values[i])
+			} else if value.Valid {
+				_m.Tier = tournament.Tier(value.String)
 			}
 		case tournament.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -364,6 +372,9 @@ func (_m *Tournament) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("external_links=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ExternalLinks))
+	builder.WriteString(", ")
+	builder.WriteString("tier=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Tier))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

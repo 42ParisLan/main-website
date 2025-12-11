@@ -69,6 +69,7 @@ export default function TournamentEdit({ tournament }: Props) {
 			custom_page_component: tournament.custom_page_component,
 			description: tournament.description,
 			max_teams: tournament.max_teams,
+			tier: tournament.tier ?? "C Tier",
 			registration_end: tournament.registration_end,
 			registration_start: tournament.registration_start,
 			tournament_start: tournament.tournament_start,
@@ -206,6 +207,41 @@ export default function TournamentEdit({ tournament }: Props) {
 						<Label htmlFor={field.name}>Max Teams</Label>
 						<Input id={field.name} value={field.state.value} onChange={(e) => field.handleChange(Number(e.target.value))} onBlur={field.handleBlur} type="number" />
 					</div>
+					)}
+				</form.Field>
+
+				<form.Field
+					name="tier"
+					validators={{
+						onChange: ({ value }: { value: unknown }) => {
+							const allowed = ["S Tier", "A Tier", "B Tier", "C Tier", "D Tier", "E Tier", "F Tier"]
+							return allowed.includes(String(value)) ? undefined : "Select a tier"
+						}
+					}}
+				>
+					{(field) => (
+						<div className="grid gap-2">
+							<Label htmlFor={field.name}>Tier</Label>
+							<Select
+								value={field.state.value}
+								onValueChange={(value) => field.handleChange(value as any)}
+							>
+								<SelectTrigger className="w-[180px]" id={field.name}>
+									<SelectValue placeholder="Select a tier" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectLabel>Tier</SelectLabel>
+										{["S Tier", "A Tier", "B Tier", "C Tier", "D Tier", "E Tier", "F Tier"].map((tier) => (
+											<SelectItem key={tier} value={tier}>{tier}</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+							{field.state.meta.errors?.[0] && (
+								<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
+							)}
+						</div>
 					)}
 				</form.Field>
 

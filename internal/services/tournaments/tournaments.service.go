@@ -30,6 +30,7 @@ type TournamentsService interface {
 	AddAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
 	EditAdminToTournament(ctx context.Context, tournamentID int, userID int, role string) (*lightmodels.Tournament, error)
 	DeleteAdminToTournament(ctx context.Context, tournamentID int, userID int) (*lightmodels.Tournament, error)
+	EndTournament(ctx context.Context, tournamentID int) error
 	// Utils
 	GetTournamentUserRole(ctx context.Context, tournamentID int) (*tournamentadmin.Role, error)
 }

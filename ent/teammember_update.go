@@ -44,6 +44,20 @@ func (_u *TeamMemberUpdate) SetNillableRole(v *string) *TeamMemberUpdate {
 	return _u
 }
 
+// SetCanReceiveTeamElo sets the "can_receive_team_elo" field.
+func (_u *TeamMemberUpdate) SetCanReceiveTeamElo(v bool) *TeamMemberUpdate {
+	_u.mutation.SetCanReceiveTeamElo(v)
+	return _u
+}
+
+// SetNillableCanReceiveTeamElo sets the "can_receive_team_elo" field if the given value is not nil.
+func (_u *TeamMemberUpdate) SetNillableCanReceiveTeamElo(v *bool) *TeamMemberUpdate {
+	if v != nil {
+		_u.SetCanReceiveTeamElo(*v)
+	}
+	return _u
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (_u *TeamMemberUpdate) SetUserID(id int) *TeamMemberUpdate {
 	_u.mutation.SetUserID(id)
@@ -155,6 +169,9 @@ func (_u *TeamMemberUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if value, ok := _u.mutation.Role(); ok {
 		_spec.SetField(teammember.FieldRole, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.CanReceiveTeamElo(); ok {
+		_spec.SetField(teammember.FieldCanReceiveTeamElo, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -273,6 +290,20 @@ func (_u *TeamMemberUpdateOne) SetRole(v string) *TeamMemberUpdateOne {
 func (_u *TeamMemberUpdateOne) SetNillableRole(v *string) *TeamMemberUpdateOne {
 	if v != nil {
 		_u.SetRole(*v)
+	}
+	return _u
+}
+
+// SetCanReceiveTeamElo sets the "can_receive_team_elo" field.
+func (_u *TeamMemberUpdateOne) SetCanReceiveTeamElo(v bool) *TeamMemberUpdateOne {
+	_u.mutation.SetCanReceiveTeamElo(v)
+	return _u
+}
+
+// SetNillableCanReceiveTeamElo sets the "can_receive_team_elo" field if the given value is not nil.
+func (_u *TeamMemberUpdateOne) SetNillableCanReceiveTeamElo(v *bool) *TeamMemberUpdateOne {
+	if v != nil {
+		_u.SetCanReceiveTeamElo(*v)
 	}
 	return _u
 }
@@ -418,6 +449,9 @@ func (_u *TeamMemberUpdateOne) sqlSave(ctx context.Context) (_node *TeamMember, 
 	}
 	if value, ok := _u.mutation.Role(); ok {
 		_spec.SetField(teammember.FieldRole, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.CanReceiveTeamElo(); ok {
+		_spec.SetField(teammember.FieldCanReceiveTeamElo, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

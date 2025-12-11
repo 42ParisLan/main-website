@@ -115,6 +115,20 @@ func (_c *TeamCreate) SetNillableScore(v *int) *TeamCreate {
 	return _c
 }
 
+// SetElo sets the "elo" field.
+func (_c *TeamCreate) SetElo(v int) *TeamCreate {
+	_c.mutation.SetElo(v)
+	return _c
+}
+
+// SetNillableElo sets the "elo" field if the given value is not nil.
+func (_c *TeamCreate) SetNillableElo(v *int) *TeamCreate {
+	if v != nil {
+		_c.SetElo(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *TeamCreate) SetCreatedAt(v time.Time) *TeamCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -350,6 +364,10 @@ func (_c *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Score(); ok {
 		_spec.SetField(team.FieldScore, field.TypeInt, value)
 		_node.Score = value
+	}
+	if value, ok := _c.mutation.Elo(); ok {
+		_spec.SetField(team.FieldElo, field.TypeInt, value)
+		_node.Elo = &value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)

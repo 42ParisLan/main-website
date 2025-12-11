@@ -695,6 +695,26 @@ func ExternalLinksNotNil() predicate.Tournament {
 	return predicate.Tournament(sql.FieldNotNull(FieldExternalLinks))
 }
 
+// TierEQ applies the EQ predicate on the "tier" field.
+func TierEQ(v Tier) predicate.Tournament {
+	return predicate.Tournament(sql.FieldEQ(FieldTier, v))
+}
+
+// TierNEQ applies the NEQ predicate on the "tier" field.
+func TierNEQ(v Tier) predicate.Tournament {
+	return predicate.Tournament(sql.FieldNEQ(FieldTier, v))
+}
+
+// TierIn applies the In predicate on the "tier" field.
+func TierIn(vs ...Tier) predicate.Tournament {
+	return predicate.Tournament(sql.FieldIn(FieldTier, vs...))
+}
+
+// TierNotIn applies the NotIn predicate on the "tier" field.
+func TierNotIn(vs ...Tier) predicate.Tournament {
+	return predicate.Tournament(sql.FieldNotIn(FieldTier, vs...))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Tournament {
 	return predicate.Tournament(sql.FieldEQ(FieldCreatedAt, v))

@@ -21,6 +21,8 @@ type TeamMember struct {
 	ID int `json:"id,omitempty"`
 	// Role holds the value of the "role" field.
 	Role string `json:"role,omitempty"`
+	// CanReceiveTeamElo holds the value of the "can_receive_team_elo" field.
+	CanReceiveTeamElo bool `json:"can_receive_team_elo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TeamMemberQuery when eager-loading is set.
 	Edges                   TeamMemberEdges `json:"edges"`
@@ -81,6 +83,8 @@ func (*TeamMember) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case teammember.FieldCanReceiveTeamElo:
+			values[i] = new(sql.NullBool)
 		case teammember.FieldID:
 			values[i] = new(sql.NullInt64)
 		case teammember.FieldRole:
@@ -117,6 +121,12 @@ func (_m *TeamMember) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field role", values[i])
 			} else if value.Valid {
 				_m.Role = value.String
+			}
+		case teammember.FieldCanReceiveTeamElo:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field can_receive_team_elo", values[i])
+			} else if value.Valid {
+				_m.CanReceiveTeamElo = value.Bool
 			}
 		case teammember.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -192,6 +202,9 @@ func (_m *TeamMember) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("role=")
 	builder.WriteString(_m.Role)
+	builder.WriteString(", ")
+	builder.WriteString("can_receive_team_elo=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CanReceiveTeamElo))
 	builder.WriteByte(')')
 	return builder.String()
 }

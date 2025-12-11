@@ -28,6 +28,8 @@ const (
 	FieldWaitlistPosition = "waitlist_position"
 	// FieldScore holds the string denoting the score field in the database.
 	FieldScore = "score"
+	// FieldElo holds the string denoting the elo field in the database.
+	FieldElo = "elo"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -91,6 +93,7 @@ var Columns = []string{
 	FieldIsWaitlisted,
 	FieldWaitlistPosition,
 	FieldScore,
+	FieldElo,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -174,6 +177,11 @@ func ByWaitlistPosition(opts ...sql.OrderTermOption) OrderOption {
 // ByScore orders the results by the score field.
 func ByScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScore, opts...).ToFunc()
+}
+
+// ByElo orders the results by the elo field.
+func ByElo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldElo, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

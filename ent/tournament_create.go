@@ -135,6 +135,20 @@ func (_c *TournamentCreate) SetExternalLinks(v map[string]string) *TournamentCre
 	return _c
 }
 
+// SetTier sets the "tier" field.
+func (_c *TournamentCreate) SetTier(v tournament.Tier) *TournamentCreate {
+	_c.mutation.SetTier(v)
+	return _c
+}
+
+// SetNillableTier sets the "tier" field if the given value is not nil.
+func (_c *TournamentCreate) SetNillableTier(v *tournament.Tier) *TournamentCreate {
+	if v != nil {
+		_c.SetTier(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *TournamentCreate) SetCreatedAt(v time.Time) *TournamentCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -277,6 +291,10 @@ func (_c *TournamentCreate) defaults() {
 		v := tournament.DefaultCustomPageComponent
 		_c.mutation.SetCustomPageComponent(v)
 	}
+	if _, ok := _c.mutation.Tier(); !ok {
+		v := tournament.DefaultTier
+		_c.mutation.SetTier(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := tournament.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -315,6 +333,14 @@ func (_c *TournamentCreate) check() error {
 	}
 	if _, ok := _c.mutation.CustomPageComponent(); !ok {
 		return &ValidationError{Name: "custom_page_component", err: errors.New(`ent: missing required field "Tournament.custom_page_component"`)}
+	}
+	if _, ok := _c.mutation.Tier(); !ok {
+		return &ValidationError{Name: "tier", err: errors.New(`ent: missing required field "Tournament.tier"`)}
+	}
+	if v, ok := _c.mutation.Tier(); ok {
+		if err := tournament.TierValidator(v); err != nil {
+			return &ValidationError{Name: "tier", err: fmt.Errorf(`ent: validator failed for field "Tournament.tier": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Tournament.created_at"`)}
@@ -402,6 +428,10 @@ func (_c *TournamentCreate) createSpec() (*Tournament, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ExternalLinks(); ok {
 		_spec.SetField(tournament.FieldExternalLinks, field.TypeJSON, value)
 		_node.ExternalLinks = value
+	}
+	if value, ok := _c.mutation.Tier(); ok {
+		_spec.SetField(tournament.FieldTier, field.TypeEnum, value)
+		_node.Tier = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(tournament.FieldCreatedAt, field.TypeTime, value)

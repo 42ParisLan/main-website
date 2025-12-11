@@ -28,6 +28,7 @@ func (Tournament) Fields() []ent.Field {
 		field.JSON("team_structure", map[string]interface{}{}).Optional(),
 		field.String("custom_page_component").Default("default"),
 		field.JSON("external_links", map[string]string{}).Optional(),
+		field.Enum("tier").Values("S Tier", "A Tier", "B Tier", "C Tier", "D Tier", "E Tier", "F Tier").Default("C Tier"),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

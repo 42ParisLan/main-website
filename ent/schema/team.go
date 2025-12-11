@@ -23,6 +23,7 @@ func (Team) Fields() []ent.Field {
 		field.Bool("is_waitlisted").Default(false),
 		field.Int("waitlist_position").Optional().Nillable(),
 		field.Int("score").Optional(),
+		field.Int("elo").Optional().Nillable(),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

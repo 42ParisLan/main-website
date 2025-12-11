@@ -26,6 +26,8 @@ type Tx struct {
 	Consent *ConsentClient
 	// Invitation is the client for interacting with the Invitation builders.
 	Invitation *InvitationClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// RankGroup is the client for interacting with the RankGroup builders.
 	RankGroup *RankGroupClient
 	// Team is the client for interacting with the Team builders.
@@ -180,6 +182,7 @@ func (tx *Tx) init() {
 	tx.Component = NewComponentClient(tx.config)
 	tx.Consent = NewConsentClient(tx.config)
 	tx.Invitation = NewInvitationClient(tx.config)
+	tx.Notification = NewNotificationClient(tx.config)
 	tx.RankGroup = NewRankGroupClient(tx.config)
 	tx.Team = NewTeamClient(tx.config)
 	tx.TeamMember = NewTeamMemberClient(tx.config)
