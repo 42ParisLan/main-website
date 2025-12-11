@@ -70,8 +70,8 @@ function RouteComponent() {
 		)
 	} else {
 		return (
-			<div className="min-h-screen flex flex-col dark bg-background">
-				<div  className="flex flex-col flex-1 ">
+			<div className="flex flex-1 flex-col dark bg-background">
+				<div  className="flex-1 flex flex-col">
 					{data && (
 						<Component tournament={data} refetch={refetch}  user={user} />
 					)}

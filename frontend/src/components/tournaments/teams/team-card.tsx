@@ -9,9 +9,11 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
     return (
         <div className="flex flex-col items-center gap-6">
             <Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl ">
+                {/* nom tournois moins visible moins gros */}
                 <CardHeader className="">
                     <CardTitle className="text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                        My team for the {tournament.name} tournament
+                        {tournament.name} tournament
+                        {/* link vers tournament */}
                     </CardTitle>
                 </CardHeader>
             </Card>
@@ -22,7 +24,7 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
                             <div className="overflow-hidden relative h-40" >
                                 <img 
                                     src={team.image_url ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
-                                    className="object-cover h-30 rounded-full"
+                                    className="object-cover h-30 rounded-xl"
                                     alt={team.name}
                                     />
                                 <h3 className="absolute text-xl font-bold text-white">{team.name}</h3>

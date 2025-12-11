@@ -15,7 +15,7 @@ export function Header() {
 		<header className="sticky top-0 w-full z-[1000] border-b border-border/50 bg-black/95 backdrop-blur-sm">
 			<div className="container mx-auto px-4 lg:px-6">
 				<nav className="flex items-center justify-between h-20">
-					<div className="h-40 flex items-center gap-12">
+					<div className="flex items-center gap-12">
 						<Link to="/" className="shrink-0">
 							<img src={logo} alt="Logo" className="h-15 w-auto"/>
 						</Link>

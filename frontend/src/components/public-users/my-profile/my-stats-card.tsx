@@ -2,9 +2,9 @@ import { Card, CardContent } from '../../ui/card';
 
 export default function MyStatsCard() {
 	return (
-		<Card>
+		<Card className='max-w-[500px]'>
 			<CardContent>
-				<div className="h-[600px]">
+				<div className="w-[100px]">
 					<div className="relative">
 						<p className="text-white">STATS</p>
 					</div>

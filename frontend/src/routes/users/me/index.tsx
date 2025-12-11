@@ -11,7 +11,7 @@ export default function MyProfileContent() {
 	const {me} = useAuth();
 	
 	return (
-		<div className="flex flex-col p-10 gap-10 double-gradient bg-black">
+		<div className=" flex flex-col p-10 gap-10 double-gradient">
 			<MyProfileCard user={me}/>
 			<MyStatsCard/>
 		</div>
