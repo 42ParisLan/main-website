@@ -551,5 +551,7 @@ func (svc *tournamentsService) EndTournament(
 		}
 	}
 
+	// TODO: make the logics of elo
+
 	return nil
 }

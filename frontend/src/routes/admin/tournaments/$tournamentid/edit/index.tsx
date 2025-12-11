@@ -55,6 +55,33 @@ function RouteComponent() {
 
 	
 	const [confirmOpen, setConfirmOpen] = useState(false);
+	const [endTournamentOpen, setEndTournamentOpen] = useState(false);
+
+	const {mutate: mutateEnd, isPending: isEndingTournament} = client.useMutation("post", "/tournaments/{id}/end", {
+		onError: (error) => {
+			const errorDescription = errorModelToDescription(error)
+			console.error(errorDescription);
+			toast.error("Failed to end tournament", {
+				description: errorDescription,
+			})
+		},
+		onSuccess: () => {
+			toast.success("Tournament ended successfully")
+			setEndTournamentOpen(false)
+			router.navigate({to: "/admin/tournaments/$tournamentid", params: {tournamentid}})
+		}
+	})
+
+	const handleEndTournament = useCallback(() => {
+		if (!data) return;
+		mutateEnd({
+			params: {
+				path: {
+					id: data.id,
+				},
+			},
+		});
+	}, [mutateEnd, data]);
 
 	const handleDeleteTournament = useCallback(() => {
 		if (!data) return;
@@ -89,21 +116,63 @@ function RouteComponent() {
 							<CardTitle>
 								Update {data.name}
 							</CardTitle>
-							{(role == "CREATOR") && (
-								<Button
-									size="sm" 
-									variant="destructive"
-									onClick={handleDeleteTournament}
-								>
-									Delete
-								</Button>
-							)}
+							<div className="flex gap-2">
+								{(role == "CREATOR") && (
+									<>
+										<Button
+											size="sm" 
+											variant="outline"
+											onClick={() => setEndTournamentOpen(true)}
+										>
+											End Tournament
+										</Button>
+										<Button
+											size="sm" 
+											variant="destructive"
+											onClick={handleDeleteTournament}
+										>
+											Delete
+										</Button>
+									</>
+								)}
+							</div>
 						</CardHeader>
 						<CardContent>
 							<TournamentEdit tournament={data}/>
 						</CardContent>
 					</Card>
 				</div>
+				{/* Confirmation dialog for ending tournament */}
+				<Dialog open={endTournamentOpen} onOpenChange={setEndTournamentOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>End Tournament</DialogTitle>
+							<DialogDescription>
+								Before ending this tournament, please verify the following:
+							</DialogDescription>
+						</DialogHeader>
+						<div className="py-4">
+							<ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+								<li>All matches have been completed and results recorded</li>
+								<li>Final rankings have been reviewed and confirmed</li>
+								<li>All team disputes or issues have been resolved</li>
+								<li>Winner(s) have been properly identified</li>
+								<li>Elo ratings and statistics are ready to be finalized</li>
+							</ul>
+							<p className="mt-4 text-sm font-medium text-foreground">
+								This action will finalize the tournament. Continue?
+							</p>
+						</div>
+						<DialogFooter>
+							<Button type="button" variant="ghost" onClick={() => setEndTournamentOpen(false)}>Cancel</Button>
+							<Button type="button" onClick={handleEndTournament} disabled={isEndingTournament}>
+								{isEndingTournament ? "Ending..." : "End Tournament"}
+							</Button>
+						</DialogFooter>
+						<DialogClose />
+					</DialogContent>
+				</Dialog>
+
 				{/* Confirmation dialog for deleting visible tournaments */}
 				<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
 					<DialogContent>

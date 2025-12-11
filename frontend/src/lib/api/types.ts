@@ -744,6 +744,26 @@ export interface paths {
         patch: operations["editTournamentAdmin"];
         trace?: never;
     };
+    "/tournaments/{id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End Tournament
+         * @description This endpoint is used to end a tournament, set the end date to now, and delete unregistered teams without rank groups.
+         */
+        post: operations["endTournament"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tournaments/{id}/me/team": {
         parameters: {
             query?: never;
@@ -3621,6 +3641,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Tournament"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    endTournament: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 42 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
             /** @description Error */

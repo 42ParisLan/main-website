@@ -107,6 +107,16 @@ func (ctrl *tournamentController) Register(api huma.API) {
 		OperationID: "deleteTournamentAdmin",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.deleteTournamentAdmin)
+
+	huma.Register(api, huma.Operation{
+		Method:      "POST",
+		Path:        "/tournaments/{id}/end",
+		Summary:     "End Tournament",
+		Description: `This endpoint is used to end a tournament, set the end date to now, and delete unregistered teams without rank groups.`,
+		Tags:        []string{"Tournament"},
+		OperationID: "endTournament",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.endTournament)
 }
 
 func (ctrl *tournamentController) getAllTournaments(
@@ -218,16 +228,16 @@ func (ctrl *tournamentController) deleteTournamentAdmin(
 	return &oneTournamentOutput{Body: tournament}, nil
 }
 
-// func (ctrl *tournamentController) updateTournament(
-// 	ctx context.Context,
-// 	input *updateTournamentInput,
-// ) (*oneTournamentOutput, error) {
-// 	tournament, err := ctrl.tournamentsService.UpdateTournament(ctx, input.TournamentID, input.Body)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (ctrl *tournamentController) endTournament(
+	ctx context.Context,
+	input *TournamentIDInput,
+) (*BodyMessage, error) {
+	err := ctrl.tournamentsService.EndTournament(ctx, input.TournamentID)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &oneTournamentOutput{
-// 		Body: tournament,
-// 	}, nil
-// }
+	return &BodyMessage{
+		Body: "Tournament ended successfully",
+	}, nil
+}

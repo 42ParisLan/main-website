@@ -3321,6 +3321,38 @@ paths:
       summary: edit admin of tournament
       tags:
         - Tournament
+  /tournaments/{id}/end:
+    post:
+      description: This endpoint is used to end a tournament, set the end date to now, and delete unregistered teams without rank groups.
+      operationId: endTournament
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: End Tournament
+      tags:
+        - Tournament
   /tournaments/{id}/me/team:
     get:
       description: This endpoint is used to get user team from a tournament.

@@ -81,6 +81,8 @@ roles:
               methods: [POST]
             - path: /tournaments/*/admin/*
               methods: [PATCH, DELETE]
+            - path: /tournaments/*/end
+              methods: [POST]
             - path: /tournaments/*/rank-groups
               methods: [GET, PUT]
             - path: /teams/*/rank-group
