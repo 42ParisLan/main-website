@@ -180,8 +180,8 @@ function RouteComponent() {
 	if (team && tournament) {
 		return (
 			<div className="flex-1 flex flex-col">
-				<div className="flex flex-1 flex-col p-2 dark bg-gradient-to-br from-primary via-gray-800 to-secondary">
-					<Card className="p-2 text-white border-0 bg-card">
+				<div className="flex flex-1 flex-col p-2 dark bg-gradient-to-br from-black to-gray-900">
+					<Card className="p-2 text-white border-0 bg-card max-w-4xl mx-auto w-full">
 						<CardContent className='font-bold p-2 flex justify-between'>
 							<CardTitle >
 								Edit {team.name}
@@ -203,8 +203,8 @@ function RouteComponent() {
 						</CardContent>
 					</Card>
 					<div className="flex flex-1 py-2 gap-2 flex-row items-center">
-						<Card className=" w-full border-0 bg-card">
-							<CardContent className="flex flex-row items-center justify-evenly min-h-[100px]">
+						<Card className=" w-full border-0 bg-card max-w-4xl mx-auto">
+							<CardContent className="flex flex-row items-center justify-evenly min-h-[100px] min-w-[100px]">
 								<div className="flex flex-col">
 									{Object.entries(tournament.team_structure).map(([key, _]) => {
 										const users = team.members?.filter((user) => user.role == key);
@@ -250,7 +250,7 @@ function RouteComponent() {
 										)}
 										getItemKey={(item) => item.id}
 										/>
-									</div>
+								</div>
 							</CardContent>
 						</Card>
 						
@@ -287,27 +287,6 @@ function RouteComponent() {
 										This action cannot be undone. Are you sure you want to continue?
 									</DialogDescription>
 								</DialogHeader>
-								<inviteForm.Field
-									name='message'
-								>
-									{(field) => (
-										<div className="grid gap-2">
-											<Label htmlFor={field.name}>Message</Label>
-											<Input
-												id={field.name}
-												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												onBlur={field.handleBlur}
-												placeholder="Message for the invitation"
-												required
-											/>
-											{field.state.meta.errors?.[0] && (
-												<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
-											)}
-										</div>
-									)}
-								</inviteForm.Field>
-
 								<inviteForm.Field
 									name='user_id'
 								>
@@ -353,6 +332,31 @@ function RouteComponent() {
 										</Select>
 									)}
 								</inviteForm.Field>
+
+								<inviteForm.Field
+									name='message'
+								>
+									{(field) => (
+										<div className="grid gap-2">
+											<Label htmlFor={field.name}>Message</Label>
+											<Input
+												id={field.name}
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												onBlur={field.handleBlur}
+												placeholder="Message for the invitation"
+												required
+											/>
+											{field.state.meta.errors?.[0] && (
+												<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
+											)}
+										</div>
+									)}
+								</inviteForm.Field>
+
+								
+
+								
 								<DialogFooter>
 									<Button type="button" variant="ghost" onClick={() => setInvitationOpen(false)}>Cancel</Button>
 									<Button type="submit">Invite</Button>

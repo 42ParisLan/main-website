@@ -52,7 +52,7 @@ function VoteCard({ vote }: VoteCardProps) {
 
 	return (
 		<div className="p-[4px] rounded-xl dark bg-gradient-to-r from-primary to-secondary transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl">
-			<Card className="border-0 overflow-hidden rounded-xl bg-gradient-to-br from-black to-gray-700 ">
+			<Card className="border-0 overflow-hidden rounded-xl from-card">
 				<CardHeader>
 					<CardTitle>{vote.title}</CardTitle>
 				</CardHeader>
@@ -73,15 +73,6 @@ function VoteCard({ vote }: VoteCardProps) {
 										Go vote
 									</Link>
 								</Button>
-								<Button asChild variant="secondary">
-									<Link 
-										to="/votes/$voteid/live"
-										params={{voteid: String(vote.id)}}
-										>
-										See live
-									</Link>
-								</Button>
-								
 							</div>
 						</>
 					)}

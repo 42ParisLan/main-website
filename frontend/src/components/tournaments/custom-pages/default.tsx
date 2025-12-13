@@ -4,7 +4,6 @@ import {type components} from "@/lib/api/types"
 import { Link } from "@tanstack/react-router"
 import RegisterCard from '../registration/register-card';
 import { useEffect, useState } from 'react';
-import { useAuth } from "@/providers/auth.provider";
 
 export default function DefaultTournament({
 	tournament,
@@ -12,7 +11,6 @@ export default function DefaultTournament({
 }: {
 	tournament: components['schemas']['Tournament'];
 	refetch: () => any;
-	user: ReturnType<typeof useAuth>['me'];
 }) {
 	const [timeLeft, setTimeLeft] = useState('');
 
@@ -82,15 +80,15 @@ export default function DefaultTournament({
 				</div>
 			)}
 			{tournament.status === 'upcoming' && (
-				<div className="flex flex-col justify-center p-2 gap-20">
-					<h2 className="text-gray-300 text-center text-5xl font-bold">
+				<div className="flex flex-col justify-center items-center p-2 gap-20">
+					<h2 className="text-gray-300 text-center  text-4xl sm:text-5xl font-bold">
 						REGISTRATION OPENS IN
 					</h2>
 
 					<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
 						<Card className="bg-gradient-to-tr from-black to-gray-800">
 							<CardContent className="w-full h-full flex justify-center items-center">
-								<p className="font-mono text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+								<p className="font-mono text-6xl sm:text-7xl md:text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
 									{timeLeft}
 								</p>
 							</CardContent>

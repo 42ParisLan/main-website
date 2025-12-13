@@ -82,7 +82,7 @@ function RouteComponent() {
 	if (team && tournament)
 	{
 		return (
-			<div className="flex flex-1 dark grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
+			<div className="flex flex-1 flex-col items-center dark gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
 				<TeamCard team={team} tournament={tournament}/>
 				{role == "creator" ? (
 				<div>

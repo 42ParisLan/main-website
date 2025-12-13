@@ -24,7 +24,7 @@ export default function MyProfileCard({user}: {user: components['schemas']['User
 	})
 
 	return (
-		<Card>
+		<Card className="max-w-4xl mx-auto w-full">
 			<CardContent>
 				<div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
 					<div className="relative">
