@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { PlusCircleIcon } from "lucide-react";
+import errorModelToDescription from "@/lib/utils";
 
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 import AppForm from "./app-form";
 import { type components } from "@/lib/api/types";
 import { useCallback, useMemo } from "react";
-import { errorModelToDescription } from "@/lib/utils";
 import { toast } from "sonner";
 import useQueryClient from "@/hooks/use-query-client";
 import { useRouter } from "@tanstack/react-router";
@@ -37,7 +37,9 @@ export default function AppCreateButton() {
 	const router = useRouter();
 	const { mutateAsync: createApp } = client.useMutation("post", "/apps", {
 		onError(error) {
-		toast.error(errorModelToDescription(error));
+			console.error(`Error while creating app ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while creating app: ${errorMessage}`)
 		},
 		onSuccess(createdApp) {
 		toast.success("App created successfully");

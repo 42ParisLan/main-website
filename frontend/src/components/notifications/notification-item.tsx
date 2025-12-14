@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import useQueryClient from '@/hooks/use-query-client';
+import errorModelToDescription from '@/lib/utils';
 import type { components } from '@/lib/api/types';
 import { Link } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -23,9 +24,10 @@ export default function NotificationItem({ notification, compact = false, onMark
 			}
 			toast.success('Notification marked as read');
 		},
-		onError(err) {
-			console.error('Failed to mark notification as read', err);
-			toast.error('Failed to mark notification as read');
+		onError(error) {
+			console.error(`Error while marking notification as read ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while marking notification as read: ${errorMessage}`)
 		},
 	});
 

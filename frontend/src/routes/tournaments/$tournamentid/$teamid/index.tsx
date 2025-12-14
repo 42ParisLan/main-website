@@ -5,6 +5,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { TeamCard } from '@/components/tournaments/teams/team-card';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
+import errorModelToDescription from '@/lib/utils';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
   component: RouteComponent,
@@ -45,8 +46,9 @@ function RouteComponent() {
 			}
 		},
 		onError(error) {
-			console.error('Failed to leave team', error)
-			toast.error("Failed to Leave Team")
+			console.error(`Error while leaving team ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while leaving team: ${errorMessage}`)
 		}
 	})
 

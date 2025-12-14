@@ -3,6 +3,7 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import errorModelToDescription from '@/lib/utils';
 import { PaginatedListControlled } from '@/components/ui/paginated-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import UserSearch from '@/components/users/user-search';
@@ -70,8 +71,9 @@ function RouteComponent() {
 			}
 		},
 		onError(error) {
-			console.error('Error deleting team', error)
-			toast.error("Failed to Delete Team")
+			console.error(`Error while deleting team ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while deleting team: ${errorMessage}`)
 		}
 	})
 
@@ -89,8 +91,9 @@ function RouteComponent() {
 			}
 		},
 		onError(error) {
-			console.error('Failed to lock team', error)
-			toast.error("Failed to Lock Team, check that the team has correct structure")
+			console.error(`Error while locking team ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while locking team: ${errorMessage}`)
 		}
 	})
 
@@ -124,8 +127,9 @@ function RouteComponent() {
 			setInvitationOpen(false)
 		},
 		onError(error) {
-			console.error('Error sending Invitation', error)
-			toast.error("Failed to send Invitation")
+			console.error(`Error while sending invitation ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while sending invitation: ${errorMessage}`)
 		}
 	})
 
