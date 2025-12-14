@@ -2,6 +2,7 @@ import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "@/components/ui/card";
 import TournamentAdminEditModal from "./admin-edit-modal";
 import { memo } from "react";
+import defaultImage from '@/assets/default.png'
 
 function TournamentAdminCard({admin, tournamentid, myRole, refetchTournament}: {admin: components['schemas']['LightTournamentAdmin']; tournamentid: number; myRole: components["schemas"]["LightTournamentAdmin"]["role"] | undefined; refetchTournament: () => any}) {
 	return (

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { IconTrash } from "@tabler/icons-react";
 import AdminEditModal from "./admin-edit-modal";
 import { memo } from "react";
+import defaultImage from '@/assets/default.png'
 
 function AdminCard({user, refetchUsers}: {user: components['schemas']['User']; refetchUsers: () => any}) {
 	return (

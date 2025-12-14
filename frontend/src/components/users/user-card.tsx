@@ -1,5 +1,6 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "../ui/card";
+import defaultImage from '@/assets/default.png'
 
 export default function UserCard({user, ...props}: {user: components['schemas']['User']} & React.ComponentProps<"div">) {
 	return (
