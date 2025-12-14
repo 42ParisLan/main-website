@@ -482,6 +482,8 @@ components:
         score:
           format: int64
           type: integer
+        tournament:
+          $ref: "#/components/schemas/LightTournament"
         waitlist_position:
           format: int64
           type: integer
@@ -1001,6 +1003,43 @@ components:
         items:
           items:
             $ref: "#/components/schemas/LightVote"
+          nullable: true
+          type: array
+        limit:
+          example: 10
+          format: int64
+          type: integer
+        page:
+          example: 1
+          format: int64
+          type: integer
+        total:
+          example: 100
+          format: int64
+          type: integer
+        total_pages:
+          example: 10
+          format: int64
+          type: integer
+      required:
+        - items
+        - page
+        - total_pages
+        - limit
+        - total
+      type: object
+    ResponseNotification:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          example: /api/schemas/ResponseNotification.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          items:
+            $ref: "#/components/schemas/Notification"
           nullable: true
           type: array
         limit:
@@ -2373,6 +2412,74 @@ paths:
         - Invitations
   /me/notifications:
     get:
+      description: Get paginated list of all notifications for the current user.
+      operationId: getNotifications
+      parameters:
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+        - example: all
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: all
+            enum:
+              - all
+              - read
+              - unread
+            example: all
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseNotification"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get user notifications
+      tags:
+        - Notifications
+  /me/notifications/live:
+    get:
       description: Server-Sent Events stream that sends live notifications in real-time. Streams new notifications as they occur.
       operationId: liveNotifications
       responses:
@@ -3681,6 +3788,32 @@ paths:
       summary: Search Users
       tags:
         - Users
+  /users/top/elo:
+    get:
+      description: This endpoint returns the top 10 users ordered by ELO (non-anonymized).
+      operationId: getTopUsersByElo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/LightUser"
+                nullable: true
+                type: array
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get Top Users by ELO
+      tags:
+        - Users
   /users/{id_or_login}:
     get:
       description: This endpoint is used to get a user by its ID or login.
@@ -3817,6 +3950,70 @@ paths:
         - OAuth2 Auth:
             - profile
       summary: Change user roles
+      tags:
+        - Users
+  /users/{id}/teams:
+    get:
+      description: This endpoint returns all teams for a specific user.
+      operationId: getUserTeams
+      parameters:
+        - example: 42
+          in: path
+          name: id
+          required: true
+          schema:
+            example: 42
+            format: int64
+            type: integer
+        - example: 0
+          explode: false
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            format: int64
+            minimum: 0
+            type: integer
+        - example: 10
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            example: 10
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+        - example: asc
+          explode: false
+          in: query
+          name: order
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            example: asc
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseLightTeam"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+        - OAuth2 Auth:
+            - profile
+      summary: Get User Teams
       tags:
         - Users
   /votes:

@@ -12,7 +12,7 @@ import (
 	"github.com/samber/do"
 )
 
-type DatabaseService *ent.Client
+type DatabaseService = *ent.Client
 
 func NewProvider() func(i *do.Injector) (DatabaseService, error) {
 	return func(i *do.Injector) (DatabaseService, error) {

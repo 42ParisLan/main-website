@@ -23,16 +23,10 @@ function WelcomePage() {
 		}
 	})
 
-	const { data: users } = client.useQuery('get', '/users', {
-		params: {
-			query: {
-				limit: 10,
-			},
-		},
-	});
+	const { data: users } = client.useQuery('get', '/users/top/elo');
 
 	return (
-		<div className="flex flex-col items-center bg-background">
+		<div className="flex flex-col items-center bg-background dark">
 			{/* Welcome message  */}
 			<div className="hero-gradient px-6 w-full py-10 md:h-130 flex flex-col md:flex-row items-center justify-around gap-8">
 				<div className="flex flex-col text-center md:text-left">
@@ -57,7 +51,7 @@ function WelcomePage() {
 			</div>
 			<div className="flex flex-col gap-20 items-center w-full tournament-gradient py-20">
 				<ActiveTournaments tournaments={tournaments?.items ?? []} />
-				<TopUsers users={users?.items ?? []} />
+				<TopUsers users={users ?? []} />
 			</div>
 		</div>
 	)

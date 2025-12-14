@@ -12,11 +12,15 @@ export default function RegisterCard({tournament}: {tournament: components['sche
                 <strong>Slug</strong>
                 <div className="text-sm">{tournament.slug}</div>
             </div>
+            <div className="sm:col-span-2">
+                <strong>Description</strong>
+                <div className="text-sm mt-1">{tournament.description ?? <span className="text-muted-foreground">No description</span>}</div>
+            </div>
 
-            <div>
+            {/* <div>
                 <strong>Visible</strong>
                 <div className="text-sm">{tournament.is_visible ? 'Yes' : 'No'}</div>
-            </div>
+            </div> */}
 
             <div>
                 <strong>Teams</strong>
@@ -61,16 +65,10 @@ export default function RegisterCard({tournament}: {tournament: components['sche
                     </div>
                 </div>
             </div>
-
-            <div className="sm:col-span-2">
-                <strong>Description</strong>
-                <div className="text-sm mt-1">{tournament.description ?? <span className="text-muted-foreground">No description</span>}</div>
-            </div>
-
-            <div>
+            {/* <div>
                 <strong>Custom page</strong>
                 <div className="text-sm">{tournament.custom_page_component ?? 'default'}</div>
-            </div>
+            </div> */}
 
         </div>
     );

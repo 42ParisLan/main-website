@@ -53,15 +53,15 @@ export default function DefaultTournament({
 	return (
 		<div className="flex flex-1 grid grid-cols-1 gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
 			{tournament.status === 'registration_open' && (
-				<div className="flex flex-col gap-6">
-					<Card className="bg-gradient-to-br from-black to-gray-800">
+				<div className="flex flex-col items-center gap-6">
+					<Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
 						<CardHeader>
 							<CardTitle className=" text-center text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
 								{tournament.name}
 							</CardTitle>
 						</CardHeader>
 					</Card>
-					<Card className="bg-gradient-to-tr from-black to-gray-800">
+					<Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
 						<CardContent>
 							<RegisterCard tournament={tournament} />
 						</CardContent>
@@ -79,15 +79,15 @@ export default function DefaultTournament({
 				</div>
 			)}
 			{tournament.status === 'upcoming' && (
-				<div className="flex flex-col justify-center p-2 gap-20">
-					<h2 className="text-gray-300 text-center text-5xl font-bold">
+				<div className="flex flex-col justify-center items-center p-2 gap-20">
+					<h2 className="text-gray-300 text-center  text-4xl sm:text-5xl font-bold">
 						REGISTRATION OPENS IN
 					</h2>
 
 					<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
 						<Card className="bg-gradient-to-tr from-black to-gray-800">
 							<CardContent className="w-full h-full flex justify-center items-center">
-								<p className="font-mono text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+								<p className="font-mono text-6xl sm:text-7xl md:text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
 									{timeLeft}
 								</p>
 							</CardContent>
@@ -103,13 +103,36 @@ export default function DefaultTournament({
 				</Card>
 			)}
 			{tournament.status === "completed" && (
-				<Card>
-					<CardContent>
-						
-					</CardContent>
-				</Card>
+				<div className="bg-gradient-to-br from-primary to-secondary p-1 rounded-md">
+					<Card className="dark bg-gradient-to-b from-black to-gray-900">
+						<CardContent>
+							{/* <Table className="">
+								<TableHeader >
+									<TableRow className="hover:bg-transparent">
+										<TableHead>Date</TableHead>
+										<TableHead>Place</TableHead>
+										<TableHead>Tier</TableHead>
+										<TableHead>Tournament</TableHead>
+										<TableHead>Result</TableHead>
+										<TableHead>Prize</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody className="">
+									<TableRow>
+										<TableCell className="">{tournament.tournament_start}</TableCell>
+										<TableCell className="">3rd-4th</TableCell>
+										<TableCell>B-Tier</TableCell>
+										<TableCell>{tournament.name}</TableCell>
+										<TableCell>2 : 3</TableCell>
+										<TableCell>Prize</TableCell>
+									</TableRow>
+								
+								</TableBody>
+							</Table> */}
+						</CardContent>
+					</Card>
+				</div>
 			)}
-				
 		</div>
 	)
 }

@@ -33,3 +33,16 @@ type changeUserRolesInput struct {
 	UserID int      `path:"id" required:"true" example:"42" description:"The User ID"`
 	Body   []string `required:"true"`
 }
+
+type topUsersByEloOutput struct {
+	Body []*lightmodels.LightUser `required:"true"`
+}
+
+type userTeamsInput struct {
+	UserID int `path:"id" required:"true" example:"42" description:"The User ID"`
+	usersmodels.GetUserTeamsParams
+}
+
+type userTeamsOutput struct {
+	Body *paging.Response[*lightmodels.LightTeam] `nullable:"false"`
+}

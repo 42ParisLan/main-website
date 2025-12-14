@@ -132,6 +132,7 @@ code {
 	--success-foreground: #ffffff;
 	--border: #27272a;
 	--input: #27272a;
+	--radius: 0.625rem;
 	--ring: #3f3f46;
 	--chart-1: #8b5cf6;
 	--chart-2: #22c55e;

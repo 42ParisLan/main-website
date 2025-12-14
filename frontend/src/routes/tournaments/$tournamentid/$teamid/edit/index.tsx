@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import errorModelToDescription from '@/lib/utils';
 import { PaginatedListControlled } from '@/components/ui/paginated-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import UserSearch from '@/components/users/user-search';
@@ -14,6 +15,7 @@ import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { Separator } from '@radix-ui/react-separator';
 
 export const Route = createFileRoute(
 	'/tournaments/$tournamentid/$teamid/edit/',
@@ -69,8 +71,9 @@ function RouteComponent() {
 			}
 		},
 		onError(error) {
-			console.error('Error deleting team', error)
-			toast.error("Failed to Delete Team")
+			console.error(`Error while deleting team ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while deleting team: ${errorMessage}`)
 		}
 	})
 
@@ -88,8 +91,9 @@ function RouteComponent() {
 			}
 		},
 		onError(error) {
-			console.error('Failed to lock team', error)
-			toast.error("Failed to Lock Team, check that the team has correct structure")
+			console.error(`Error while locking team ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while locking team: ${errorMessage}`)
 		}
 	})
 
@@ -123,8 +127,9 @@ function RouteComponent() {
 			setInvitationOpen(false)
 		},
 		onError(error) {
-			console.error('Error sending Invitation', error)
-			toast.error("Failed to send Invitation")
+			console.error(`Error while sending invitation ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while sending invitation: ${errorMessage}`)
 		}
 	})
 
@@ -178,9 +183,9 @@ function RouteComponent() {
 
 	if (team && tournament) {
 		return (
-			<div className=" min-h-screen flex flex-col">
-				<div className="flex flex-1 flex-col p-2 dark bg-gradient-to-br from-primary via-gray-800 to-secondary">
-					<Card className="p-2 text-white border-0 bg-gradient-to-br from-black to-gray-700 ">
+			<div className="flex-1 flex flex-col">
+				<div className="flex flex-1 flex-col p-2 dark bg-gradient-to-br from-black to-gray-900">
+					<Card className="p-2 text-white border-0 bg-card max-w-4xl mx-auto w-full">
 						<CardContent className='font-bold p-2 flex justify-between'>
 							<CardTitle >
 								Edit {team.name}
@@ -201,60 +206,58 @@ function RouteComponent() {
 							</Button>
 						</CardContent>
 					</Card>
-					<div className="flex flex-1 py-2 gap-2 flex-row justify-center ">
-						<Card className=" w-full flex-1 border-0 bg-gradient-to-br from-black to-gray-700">
-							<CardContent>
-								{Object.entries(tournament.team_structure).map(([key, _]) => {
-									const users = team.members?.filter((user) => user.role == key);
-									if (users && users.length > 0)
-										{
-											return (
-												<>
-												<p>{key}</p>
-												{users.map((team_member) => (
-													<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
-														<img
-															src={team_member.user?.picture ?? ''}
-															alt={team_member.user?.username ?? 'team member'}
-															className="w-10 h-10 rounded-full object-cover"
-															/>
-														<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
-													</div>
-												))}
-											</>
-										)
-									}
-								})}
-								{team.is_locked == false && (
-									<Button
+					<div className="flex flex-1 py-2 gap-2 flex-row items-center">
+						<Card className=" w-full border-0 bg-card max-w-4xl mx-auto">
+							<CardContent className="flex flex-row items-center justify-evenly min-h-[100px] min-w-[100px]">
+								<div className="flex flex-col">
+									{Object.entries(tournament.team_structure).map(([key, _]) => {
+										const users = team.members?.filter((user) => user.role == key);
+										if (users && users.length > 0)
+											{
+												return (
+													<>
+													<p>{key}</p>
+													{users.map((team_member) => (
+														<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
+															<img
+																src={team_member.user?.picture ?? ''}
+																alt={team_member.user?.username ?? 'team member'}
+																className="w-10 h-10 rounded-full object-cover"
+																/>
+															<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
+														</div>
+													))}
+												</>
+											)
+										}
+									})}
+									{team.is_locked == false && (
+										<Button
 										onClick={() => setInvitationOpen(true)}
 										>
-										Invite User
-									</Button>
-								)}
-							</CardContent>
-						</Card>
-						<Card className="w-full border-0 flex-1  bg-gradient-to-br from-black to-gray-700">
-							<CardHeader className='flex justify-between'>
-								<CardTitle>
-									Invitations
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<PaginatedListControlled<components['schemas']['Invitation']>
-									data={invitations}
-									page={page}
-									onPageChange={setPage}
-									isLoading={isLoadingInvitations}
-									renderItem={(item) => (
-										<>
-											<InvitationItem invitation={item} tournamentid={tournament.slug} />
-										</>
+											Invite User
+										</Button>
 									)}
-									getItemKey={(item) => item.id}
-								/>
+								</div>
+								<Separator orientation="vertical" className="self-stretch mx-2 bg-gray-500 w-px"/>
+								<div>
+									<h3>Invitations</h3>
+									<PaginatedListControlled<components['schemas']['Invitation']>
+										data={invitations}
+										page={page}
+										onPageChange={setPage}
+										isLoading={isLoadingInvitations}
+										renderItem={(item) => (
+											<>
+												<InvitationItem invitation={item} tournamentid={tournament.slug} />
+											</>
+										)}
+										getItemKey={(item) => item.id}
+										/>
+								</div>
 							</CardContent>
 						</Card>
+						
 					</div>
 					{/* Confirmation dialog for deleting visible tournaments */}
 					<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
@@ -274,7 +277,7 @@ function RouteComponent() {
 					</Dialog>
 					{/* Invitation dialog for adding users */}
 					<Dialog open={invitationOpen} onOpenChange={setInvitationOpen}>
-						<DialogContent>
+						<DialogContent className="dark overflow-hidden bg-card">
 							<form
 								onSubmit={(e) => {
 									e.preventDefault();
@@ -288,27 +291,6 @@ function RouteComponent() {
 										This action cannot be undone. Are you sure you want to continue?
 									</DialogDescription>
 								</DialogHeader>
-								<inviteForm.Field
-									name='message'
-								>
-									{(field) => (
-										<div className="grid gap-2">
-											<Label htmlFor={field.name}>Message</Label>
-											<Input
-												id={field.name}
-												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												onBlur={field.handleBlur}
-												placeholder="Message for the invitation"
-												required
-											/>
-											{field.state.meta.errors?.[0] && (
-												<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
-											)}
-										</div>
-									)}
-								</inviteForm.Field>
-
 								<inviteForm.Field
 									name='user_id'
 								>
@@ -354,6 +336,31 @@ function RouteComponent() {
 										</Select>
 									)}
 								</inviteForm.Field>
+
+								<inviteForm.Field
+									name='message'
+								>
+									{(field) => (
+										<div className="grid gap-2">
+											<Label htmlFor={field.name}>Message</Label>
+											<Input
+												id={field.name}
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												onBlur={field.handleBlur}
+												placeholder="Message for the invitation"
+												required
+											/>
+											{field.state.meta.errors?.[0] && (
+												<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>
+											)}
+										</div>
+									)}
+								</inviteForm.Field>
+
+								
+
+								
 								<DialogFooter>
 									<Button type="button" variant="ghost" onClick={() => setInvitationOpen(false)}>Cancel</Button>
 									<Button type="submit">Invite</Button>

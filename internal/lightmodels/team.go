@@ -53,6 +53,7 @@ type LightTeam struct {
 	RankGroup        *LightRankGroup    `json:"rank_group,omitempty"`
 	Members          []*LightTeamMember `json:"members,omitempty"`
 	Creator          *LightUser         `json:"creator,omitempty"`
+	Tournament       *LightTournament   `json:"tournament,omitempty"`
 	WaitlistPosition *int               `json:"waitlist_position,omitempty"`
 	CreatedAt        time.Time          `json:"created_at"`
 }
@@ -85,6 +86,11 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 		}
 	}
 
+	var tournament *LightTournament
+	if entTeam.Edges.Tournament != nil {
+		tournament = NewLightTournamentFromEnt(ctx, entTeam.Edges.Tournament, S3Service)
+	}
+
 	return &LightTeam{
 		ID:               entTeam.ID,
 		Name:             entTeam.Name,
@@ -97,6 +103,7 @@ func NewLightTeamFromEnt(ctx context.Context, entTeam *ent.Team, S3Service s3ser
 		RankGroup:        rankGroup,
 		Members:          members,
 		Creator:          creator,
+		Tournament:       tournament,
 		WaitlistPosition: entTeam.WaitlistPosition,
 		CreatedAt:        entTeam.CreatedAt,
 	}

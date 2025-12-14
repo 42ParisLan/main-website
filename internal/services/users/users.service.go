@@ -9,12 +9,14 @@ import (
 
 	"base-website/ent"
 	"base-website/ent/predicate"
+	"base-website/ent/teammember"
 	"base-website/ent/user"
 	"base-website/internal/lightmodels"
 	configservice "base-website/internal/services/config"
 	databaseservice "base-website/internal/services/database"
 	intraservice "base-website/internal/services/intra"
 	rbacservice "base-website/internal/services/rbac"
+	s3service "base-website/internal/services/s3"
 	usersmodels "base-website/internal/services/users/models"
 	"base-website/pkg/errorfilters"
 	"base-website/pkg/paging"
@@ -30,8 +32,12 @@ type UserService interface {
 	GetUserByLogin(ctx context.Context, login string) (*usersmodels.User, error)
 	// This method is used to get a user by its ID.
 	GetUserByID(ctx context.Context, id int) (*usersmodels.User, error)
+	// This method is used to get top users ordered by elo.
+	GetTopUsersByElo(ctx context.Context) ([]*lightmodels.LightUser, error)
 	// This method is used get user by its ID or login.
 	GetUserByIDOrLogin(ctx context.Context, idOrLogin string) (*usersmodels.User, error)
+	// This method is used to get all teams for a user.
+	GetUserTeams(ctx context.Context, userID int, params *usersmodels.GetUserTeamsParams) (*paging.Response[*lightmodels.LightTeam], error)
 	// This method is user to change user roles by its ID
 	ChangeUserRolesByID(ctx context.Context, id int, roles []string) (*usersmodels.User, error)
 	// This method is used to anonymize a user by its ID (remove personal data)
@@ -46,6 +52,7 @@ type usersService struct {
 	intraService    intraservice.IntraService
 	errorFilter     errorfilters.ErrorFilter
 	rbacService     rbacservice.RBACService
+	s3service       s3service.S3Service
 }
 
 func NewProvider() func(i *do.Injector) (UserService, error) {
@@ -55,6 +62,7 @@ func NewProvider() func(i *do.Injector) (UserService, error) {
 			do.MustInvoke[databaseservice.DatabaseService](i),
 			do.MustInvoke[intraservice.IntraService](i),
 			do.MustInvoke[rbacservice.RBACService](i),
+			do.MustInvoke[s3service.S3Service](i),
 		)
 	}
 }
@@ -64,6 +72,7 @@ func New(
 	databaseService databaseservice.DatabaseService,
 	intraService intraservice.IntraService,
 	rbacService rbacservice.RBACService,
+	s3service s3service.S3Service,
 ) (UserService, error) {
 	return &usersService{
 		configService:   configService,
@@ -71,6 +80,7 @@ func New(
 		intraService:    intraService,
 		errorFilter:     errorfilters.NewEntErrorFilter().WithEntityTypeName("user"),
 		rbacService:     rbacService,
+		s3service:       s3service,
 	}, nil
 }
 
@@ -147,6 +157,25 @@ func (svc *usersService) GetUserByID(ctx context.Context, id int) (*usersmodels.
 	return usersmodels.NewUserFromEnt(user), nil
 }
 
+func (svc *usersService) GetTopUsersByElo(ctx context.Context) ([]*lightmodels.LightUser, error) {
+	users, err := svc.databaseService.User.Query().
+		Where(
+			user.AnonymizedAtIsNil(),
+			user.EloGT(0),
+		).
+		Order(
+			ent.Desc(user.FieldElo),
+			ent.Desc(user.FieldID),
+		).
+		Limit(10).
+		All(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get")
+	}
+
+	return lightmodels.NewLightUsersFromEnt(users), nil
+}
+
 func (svc *usersService) GetUserByIDOrLogin(
 	ctx context.Context,
 	idOrLogin string,
@@ -164,6 +193,46 @@ func (svc *usersService) GetUserByIDOrLogin(
 		return nil, svc.errorFilter.Filter(err, "get")
 	}
 	return usersmodels.NewUserFromEnt(user), nil
+}
+
+func (svc *usersService) GetUserTeams(ctx context.Context, userID int, params *usersmodels.GetUserTeamsParams) (*paging.Response[*lightmodels.LightTeam], error) {
+	query := svc.databaseService.TeamMember.Query().
+		Where(teammember.HasUserWith(user.IDEQ(userID))).
+		WithTeam(func(tq *ent.TeamQuery) {
+			tq.WithCreator().
+				WithMembers(func(tmq *ent.TeamMemberQuery) {
+					tmq.WithUser()
+				}).
+				WithRankGroup().
+				WithTournament()
+		})
+
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "count teams")
+	}
+
+	query = paging.ApplyQueryPaging(query, params.Input)
+
+	if params.Order == "asc" {
+		query = query.Order(ent.Asc("id"))
+	} else {
+		query = query.Order(ent.Desc("id"))
+	}
+
+	teamMembers, err := query.All(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "get teams")
+	}
+
+	teams := make([]*lightmodels.LightTeam, 0, len(teamMembers))
+	for _, tm := range teamMembers {
+		if tm.Edges.Team != nil {
+			teams = append(teams, lightmodels.NewLightTeamFromEnt(ctx, tm.Edges.Team, svc.s3service))
+		}
+	}
+
+	return paging.CreatePagingResponse(teams, total, params.Page, params.Limit), nil
 }
 
 func (svc *usersService) SearchUsers(

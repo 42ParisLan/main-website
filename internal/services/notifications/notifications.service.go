@@ -8,6 +8,7 @@ import (
 	"base-website/internal/security"
 	databaseservice "base-website/internal/services/database"
 	"base-website/pkg/errorfilters"
+	"base-website/pkg/paging"
 	"context"
 	"time"
 
@@ -19,6 +20,7 @@ type NotificationsService interface {
 	MarkAsRead(ctx context.Context, notificationID int) error
 	CreateNotification(ctx context.Context, userID int, notifType, title, message, href string) (*ent.Notification, error)
 	ListLastNotifications(ctx context.Context, limit int) ([]*lightmodels.Notification, error)
+	ListNotifications(ctx context.Context, status string, input *paging.Input) (*paging.Response[*lightmodels.Notification], error)
 }
 
 type notificationsService struct {
@@ -112,7 +114,7 @@ func (svc *notificationsService) ListLastNotifications(
 	}
 
 	notifs, err := svc.databaseService.Notification.Query().
-		Where(notification.HasUserWith(user.IDEQ(userID))).
+		Where(notification.HasUserWith(user.IDEQ(userID)), notification.ReadEQ(false)).
 		Order(ent.Desc(notification.FieldCreatedAt)).
 		Limit(limit).
 		All(ctx)
@@ -121,4 +123,46 @@ func (svc *notificationsService) ListLastNotifications(
 	}
 
 	return lightmodels.NewNotificationsFromEnt(notifs), nil
+}
+
+func (svc *notificationsService) ListNotifications(
+	ctx context.Context,
+	status string,
+	input *paging.Input,
+) (*paging.Response[*lightmodels.Notification], error) {
+	userID, err := security.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := svc.databaseService.Notification.Query().
+		Where(notification.HasUserWith(user.IDEQ(userID)))
+
+	// Apply status filter
+	if status == "read" {
+		query = query.Where(notification.ReadEQ(true))
+	} else if status == "unread" {
+		query = query.Where(notification.ReadEQ(false))
+	}
+	// "all" or empty means no filter
+
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "count")
+	}
+
+	query = paging.ApplyQueryPaging(query, *input)
+
+	if input.Order == "asc" {
+		query = query.Order(ent.Asc(notification.FieldCreatedAt))
+	} else {
+		query = query.Order(ent.Desc(notification.FieldCreatedAt))
+	}
+
+	notifs, err := query.All(ctx)
+	if err != nil {
+		return nil, svc.errorFilter.Filter(err, "list")
+	}
+
+	return paging.CreatePagingResponse(lightmodels.NewNotificationsFromEnt(notifs), total, input.Page, input.Limit), nil
 }

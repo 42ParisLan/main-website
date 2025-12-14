@@ -1,7 +1,6 @@
 import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo } from 'react'
-
 export const Route = createFileRoute('/tournaments/$tournamentid/')({
   component: RouteComponent,
 })
@@ -9,6 +8,7 @@ export const Route = createFileRoute('/tournaments/$tournamentid/')({
 function RouteComponent() {
 	const {tournamentid} = Route.useParams();
 	const router = useRouter();
+
 
 	const client = useQueryClient();
 
@@ -42,6 +42,10 @@ function RouteComponent() {
 		router.navigate({to: '/tournaments'})
 		return
 	}
+	
+	if (!data) {
+		return <div className="text-sm text-muted-foreground">Loading tournament…</div>
+	}
 
 	const chosen = data?.custom_page_component || "default"
 	const Component = componentMap[chosen] ?? componentMap['default'] ?? (() => <p>Missing component</p>)
@@ -53,10 +57,10 @@ function RouteComponent() {
 		)
 	} else {
 		return (
-			<div className="min-h-screen flex flex-col dark bg-background">
-				<div  className="flex flex-col flex-1 ">
+			<div className="flex flex-1 flex-col dark bg-background">
+				<div  className="flex-1 flex flex-col">
 					{data && (
-						<Component tournament={data} refetch={refetch} />
+						<Component tournament={data} refetch={refetch}/>
 					)}
 				</div>
 			</div>

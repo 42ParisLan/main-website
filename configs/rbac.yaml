@@ -67,6 +67,10 @@ roles:
               methods: [GET]
             - path: /apps/*/me/consent
               methods: [GET]
+            - path: /users/top/elo
+              methods: [GET]
+            - path: /users/*/teams
+              methods: [GET]
 
     basic_admin:
         name: 'basic_admin'

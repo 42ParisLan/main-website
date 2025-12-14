@@ -13,6 +13,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"path/filepath"
 	"strings"
 	"time"
@@ -523,12 +524,127 @@ func (svc *tournamentsService) EndTournament(
 		return huma.Error401Unauthorized("can't end tournament when registration are not closed")
 	}
 
-	_, err = svc.databaseService.Tournament.UpdateOneID(tournamentID).
-		SetTournamentEnd(now).
-		Save(ctx)
+	unrankedTeams, err := svc.databaseService.Team.Query().
+		Where(
+			team.HasTournamentWith(tournament.IDEQ(tournamentID)),
+			team.IsRegisteredEQ(true),
+			team.Not(team.HasRankGroup()),
+		).
+		Count(ctx)
 	if err != nil {
+		return svc.errorFilter.Filter(err, "check ranked teams")
+	}
+	if unrankedTeams > 0 {
+		return huma.Error401Unauthorized("cannot end tournament: all registered teams must have a rank group assigned")
+	}
+
+	eloBaseByTier := map[tournament.Tier]int{
+		tournament.TierSTier: 120,
+		tournament.TierATier: 100,
+		tournament.TierBTier: 80,
+		tournament.TierCTier: 60,
+		tournament.TierDTier: 45,
+		tournament.TierETier: 30,
+		tournament.TierFTier: 15,
+	}
+
+	tx, err := svc.databaseService.Tx(ctx)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "start transaction")
+	}
+
+	rollback := true
+	defer func() {
+		if rollback {
+			tx.Rollback()
+		}
+	}()
+
+	entTournamentWithTeams, err := tx.Tournament.
+		Query().
+		Where(tournament.IDEQ(tournamentID)).
+		WithRankGroups().
+		WithTeams(func(teamQuery *ent.TeamQuery) {
+			teamQuery.
+				Where(team.IsRegisteredEQ(true)).
+				WithRankGroup().
+				WithMembers(func(memberQuery *ent.TeamMemberQuery) {
+					memberQuery.WithUser()
+				})
+		}).
+		Only(ctx)
+	if err != nil {
+		return svc.errorFilter.Filter(err, "load tournament for elo")
+	}
+
+	if len(entTournamentWithTeams.Edges.RankGroups) == 0 {
+		return huma.Error400BadRequest("cannot end tournament without rank groups")
+	}
+
+	totalRanks := 0
+	for _, rg := range entTournamentWithTeams.Edges.RankGroups {
+		if rg.RankMax > totalRanks {
+			totalRanks = rg.RankMax
+		}
+	}
+
+	if totalRanks == 0 {
+		return huma.Error400BadRequest("cannot end tournament: invalid rank group ranges")
+	}
+
+	baseDelta, ok := eloBaseByTier[entTournamentWithTeams.Tier]
+	if !ok {
+		baseDelta = eloBaseByTier[tournament.TierCTier]
+	}
+
+	for _, entTeam := range entTournamentWithTeams.Edges.Teams {
+		if entTeam.Edges.RankGroup == nil {
+			return huma.Error400BadRequest("all teams must have a rank group before ending the tournament")
+		}
+
+		midRank := float64(entTeam.Edges.RankGroup.RankMin+entTeam.Edges.RankGroup.RankMax) / 2.0
+
+		placementScore := 1.0
+		if totalRanks > 1 {
+			placementScore = 1 - (midRank-1)/float64(totalRanks-1)
+			if placementScore < 0 {
+				placementScore = 0
+			}
+		}
+
+		delta := int(math.Round(float64(baseDelta) * placementScore))
+		if delta == 0 {
+			continue
+		}
+
+		if err := tx.Team.UpdateOneID(entTeam.ID).AddElo(delta).Exec(ctx); err != nil {
+			return svc.errorFilter.Filter(err, "update team elo")
+		}
+
+		for _, member := range entTeam.Edges.Members {
+			if !member.CanReceiveTeamElo {
+				continue
+			}
+			if member.Edges.User == nil {
+				return huma.Error400BadRequest("team member missing user while distributing elo")
+			}
+
+			if err := tx.User.UpdateOneID(member.Edges.User.ID).AddElo(delta).Exec(ctx); err != nil {
+				return svc.errorFilter.Filter(err, "update user elo")
+			}
+		}
+	}
+
+	if _, err := tx.Tournament.UpdateOneID(tournamentID).
+		SetTournamentEnd(now).
+		Save(ctx); err != nil {
 		return svc.errorFilter.Filter(err, "update tournament")
 	}
+
+	if err := tx.Commit(); err != nil {
+		return svc.errorFilter.Filter(err, "commit elo updates")
+	}
+	rollback = false
 
 	teams, err := svc.databaseService.Team.Query().
 		Where(
@@ -550,8 +666,6 @@ func (svc *tournamentsService) EndTournament(
 			svc.s3service.RemoveObject(ctx, *t.ImageURL)
 		}
 	}
-
-	// TODO: make the logics of elo
 
 	return nil
 }

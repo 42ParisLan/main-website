@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import useQueryClient from '@/hooks/use-query-client'
 import { useAuth } from '@/providers/auth.provider';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { TeamCard } from '@/components/tournaments/teams/team-card';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
+import errorModelToDescription from '@/lib/utils';
 
 export const Route = createFileRoute('/tournaments/$tournamentid/$teamid/')({
   component: RouteComponent,
@@ -32,34 +33,35 @@ function RouteComponent() {
 		}
 	})
 
-	// const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
-	// 	onSuccess() {
-	// 		toast.success("Team Successfuly Leaved")
-	// 		if (tournament) {
-	// 			router.navigate({
-	// 				to: "/tournaments/$tournamentid",
-	// 				params: {
-	// 					tournamentid: tournament.slug,
-	// 				},
-	// 			})
-	// 		}
-	// 	},
-	// 	onError(error) {
-	// 		console.error('Failed to leave team', error)
-	// 		toast.error("Failed to Leave Team")
-	// 	}
-	// })
+	const {mutate : mutateLeave} = client.useMutation("post", "/teams/{id}/leave", {
+		onSuccess() {
+			toast.success("Team Successfuly Leaved")
+			if (tournament) {
+				router.navigate({
+					to: "/tournaments/$tournamentid",
+					params: {
+						tournamentid: tournament.slug,
+					},
+				})
+			}
+		},
+		onError(error) {
+			console.error(`Error while leaving team ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while leaving team: ${errorMessage}`)
+		}
+	})
 
-	// const performLeave = useCallback(() => {
-	// 	if (!team) return;
-	// 	mutateLeave({
-	// 		params: {
-	// 			path: {
-	// 				id: team.id,
-	// 			},
-	// 		},
-	// 	});
-	// }, [mutateLeave, team]);
+	const performLeave = useCallback(() => {
+		if (!team) return;
+		mutateLeave({
+			params: {
+				path: {
+					id: team.id,
+				},
+			},
+		});
+	}, [mutateLeave, team]);
 
 	const role = useMemo(() => {
 		if (team?.creator?.id === me.id) return 'creator'
@@ -82,100 +84,29 @@ function RouteComponent() {
 	if (team && tournament)
 	{
 		return (
-			<>
-				<div className="min-h-screen flex flex-col bg-black ">
-					<Card className="border-0 flex-1 bg-gradient-to-br from-black via-foreground to-gray-700">
-						<CardHeader className="p-4 w-full flex items-center">
-							<CardTitle className="text-white text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-								My team for the {tournament.name} tournament
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="flex flex-col items-center">
-							<div className="p-4 w-100">
-								<TeamCard team={team} tournament={tournament}/>
-							</div>
-							
-							{role == "creator" ? (
-							<>
-								<Button
-									variant="gradient"
-									asChild
-								>
-									<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-										Edit Team
-									</Link>
-								</Button>
-							</>
-						) : role == "member" && (
-							<Button
-								variant="destructive"
-							>
-								Leave Team
-							</Button>
-						)}
-						</CardContent>
-					</Card>
+			<div className="flex flex-1 flex-col items-center dark gap-4 p-6 bg-gradient-to-br from-black to-gray-800">
+				<TeamCard team={team} tournament={tournament}/>
+				{role == "creator" ? (
+				<div>
+					<Button
+						variant="secondary"
+						asChild
+					>
+						<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
+							Edit Team
+						</Link>
+					</Button>
 				</div>
-			</>
+				) : role == "member" && (
+					<Button
+						variant="destructive"
+						onClick={performLeave}
+					>
+						Leave Team
+					</Button>
+				)}
+			</div>
 		)
 	}
-				{/* <Card>
-					<CardHeader className='flex justify-between'>
-						<CardTitle>
-							{team.name}
-						</CardTitle>
-						team for tournament: "{tournament.name}"
-					</CardHeader>
-					<CardContent>
-						{Object.entries(tournament.team_structure).map(([key, _]) => {
-							const users = team.members?.filter((user) => user.role == key);
-							if (users && users.length > 0)
-							{
-								return (
-									<>
-										<p>{key}</p>
-										{users.map((team_member) => (
-											<div key={team_member.user?.id} className="flex items-center gap-3 py-2">
-												<img
-													src={team_member.user?.picture ?? ''}
-													alt={team_member.user?.username ?? 'team member'}
-													className="w-10 h-10 rounded-full object-cover"
-												/>
-												<p className="text-sm">{team_member.user?.username ?? 'Unknown'}</p>
-											</div>
-										))}
-									</>
-								)
-							}
-						})}
-					</CardContent>
-					<CardFooter>
-						{team.is_locked == false && (
-							<>
-								{role == "creator" ? (
-									<>
-										<Button
-											variant="default"
-											asChild
-										>
-											<Link to={`/tournaments/$tournamentid/$teamid/edit`} params={{tournamentid, teamid}}>
-												Edit Team
-											</Link>
-										</Button>
-									</>
-								) : role == "member" && (
-									<Button
-										variant="destructive"
-										onClick={performLeave}
-									>
-										Leave Team
-									</Button>
-								)}
-							</>
-						)}
-					</CardFooter>
-				</Card> */}
-	
-
 	return null
 }

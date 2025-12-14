@@ -12,6 +12,7 @@ import z from "zod";
 import { ColorPicker, ColorPickerEyeDropper, ColorPickerHue, ColorPickerSelection, InputColoPicker } from "@/components/ui/shadcn-io/color-picker";
 import Color from "color";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import defaultImage from '@/assets/default.png'
 
 interface ComponentEditModalProps {
 	component: components['schemas']['Component'];
@@ -136,7 +137,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 							className="w-full h-full object-cover"
 							src={
 								!component.image_url || component.image_url === ""
-									? "https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+									? defaultImage
 									: component.image_url
 							}
 							alt="component preview"
@@ -299,7 +300,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 										) : (
 											<img
 												className="w-full h-full object-cover"
-												src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+												src={defaultImage}
 												alt="component preview"
 											/>
 										)}

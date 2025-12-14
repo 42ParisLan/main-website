@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import useQueryClient from '@/hooks/use-query-client';
+import errorModelToDescription from '@/lib/utils';
 import type { components } from '@/lib/api/types';
 import { useAuth } from '@/providers/auth.provider';
 import { Link } from '@tanstack/react-router';
@@ -24,9 +25,10 @@ export default function InvitationItem({ invitation, tournamentid = undefined, c
 		toast.success('Invitation accepted');
 		setRemoved(true);
 		},
-		onError(err) {
-		console.error('Failed to accept invitation', err);
-		toast.error('Failed to accept invitation');
+		onError(error) {
+			console.error(`Error while accepting invitation ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while accepting invitation: ${errorMessage}`)
 		},
 	});
 
@@ -35,9 +37,10 @@ export default function InvitationItem({ invitation, tournamentid = undefined, c
 		toast.success('Invitation removed');
 		setRemoved(true);
 		},
-		onError(err) {
-		console.error('Failed to delete invitation', err);
-		toast.error('Failed to delete invitation');
+		onError(error) {
+			console.error(`Error while deleting invitation ${error}`)
+			const errorMessage = errorModelToDescription(error);
+			toast.error(`Error while deleting invitation: ${errorMessage}`)
 		},
 	});
 

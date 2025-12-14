@@ -14,14 +14,14 @@ export default function PublicTournamentCard({
 			params={{ tournamentid: String(tournament.id) }}
 			className="block rounded-xl overflow-hidden group relative"
 		>
-			<Card className="w-full h-48 border-none rounded-xl overflow-hidden">
+			<Card className="p-0 w-full h-46 border-none rounded-xl overflow-hidden">
 				<img
 					src={tournament.iamge_url ?? defaultTournamentPicture}
 					alt={tournament.name}
 					className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
 				/>
 				<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-				<CardFooter className="absolute bottom-0 left-0 right-0 p-4">
+				<CardFooter className="absolute bottom-0 left-0 right-0 p-2">
 					<h3 className="text-lg font-bold text-white truncate">
 						{tournament.name}
 					</h3>

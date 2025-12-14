@@ -6,6 +6,7 @@ import { Button } from "../../ui/button";
 import useQueryClient from '@/hooks/use-query-client';
 import { toast } from 'sonner';
 import { useRouter } from '@tanstack/react-router'
+import defaultImage from '@/assets/default.png'
 
 export default function MyProfileCard({user}: {user: components['schemas']['User']}) {
 	const client = useQueryClient();
@@ -24,12 +25,12 @@ export default function MyProfileCard({user}: {user: components['schemas']['User
 	})
 
 	return (
-		<Card>
+		<Card className="max-w-4xl mx-auto w-full">
 			<CardContent>
 				<div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
 					<div className="relative">
 						<Avatar className="h-24 w-24">
-						<AvatarImage src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'} alt="Profile" />
+						<AvatarImage src={user.picture ?? defaultImage} alt="Profile" />
 						<AvatarFallback className="text-2xl">JD</AvatarFallback>
 						</Avatar>
 					</div>
