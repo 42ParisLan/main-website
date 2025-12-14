@@ -40,6 +40,26 @@ func (ctrl *userController) Register(api huma.API) {
 
 	huma.Register(api, huma.Operation{
 		Method:      "GET",
+		Path:        "/users/top/elo",
+		Summary:     "Get Top Users by ELO",
+		Description: `This endpoint returns the top 10 users ordered by ELO (non-anonymized).`,
+		Tags:        []string{"Users"},
+		OperationID: "getTopUsersByElo",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.getTopUsersByElo)
+
+	huma.Register(api, huma.Operation{
+		Method:      "GET",
+		Path:        "/users/{id}/teams",
+		Summary:     "Get User Teams",
+		Description: `This endpoint returns all teams for a specific user.`,
+		Tags:        []string{"Users"},
+		OperationID: "getUserTeams",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.getUserTeams)
+
+	huma.Register(api, huma.Operation{
+		Method:      "GET",
 		Path:        "/users",
 		Summary:     "Search Users",
 		Description: `This endpoint is used to search users.`,
@@ -101,6 +121,30 @@ func (ctrl *userController) getUserByID(
 	return &oneUserOutput{
 		Body: user,
 	}, nil
+}
+
+func (ctrl *userController) getTopUsersByElo(
+	ctx context.Context,
+	input *struct{},
+) (*topUsersByEloOutput, error) {
+	users, err := ctrl.usersService.GetTopUsersByElo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &topUsersByEloOutput{Body: users}, nil
+}
+
+func (ctrl *userController) getUserTeams(
+	ctx context.Context,
+	input *userTeamsInput,
+) (*userTeamsOutput, error) {
+	teams, err := ctrl.usersService.GetUserTeams(ctx, input.UserID, &input.GetUserTeamsParams)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userTeamsOutput{Body: teams}, nil
 }
 
 func (ctrl *userController) searchUsers(

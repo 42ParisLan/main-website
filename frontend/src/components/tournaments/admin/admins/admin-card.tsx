@@ -10,7 +10,7 @@ function TournamentAdminCard({admin, tournamentid, myRole, refetchTournament}: {
 				<div className="size-full flex flex-col gap-5 items-center justify-center">
 					<div className="rounded-lg aspect-square size-full overflow-hidden">
 						<img 
-							src={admin.user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
+							src={admin.user.picture ?? defaultImage}
 							className="object-cover size-full"
 							alt={admin.user.username}
 						/>

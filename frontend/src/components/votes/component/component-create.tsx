@@ -245,7 +245,7 @@ export default function ComponentCreate({ children, voteid, refetchVote }: Compo
 										) : (
 											<img
 												className="w-full h-full object-cover"
-												src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+												src=defaultImage
 												alt="component preview"
 											/>
 										)}

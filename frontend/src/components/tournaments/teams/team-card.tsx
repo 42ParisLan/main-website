@@ -1,6 +1,7 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent, CardHeader, CardTitle} from "../../ui/card";
 import { Link } from '@tanstack/react-router';
+import defaultImage from '@/assets/default.png'
 
 export function TeamCard({team, tournament}: {team: components['schemas']['LightTeam'], tournament: components['schemas']['Tournament']}) {
 	return (
@@ -20,7 +21,7 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
 						<div className="pr-4">
 							<div className="p-0 h-50 border-none rounded-xl overflow-hidden" >
 								<img 
-									src={team.image_url ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
+									src={team.image_url ?? defaultImage}
 									className="rounded-xl w-full h-full transition-transform duration-300 group-hover:scale-110"
 									alt={team.name}
 									/>
@@ -41,7 +42,7 @@ export function TeamCard({team, tournament}: {team: components['schemas']['Light
 								<span className="p-3 text-sm text-white font-bold text-center">{member?.role}</span>
 								<Link to={`/users/$userid`} params={{ userid: String(member?.user.id) }} className=" overflow-hidden">
 									<img 
-										src={member?.user?.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
+										src={member?.user?.picture ?? defaultImage}
 										className="h-20 w-20 hover:cursor-pointer object-cover rounded-full"
 										alt={member?.user?.username }
 										title={member?.user?.username }

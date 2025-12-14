@@ -16,3 +16,8 @@ type SearchUsersParams struct {
 	// The kind of the user
 	Kind string `query:"kind" example:"user" description:"The kind of the user" enum:"user,admin"`
 }
+
+type GetUserTeamsParams struct {
+	// Pagination parameters
+	paging.Input
+}

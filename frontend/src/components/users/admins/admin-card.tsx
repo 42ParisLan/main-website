@@ -12,7 +12,7 @@ function AdminCard({user, refetchUsers}: {user: components['schemas']['User']; r
 				<div className="size-full flex flex-col gap-5 items-center justify-center">
 					<div className="rounded-lg aspect-square size-full overflow-hidden">
 						<img 
-							src={user.picture ?? 'https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg'}
+							src={user.picture ?? defaultImage}
 							className="object-cover size-full"
 							alt={user.username}
 						/>

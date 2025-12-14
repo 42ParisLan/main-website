@@ -136,7 +136,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 							className="w-full h-full object-cover"
 							src={
 								!component.image_url || component.image_url === ""
-									? "https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+									? defaultImage
 									: component.image_url
 							}
 							alt="component preview"
@@ -299,7 +299,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 										) : (
 											<img
 												className="w-full h-full object-cover"
-												src="https://static.posters.cz/image/750/star-wars-see-no-stormtrooper-i101257.jpg"
+												src=defaultImage
 												alt="component preview"
 											/>
 										)}
