@@ -52,16 +52,16 @@ function RouteComponent() {
 		}
 	})
 
-	const performLeave = useCallback(() => {
-		if (!team) return;
-		mutateLeave({
-			params: {
-				path: {
-					id: team.id,
-				},
-			},
-		});
-	}, [mutateLeave, team]);
+	// const performLeave = useCallback(() => {
+	// 	if (!team) return;
+	// 	mutateLeave({
+	// 		params: {
+	// 			path: {
+	// 				id: team.id,
+	// 			},
+	// 		},
+	// 	});
+	// }, [mutateLeave, team]);
 
 	const role = useMemo(() => {
 		if (team?.creator?.id === me.id) return 'creator'
