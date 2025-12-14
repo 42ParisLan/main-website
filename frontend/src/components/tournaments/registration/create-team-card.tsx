@@ -27,7 +27,7 @@ export default function CreateTeamCard({tournament}: {tournament: components['sc
 					router.navigate({
 						to: "/tournaments/$tournamentid/$teamid",
 						params: {
-							tournamentid: String(tournament.id),
+							tournamentid: String(tournament.slug),
 							teamid: String(data.id),
 						},
 					})

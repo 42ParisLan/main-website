@@ -21,7 +21,7 @@ function GdprPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-2">2. Data Controller</h2>
             <p className="text-gray-300">
-              42LAN is the data controller responsible for your personal data. If you have any questions about this policy or our data protection practices, please contact us at <a href="mailto:dpo@42lan.gg" className="text-blue-400 hover:underline">dpo@42lan.gg</a>.
+              42LAN is the data controller responsible for your personal data. If you have any questions about this policy or our data protection practices, please contact us at <a href="mailto:dpo@42lan.fr" className="text-blue-400 hover:underline">dpo@42lan.fr</a>.
             </p>
           </section>
 
@@ -31,10 +31,11 @@ function GdprPage() {
               We may collect the following types of personal data:
             </p>
             <ul className="list-disc list-inside mt-2 text-gray-300">
-              <li>Identity Data: username, first name, last name.</li>
+              <li>Identity Data: username, 42 intra ID.</li>
               <li>Contact Data: email address.</li>
-              <li>Technical Data: IP address, browser type, operating system.</li>
-              <li>Usage Data: information about how you use our website and services.</li>
+              <li>Profile Data: profile picture.</li>
+              <li>Account Data: creation date, last update date, ELO rating.</li>
+              <li>Usage Data: information about how you use our website and services, tournament participation, votes.</li>
             </ul>
           </section>
 
@@ -72,14 +73,30 @@ function GdprPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-2">6. Data Security</h2>
+            <h2 className="text-2xl font-semibold mb-2">6. Account Anonymization</h2>
+            <p className="text-gray-300">
+              You can exercise your right to erasure by anonymizing your account. When you anonymize your account:
+            </p>
+            <ul className="list-disc list-inside mt-2 text-gray-300">
+              <li>Your personal information (username, email, profile picture) will be permanently anonymized.</li>
+              <li>Your account will be marked with an anonymization timestamp.</li>
+              <li>Your historical participation data (tournament results, votes, etc.) will be retained for data integrity and competition records, but will no longer be linked to your personal identity.</li>
+              <li>This action is irreversible.</li>
+            </ul>
+            <p className="text-gray-300 mt-2">
+              You can initiate the anonymization process from your profile settings on the platform. We will ask for confirmation before proceeding.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-2">7. Data Security</h2>
             <p className="text-gray-300">
               We have implemented appropriate security measures to prevent your personal data from being accidentally lost, used, or accessed in an unauthorized way.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-2">7. Changes to This Policy</h2>
+            <h2 className="text-2xl font-semibold mb-2">8. Changes to This Policy</h2>
             <p className="text-gray-300">
               We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page.
             </p>

@@ -9,24 +9,20 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import useQueryClient from "@/hooks/use-query-client"
 import { Link } from "@tanstack/react-router"
 import { useMemo, useState } from "react"
 import type { components } from "@/lib/api/types"
 import { useSSE } from "@/hooks/use-sse"
 import InvitationItem from "@/components/invitations/invitation-item"
+import NotificationItem from "@/components/notifications/notification-item"
 
 export function HeaderNotifs() {
-	const client = useQueryClient();
-
 	const [notifications, setNotifications] = useState<components["schemas"]["Notification"][]>([])
 	const [invitationItems, setInvitationItems] = useState<components["schemas"]["Invitation"][]>([])
 
 	const invitationsCount = useMemo(() => invitationItems.length, [invitationItems])
 
-	const { mutate: markRead, isPending: isMarking } = client.useMutation("post", "/notifications/{id}/read")
-
-	const { error } = useSSE<"/me/notifications">("/me/notifications", {
+	const { error } = useSSE<"/me/notifications/live">("/me/notifications/live", {
 		message: (data) => {
 			setNotifications((prev) => {
 				const next = [data, ...prev]
@@ -38,7 +34,7 @@ export function HeaderNotifs() {
 				})
 				return deduped.slice(0, 50)
 			})
-		},
+		}
 	})
 
 	const { error: invitationsLiveError } = useSSE<"/me/invitations/live">("/me/invitations/live", {
@@ -92,25 +88,26 @@ export function HeaderNotifs() {
 				{invitationsCount === 0 && (
 					<DropdownMenuItem className="opacity-70">No invitations</DropdownMenuItem>
 				)}
-			{invitationsCount > 0 && (
-				<div className="flex flex-col max-h-72 overflow-auto">
-					{invitationItems.slice(0, 3).map((inv: any) => (
-						<div key={inv.id} className="px-1">
-							<InvitationItem invitation={inv} tournamentid={inv?.team?.tournament?.slug ?? undefined} compact />
-						</div>
-					))}
-					{invitationsCount > 3 && (
-						<div className="px-1 py-2">
-							<Link
-								to="/users/me/invitations"
-								className="text-xs text-primary hover:text-primary/80 underline"
-							>
-								View all {invitationsCount} invitations
-							</Link>
-						</div>
-					)}
-				</div>
-			)}				<DropdownMenuSeparator />
+				{invitationsCount > 0 && (
+					<div className="flex flex-col max-h-72 overflow-auto">
+						{invitationItems.slice(0, 3).map((inv: any) => (
+							<div key={inv.id} className="px-1">
+								<InvitationItem invitation={inv} tournamentid={inv?.team?.tournament?.slug ?? undefined} compact />
+							</div>
+						))}
+						{invitationsCount > 3 && (
+							<div className="px-1 py-2">
+								<Link
+									to={"/users/me/notifs"}
+									className="text-xs text-primary hover:text-primary/80 underline"
+								>
+									View all {invitationsCount} invitations
+								</Link>
+							</div>
+						)}
+					</div>
+				)}
+				<DropdownMenuSeparator />
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Notifications</span>
 					{notificationsCount > 0 && (
@@ -127,49 +124,30 @@ export function HeaderNotifs() {
 				{notificationsCount > 0 && (
 					<div className="flex flex-col max-h-72 overflow-auto">
 						{notifications.slice(0, 20).map((notif) => (
-							<DropdownMenuItem key={notif.id} className="flex flex-col gap-1 py-2">
-								<div className="flex items-center justify-between w-full">
-									<div className="flex items-center gap-2">
-										<span className={`size-2 rounded-full ${notif.read ? "bg-gray-500" : "bg-primary"}`} />
-										{notif.href ? (
-											<Link
-												to={notif.href}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-sm font-semibold text-white/90 underline decoration-primary/60 decoration-2 underline-offset-4"
-											>
-												{notif.title}
-											</Link>
-										) : (
-											<span className="text-sm font-semibold text-white/90">{notif.title}</span>
-										)}
-									</div>
-									<Button
-										variant="ghost"
-										size="sm"
-										className="h-7 px-2 text-xs"
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											if (notif.read) return;
-											markRead({
-												params: { path: { id: notif.id } },
-											}, {
-												onSuccess: () => {
-													setNotifications((prev) => prev.map((n) => n.id === notif.id ? { ...n, read: true } : n))
-												},
-											})
+							<DropdownMenuItem key={notif.id} asChild>
+								<div>
+									<NotificationItem 
+										notification={notif} 
+										compact 
+										onMarkRead={(id) => {
+											setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n))
 										}}
-										disabled={notif.read || isMarking}
-									>
-										{notif.read ? "Read" : "Mark read"}
-									</Button>
+									/>
 								</div>
-								<span className="text-xs text-gray-300 leading-snug line-clamp-2">{notif.message}</span>
 							</DropdownMenuItem>
 						))}
 					</div>
 				)}
+				<DropdownMenuSeparator />
+				<Button
+					variant="link"
+				>
+					<Link
+						to={"/users/me/notifs"}
+					>
+						See all notifications and invitations
+					</Link>
+				</Button>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

@@ -428,6 +428,26 @@ export interface paths {
             cookie?: never;
         };
         /**
+         * Get user notifications
+         * @description Get paginated list of all notifications for the current user.
+         */
+        get: operations["getNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/notifications/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Live notifications stream
          * @description Server-Sent Events stream that sends live notifications in real-time. Streams new notifications as they occur.
          */
@@ -1804,6 +1824,35 @@ export interface components {
              */
             total_pages: number;
         };
+        ResponseNotification: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example /api/schemas/ResponseNotification.json
+             */
+            readonly $schema?: string;
+            items: components["schemas"]["Notification"][] | null;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            limit: number;
+            /**
+             * Format: int64
+             * @example 1
+             */
+            page: number;
+            /**
+             * Format: int64
+             * @example 100
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @example 10
+             */
+            total_pages: number;
+        };
         ResultsResponse: {
             /**
              * Format: uri
@@ -2847,6 +2896,44 @@ export interface operations {
                         /** @description The retry time in milliseconds. */
                         retry?: number;
                     }[];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    getNotifications: {
+        parameters: {
+            query?: {
+                /** @example 0 */
+                page?: number;
+                /** @example 10 */
+                limit?: number;
+                /** @example asc */
+                order?: "asc" | "desc";
+                /** @example all */
+                status?: "all" | "read" | "unread";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseNotification"];
                 };
             };
             /** @description Error */

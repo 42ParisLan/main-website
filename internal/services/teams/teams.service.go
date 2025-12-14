@@ -719,7 +719,7 @@ func (svc *teamsService) sendTeamRegistrationNotifications(ctx context.Context, 
 		return
 	}
 
-	href := fmt.Sprintf("/tournaments/%s/teams/%d", entTeam.Edges.Tournament.Slug, entTeam.ID)
+	href := fmt.Sprintf("/tournaments/%s/%d", entTeam.Edges.Tournament.Slug, entTeam.ID)
 
 	for _, member := range members {
 		if member == nil || member.Edges.User == nil {
@@ -731,7 +731,7 @@ func (svc *teamsService) sendTeamRegistrationNotifications(ctx context.Context, 
 			member.Edges.User.ID,
 			"team",
 			"Team Registered",
-			fmt.Sprintf("Your team '%s' has been registered to the tournament", entTeam.Name),
+			fmt.Sprintf("Your team '%s' has been registered to '%s'", entTeam.Name, entTeam.Edges.Tournament.Name),
 			href,
 		)
 		if err != nil {

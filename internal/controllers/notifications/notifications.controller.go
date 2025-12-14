@@ -5,6 +5,7 @@ import (
 	"base-website/internal/security"
 	notificationsservice "base-website/internal/services/notifications"
 	pubsubservice "base-website/internal/services/pubsub"
+	"base-website/pkg/paging"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -28,9 +29,19 @@ func Init(api huma.API, injector *do.Injector) {
 }
 
 func (ctrl *notificationController) Register(api huma.API) {
-	sse.Register(api, huma.Operation{
+	huma.Register(api, huma.Operation{
 		Method:      "GET",
 		Path:        "/me/notifications",
+		Summary:     "Get user notifications",
+		Description: `Get paginated list of all notifications for the current user.`,
+		Tags:        []string{"Notifications"},
+		OperationID: "getNotifications",
+		Security:    security.WithAuth("profile"),
+	}, ctrl.getNotifications)
+
+	sse.Register(api, huma.Operation{
+		Method:      "GET",
+		Path:        "/me/notifications/live",
 		Summary:     "Live notifications stream",
 		Description: `Server-Sent Events stream that sends live notifications in real-time. Streams new notifications as they occur.`,
 		Tags:        []string{"Notifications"},
@@ -49,6 +60,24 @@ func (ctrl *notificationController) Register(api huma.API) {
 		OperationID: "markNotificationAsRead",
 		Security:    security.WithAuth("profile"),
 	}, ctrl.markNotificationAsRead)
+}
+
+func (ctrl *notificationController) getNotifications(
+	ctx context.Context,
+	input *NotificationsInput,
+) (*paginatedNotificationsOutput, error) {
+	result, err := ctrl.notificationsService.ListNotifications(ctx, input.Status, &paging.Input{
+		Page:  input.Page,
+		Limit: input.Limit,
+		Order: input.Order,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &paginatedNotificationsOutput{
+		Body: result,
+	}, nil
 }
 
 func (ctrl *notificationController) liveNotifications(
