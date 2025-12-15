@@ -6,6 +6,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
 import defaultTournamentImage from "@/assets/default-tournament.png"
+import RLVideo from "@/assets/42RL.mp4"
 
 export default function RLTournament({
 	tournament,
@@ -101,7 +102,7 @@ function OngoingComponent({
 					autoPlay
 					muted
 				>
-					<source src="/src/assets/42RL.mp4" type="video/mp4" />
+					<source src={RLVideo} type="video/mp4" />
 					Your browser does not support the video tag.
 				</video>
 
