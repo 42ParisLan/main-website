@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import useQueryClient from "@/hooks/use-query-client";
 import type { components } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
+import { IconBrandDiscord } from "@tabler/icons-react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
@@ -20,7 +21,7 @@ export default function RLTournament({
 		return <OngoingComponent tournament={tournament} refetch={refetch}/>
 	} else if (tournament.status == "registration_open") {
 		return (
-			<RegistrationOpenComponent tournament={tournament}/>
+			<RegistrationOpenComponent tournament={tournament} refetch={refetch}/>
 		)
 	} else if (tournament.status == "registration_closed") {
 		return (
@@ -60,15 +61,15 @@ function OngoingComponent({
 		if (tournament.status !== 'upcoming') return;
 		const updateCountdown = () => {
 			const now = new Date().getTime();
-			const start = new Date(tournament.registration_start).getTime();
+			const end = new Date(tournament.registration_start).getTime();
 
-			if (now >= start) {
-				setTimeLeft('00:00:00');
+			if (now >= end) {
+				setTimeLeft('Registration Started');
 				refetch();
 				return;
 			}
 
-			const diff = start - now;
+			const diff = end - now;
 			const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 			const hours = Math.floor(
 				(diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -78,7 +79,7 @@ function OngoingComponent({
 
 			let timeLeftString = '';
 			if (days > 0) {
-				timeLeftString += `${String(days).padStart(2, '0')}:`;
+				timeLeftString += `${days}d `;
 			}
 			timeLeftString += `${String(hours).padStart(2, '0')}:${String(
 				minutes
@@ -116,29 +117,91 @@ function OngoingComponent({
 				</Button>
 			</div>
 
-			<div className="flex flex-col justify-center items-center p-2 gap-20">
-				<h2 className="text-gray-300 text-center  text-4xl sm:text-5xl font-bold">
-					REGISTRATION OPENS IN
+			<div className="text-center space-y-4">
+				<h2 className="text-3xl font-bold text-primary">
+					REGISTRATIONS OPEN IN
 				</h2>
-
-				<div className=" rounded-md p-[4px] bg-gradient-to-br from-primary to-secondary">
-					<Card className="bg-gradient-to-tr from-black to-gray-800">
-						<CardContent className="w-full h-full flex justify-center items-center">
-							<p className="font-mono text-6xl sm:text-7xl md:text-9xl bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-								{timeLeft}
-							</p>
-						</CardContent>
-					</Card>
+				<div className="rounded-lg p-[3px] bg-gradient-to-r from-primary to-secondary inline-block">
+					<div className="bg-gray-900 rounded-lg px-8 py-4">
+						<p className="font-mono text-4xl md:text-5xl text-white">
+							{timeLeft}
+						</p>
+					</div>
 				</div>
 			</div>
+
+			{/* Add space between countdown and title */}
+			<div className="h-8" />
+
+			<div className="text-center space-y-3">
+				<h1 className="text-5xl md:text-6xl font-bold text-white">{tournament.name}</h1>
+				{tournament.description && (
+					<p className="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto">
+						{tournament.description}
+					</p>
+				)}
+			</div>
+
+			{/* Tournament Details */}
+			<div className="flex flex-col items-center justify-center mt-8 gap-6">
+				<Card>
+					<CardContent className="p-6 space-y-4">
+						<h3 className="text-2xl font-bold text-primary">Tournament Information</h3>
+						<div className="space-y-3">
+							<div>
+								<h4 className="font-semibold mb-1">📅 Date</h4>
+								<p>January 22 & 23, 2025</p>
+							</div>
+							<div>
+								<h4 className="font-semibold mb-1">📍 Location</h4>
+								<p>
+									<strong>Qualifiers (Jan 22):</strong> Cluster F1B<br />
+									<strong>Semi-finals & Finals (Jan 23):</strong> Amphithéâtre Xavier Niel
+								</p>
+							</div>
+							<div>
+								<h4 className="font-semibold mb-1">👥 Teams</h4>
+								<p>There will be <span className="font-bold text-primary">48 teams</span> competing in this tournament.</p>
+							</div>
+							<div>
+								<h4 className="font-semibold mb-1">🎮 What to Bring</h4>
+								<ul className="list-disc list-inside space-y-1">
+									<li>Your own controller</li>
+									<li>Headphones/microphone (if you need to communicate with teammates)</li>
+								</ul>
+							</div>
+						</div>
+
+						{/* Discord Button inside Card */}
+						<div className="pt-4 flex justify-center">
+							<Button
+								asChild
+								variant="ghost"
+								size="lg"
+								className="flex items-center gap-2 px-8 py-4 text-lg font-semibold bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-md transition-colors"
+							>
+								<a href="http://discord.42lan.fr" target="_blank" rel="noopener noreferrer">
+									<IconBrandDiscord size={28} className="inline-block -mt-1" />
+									Join our Discord
+								</a>
+							</Button>
+						</div>
+					</CardContent>
+				</Card>
+			</div>
+
+			{/* Add space after tournament information */}
+			<div className="h-12" />
 		</div>
 	)
 }
 
 function RegistrationOpenComponent({
 	tournament,
+	refetch,
 }: {
 	tournament: components['schemas']['Tournament'];
+	refetch: () => any;
 }) {
 	const [timeLeft, setTimeLeft] = useState('');
 	const client = useQueryClient();
@@ -164,6 +227,7 @@ function RegistrationOpenComponent({
 
 			if (now >= end) {
 				setTimeLeft('Registration Closed');
+				refetch();
 				return;
 			}
 
@@ -220,7 +284,7 @@ function RegistrationOpenComponent({
 						<h3 className="text-2xl font-bold text-primary">Tournament Information</h3>
 						<div className="space-y-3">
 							<div>
-								<h4 className="font-semibol mb-1">📅 Date</h4>
+								<h4 className="font-semibold mb-1">📅 Date</h4>
 								<p>January 22 & 23, 2025</p>
 							</div>
 							<div>
@@ -231,12 +295,31 @@ function RegistrationOpenComponent({
 								</p>
 							</div>
 							<div>
+								<h4 className="font-semibold mb-1">👥 Teams</h4>
+								<p>There will be <span className="font-bold text-primary">48 teams</span> competing in this tournament.</p>
+							</div>
+							<div>
 								<h4 className="font-semibold mb-1">🎮 What to Bring</h4>
 								<ul className="list-disc list-inside space-y-1">
 									<li>Your own controller</li>
 									<li>Headphones/microphone (if you need to communicate with teammates)</li>
 								</ul>
 							</div>
+						</div>
+
+						{/* Discord Button inside Card */}
+						<div className="pt-4 flex justify-center">
+							<Button
+								asChild
+								variant="ghost"
+								size="lg"
+								className="flex items-center gap-2 px-8 py-4 text-lg font-semibold bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-md transition-colors"
+							>
+								<a href="http://discord.42lan.fr" target="_blank" rel="noopener noreferrer">
+									<IconBrandDiscord size={28} className="inline-block -mt-1" />
+									Join our Discord
+								</a>
+							</Button>
 						</div>
 					</CardContent>
 				</Card>
@@ -246,6 +329,7 @@ function RegistrationOpenComponent({
 						<h3 className="text-2xl font-bold text-primary">Team Structure</h3>
 						{tournament.team_structure ? (
 							<div className="text-lg">
+								<p className="mb-2">To compose your teams you need to have:</p>
 								{Object.entries(tournament.team_structure).map(([role, limits]) => (
 									<div key={role} className="mb-2">
 										<span className="font-semibold">{role}:</span> {limits.min === limits.max ? limits.min : `${limits.min}-${limits.max}`}
