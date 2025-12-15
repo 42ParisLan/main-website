@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import useQueryClient from "@/hooks/use-query-client";
 import type { components } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
+import { IconBrandDiscord } from "@tabler/icons-react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
@@ -142,7 +143,7 @@ function OngoingComponent({
 			</div>
 
 			{/* Tournament Details */}
-			<div className="flex justify-center mt-8">
+			<div className="flex flex-col items-center justify-center mt-8 gap-6">
 				<Card>
 					<CardContent className="p-6 space-y-4">
 						<h3 className="text-2xl font-bold text-primary">Tournament Information</h3>
@@ -159,12 +160,31 @@ function OngoingComponent({
 								</p>
 							</div>
 							<div>
+								<h4 className="font-semibold mb-1">👥 Teams</h4>
+								<p>There will be <span className="font-bold text-primary">48 teams</span> competing in this tournament.</p>
+							</div>
+							<div>
 								<h4 className="font-semibold mb-1">🎮 What to Bring</h4>
 								<ul className="list-disc list-inside space-y-1">
 									<li>Your own controller</li>
 									<li>Headphones/microphone (if you need to communicate with teammates)</li>
 								</ul>
 							</div>
+						</div>
+
+						{/* Discord Button inside Card */}
+						<div className="pt-4 flex justify-center">
+							<Button
+								asChild
+								variant="ghost"
+								size="lg"
+								className="flex items-center gap-2 px-8 py-4 text-lg font-semibold bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-md transition-colors"
+							>
+								<a href="http://discord.42lan.fr" target="_blank" rel="noopener noreferrer">
+									<IconBrandDiscord size={28} className="inline-block -mt-1" />
+									Join our Discord
+								</a>
+							</Button>
 						</div>
 					</CardContent>
 				</Card>
@@ -264,7 +284,7 @@ function RegistrationOpenComponent({
 						<h3 className="text-2xl font-bold text-primary">Tournament Information</h3>
 						<div className="space-y-3">
 							<div>
-								<h4 className="font-semibol mb-1">📅 Date</h4>
+								<h4 className="font-semibold mb-1">📅 Date</h4>
 								<p>January 22 & 23, 2025</p>
 							</div>
 							<div>
@@ -275,12 +295,31 @@ function RegistrationOpenComponent({
 								</p>
 							</div>
 							<div>
+								<h4 className="font-semibold mb-1">👥 Teams</h4>
+								<p>There will be <span className="font-bold text-primary">48 teams</span> competing in this tournament.</p>
+							</div>
+							<div>
 								<h4 className="font-semibold mb-1">🎮 What to Bring</h4>
 								<ul className="list-disc list-inside space-y-1">
 									<li>Your own controller</li>
 									<li>Headphones/microphone (if you need to communicate with teammates)</li>
 								</ul>
 							</div>
+						</div>
+
+						{/* Discord Button inside Card */}
+						<div className="pt-4 flex justify-center">
+							<Button
+								asChild
+								variant="ghost"
+								size="lg"
+								className="flex items-center gap-2 px-8 py-4 text-lg font-semibold bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-md transition-colors"
+							>
+								<a href="http://discord.42lan.fr" target="_blank" rel="noopener noreferrer">
+									<IconBrandDiscord size={28} className="inline-block -mt-1" />
+									Join our Discord
+								</a>
+							</Button>
 						</div>
 					</CardContent>
 				</Card>
@@ -290,6 +329,7 @@ function RegistrationOpenComponent({
 						<h3 className="text-2xl font-bold text-primary">Team Structure</h3>
 						{tournament.team_structure ? (
 							<div className="text-lg">
+								<p className="mb-2">To compose your teams you need to have:</p>
 								{Object.entries(tournament.team_structure).map(([role, limits]) => (
 									<div key={role} className="mb-2">
 										<span className="font-semibold">{role}:</span> {limits.min === limits.max ? limits.min : `${limits.min}-${limits.max}`}
