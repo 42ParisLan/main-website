@@ -22,7 +22,7 @@ export function HeaderNotifs() {
 
 	const invitationsCount = useMemo(() => invitationItems.length, [invitationItems])
 
-	const { error } = useSSE<"/me/notifications/live">("/me/notifications/live", {
+	useSSE<"/me/notifications/live">("/me/notifications/live", {
 		message: (data) => {
 			setNotifications((prev) => {
 				const next = [data, ...prev]
@@ -37,7 +37,7 @@ export function HeaderNotifs() {
 		}
 	})
 
-	const { error: invitationsLiveError } = useSSE<"/me/invitations/live">("/me/invitations/live", {
+	useSSE<"/me/invitations/live">("/me/invitations/live", {
 		message: (data) => {
 			setInvitationItems((prev) => {
 				const next = [data as any, ...prev]
