@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { IconTrash } from "@tabler/icons-react";
 import AdminEditModal from "./admin-edit-modal";
 import { memo } from "react";
-import defaultImage from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 function AdminCard({user, refetchUsers}: {user: components['schemas']['User']; refetchUsers: () => any}) {
 	return (
@@ -13,7 +13,7 @@ function AdminCard({user, refetchUsers}: {user: components['schemas']['User']; r
 				<div className="size-full flex flex-col gap-5 items-center justify-center">
 					<div className="rounded-lg aspect-square size-full overflow-hidden">
 						<img 
-							src={user.picture ?? defaultImage}
+							src={user.picture ?? defaultUserImage}
 							className="object-cover size-full"
 							alt={user.username}
 						/>

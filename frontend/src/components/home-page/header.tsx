@@ -1,7 +1,7 @@
 import { Button } from '../ui/button';
 import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import defaultpng from "@/assets/default.png"
+import defaultUserImage from "@/assets/default-user.png"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import logo from '@/assets/logo.svg';
 import { useAuth, useLogout } from '@/providers/auth.provider';
@@ -58,7 +58,7 @@ export function Header() {
 									<Button className="p-0 h-auto w-auto rounded-full focus-visible:ring-2 ring-primary/50 hover:ring-primary transition-all" variant="transparent">
 										<div className="rounded-full p-[2px] bg-gradient-to-br from-primary to-secondary">  
 											<Avatar className="h-10 w-10">
-												<AvatarImage src={me.picture ?? defaultpng} alt="Profile" />
+												<AvatarImage src={me.picture ?? defaultUserImage} alt="Profile" />
 												<AvatarFallback className="text-sm font-medium">
 													{me.username?.slice(0, 2).toUpperCase() || 'U'}
 												</AvatarFallback>

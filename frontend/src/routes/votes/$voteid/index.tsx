@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import useQueryClient from '@/hooks/use-query-client';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCallback } from 'react';
+import defaultUserImage from "@/assets/default-user.png"
 
 export const Route = createFileRoute('/votes/$voteid/')({
   component: RouteComponent,
@@ -63,7 +64,7 @@ function RouteComponent() {
 								<CardContent>
 									<p>{component.description}</p>
 									<img
-										src={component.image_url ?? "https://example.com/"}
+										src={component.image_url ?? defaultUserImage}
 										alt={component.name}
 										/>
 								</CardContent>

@@ -69,6 +69,9 @@ export const useSSE = <Ep extends HasEventStream<paths>>(
 ) => {
 	const [error, setError] = useState(false);
 	const handlersRef = useRef(handlers);
+	const retryCountRef = useRef(0);
+	const maxRetries = 3;
+	const retryDelay = 1000;
 
 	useEffect(() => {
 		handlersRef.current = handlers;
@@ -77,28 +80,57 @@ export const useSSE = <Ep extends HasEventStream<paths>>(
 	useEffect(() => {
 		if (opts.disabled) return undefined;
 
-		const sseClient = new EventSource(`/api${endpoint}`);
+		let sseClient: EventSource | null = null;
+		let closed = false;
 
-		sseClient.onerror = () => setError(true);
+		function connect() {
+			if (closed) return;
+			sseClient = new EventSource(`/api${endpoint}`);
 
-		for (const [event] of Object.entries(handlers) as Array<
-			[string, (data: any, client: EventSource) => void | Promise<void>]
-		>) {
-			sseClient.addEventListener(event, (ev) => {
-				const data = JSON.parse(ev.data as string);
+			sseClient.onerror = () => {
+				if (retryCountRef.current < maxRetries) {
+					retryCountRef.current += 1;
+					sseClient?.close();
+					setTimeout(() => {
+						if (!closed) connect();
+					}, retryDelay);
+				} else {
+					setError(true);
+					sseClient?.close();
+				}
+			};
 
-				const execHandler = async () => {
-					const currentHandler = (handlersRef.current as any)[event];
-					if (currentHandler) {
-						await currentHandler(data, sseClient);
-					}
-				};
+			for (const [event] of Object.entries(handlers) as Array<
+				[
+					string,
+					(data: any, client: EventSource) => void | Promise<void>
+				]
+			>) {
+				sseClient.addEventListener(event, (ev) => {
+					const data = JSON.parse(ev.data as string);
 
-				void execHandler();
-			});
+					const execHandler = async () => {
+						const currentHandler = (handlersRef.current as any)[
+							event
+						];
+						if (currentHandler) {
+							await currentHandler(data, sseClient!);
+						}
+					};
+
+					void execHandler();
+				});
+			}
 		}
 
-		return () => sseClient.close();
+		retryCountRef.current = 0;
+		setError(false);
+		connect();
+
+		return () => {
+			closed = true;
+			sseClient?.close();
+		};
 	}, [endpoint, opts.disabled]);
 
 	return { error };

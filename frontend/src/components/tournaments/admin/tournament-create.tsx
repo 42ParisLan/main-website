@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { components } from "@/lib/api/types";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../ui/select";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../ui/button";
@@ -254,13 +255,14 @@ export default function TournamentCreate() {
 				{(field) => (
 					<div className="grid gap-2">
 						<Label htmlFor={field.name}>Description</Label>
-						<Input
+						<Textarea
 							id={field.name}
 							value={field.state.value}
 							onChange={(e) => field.handleChange(e.target.value)}
 							onBlur={field.handleBlur}
 							placeholder="Description of the tournament"
 							required
+							rows={5}
 						/>
 						{field.state.meta.errors?.[0] && (
 							<p className="text-destructive text-sm">{field.state.meta.errors[0]}</p>

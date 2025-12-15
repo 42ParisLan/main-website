@@ -1508,12 +1508,12 @@ export interface components {
             external_links?: {
                 [key: string]: string;
             };
-            iamge_url: string | null;
             /**
              * Format: int64
              * @example 42
              */
             id: number;
+            image_url: string | null;
             is_visible: boolean;
             /**
              * Format: int64
@@ -1948,12 +1948,12 @@ export interface components {
             external_links?: {
                 [key: string]: string;
             };
-            iamge_url: string | null;
             /**
              * Format: int64
              * @example 42
              */
             id: number;
+            image_url: string | null;
             is_visible: boolean;
             /** Format: int64 */
             max_teams: number;

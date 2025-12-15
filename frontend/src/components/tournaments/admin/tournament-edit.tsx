@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { components } from "@/lib/api/types";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../ui/select";
 import {useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../ui/button";
@@ -20,7 +21,7 @@ export default function TournamentEdit({ tournament }: Props) {
 	const client = useQueryClient();
 
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
-	const [previewUrl, setPreviewUrl] = useState<string>(tournament.iamge_url ?? "");
+	const [previewUrl, setPreviewUrl] = useState<string>(tournament.image_url ?? "");
 	const [externalLinks, setExternalLinks] = useState<Array<{ key: string; url: string }>>(() => {
 		const links = tournament.external_links ?? {};
 		return Object.keys(links).map((k) => ({ key: k, url: links[k] }));
@@ -40,13 +41,13 @@ export default function TournamentEdit({ tournament }: Props) {
 
 	useEffect(() => {
 		if (!selectedFile) {
-			setPreviewUrl(tournament.iamge_url ?? "");
+			setPreviewUrl(tournament.image_url ?? "");
 			return;
 		}
 		const url = URL.createObjectURL(selectedFile);
 		setPreviewUrl(url);
 		return () => URL.revokeObjectURL(url);
-	}, [selectedFile, tournament.iamge_url]);
+	}, [selectedFile, tournament.image_url]);
 
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -194,10 +195,17 @@ export default function TournamentEdit({ tournament }: Props) {
 
 				<form.Field name="description">
 					{(field) => (
-					<div className="grid gap-2">
-						<Label htmlFor={field.name}>Description</Label>
-						<Input id={field.name} value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} onBlur={field.handleBlur} placeholder="Description" />
-					</div>
+						<div className="grid gap-2">
+							<Label htmlFor={field.name}>Description</Label>
+							<Textarea
+								id={field.name}
+								value={field.state.value}
+								onChange={(e) => field.handleChange(e.target.value)}
+								onBlur={field.handleBlur}
+								placeholder="Description"
+								rows={5}
+							/>
+						</div>
 					)}
 				</form.Field>
 

@@ -533,13 +533,13 @@ components:
           additionalProperties:
             type: string
           type: object
-        iamge_url:
-          nullable: true
-          type: string
         id:
           example: 42
           format: int64
           type: integer
+        image_url:
+          nullable: true
+          type: string
         is_visible:
           type: boolean
         max_teams:
@@ -597,7 +597,7 @@ components:
         - id
         - slug
         - name
-        - iamge_url
+        - image_url
         - is_visible
         - registration_start
         - registration_end
@@ -1159,13 +1159,13 @@ components:
           additionalProperties:
             type: string
           type: object
-        iamge_url:
-          nullable: true
-          type: string
         id:
           example: 42
           format: int64
           type: integer
+        image_url:
+          nullable: true
+          type: string
         is_visible:
           type: boolean
         max_teams:
@@ -1229,7 +1229,7 @@ components:
         - slug
         - name
         - description
-        - iamge_url
+        - image_url
         - is_visible
         - registration_start
         - registration_end

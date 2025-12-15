@@ -1,6 +1,6 @@
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "../ui/card";
-import defaultImage from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 export default function UserCard({user, ...props}: {user: components['schemas']['User']} & React.ComponentProps<"div">) {
 	return (
@@ -9,7 +9,7 @@ export default function UserCard({user, ...props}: {user: components['schemas'][
 				<div className="size-full flex flex-col gap-5 items-center justify-center">
 					<div className="rounded-lg aspect-square size-full overflow-hidden">
 						<img 
-							src={user.picture ?? defaultImage}
+							src={user.picture ?? defaultUserImage}
 							className="object-cover size-full"
 							alt={user.username}
 						/>

@@ -23,7 +23,7 @@ import errorModelToDescription from '@/lib/utils'
 import { IconEdit } from '@tabler/icons-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import defaultpicture from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 interface TeamRankGroupCardProps {
 	team: components['schemas']['LightTeam']
@@ -139,7 +139,7 @@ export function TeamRankGroupCard({
 							<div className="flex items-center gap-3">
 								<Avatar className="h-8 w-8">
 									<AvatarImage
-										src={member.user?.picture ?? defaultpicture}
+										src={member.user?.picture ?? defaultUserImage}
 										alt={member.user?.username ?? 'User'}
 									/>
 									<AvatarFallback>

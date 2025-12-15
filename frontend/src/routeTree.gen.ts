@@ -31,6 +31,7 @@ import { Route as AdminAdminsIndexRouteImport } from './routes/admin/admins/inde
 import { Route as VotesVoteidResultsIndexRouteImport } from './routes/votes/$voteid/results/index'
 import { Route as VotesVoteidLiveIndexRouteImport } from './routes/votes/$voteid/live/index'
 import { Route as UsersMeNotifsIndexRouteImport } from './routes/users/me/notifs/index'
+import { Route as UsersMeInvitationsIndexRouteImport } from './routes/users/me/invitations/index'
 import { Route as TournamentsTournamentidTeamsIndexRouteImport } from './routes/tournaments/$tournamentid/teams/index'
 import { Route as TournamentsTournamentidRegisterIndexRouteImport } from './routes/tournaments/$tournamentid/register/index'
 import { Route as TournamentsTournamentidTeamidIndexRouteImport } from './routes/tournaments/$tournamentid/$teamid/index'
@@ -155,6 +156,11 @@ const UsersMeNotifsIndexRoute = UsersMeNotifsIndexRouteImport.update({
   path: '/users/me/notifs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersMeInvitationsIndexRoute = UsersMeInvitationsIndexRouteImport.update({
+  id: '/users/me/invitations/',
+  path: '/users/me/invitations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TournamentsTournamentidTeamsIndexRoute =
   TournamentsTournamentidTeamsIndexRouteImport.update({
     id: '/tournaments/$tournamentid/teams/',
@@ -253,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentid/$teamid': typeof TournamentsTournamentidTeamidIndexRoute
   '/tournaments/$tournamentid/register': typeof TournamentsTournamentidRegisterIndexRoute
   '/tournaments/$tournamentid/teams': typeof TournamentsTournamentidTeamsIndexRoute
+  '/users/me/invitations': typeof UsersMeInvitationsIndexRoute
   '/users/me/notifs': typeof UsersMeNotifsIndexRoute
   '/votes/$voteid/live': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
@@ -288,6 +295,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentid/$teamid': typeof TournamentsTournamentidTeamidIndexRoute
   '/tournaments/$tournamentid/register': typeof TournamentsTournamentidRegisterIndexRoute
   '/tournaments/$tournamentid/teams': typeof TournamentsTournamentidTeamsIndexRoute
+  '/users/me/invitations': typeof UsersMeInvitationsIndexRoute
   '/users/me/notifs': typeof UsersMeNotifsIndexRoute
   '/votes/$voteid/live': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results': typeof VotesVoteidResultsIndexRoute
@@ -325,6 +333,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentid/$teamid/': typeof TournamentsTournamentidTeamidIndexRoute
   '/tournaments/$tournamentid/register/': typeof TournamentsTournamentidRegisterIndexRoute
   '/tournaments/$tournamentid/teams/': typeof TournamentsTournamentidTeamsIndexRoute
+  '/users/me/invitations/': typeof UsersMeInvitationsIndexRoute
   '/users/me/notifs/': typeof UsersMeNotifsIndexRoute
   '/votes/$voteid/live/': typeof VotesVoteidLiveIndexRoute
   '/votes/$voteid/results/': typeof VotesVoteidResultsIndexRoute
@@ -363,6 +372,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentid/$teamid'
     | '/tournaments/$tournamentid/register'
     | '/tournaments/$tournamentid/teams'
+    | '/users/me/invitations'
     | '/users/me/notifs'
     | '/votes/$voteid/live'
     | '/votes/$voteid/results'
@@ -398,6 +408,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentid/$teamid'
     | '/tournaments/$tournamentid/register'
     | '/tournaments/$tournamentid/teams'
+    | '/users/me/invitations'
     | '/users/me/notifs'
     | '/votes/$voteid/live'
     | '/votes/$voteid/results'
@@ -434,6 +445,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentid/$teamid/'
     | '/tournaments/$tournamentid/register/'
     | '/tournaments/$tournamentid/teams/'
+    | '/users/me/invitations/'
     | '/users/me/notifs/'
     | '/votes/$voteid/live/'
     | '/votes/$voteid/results/'
@@ -460,6 +472,7 @@ export interface RootRouteChildren {
   TournamentsTournamentidTeamidIndexRoute: typeof TournamentsTournamentidTeamidIndexRoute
   TournamentsTournamentidRegisterIndexRoute: typeof TournamentsTournamentidRegisterIndexRoute
   TournamentsTournamentidTeamsIndexRoute: typeof TournamentsTournamentidTeamsIndexRoute
+  UsersMeInvitationsIndexRoute: typeof UsersMeInvitationsIndexRoute
   UsersMeNotifsIndexRoute: typeof UsersMeNotifsIndexRoute
   VotesVoteidLiveIndexRoute: typeof VotesVoteidLiveIndexRoute
   VotesVoteidResultsIndexRoute: typeof VotesVoteidResultsIndexRoute
@@ -622,6 +635,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersMeNotifsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/me/invitations/': {
+      id: '/users/me/invitations/'
+      path: '/users/me/invitations'
+      fullPath: '/users/me/invitations'
+      preLoaderRoute: typeof UsersMeInvitationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tournaments/$tournamentid/teams/': {
       id: '/tournaments/$tournamentid/teams/'
       path: '/tournaments/$tournamentid/teams'
@@ -769,6 +789,7 @@ const rootRouteChildren: RootRouteChildren = {
     TournamentsTournamentidRegisterIndexRoute,
   TournamentsTournamentidTeamsIndexRoute:
     TournamentsTournamentidTeamsIndexRoute,
+  UsersMeInvitationsIndexRoute: UsersMeInvitationsIndexRoute,
   UsersMeNotifsIndexRoute: UsersMeNotifsIndexRoute,
   VotesVoteidLiveIndexRoute: VotesVoteidLiveIndexRoute,
   VotesVoteidResultsIndexRoute: VotesVoteidResultsIndexRoute,
