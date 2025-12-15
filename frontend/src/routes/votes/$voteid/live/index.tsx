@@ -4,6 +4,7 @@ import type { components } from '@/lib/api/types';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState, useRef, useEffect, useMemo } from 'react';
 import versusIcon from '@/assets/versus-vs-icon.svg';
+import defaultUserImage from "@/assets/default-user.png"
 
 function DiagonalSplit({ left, right }: { left: string; right: string }) {
 	const elRef = useRef<HTMLDivElement | null>(null);
@@ -205,7 +206,7 @@ function RouteComponent() {
 					rawPercentage={results[0].rawPercentage}
 					color={component1?.color}
 					label={component1?.name}
-					imageUrl={component1?.image_url ?? "https://example.com/"}
+					imageUrl={component1?.image_url ?? defaultUserImage}
 					side="left"
 					nb_vote={results[0].votes}
 				/>
@@ -222,7 +223,7 @@ function RouteComponent() {
 					rawPercentage={results[1].rawPercentage}
 					color={component2?.color}
 					label={component2?.name}
-					imageUrl={component2?.image_url ?? "https://example.com/"}
+					imageUrl={component2?.image_url ?? defaultUserImage}
 					side="right"
 					nb_vote={results[1].votes}
 				/>

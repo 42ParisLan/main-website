@@ -3,7 +3,7 @@ import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Link } from "@tanstack/react-router";
-import defaultimage from "@/assets/default.png"
+import defaultTournamentImage from "@/assets/default-tournament.png"
 
 function formatDate(iso?: string) {
 	if (!iso) return "—";
@@ -28,10 +28,10 @@ export default function TournamentCard({
 		<Card>
 			<CardContent>
 				<div className="flex gap-4">
-					<div className="flex-shrink-0">
+					<div className="flex-shrink-0 max-w-xs">
 						<img
-							src={tournament.iamge_url ?? defaultimage}
-							className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+							src={tournament.image_url ?? defaultTournamentImage}
+							className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 rounded-xl"
 						/>
 					</div>
 

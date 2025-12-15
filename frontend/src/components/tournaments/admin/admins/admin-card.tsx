@@ -2,7 +2,7 @@ import type { components } from "@/lib/api/types";
 import { Card, CardContent } from "@/components/ui/card";
 import TournamentAdminEditModal from "./admin-edit-modal";
 import { memo } from "react";
-import defaultImage from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 function TournamentAdminCard({admin, tournamentid, myRole, refetchTournament}: {admin: components['schemas']['LightTournamentAdmin']; tournamentid: number; myRole: components["schemas"]["LightTournamentAdmin"]["role"] | undefined; refetchTournament: () => any}) {
 	return (
@@ -11,7 +11,7 @@ function TournamentAdminCard({admin, tournamentid, myRole, refetchTournament}: {
 				<div className="size-full flex flex-col gap-5 items-center justify-center">
 					<div className="rounded-lg aspect-square size-full overflow-hidden">
 						<img 
-							src={admin.user.picture ?? defaultImage}
+							src={admin.user.picture ?? defaultUserImage}
 							className="object-cover size-full"
 							alt={admin.user.username}
 						/>

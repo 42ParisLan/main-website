@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { components } from "@/lib/api/types";
 import { Card, CardContent } from '../../ui/card';
-import defaultImage from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 export default function MyProfileCard({user}: {user: components['schemas']['User']}) {
 
@@ -12,7 +12,7 @@ export default function MyProfileCard({user}: {user: components['schemas']['User
 				<div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
 					<div className="relative">
 						<Avatar className="h-24 w-24">
-						<AvatarImage src={user.picture ?? defaultImage} alt="Profile" />
+						<AvatarImage src={user.picture ?? defaultUserImage} alt="Profile" />
 						<AvatarFallback className="text-2xl">JD</AvatarFallback>
 						</Avatar>
 					</div>

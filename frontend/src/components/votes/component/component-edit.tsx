@@ -12,7 +12,7 @@ import z from "zod";
 import { ColorPicker, ColorPickerEyeDropper, ColorPickerHue, ColorPickerSelection, InputColoPicker } from "@/components/ui/shadcn-io/color-picker";
 import Color from "color";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import defaultImage from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 interface ComponentEditModalProps {
 	component: components['schemas']['Component'];
@@ -137,7 +137,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 							className="w-full h-full object-cover"
 							src={
 								!component.image_url || component.image_url === ""
-									? defaultImage
+									? defaultUserImage
 									: component.image_url
 							}
 							alt="component preview"
@@ -300,7 +300,7 @@ export default function ComponentEdit({ component, refetchVote }: ComponentEditM
 										) : (
 											<img
 												className="w-full h-full object-cover"
-												src={defaultImage}
+												src={defaultUserImage}
 												alt="component preview"
 											/>
 										)}

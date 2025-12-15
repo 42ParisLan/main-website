@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import z from "zod";
 import { ColorPicker, ColorPickerEyeDropper, ColorPickerHue, ColorPickerSelection, InputColoPicker } from "@/components/ui/shadcn-io/color-picker";
 import Color from "color";
-import defaultImage from '@/assets/default.png'
+import defaultUserImage from "@/assets/default-user.png"
 
 interface ComponentCreateModalProps {
 	children?: React.ReactNode;
@@ -246,7 +246,7 @@ export default function ComponentCreate({ children, voteid, refetchVote }: Compo
 										) : (
 											<img
 												className="w-full h-full object-cover"
-												src={defaultImage}
+												src={defaultUserImage}
 												alt="component preview"
 											/>
 										)}

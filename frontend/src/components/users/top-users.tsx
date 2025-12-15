@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import type { components } from '@/lib/api/types';
 import { Crown } from 'lucide-react';
-import defaultpicture from '@/assets/default.png';
+import defaultUserImage from "@/assets/default-user.png"
 import {
 	Table,
 	TableBody,
@@ -71,7 +71,7 @@ export default function TopUsers({
 											<div className="flex items-center gap-3">
 												<Avatar className="h-9 w-9">
 													<AvatarImage
-														src={user.picture ?? defaultpicture}
+														src={user.picture ?? defaultUserImage}
 														alt="Avatar"
 													/>
 													<AvatarFallback>

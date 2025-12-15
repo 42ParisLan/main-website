@@ -56,10 +56,6 @@ export function HeaderNotifs() {
 	const notificationsCount = useMemo(() => notifications.length, [notifications])
 	const totalBadgeCount = invitationsCount + unreadCount
 
-	if (error || invitationsLiveError) {
-		return (<p>Notifications failed</p>)
-	}
-
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>

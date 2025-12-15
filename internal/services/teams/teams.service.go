@@ -310,6 +310,10 @@ func (svc *teamsService) UpdateTeam(
 		return nil, err
 	}
 
+	if time.Now().After(entTeam.Edges.Tournament.RegistrationEnd) {
+		return nil, huma.Error401Unauthorized("registration are closed")
+	}
+
 	if entTeam.Edges.Tournament.TournamentEnd != nil && time.Now().After(*entTeam.Edges.Tournament.TournamentEnd) {
 		return nil, huma.Error401Unauthorized("tournament is finished")
 	}
@@ -372,6 +376,10 @@ func (svc *teamsService) DeleteTeam(
 		Only(ctx)
 	if err != nil {
 		return err
+	}
+
+	if entTeam.IsRegistered && entTeam.Edges.Tournament.TournamentEnd != nil && time.Now().After(entTeam.Edges.Tournament.RegistrationEnd) {
+		return huma.Error401Unauthorized("registrations are closed")
 	}
 
 	if entTeam.Edges.Tournament.TournamentEnd != nil && time.Now().After(*entTeam.Edges.Tournament.TournamentEnd) {

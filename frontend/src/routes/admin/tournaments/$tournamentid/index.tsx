@@ -53,9 +53,9 @@ function RouteComponent() {
 						</CardHeader>
 						<CardContent>
 							{/* tournament image if available */}
-							{data.iamge_url ? (
+							{data.image_url ? (
 								<div className="mb-4">
-									<img src={data.iamge_url} alt={`${data.name} cover`} className="w-48 h-32 rounded-md object-cover" />
+									<img src={data.image_url} alt={`${data.name} cover`} className="w-48 h-32 rounded-md object-cover" />
 								</div>
 							) : null}
 							<div className="flex gap-2 mb-4">

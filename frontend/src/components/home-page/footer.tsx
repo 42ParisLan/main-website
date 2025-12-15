@@ -1,4 +1,4 @@
-import { IconBrandDiscordFilled, IconBrandX, IconBrandYoutubeFilled } from '@tabler/icons-react'
+import { IconBrandDiscordFilled, IconBrandYoutubeFilled } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router';
 import logo from '@/assets/logo.svg';
 
@@ -11,9 +11,8 @@ export function Footer() {
 						<img src={logo} alt="42LAN Logo" className="h-8" />
 					</Link>
 					<div className="flex gap-4">
-						<a href="#" aria-label="Discord" className="text-gray-400 hover:text-white"><IconBrandDiscordFilled/></a>
-						<a href="#" aria-label="X" className="text-gray-400 hover:text-white"><IconBrandX/></a>
-						<a href="#" aria-label="Youtube" className="text-gray-400 hover:text-white"><IconBrandYoutubeFilled/></a>
+						<a href="http://discord.42lan.fr" aria-label="Discord" className="text-gray-400 hover:text-white"><IconBrandDiscordFilled/></a>
+						<a href="https://www.youtube.com/watch?v=W3UEHzCtoP4" aria-label="Youtube" className="text-gray-400 hover:text-white"><IconBrandYoutubeFilled/></a>
 					</div>
 					<div className="flex flex-col md:flex-row gap-4 text-xs">
 						<Link to="/terms-of-service" className="text-gray-400 hover:text-white">Terms of Service</Link>

@@ -9,6 +9,8 @@ import { useForm } from '@tanstack/react-form';
 import useQueryClient from '@/hooks/use-query-client'
 import {type components} from "@/lib/api/types"
 import { useRouter } from '@tanstack/react-router'
+import defaultTeamImage from "@/assets/default-team.png"
+import errorModelToDescription from '@/lib/utils';
 
 export default function CreateTeamCard({tournament}: {tournament: components['schemas']['Tournament']}) {
 	
@@ -21,62 +23,68 @@ export default function CreateTeamCard({tournament}: {tournament: components['sc
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	const { mutate: mutateCreateTeam, isPending: isCreating } = client.useMutation("post", "/tournaments/{id}/teams", {
-			onSuccess(data) {
-				toast.success("Team Successfuly created")
-				if (data && tournament) {
-					router.navigate({
-						to: "/tournaments/$tournamentid/$teamid",
-						params: {
-							tournamentid: String(tournament.slug),
-							teamid: String(data.id),
-						},
-					})
-				}
-			},
-			onError(error) {
-				console.error('Error creating team', error)
-				toast.error("Failed to Create Team")
+		onSuccess(data) {
+			toast.success("Team Successfuly created")
+			if (data && tournament) {
+				router.navigate({
+					to: "/tournaments/$tournamentid/$teamid",
+					params: {
+						tournamentid: String(tournament.slug),
+						teamid: String(data.id),
+					},
+				})
 			}
-		})
-		const form = useForm({
-				defaultValues: {
-					creator_status: "",
-					name: "",
-					image: null as File | null,
-				},
-				onSubmit: async ({ value }) => {
-					if (!tournament) return
-					const formData = new FormData();
-					formData.append("creator_status", value.creator_status)
-					formData.append("name", value.name)
-					if (value.image) formData.append("image", value.image);
-					mutateCreateTeam({
-						params: {
-							path: {
-								id: tournament?.id
-							}
-						},
-						body: formData as any
-					});
-				},
-			});
-		
-		useEffect(() => {
-			if (!selectedFile) {
-				setPreviewUrl("");
+		},
+		onError(error) {
+			const errorMessage = errorModelToDescription(error);
+			console.error('Error creating team', error)
+			toast.error(`Failed to Create Team: ${errorMessage}`)
+		}
+	})
+
+	const roles = useMemo(() => {
+		return Object.keys(tournament?.team_structure ?? {});
+	}, [tournament?.team_structure])
+
+	const form = useForm({
+		defaultValues: {
+			creator_status: "",
+			name: "",
+			image: null as File | null,
+		},
+		onSubmit: async ({ value }) => {
+			if (!tournament) return
+			if (!roles.includes(value.creator_status)) {
+				toast.error("Please select a valid role");
 				return;
 			}
-			const url = URL.createObjectURL(selectedFile);
-			setPreviewUrl(url);
-			return () => URL.revokeObjectURL(url);
-		}, [selectedFile]);
+			const formData = new FormData();
+			formData.append("creator_status", value.creator_status)
+			formData.append("name", value.name)
+			if (value.image) formData.append("image", value.image);
+			mutateCreateTeam({
+				params: {
+					path: {
+						id: tournament?.id
+					}
+				},
+				
+				body: formData as any
+			});
+		},
+	});
 	
-		const roles = useMemo(() => {
-			return Object.keys(tournament?.team_structure ?? {});
-		}, [tournament?.team_structure])
-		
+	useEffect(() => {
+		if (!selectedFile) {
+			setPreviewUrl("");
+			return;
+		}
+		const url = URL.createObjectURL(selectedFile);
+		setPreviewUrl(url);
+		return () => URL.revokeObjectURL(url);
+	}, [selectedFile]);
 
-    return (
+	return (
 			<Card className="bg-card w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
 				<CardHeader>
 					<CardTitle>Create Team</CardTitle>
@@ -188,7 +196,7 @@ export default function CreateTeamCard({tournament}: {tournament: components['sc
 										{previewUrl ? (
 											<img className="w-full h-full object-cover" src={previewUrl} alt="component preview" />
 										) : (
-											<div className="text-center p-4 text-sm text-muted-foreground">No image selected</div>
+											<img className="w-full h-full object-cover" src={defaultTeamImage} alt="component preview" />
 										)}
 									</div>
 								</div>

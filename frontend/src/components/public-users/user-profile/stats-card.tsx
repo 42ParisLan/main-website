@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import defaultpicture from '@/assets/default.png';
+import defaultTeamImage from "@/assets/default-team.png"
 import { Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -104,7 +104,7 @@ export default function MyStatsCard({user}: {user: components['schemas']['User']
 											<div className="flex items-center gap-3">
 												<Avatar className="h-9 w-9">
 													<AvatarImage
-														src={team.image_url ?? defaultpicture}
+														src={team.image_url ?? defaultTeamImage}
 														alt="Team Avatar"
 													/>
 													<AvatarFallback>
@@ -131,10 +131,10 @@ export default function MyStatsCard({user}: {user: components['schemas']['User']
 									</TableCell>
 									<TableCell>
 										<div className="flex items-center gap-3">
-											{team.tournament?.iamge_url && (
+											{team.tournament?.image_url && (
 												<Avatar className="h-9 w-9">
 													<AvatarImage
-														src={team.tournament.iamge_url}
+														src={team.tournament.image_url}
 														alt="Tournament Avatar"
 													/>
 													<AvatarFallback>
