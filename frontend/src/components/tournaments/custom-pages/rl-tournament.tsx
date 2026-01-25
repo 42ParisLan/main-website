@@ -349,7 +349,7 @@ function CompleteComponent({
 							{/* Repeat for each image */}
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
@@ -358,7 +358,7 @@ function CompleteComponent({
 							</CarouselItem>
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image2.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
@@ -367,7 +367,7 @@ function CompleteComponent({
 							</CarouselItem>
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image3.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
@@ -376,7 +376,7 @@ function CompleteComponent({
 							</CarouselItem>
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image4.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
@@ -385,7 +385,7 @@ function CompleteComponent({
 							</CarouselItem>
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image5.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
@@ -394,7 +394,7 @@ function CompleteComponent({
 							</CarouselItem>
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image6.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
@@ -403,7 +403,7 @@ function CompleteComponent({
 							</CarouselItem>
 							<CarouselItem className="basis-full">
 								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
-									<img 
+									<img
 										src={`${env.MINIO_ENDPOINT}/42lan---rl/image7.jpg`}
 										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
 										alt="Team"
