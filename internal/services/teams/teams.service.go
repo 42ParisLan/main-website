@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/samber/do"
 )
@@ -115,10 +116,17 @@ func (svc *teamsService) ListTeamsByTournament(
 
 	query = paging.ApplyQueryPaging(query, params.Input)
 
-	if params.Order == "asc" {
+	switch params.Order {
+	case "asc":
 		query = query.Order(ent.Asc(team.FieldID))
-	} else {
+	case "desc":
 		query = query.Order(ent.Desc(team.FieldID))
+	case "rank_asc":
+		query = query.Order(team.ByRankGroupField("rank_min", sql.OrderAsc()))
+	case "rank_desc":
+		query = query.Order(team.ByRankGroupField("rank_min", sql.OrderDesc()))
+	default:
+		query = query.Order(ent.Asc(team.FieldID))
 	}
 
 	teams, err := query.
