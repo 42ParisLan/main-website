@@ -38,6 +38,7 @@ func (ctrl *envController) getEnv(
 		Body: envResponse{
 			OAuthAuthorizeURL: "https://api.intra.42.fr/oauth/authorize",
 			OAuthClientID:     ctrl.config.IntraClientID,
+			MinioEndpoint:     ctrl.config.MinioPublicEndpoint + "/" + ctrl.config.MinioBucket + "/public",
 		},
 	}, nil
 }

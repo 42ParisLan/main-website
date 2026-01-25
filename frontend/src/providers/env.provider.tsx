@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 type EnvVars = {
 	VITE_OAUTH_AUTHORIZE_URL: string;
 	VITE_OAUTH_CLIENT_ID: string;
+	MINIO_ENDPOINT: string;
 };
 
 const EnvContext = createContext<EnvVars | undefined>(undefined);

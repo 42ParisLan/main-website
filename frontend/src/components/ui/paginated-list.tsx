@@ -117,6 +117,8 @@ interface PaginatedListControlledProps<T> extends Omit<PaginatedListProps<T>, 'd
 	data: PaginatedResponse<T> | undefined;
 	page: number;
 	onPageChange: (page: number) => void;
+	removeDiv?: boolean;
+	split?:string;
 }
 
 export function PaginatedListControlled<T>({
@@ -130,6 +132,8 @@ export function PaginatedListControlled<T>({
 	emptyMessage = 'No items found',
 	loadingComponent = <div>Loading...</div>,
 	itemLabel = 'item',
+	removeDiv = false,
+	split,
 }: PaginatedListControlledProps<T>) {
 	const items = useMemo(() => data?.items ?? [], [data?.items]);
 	const totalPages = useMemo(() => data?.total_pages ?? 1, [data?.total_pages]);
@@ -160,41 +164,55 @@ export function PaginatedListControlled<T>({
 
 	return (
 		<>
-			<div className={itemsContainerClassName}>
-				{items.map((item) => (
-					<div key={getItemKey(item)}>
-						{renderItem(item)}
-					</div>
-				))}
-			</div>
+			{split != "pagination" && (
+				<>
+					{removeDiv ? (
+						<>
+							{items.map((item) => renderItem(item))}
+						</>
+					) : (
+						<div className={itemsContainerClassName}>
+							{items.map((item) => (
+								<div key={getItemKey(item)}>
+									{renderItem(item)}
+								</div>
+							))}
+						</div>
+					)}
+				</>
+			)}
 
-			{/* Pagination Controls */}
-			{totalPages > 1 && (
-				<div className="flex items-center justify-between mt-6 pt-6 border-t">
-					<div className="text-sm text-muted-foreground">
-						Page {page + 1} of {totalPages} • Showing {items.length} of {total} {pluralLabel}
-					</div>
-					<div className="flex gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={handlePreviousPage}
-							disabled={!hasPreviousPage}
-						>
-							<IconChevronLeft className="w-4 h-4 mr-1" />
-							Previous
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={handleNextPage}
-							disabled={!hasNextPage}
-						>
-							Next
-							<IconChevronRight className="w-4 h-4 ml-1" />
-						</Button>
-					</div>
-				</div>
+			{split != "items" && (
+				<>
+					{/* Pagination Controls */}
+					{totalPages > 1 && (
+						<div className="flex items-center justify-between mt-6 pt-6 border-t">
+							<div className="text-sm text-muted-foreground">
+								Page {page + 1} of {totalPages} • Showing {items.length} of {total} {pluralLabel}
+							</div>
+							<div className="flex gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={handlePreviousPage}
+									disabled={!hasPreviousPage}
+								>
+									<IconChevronLeft className="w-4 h-4 mr-1" />
+									Previous
+								</Button>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={handleNextPage}
+									disabled={!hasNextPage}
+								>
+									Next
+									<IconChevronRight className="w-4 h-4 ml-1" />
+								</Button>
+							</div>
+						</div>
+					)}
+				</>
 			)}
 		</>
 	);

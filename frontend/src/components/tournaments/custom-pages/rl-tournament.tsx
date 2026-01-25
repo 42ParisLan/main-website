@@ -1,13 +1,19 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect} from "react";
 import useQueryClient from "@/hooks/use-query-client";
 import type { components } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
 import { IconBrandDiscord } from "@tabler/icons-react";
-import { Volume2, VolumeX } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Crown } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
 import defaultTournamentImage from "@/assets/default-tournament.png"
-import RLVideo from "@/assets/42RL.mp4"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import defaultTeamImage from "@/assets/default-team.png"
+import defaultUserImage from "@/assets/default-user.png"
+import { PaginatedListControlled } from "@/components/ui/paginated-list";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEnv } from "@/providers/env.provider";
 
 export default function RLTournament({
 	tournament,
@@ -31,10 +37,387 @@ export default function RLTournament({
 		return (
 			<p>Tournament is actually playing come back after to see results</p>
 		)
-	} else if (tournament.status == "completed")
+	} else if (tournament.status == "completed") {
+		return <CompleteComponent tournament={tournament}/>
+	}
 
 	return (
 		<p>{tournament.status}</p>
+	)
+}
+
+function getOrdinal(n: number) {
+	const s = ['th', 'st', 'nd', 'rd']
+	const v = n % 100
+	return n + (s[(v - 20) % 10] || s[v] || s[0])
+}
+
+function CompleteComponent({
+	tournament,
+}: {
+	tournament: components['schemas']['Tournament'];
+}) {
+	const client = useQueryClient();
+	const [page, setPage] = useState(0);
+
+	const { data: teams, isLoading: isTeamsLoading } = client.useQuery("get", "/tournaments/{id}/teams", {
+		params: {
+			path: { id: Number(tournament.id) },
+			query: {
+				page,
+				has_rank_group: "yes",
+				limit: 10,
+				order: "rank_asc"
+			}
+		}
+	});
+
+	const {data: winnerTeam} = client.useQuery("get", "/teams/{id}", {
+		params: {
+			path: {
+				id: 1,
+			}
+		}
+	})
+
+	const {data:mvpUser} = client.useQuery("get", "/users/{id_or_login}", {
+		params: {
+			path: {
+				id_or_login: "hdaher",
+			}
+		}
+	})
+	const {data:secondMvpUser} = client.useQuery("get", "/users/{id_or_login}", {
+		params: {
+			path: {
+				id_or_login: "damalca",
+			}
+		}
+	})
+	const {data:thirdMvpUser} = client.useQuery("get", "/users/{id_or_login}", {
+		params: {
+			path: {
+				id_or_login: "dnahon",
+			}
+		}
+	})
+
+	const env = useEnv()
+
+	if (!winnerTeam || !mvpUser) {
+		return (
+			<p>Can't find winner team</p>
+		)
+	}
+
+	return (
+		<div className="w-full min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+			{/* Image Section */}
+			<div className="relative w-full">
+				<img
+					className="w-full h-full object-cover"
+					src={tournament.image_url ?? defaultTournamentImage}
+					alt={tournament.name}
+				/>
+				<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black"></div>
+			</div>
+
+			{/* Content Section */}
+			<div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
+				<div className="relative">
+					{/* Central Winner Card - Neutral BG */}
+					<div className="backdrop-blur-sm border border-slate-500/30 rounded-3xl p-8 md:p-12 shadow-2xl shadow-black/30 mx-4 relative z-20 text-center space-y-8 bg-white/10">
+						<div className="absolute -top-8 left-1/2 -translate-x-1/2">
+							<div className="w-32 h-16 bg-gradient-to-r from-amber-400 to-yellow-500 text-sm md:text-base font-bold uppercase tracking-widest text-slate-900 px-6 py-3 rounded-full shadow-xl border-4 border-amber-300 flex items-center justify-center">
+								CHAMPION
+							</div>
+						</div>
+						<h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent drop-shadow-2xl">
+							{tournament.name}
+						</h1>
+						<p className="text-xl text-slate-300 font-medium">Congratulations to our winner team:</p>
+						<div className="border border-slate-500/50 rounded-2xl p-8 space-y-6 bg-slate-900/20">
+							<p className="text-3xl md:text-4xl font-bold text-amber-400">{winnerTeam.name}</p>
+							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{winnerTeam.members?.length} gap-4 pt-6 border-t border-slate-500/50">
+								{winnerTeam.members?.map((member) => (
+									<Link to={"/users/$userid"} params={{userid: String(member.user.id)}}>
+										<div key={member.user.username} className="flex items-center space-x-4 p-4 bg-slate-800/30 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group">
+												<img 
+													src={member.user.picture ?? defaultUserImage}
+													className="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-amber-400 shadow-xl group-hover:scale-110 transition-transform duration-200"
+													alt={member.user.username}
+												/>
+												<span className="font-semibold text-white text-lg">{member.user.username}</span>
+										</div>
+									</Link>
+								))}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="max-w-5xl mx-auto px-4 py-12">
+				<div className="text-center space-y-3 mb-16">
+					<h2 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent drop-shadow-xl">
+						MVP of the Tournament
+					</h2>
+				</div>
+				
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
+					{/* 1st MVP - Gold Podium */}
+					<div className="relative group">
+						<div className="backdrop-blur-sm bg-white/10 border border-slate-500/30 rounded-3xl p-8 md:p-10 shadow-2xl shadow-black/30 hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
+							<Link to={"/users/$userid"} params={{userid: String(mvpUser?.id)}}>
+								<div className="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-20 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl shadow-2xl flex items-center justify-center text-3xl">
+									🥇
+								</div>
+								<img 
+									src={mvpUser.picture ?? defaultUserImage}
+									className="w-32 h-32 mx-auto rounded-full border-8 border-yellow-400 shadow-2xl mb-6 group-hover:scale-110 transition-transform duration-300"
+									alt={mvpUser.username}
+								/>
+								<h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{mvpUser.username}</h3>
+								<div className="grid grid-cols-2 gap-4 text-sm md:text-base text-slate-300 mb-6">
+									<div className="space-y-1">
+										<div className="font-mono font-bold text-2xl text-yellow-400">899</div>
+										<div>Score</div>
+									</div>
+									<div className="space-y-1">
+										<div className="font-mono font-bold text-xl text-emerald-400">3.2</div>
+										<div>Goals</div>
+									</div>
+									<div className="space-y-1">
+										<div className="font-mono font-bold text-xl text-blue-400">1.2</div>
+										<div>Assists</div>
+									</div>
+									<div className="space-y-1">
+										<div className="font-mono font-bold text-xl text-indigo-400">2.6</div>
+										<div>Saves</div>
+									</div>
+								</div>
+							</Link>
+						</div>
+					</div>
+
+					{/* 2nd Place - Silver */}
+					<div className="relative group lg:col-span-1">
+						<div className="backdrop-blur-sm bg-white/5 border border-slate-500/20 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/20 hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-1">
+							<Link to={"/users/$userid"} params={{userid: String(secondMvpUser?.id)}}>
+								<div className="absolute -top-10 left-1/2 -translate-x-1/2 w-16 h-16 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl shadow-xl flex items-center justify-center text-2xl">
+									🥈
+								</div>
+								<img 
+									src={secondMvpUser?.picture ?? defaultUserImage}
+									className="w-24 h-24 mx-auto rounded-full border-4 border-gray-400 shadow-xl mb-4 group-hover:scale-105 transition-transform"
+									alt={secondMvpUser?.username}
+								/>
+								<h4 className="text-xl md:text-2xl font-bold text-slate-200 mb-4">{secondMvpUser?.username ?? 'N/A'}</h4>
+								<div className="text-sm text-slate-400 space-y-2">
+									<div><span className="font-mono font-semibold text-lg">738</span> score</div>
+									<div>2.4 goals | 1.8 assists | 2.2 saves</div>
+								</div>
+							</Link>
+						</div>
+					</div>
+
+					{/* 3rd Place - Bronze */}
+					<div className="relative group lg:col-span-1">
+						<div className="backdrop-blur-sm bg-white/5 border border-slate-500/20 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/20 hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-1">
+							<Link to={"/users/$userid"} params={{userid: String(thirdMvpUser?.id)}}>
+								<div className="absolute -top-10 left-1/2 -translate-x-1/2 w-16 h-16 bg-gradient-to-r from-orange-500 to-amber-600 rounded-xl shadow-xl flex items-center justify-center text-2xl">
+									🥉
+								</div>
+								<img 
+									src={thirdMvpUser?.picture ?? defaultUserImage}
+									className="w-24 h-24 mx-auto rounded-full border-4 border-orange-500 shadow-xl mb-4 group-hover:scale-105 transition-transform"
+									alt={thirdMvpUser?.username}
+								/>
+								<h4 className="text-xl md:text-2xl font-bold text-slate-200 mb-4">{thirdMvpUser?.username ?? 'N/A'}</h4>
+								<div className="text-sm text-slate-400 space-y-2">
+									<div><span className="font-mono font-semibold text-lg">653</span> score</div>
+									<div>2.8 goals | 1 assist | 1 save</div>
+								</div>
+							</Link>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<Card className='max-w-[500px] w-full mx-auto'>
+				<CardHeader>
+					<CardTitle>Classement of Tournament</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Table className="table-fixed w-full">
+						<TableHeader>
+							<TableRow>
+								<TableHead className="w-[80px] text-center">Rank</TableHead>
+								<TableHead className="w-[calc(100%-160px)]">Team</TableHead>
+								<TableHead className="w-[80px] text-right">Elo</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							<PaginatedListControlled<components['schemas']['LightTeam']>
+								data={teams}
+								page={page}
+								onPageChange={(newPage) => setPage(newPage)}
+								isLoading={isTeamsLoading}
+								removeDiv={true}
+								split="items"
+								renderItem={(team) => {
+									let name = getOrdinal(team.rank_group?.rank_min ?? 0)
+									if (team.rank_group?.rank_min !== team.rank_group?.rank_max) {
+										name += ` - ${getOrdinal(team.rank_group?.rank_max ?? 0)}`
+									}
+
+									return (
+										<TableRow key={team.id}>
+											<TableCell
+												className={`text-center font-bold text-white ${
+													team.rank_group?.rank_min === 1
+														? 'bg-[var(--placement-1)]'
+														: team.rank_group?.rank_min === 2
+															? 'bg-[var(--placement-2)]'
+															: team.rank_group?.rank_min === 3
+																? 'bg-[var(--placement-3)]'
+																: team.rank_group?.rank_min === 4
+																	? 'bg-[var(--placement-4)]'
+																	: 'bg-[var(--placement-lightblue)]'
+												}`}
+											>
+												{name}
+											</TableCell>
+											<TableCell>
+												<Link to={"/tournaments/$tournamentid/$teamid"} params={{teamid: String(team.id), tournamentid: tournament.slug}}>
+													<div className="flex items-center gap-3">
+														<Avatar className="h-9 w-9">
+															<AvatarImage
+																src={team.image_url ?? defaultTeamImage}
+																alt="Avatar"
+															/>
+															<AvatarFallback>
+																{team.name.slice(0, 2)}
+															</AvatarFallback>
+														</Avatar>
+														<div className="flex items-center gap-2">
+															{team.name}
+															{team.rank_group?.rank_min !== undefined && team.rank_group.rank_min < 3 && (
+																<Crown
+																	size={16}
+																	className={
+																		team.rank_group?.rank_min === 1
+																			? 'text-yellow-500'
+																			: team.rank_group?.rank_min === 2
+																				? 'text-gray-400'
+																				: 'text-yellow-700'
+																	}
+																/>
+															)}
+														</div>
+													</div>
+												</Link>
+											</TableCell>
+											<TableCell className="text-right font-semibold text-white/90">{team.elo == 0 ? 'N/A' : team.elo}</TableCell>
+										</TableRow>
+									)
+								}}
+								getItemKey={(team) => team.id}
+							/>
+						</TableBody>
+					</Table>
+					<PaginatedListControlled<components['schemas']['LightTeam']>
+						data={teams}
+						page={page}
+						onPageChange={(newPage) => setPage(newPage)}
+						isLoading={isTeamsLoading}
+						split="pagination"
+						renderItem={() => <></>}
+						getItemKey={(team) => team.id}
+					/>
+				</CardContent>
+			</Card>
+
+			<div className="w-full flex items-center justify-center py-12">
+				<div className="text-center space-y-6 w-full max-w-md mx-auto">
+					<h1 className="text-3xl md:text-4xl font-bold text-white">
+						Album of the Tournament
+					</h1>
+					<Carousel className="w-full mx-auto" opts={{ align: 'center', loop: false }}>
+						<CarouselContent className="-ml-1">
+							{/* Repeat for each image */}
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image2.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image3.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image4.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image5.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image6.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="basis-full">
+								<div className="p-1 h-[50vh] flex items-center justify-center rounded-lg overflow-hidden">
+									<img 
+										src={`http://${env.MINIO_ENDPOINT}/42lan---rl/image7.jpg`}
+										className="h-full w-auto mx-auto block object-contain shadow-lg rounded-lg"
+										alt="Team"
+									/>
+								</div>
+							</CarouselItem>
+							{/* Same for image2.jpg */}
+						</CarouselContent>
+						<CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2" />
+						<CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2" />
+					</Carousel>
+				</div>
+			</div>
+		</div>
 	)
 }
 
@@ -45,16 +428,6 @@ function OngoingComponent({
 	tournament: components['schemas']['Tournament'];
 	refetch: () => any;
 }) {
-	const [isMuted, setIsMuted] = useState(true);
-	const videoRef = useRef<HTMLVideoElement>(null);
-
-	const toggleMute = () => {
-		if (videoRef.current) {
-			videoRef.current.muted = !isMuted;
-			setIsMuted(!isMuted);
-		}
-	};
-
 	const [timeLeft, setTimeLeft] = useState('');
 
 	useEffect(() => {
@@ -96,27 +469,6 @@ function OngoingComponent({
 
 	return (
 		<div className="w-full">
-			<div className="relative w-full flex items-center justify-center bg-black">
-				<video
-					ref={videoRef}
-					className="w-full h-full object-cover"
-					autoPlay
-					muted
-				>
-					<source src={RLVideo} type="video/mp4" />
-					Your browser does not support the video tag.
-				</video>
-
-				<Button
-					onClick={toggleMute}
-					className="absolute bottom-8 right-8 z-10 p-6"
-					variant="secondary"
-					size="lg"
-				>
-					{isMuted ? <VolumeX className="h-12 w-12" /> : <Volume2 className="h-12 w-12" />}
-				</Button>
-			</div>
-
 			<div className="text-center space-y-4">
 				<h2 className="text-3xl font-bold text-primary">
 					REGISTRATIONS OPEN IN

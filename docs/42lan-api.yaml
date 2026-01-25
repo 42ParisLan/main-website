@@ -295,6 +295,8 @@ components:
           format: uri
           readOnly: true
           type: string
+        MINIO_ENDPOINT:
+          type: string
         VITE_OAUTH_AUTHORIZE_URL:
           type: string
         VITE_OAUTH_CLIENT_ID:
@@ -302,6 +304,7 @@ components:
       required:
         - VITE_OAUTH_AUTHORIZE_URL
         - VITE_OAUTH_CLIENT_ID
+        - MINIO_ENDPOINT
       type: object
     ErrorDetail:
       additionalProperties: false
@@ -1536,6 +1539,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
       responses:
@@ -2050,6 +2055,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
       responses:
@@ -2345,6 +2352,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
       responses:
@@ -2762,6 +2771,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
       responses:
@@ -2989,6 +3000,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
         - example: visible
@@ -3610,6 +3623,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
         - example: all
@@ -3757,6 +3772,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
         - example: user
@@ -3995,6 +4012,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
       responses:
@@ -4051,6 +4070,8 @@ paths:
             enum:
               - asc
               - desc
+              - rank_asc
+              - rank_desc
             example: asc
             type: string
         - example: visible

@@ -1352,6 +1352,7 @@ export interface components {
              * @example /api/schemas/EnvResponse.json
              */
             readonly $schema?: string;
+            MINIO_ENDPOINT: string;
             VITE_OAUTH_AUTHORIZE_URL: string;
             VITE_OAUTH_CLIENT_ID: string;
         };
@@ -2127,7 +2128,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
             };
             header?: never;
             path?: never;
@@ -2603,7 +2604,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
             };
             header?: never;
             path?: never;
@@ -2882,7 +2883,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
             };
             header?: never;
             path?: never;
@@ -3231,7 +3232,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
             };
             header?: never;
             path: {
@@ -3438,7 +3439,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
                 /** @example visible */
                 visible?: "all" | "visible";
                 /** @example ongoing */
@@ -3922,7 +3923,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
                 /** @example all */
                 status?: "all" | "locked" | "draft" | "register" | "waitlist";
                 /** @example all */
@@ -4010,7 +4011,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
                 /** @example user */
                 kind?: "user" | "admin";
             };
@@ -4208,7 +4209,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
             };
             header?: never;
             path: {
@@ -4247,7 +4248,7 @@ export interface operations {
                 /** @example 10 */
                 limit?: number;
                 /** @example asc */
-                order?: "asc" | "desc";
+                order?: "asc" | "desc" | "rank_asc" | "rank_desc";
                 /** @example visible */
                 visible?: "all" | "visible";
                 /** @example ongoing */
